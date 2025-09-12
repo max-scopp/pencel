@@ -3,16 +3,16 @@ import type { Props } from "./jsx.ts";
 export type JSXElement = {
   type: string | ((props: Record<string, unknown>) => JSXElement | null);
   props: Record<string, unknown>;
-  children: Array<JSXElement | string | number | boolean | null>;
+  children?: Array<JSXElement | string | number | boolean | null>;
   key?: string | number;
 };
 
 export type VNode = {
-  type: string | ((props: Record<string, unknown>) => VNode | null);
-  props?: Props;
-  children?: Array<VNode | string | number | boolean | null>;
-  key: string | number | null;
-  $elm$?: HTMLElement | null;
+  $type$: string | ((props: Record<string, unknown>) => JSXElement | null);
+  $props$?: Props;
+  $children$?: Array<VNode | null>;
+  $key$: string | number | null;
+  $elm$?: HTMLElement | Text | Comment | null;
   $text$?: string;
 };
 

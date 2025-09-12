@@ -1,6 +1,10 @@
+import { createPerformanceTree } from "@pencil/utils";
 import type { JSXElement, VNode } from "./types.ts";
 
-export type Props = Record<string, unknown> ;
+// Global performance tracker for JSX operations
+export const jsxPerf = createPerformanceTree();
+
+export type Props = Record<string, unknown>;
 export type ComponentType = (props: Props) => JSXElement | null;
 
 export function h(
@@ -8,8 +12,10 @@ export function h(
   props?: Props | null,
   ...children: unknown[]
 ): JSXElement {
-  return {
-    type,
+  jsxPerf.start("jsx-creation");
+
+  const result: JSXElement = {
+    type: type,
     props: props || {},
     children: children
       .flat()
@@ -23,21 +29,93 @@ export function h(
       ),
     key: props?.key as string | number | undefined,
   };
+
+  jsxPerf.end("jsx-creation");
+  return result;
 }
 
-export function toVNode(jsx: JSXElement): VNode {
-  return {
-    type: jsx.type,
-    props: jsx.props,
-    children: jsx.children.map((child) =>
-      typeof child === "string" ||
-      typeof child === "number" ||
-      typeof child === "boolean" ||
-      child === null
-        ? child
-        : toVNode(child),
-    ),
-    key: jsx.key ?? null,
+export function toVNode(
+  jsx: JSXElement | string | number | boolean | null,
+): VNode {
+  jsxPerf.start("vnode-conversion");
+
+  if (
+    typeof jsx === "string" ||
+    typeof jsx === "number" ||
+    typeof jsx === "boolean"
+  ) {
+    jsxPerf.end("vnode-conversion");
+    return {
+      $type$: "TEXT",
+      $props$: {},
+      $children$: [],
+      $key$: null,
+      $elm$: null,
+      $text$: String(jsx),
+    };
+  }
+
+  if (jsx === null) {
+    jsxPerf.end("vnode-conversion");
+    return {
+      $type$: "COMMENT",
+      $props$: {},
+      $children$: [],
+      $key$: null,
+      $elm$: null,
+      $text$: "",
+    };
+  }
+
+  let type: string;
+
+  if (typeof jsx.type === "function") {
+    // For component functions, we need to execute them to get the actual JSX
+    jsxPerf.start("component-render");
+    const componentResult = jsx.type({
+      ...jsx.props,
+      children: jsx.children || [],
+    });
+    jsxPerf.end("component-render");
+
+    if (componentResult === null) {
+      // Component returned null, create a comment node
+      jsxPerf.end("vnode-conversion");
+      return {
+        $type$: "COMMENT",
+        $props$: {},
+        $children$: [],
+        $key$: jsx.key ?? null,
+        $elm$: null,
+        $text$: "",
+      };
+    }
+
+    // Recursively convert the component's result
+    const result = toVNode(componentResult);
+    jsxPerf.end("vnode-conversion");
+    return result;
+  } else {
+    type = jsx.type;
+  }
+
+  const result: VNode = {
+    $type$: type,
+    $props$: jsx.props,
+    $children$: (jsx.children || []).map((child) => {
+      if (child == null) {
+        return null;
+      }
+
+      return toVNode(child);
+    }),
+    $key$: jsx.key ?? null,
     $elm$: null,
   };
+
+  jsxPerf.end("vnode-conversion");
+  return result;
 }
+
+jsxPerf.end("root");
+jsxPerf.log();

@@ -19,5 +19,8 @@
     "titleBar.inactiveBackground": "#e8b64799",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.remoteColor": "#E8B647"
+  "peacock.remoteColor": "#E8B647",
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }

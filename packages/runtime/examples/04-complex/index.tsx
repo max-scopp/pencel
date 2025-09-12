@@ -1,13 +1,71 @@
 import { type Component, render } from "../../src";
-import "../02-custom-elements/mx-card";
-import { h } from "../../src/index"
+import { h } from "../../src/index";
+
+// Define custom element
+class MxCard extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: "open" });
+    const style = document.createElement("style");
+    style.textContent = `
+      :host {
+        display: block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 16px;
+        margin: 8px;
+      }
+      .title { font-weight: bold; }
+    `;
+    shadow.appendChild(style);
+  }
+
+  static get observedAttributes() {
+    return ["title"];
+  }
+
+  attributeChangedCallback(name: string, _: string, newValue: string) {
+    if (name === "title") {
+      const titleElm = this.shadowRoot?.querySelector(".title");
+      if (titleElm) {
+        titleElm.textContent = newValue;
+      }
+    }
+  }
+
+  connectedCallback() {
+    const title = document.createElement("div");
+    title.className = "title";
+    title.textContent = this.getAttribute("title") || "";
+    this.shadowRoot?.appendChild(title);
+
+    const slot = document.createElement("slot");
+    this.shadowRoot?.appendChild(slot);
+  }
+}
+
+customElements.define("mx-card", MxCard);
+
+// Global state
+const globalState: Record<string, unknown> = {};
+let renderScheduled = false;
 
 // Utility function for state management (simple implementation)
-function useState<T>(initial: T): [T, (value: T) => void] {
-  let state = initial;
+function useState<T>(initial: T, key: string): [T, (value: T) => void] {
+  if (!(key in globalState)) {
+    globalState[key] = initial;
+  }
+  const state = globalState[key] as T;
   const setState = (value: T) => {
-    state = value;
-    renderApp(); // Re-render the app when state changes
+    globalState[key] = value;
+    // Schedule render to batch multiple state updates
+    if (!renderScheduled) {
+      renderScheduled = true;
+      requestAnimationFrame(() => {
+        renderApp();
+        renderScheduled = false;
+      });
+    }
   };
   return [state, setState];
 }
@@ -56,8 +114,8 @@ interface TodoItem {
 }
 
 const TodoList: Component = () => {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [input, setInput] = useState("");
+  const [todos, setTodos] = useState<TodoItem[]>([], "todos");
+  const [input, setInput] = useState("", "input");
 
   const addTodo = () => {
     if (input.trim()) {
@@ -94,6 +152,9 @@ const TodoList: Component = () => {
             key={todo.id}
             className={todo.completed ? "completed" : ""}
             onClick={() => toggleTodo(todo.id)}
+            onKeyDown={(e: KeyboardEvent) => {
+              if (e.key === "Enter") toggleTodo(todo.id);
+            }}
           >
             {todo.text}
           </li>
@@ -105,7 +166,7 @@ const TodoList: Component = () => {
 
 // Main App combining everything
 const App: Component = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(0, "activeTab");
   const tabs = ["Todo List", "Custom Elements", "Info"];
 
   return (
@@ -167,9 +228,9 @@ const App: Component = () => {
 
 // Initial render
 const root = document.getElementById("root");
-if (root) {
-  const renderApp = () => {
-    render(<App />, root);
-  };
-  renderApp();
-}
+
+const renderApp = () => {
+  render(<App />, root);
+};
+
+renderApp();

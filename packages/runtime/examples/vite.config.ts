@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   root: "./",
   base: "/",
   server: {
@@ -16,6 +18,7 @@ export default defineConfig({
         "custom-elements": "02-custom-elements/index.html",
         functional: "03-functional-components/index.html",
         complex: "04-complex/index.html",
+        test: "test-multiple-renders.html",
       },
     },
   },
