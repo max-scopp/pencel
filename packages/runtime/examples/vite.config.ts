@@ -19,6 +19,7 @@ export default defineConfig({
         functional: "03-functional-components/index.html",
         complex: "04-complex/index.html",
         pencil: "05-pencil/index.html",
+        pencilPropsState: "06-pencil-props-state/index.html",
         test: "test-multiple-renders.html",
       },
     },

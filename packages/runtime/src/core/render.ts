@@ -3,33 +3,114 @@ import { setAttributes } from "./attributes.ts";
 import { toVNode } from "./jsx.ts";
 import type { JSXElement, VNode } from "./types.ts";
 
-// Extend HTMLElement to include our internal storage
+// Extend HTMLElement and ShadowRoot to include our internal storage
 declare global {
   interface HTMLElement {
     __$pencil_internals$?: {
       vnode?: VNode;
     };
   }
+  interface ShadowRoot {
+    __$pencil_internals$?: {
+      vnode?: VNode;
+    };
+  }
 }
 
-export function render(jsx: JSXElement, container: HTMLElement): void {
-  // Create a new performance tree for this render cycle
-  const renderPerf = createPerformanceTree();
-  renderPerf.start("render-cycle");
+type RenderContainer = HTMLElement | ShadowRoot;
 
-  container.__$pencil_internals$ ??= {};
+// Component update scheduler integrated with render system
+class ComponentUpdateScheduler {
+  private pendingUpdates = new Set<HTMLElement>();
+  private pendingRenders = new Set<() => void>();
+  private isFlushingUpdates = false;
+
+  scheduleComponentUpdate(component: HTMLElement, renderFn: () => void) {
+    this.pendingUpdates.add(component);
+    this.pendingRenders.add(renderFn);
+
+    if (!this.isFlushingUpdates) {
+      // Use microtask for immediate scheduling
+      queueMicrotask(() => this.flushUpdates());
+    }
+  }
+
+  scheduleRender(renderFn: () => void) {
+    this.pendingRenders.add(renderFn);
+
+    if (!this.isFlushingUpdates) {
+      requestAnimationFrame(() => this.flushUpdates());
+    }
+  }
+
+  private flushUpdates() {
+    if (this.isFlushingUpdates) return;
+
+    this.isFlushingUpdates = true;
+
+    // Create a new performance tree for this entire batch
+    const renderPerf = createPerformanceTree();
+    renderPerf.start("render-batch");
+
+    // Execute all queued renders in one big batch
+    for (const render of this.pendingRenders) {
+      render();
+    }
+
+    renderPerf.end("render-batch");
+    renderPerf.log();
+
+    this.pendingUpdates.clear();
+    this.pendingRenders.clear();
+    this.isFlushingUpdates = false;
+  }
+}
+
+const scheduler = new ComponentUpdateScheduler();
+
+// Export function for components to schedule updates
+export function scheduleComponentUpdate(
+  component: HTMLElement,
+  renderFn: () => void,
+) {
+  scheduler.scheduleComponentUpdate(component, renderFn);
+}
+
+function scheduleRender(renderFn: () => void) {
+  scheduler.scheduleRender(renderFn);
+}
+export function render(jsx: JSXElement, container: RenderContainer): void {
+  scheduleRender(() => {
+    performRender(jsx, container);
+  });
+}
+
+function performRender(jsx: JSXElement, container: RenderContainer): void {
+  const internals = (container as { __$pencil_internals$?: { vnode?: VNode } })
+    .__$pencil_internals$;
+  if (!internals) {
+    (
+      container as { __$pencil_internals$: { vnode?: VNode } }
+    ).__$pencil_internals$ = { vnode: undefined };
+  }
+  const containerInternals = (
+    container as { __$pencil_internals$: { vnode?: VNode } }
+  ).__$pencil_internals$;
 
   const newVNode = toVNode(jsx);
 
   // Get the previously rendered VNode from the container
-  const oldVNode = container.__$pencil_internals$?.vnode;
+  const oldVNode = containerInternals.vnode;
+
+  // Create a performance tree for this specific render
+  const renderPerf = createPerformanceTree();
 
   if (oldVNode) {
     // Update existing content using patch
     const updatedVNode = patch(oldVNode, newVNode, renderPerf);
 
     // Store the updated VNode for future renders
-    container.__$pencil_internals$.vnode = updatedVNode;
+    containerInternals.vnode = updatedVNode;
   } else {
     // First render - create new DOM
     const newNode = createDOM(newVNode, renderPerf);
@@ -37,32 +118,28 @@ export function render(jsx: JSXElement, container: HTMLElement): void {
     container.appendChild(newNode);
 
     // Store the VNode for future renders
-    container.__$pencil_internals$.vnode = newVNode;
+    containerInternals.vnode = newVNode;
   }
-
-  renderPerf.end("render-cycle");
-
-  // Log performance after render completes
-  renderPerf.log();
 }
 
 function createDOM(
   vnode: VNode,
   perf: ReturnType<typeof createPerformanceTree>,
 ): HTMLElement | Text | Comment {
-  perf.start(`create-${vnode.$type$}`);
+  const nodeType = String(vnode.$type$);
+  perf.start(`🔨 create-${nodeType}`);
 
   if (vnode.$type$ === "COMMENT") {
     const comment = document.createComment(vnode.$text$ || "");
     vnode.$elm$ = comment;
-    perf.end(`create-${vnode.$type$}`);
+    perf.end(`🔨 create-${nodeType}`);
     return comment;
   }
 
   if (vnode.$type$ === "TEXT") {
     const text = document.createTextNode(vnode.$text$ || "");
     vnode.$elm$ = text;
-    perf.end(`create-${vnode.$type$}`);
+    perf.end(`🔨 create-${nodeType}`);
     return text;
   }
 
@@ -72,58 +149,56 @@ function createDOM(
     typeof vnode === "boolean"
   ) {
     const result = document.createTextNode(String(vnode));
-    // Note: This case should not be reached as toVNode converts primitives
-    perf.end(`create-${(vnode as VNode).$type$}`);
+    perf.end(`🔨 create-${(vnode as VNode).$type$}`);
     return result;
   }
 
-  const element = document.createElement(vnode.$type$ as string);
+  const element = document.createElement(String(vnode.$type$));
 
   // Set attributes and properties
   setAttributes(element, vnode.$props$);
 
-  // Create and append children
-  vnode.$children$?.forEach((child) => {
-    if (child != null) {
-      element.appendChild(createDOM(child as VNode, perf));
+  // Create all children at once
+  if (vnode.$children$ && vnode.$children$.length > 0) {
+    for (const child of vnode.$children$) {
+      if (child != null) {
+        const childElement = createDOM(child as VNode, perf);
+        element.appendChild(childElement);
+      }
     }
-  });
+  }
 
   vnode.$elm$ = element;
-  perf.end(`create-${vnode.$type$}`);
+  perf.end(`🔨 create-${nodeType}`);
   return element;
 }
 
-export function patch(
+function patch(
   oldVNode: VNode | null,
   newVNode: VNode,
   perf: ReturnType<typeof createPerformanceTree>,
 ): VNode {
-  const patchName = oldVNode ? `patch-${oldVNode.$type$}` : "patch-null";
-  perf.start(patchName);
+  const newNodeType = String(newVNode.$type$);
 
   // If old node doesn't exist, create new DOM
   if (!oldVNode) {
     const newNode = createDOM(newVNode, perf);
     newVNode.$elm$ = newNode;
-    perf.end(patchName);
     return newVNode;
   }
 
   // If nodes are the same reference, no change needed
   if (oldVNode === newVNode) {
-    perf.end(patchName);
     return newVNode;
   }
 
-  // If nodes are different types, replace completely
+  // If nodes are different types, replace completely (create new)
   if (oldVNode.$type$ !== newVNode.$type$) {
     const newNode = createDOM(newVNode, perf);
     if (oldVNode.$elm$?.parentNode) {
       oldVNode.$elm$.parentNode.replaceChild(newNode, oldVNode.$elm$);
     }
     newVNode.$elm$ = newNode;
-    perf.end(patchName);
     return newVNode;
   }
 
@@ -131,9 +206,11 @@ export function patch(
   const elm = oldVNode.$elm$;
   newVNode.$elm$ = elm;
   if (!elm) {
-    perf.end(patchName);
     return newVNode;
   }
+
+  const patchName = `🔧 update-${newNodeType}`;
+  perf.start(patchName);
 
   // Handle text nodes
   if (oldVNode.$type$ === "TEXT" && newVNode.$type$ === "TEXT") {
@@ -147,7 +224,7 @@ export function patch(
   // Update props
   setAttributes(elm as HTMLElement, newVNode.$props$);
 
-  // Update children recursively
+  // Update children
   const oldChildren = oldVNode.$children$ || [];
   const newChildren = newVNode.$children$ || [];
   const oldLen = oldChildren.length;
@@ -166,12 +243,15 @@ export function patch(
 
   // Remove extra old children
   if (oldLen > newLen) {
+    const removeName = `🗑️ remove-${newNodeType}-children`;
+    perf.start(removeName);
     for (let i = len; i < oldLen; i++) {
       const child = oldChildren[i];
       if (child && typeof child === "object" && "$elm" in child && child.$elm) {
-        elm.removeChild(child.$elm as Node);
+        (elm as HTMLElement).removeChild(child.$elm as Node);
       }
     }
+    perf.end(removeName);
   }
 
   // Add new children
@@ -180,7 +260,7 @@ export function patch(
       const child = newChildren[i];
       if (child != null) {
         const dom = createDOM(child as VNode, perf);
-        elm.appendChild(dom);
+        (elm as HTMLElement).appendChild(dom);
         (child as VNode).$elm$ = dom;
       }
     }

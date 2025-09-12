@@ -1,4 +1,6 @@
-export interface PencilConfig {
+import type { PencilRuntimeConfig } from "@pencil/runtime";
+
+export interface PencilConfig extends PencilRuntimeConfig {
   compiler?: {
     target?:
       | "es5"

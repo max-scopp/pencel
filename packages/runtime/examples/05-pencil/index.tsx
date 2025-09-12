@@ -16,6 +16,21 @@ class FancyButton extends HTMLButtonElement {
   }
 }
 
+// Example using explicit extends option (doesn't need to inherit)
+@Component({
+  tagName: "custom-input",
+  extends: "input",
+})
+class CustomInput extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    console.log("Custom input connected!");
+  }
+}
+
 // Example without explicit tagName (uses class name)
 @Component({
   tagName: "simple",

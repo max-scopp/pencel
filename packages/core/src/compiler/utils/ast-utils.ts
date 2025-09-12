@@ -9,10 +9,46 @@ export function createSourceFile(
     experimentalDecorators: true,
     emitDecoratorMetadata: true,
   };
+
+  // Use TypeScript's built-in createCompilerHost for a complete, working host
   const host = ts.createCompilerHost(compilerOptions);
+
+  // Override only the methods we need for string-based source files
   const originalReadFile = host.readFile;
-  host.readFile = (fileName: string) =>
-    fileName === "temp.ts" ? fileContents : originalReadFile(fileName);
+  const originalFileExists = host.fileExists;
+  const originalGetSourceFile = host.getSourceFile;
+
+  host.readFile = (fileName: string) => {
+    if (fileName === "temp.ts") {
+      return fileContents;
+    }
+    return originalReadFile(fileName);
+  };
+
+  host.fileExists = (fileName: string) => {
+    if (fileName === "temp.ts") {
+      return true;
+    }
+    return originalFileExists(fileName);
+  };
+
+  host.getSourceFile = (
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: (message: string) => void,
+    shouldCreateNewSourceFile?: boolean,
+  ) => {
+    if (fileName === "temp.ts") {
+      return ts.createSourceFile(fileName, fileContents, languageVersion);
+    }
+    return originalGetSourceFile(
+      fileName,
+      languageVersion,
+      onError,
+      shouldCreateNewSourceFile,
+    );
+  };
+
   const program = ts.createProgram([fileName], compilerOptions, host);
   const sourceFile = program.getSourceFile(fileName);
   if (!sourceFile) {
