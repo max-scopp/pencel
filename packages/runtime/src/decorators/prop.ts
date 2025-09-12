@@ -2,7 +2,14 @@ import { reactiveComponents, triggerUpdate } from "./component.ts";
 
 // Property decorator for reactive props (can be set via attributes or properties)
 
-// Helper function to initialize reactive system with default values
+interface PencilPropsMetadata {
+  __pencilProps?: Map<string, PropOptions>;
+}
+
+/**
+ * Initializes the reactive system for a component, setting up default values
+ * for all props that have them defined.
+ */
 function initializeReactiveSystem(component: HTMLElement) {
   let reactive = reactiveComponents.get(component);
   if (!reactive) {
@@ -17,13 +24,9 @@ function initializeReactiveSystem(component: HTMLElement) {
     reactiveComponents.set(component, reactive);
 
     // Initialize default values for all props
-    const ctor = (component as { constructor?: unknown }).constructor;
-    const propMetadata = ctor
-      ? (ctor as { __pencilProps?: Map<string, PropOptions> }).__pencilProps
-      : undefined;
-
-    if (propMetadata) {
-      for (const [propName, propOptions] of propMetadata) {
+    const metadata = getPropsMetadata(component);
+    if (metadata) {
+      for (const [propName, propOptions] of metadata) {
         if (
           propOptions.defaultValue !== undefined &&
           !reactive.props.has(propName)
@@ -36,22 +39,44 @@ function initializeReactiveSystem(component: HTMLElement) {
   return reactive;
 }
 
+/**
+ * Gets the props metadata map from a component's constructor
+ */
+function getPropsMetadata(
+  component: HTMLElement,
+): Map<string, PropOptions> | undefined {
+  const ctor = (component as { constructor?: unknown }).constructor;
+  return ctor ? (ctor as PencilPropsMetadata).__pencilProps : undefined;
+}
+
+/**
+ * Stores props metadata on the component's constructor
+ */
+function setPropsMetadata(
+  target: object,
+  propertyName: string,
+  options: PropOptions,
+) {
+  const ctor = (target as { constructor?: unknown }).constructor;
+  if (!ctor) return;
+
+  const metadata = ctor as PencilPropsMetadata;
+  if (!metadata.__pencilProps) {
+    metadata.__pencilProps = new Map<string, PropOptions>();
+  }
+  metadata.__pencilProps.set(propertyName, options || {});
+}
+
+/**
+ * Property decorator that makes component properties reactive.
+ * Changes to these properties will automatically trigger re-renders.
+ */
 export function Prop(options?: PropOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
     const propertyName = propertyKey as string;
 
     // Store metadata about props on the class
-    const ctor = (target as { constructor?: unknown }).constructor;
-    if (ctor && !(ctor as { __pencilProps?: unknown }).__pencilProps) {
-      (ctor as { __pencilProps: Map<string, PropOptions> }).__pencilProps =
-        new Map<string, PropOptions>();
-    }
-    if (ctor) {
-      (ctor as { __pencilProps: Map<string, PropOptions> }).__pencilProps.set(
-        propertyName,
-        options || {},
-      );
-    }
+    setPropsMetadata(target, propertyName, options || {});
 
     // Define getter/setter for the property
     Object.defineProperty(target, propertyName, {
@@ -68,6 +93,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
 
         return value;
       },
+
       set(value: unknown) {
         const component = this as HTMLElement;
         const reactive = initializeReactiveSystem(component);
@@ -78,11 +104,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
           reactive.props.set(propertyName, value);
 
           // Reflect to attribute if needed
-          const propOptions = ctor
-            ? (
-                ctor as { __pencilProps: Map<string, PropOptions> }
-              ).__pencilProps?.get(propertyName)
-            : undefined;
+          const propOptions = getPropsMetadata(component)?.get(propertyName);
           if (propOptions?.reflect) {
             if (value == null) {
               component.removeAttribute(propertyName);
@@ -95,6 +117,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
           triggerUpdate(component);
         }
       },
+
       enumerable: true,
       configurable: true,
     });

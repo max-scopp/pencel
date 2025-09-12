@@ -8,6 +8,7 @@
     "build": "nx build"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.5",
     "@pencil/runtime": "^0.0.1"
   },
   "devDependencies": {

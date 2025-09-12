@@ -1,5 +1,20 @@
 // biome-ignore lint/correctness/noUnusedImports: <explanation>
+
+import { css } from "@emotion/css";
 import { Component, h, render } from "../../src";
+
+const fancyButtonStyles = css`
+  background: #007bff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  
+  &:hover {
+    background: #0056b3;
+  }
+`;
 
 @Component({
   tagName: "fancy-button",
@@ -7,19 +22,18 @@ import { Component, h, render } from "../../src";
 class FancyButton extends HTMLButtonElement {
   constructor() {
     super();
-
-    debugger;
   }
 
   connectedCallback() {
     console.log("Custom button connected!");
+    // Apply the emotion CSS class
+    this.className = fancyButtonStyles;
   }
 }
 
 // Example using explicit extends option (doesn't need to inherit)
 @Component({
   tagName: "custom-input",
-  extends: "input",
 })
 class CustomInput extends HTMLElement {
   constructor() {
@@ -44,8 +58,10 @@ class SimpleElement extends HTMLElement {
 // Example usage
 const app = (
   <div class="container">
-    <h1>Pencil Components Example</h1>
-    <pen-fancy-button>Fancy Button</pen-fancy-button>
+    <h1>Pencil Components with Emotion CSS</h1>
+    <button type="button" is="pen-fancy-button">
+      Styled Button
+    </button>
     <pen-simple>Simple Element</pen-simple>
   </div>
 );
