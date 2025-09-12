@@ -1,90 +1,155 @@
-# Pencil
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+# ✏️ Pencil
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+> Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.  
+> *Write once. Ship clean.*
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Why Pencil?
 
-## Finish your CI setup
+**Pencil** is a lightweight toolkit for authoring Web Components using familiar, decorator-based TypeScript syntax — very much inspired by the ergonomics of [Stencil](https://stenciljs.com).
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/A3T0btclM9)
+But unlike Stencil, Pencil takes a different approach under the hood:
 
+- 🛠 No compiler lock-in
+- 🧩 No enforced bundler or dev server
+- 🚫 No automatic polyfills
+- 🎯 Build-agnostic, framework-friendly
+- 📦 Output: just standard TypeScript Web Components — nothing hidden
 
-## Generate a library
+It’s ideal for teams building **design systems** that need to be:
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+- Framework-agnostic (React, Angular, Vue, etc.)
+- Easy to consume and integrate
+- Fully transparent in how code is authored, shipped, and maintained
+
+---
+
+## ✨ What Makes Pencil Different?
+
+While **Pencil shares a lot of syntax and structure with Stencil**, it follows a different philosophy:
+
+|                     | **Stencil**                                      | **Pencil**                                  |
+|---------------------|--------------------------------------------------|---------------------------------------------|
+| Syntax              | TypeScript + decorators                          | Same                                          |
+| Output              | Compiled JS bundles                              | Pure TS source (no compiler)                 |
+| Build system        | Custom compiler + Rollup                         | Bring your own (Vite, Rollup, esbuild, etc.) |
+| Polyfills           | Included automatically                           | Opt-in only                                   |
+| Framework bindings  | Auto-generated                                  | Source-level generation             |
+| Styling             | Scoped CSS, Shadow DOM                           | Same (configurable)                          |
+| Runtime             | Lightweight custom runtime (~4–7KB)             | None or minimal (~0–2KB)                     |
+
+> Pencil isn't meant to replace Stencil — it’s just a different spin.  
+> In fact, many Stencil components may run unmodified in Pencil.
+
+---
+
+## ✍️ Example: Writing a Component in Pencil
+
+```tsx
+import { component, prop, event, h } from '@pencil/core';
+
+@Component('ui-button')
+export class UIButton extends HTMLElement {
+  @Prop() label: string = 'Click me';
+  @Event() clicked: CustomEvent<void>;
+
+  connectedCallback() {
+    console.log("We're connected!");
+  }
+
+  private onClick = () => {
+    this.clicked = new CustomEvent('clicked', { bubbles: true, composed: true });
+    this.dispatchEvent(this.clicked);
+  };
+
+  private render() {
+    return (
+      <button part="button" onClick={this.onClick}>
+        {this.label}
+      </button>
+    );
+  }
+}
 ```
 
-## Run tasks
+---
 
-To build the library use:
+## 🎯 Ideal Use Cases
 
-```sh
-npx nx build pkg1
-```
+* Framework-agnostic **design systems**
+* Teams that want full control over build output
+* Developers who love Stencil’s DX but don’t want compiler magic
+* Consumers who need **clear, portable source code**
 
-To run any task with Nx use:
+---
 
-```sh
-npx nx <target> <project-name>
-```
+## 🔄 Compatibility with Stencil
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+Pencil aims to be **syntactically compatible** with Stencil for most use cases.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* Many existing Stencil components can be used as-is or with minor changes
+* You can gradually migrate individual components
+* Or even share a codebase between both tools if you keep your syntax generic
 
-## Versioning and releasing
+We’re not trying to be “better” than Stencil — just different.
+If Stencil fits your needs, it’s a great tool.
+If you want more transparency and less abstraction, Pencil might be a better fit for you.
 
-To version and release the library use
+---
 
-```
-npx nx release
-```
+## 📦 Outputs
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+From a Pencil component, you can optionally generate:
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* ✅ Plain TS Web Component code
+* ✅ Typed React bindings (`@pencil/react`)
+* ✅ Angular wrappers (`@pencil/angular`)
+* ✅ Metadata for IDEs and documentation tools
 
-## Keep TypeScript project references up to date
+Nothing is mandatory. You own the output.
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+---
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+## 🧠 Philosophy
 
-```sh
-npx nx sync
-```
+* **Source-first**: your output is plain, readable code — no magic
+* **Framework-optional**: bindings are additive, not required
+* **No polyfills**: we don’t assume what your consumers need
+* **Open and minimal**: you see what you ship
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+---
 
-```sh
-npx nx sync:check
-```
+## 🚧 Status
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+Pencil is currently in **active development**.
+We’re working on:
 
+* [ ] First stable release of `@pencil/core`
+* [ ] React and Angular binding generators
+* [ ] CLI for generating components, bindings, and docs
+* [ ] Playground and testing tools
+* [ ] Compatibility guides for Stencil users
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## 💬 Contributing
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+We welcome feedback, ideas, and contributions — especially from:
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* Design system teams
+* Component library maintainers
+* Open-minded Web Component fans
 
-## Useful links
+---
 
-Learn more:
+## 📜 License
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+MIT © Pencil Authors
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
+
+## 🙏 Acknowledgements
+
+Pencil wouldn't exist without the inspiration and innovation behind [Stencil](https://stenciljs.com). We deeply respect the project and its community.
+
+This is just a different path — for those who want to draw their components with a different tool.
