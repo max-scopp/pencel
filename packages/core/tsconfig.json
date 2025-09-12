@@ -1,9 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "lib": ["DOM", "ESNext"],
+    "baseUrl": ".",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "declaration": true,
+    "sourceMap": true,
+    "emitDeclarationOnly": false,
+    "allowImportingTsExtensions": false
   },
   "include": ["src/**/*"],
-  "files": []
+  "exclude": ["node_modules", "dist"]
 }

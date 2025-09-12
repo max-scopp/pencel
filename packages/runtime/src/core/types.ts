@@ -16,11 +16,6 @@ export type VNode = {
   $text$?: string;
 };
 
-// export interface Component {
-//   render(): JSXElement | null;
-// }
-export type Component<TProps = any> = any;
-
 export interface LifecycleHooks {
   connectedCallback?(): void;
   disconnectedCallback?(): void;

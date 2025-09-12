@@ -11,14 +11,26 @@
       "import": "./dist/index.js"
     }
   },
-  "scripts": {
-    "build": "tsc",
-    "test": "bun src/index.ts"
-  },
   "dependencies": {
     "@pencil/utils": "^0.0.0"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
+  },
+  "nx": {
+    "sourceRoot": "packages/runtime",
+    "projectType": "library",
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "bun build.ts",
+          "cwd": "packages/runtime"
+        }
+      }
+    }
   }
 }

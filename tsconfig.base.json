@@ -20,7 +20,7 @@
     "target": "es2022",
     "customConditions": ["@pencil/source"],
     "paths": {
-      "@pencil/*": ["packages/*/src/index.ts"]
+      "@pencil/*": ["./packages/*/src/index.ts"]
     }
   }
 }

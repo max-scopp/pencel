@@ -5,7 +5,20 @@
     ".": "./index.js",
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "test": "bun src/index.ts"
+  "nx": {
+    "sourceRoot": "packages/core",
+    "projectType": "library",
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "bun build.ts",
+          "cwd": "packages/core"
+        }
+      }
+    }
   }
 }

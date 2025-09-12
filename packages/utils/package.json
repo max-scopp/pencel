@@ -6,11 +6,23 @@
     ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "build": "bun build src/index.ts --outdir dist --format esm --target browser",
-    "test": "node dist/index.js"
-  },
   "devDependencies": {
     "typescript": "^5.2.2"
+  },
+  "nx": {
+    "sourceRoot": "packages/utils",
+    "projectType": "library",
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "bun build.ts",
+          "cwd": "packages/utils"
+        }
+      }
+    }
   }
 }

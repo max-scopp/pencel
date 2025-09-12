@@ -13,5 +13,25 @@
   "devDependencies": {
     "typescript": "^5.2.2",
     "vite": "^4.4.9"
+  },
+  "nx": {
+    "sourceRoot": "packages/runtime/examples",
+    "projectType": "application",
+    "targets": {
+      "serve": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "vite",
+          "cwd": "packages/runtime/examples"
+        }
+      },
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "vite build",
+          "cwd": "packages/runtime/examples"
+        }
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {},
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/**"
   ],
   "dependencies": {
     "vite": "^7.1.5"
@@ -19,6 +19,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@types/node": "20.19.9",
+    "bun-plugin-dts": "^0.3.0",
     "esbuild": "^0.19.2",
     "nx": "21.5.2",
     "tslib": "^2.3.0",

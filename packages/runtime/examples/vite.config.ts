@@ -18,6 +18,7 @@ export default defineConfig({
         "custom-elements": "02-custom-elements/index.html",
         functional: "03-functional-components/index.html",
         complex: "04-complex/index.html",
+        pencil: "05-pencil/index.html",
         test: "test-multiple-renders.html",
       },
     },

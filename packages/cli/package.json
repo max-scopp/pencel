@@ -2,11 +2,22 @@
   "name": "@pencil/cli",
   "version": "0.0.1",
   "dependencies": {
-    "@pencil/core": "workspace:*"
+    "@pencil/core": "workspace:*",
+    "clipanion": "^4.0.0-rc.4",
+    "c12": "^2.0.1"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.2.21"
   },
   "nx": {
+    "sourceRoot": "packages/cli",
+    "projectType": "application",
     "targets": {
       "build": {
+        "dependsOn": [
+          "^build"
+        ],
         "executor": "nx:run-commands",
         "options": {
           "command": "bun build --compile src/main.ts --outfile out/cli --target node",
@@ -14,6 +25,9 @@
         }
       },
       "run": {
+        "dependsOn": [
+          "^build"
+        ],
         "executor": "nx:run-commands",
         "options": {
           "command": "bun src/main.ts",
@@ -21,9 +35,5 @@
         }
       }
     }
-  },
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "^1.2.21"
   }
 }
