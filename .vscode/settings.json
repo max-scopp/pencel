@@ -1,0 +1,23 @@
+{
+  "editor.defaultFormatter": "biomejs.biome",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#eec874",
+    "activityBar.background": "#eec874",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#118e67",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#eec874",
+    "statusBar.background": "#e8b647",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#e0a31c",
+    "statusBarItem.remoteBackground": "#e8b647",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#e8b647",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#e8b64799",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.remoteColor": "#E8B647"
+}

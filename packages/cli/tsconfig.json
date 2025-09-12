@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@pencil/core": ["../core/src/index.ts"]
+    }
+  },
+  "references": [
+    {
+      "path": "../core"
+    }
+  ],
+  "include": ["src/**/*"],
+  "files": []
+}

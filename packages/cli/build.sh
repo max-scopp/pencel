@@ -1,0 +1,1 @@
+bun build --compile src/main.ts --outfile out/cli --target node

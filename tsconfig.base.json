@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
+    "jsx": "preserve",
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "importHelpers": true,

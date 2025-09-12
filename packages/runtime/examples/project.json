@@ -1,0 +1,23 @@
+{
+  "name": "runtime-examples",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/runtime/examples",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite",
+        "cwd": "packages/runtime/examples"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build",
+        "cwd": "packages/runtime/examples"
+      }
+    }
+  },
+  "tags": []
+}

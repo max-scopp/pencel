@@ -1,0 +1,17 @@
+{
+  "name": "@pencil/runtime-examples",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nx serve",
+    "build": "nx build"
+  },
+  "dependencies": {
+    "@pencil/runtime": "^0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}
