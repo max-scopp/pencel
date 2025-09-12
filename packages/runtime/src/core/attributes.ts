@@ -1,9 +1,9 @@
-import type { Props } from "./jsx";
+import type { Props } from "./jsx.ts";
 
 const eventPattern = /^on[A-Z]/;
 
-export function setAttributes(element: HTMLElement, props: Props): void {
-  for (const [key, value] of Object.entries(props)) {
+export function setAttributes(element: HTMLElement, props: Props | undefined): void {
+  for (const [key, value] of Object.entries(props ?? {})) {
     if (key === "key" || key === "children") continue;
 
     // Handle event listeners

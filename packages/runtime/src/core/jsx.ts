@@ -1,6 +1,6 @@
-import type { JSXElement, VNode } from "./types";
+import type { JSXElement, VNode } from "./types.ts";
 
-export type Props = Record<string, unknown>;
+export type Props = Record<string, unknown> ;
 export type ComponentType = (props: Props) => JSXElement | null;
 
 export function h(
@@ -27,9 +27,9 @@ export function h(
 
 export function toVNode(jsx: JSXElement): VNode {
   return {
-    $type$: jsx.type,
-    $props$: jsx.props,
-    $children$: jsx.children.map((child) =>
+    type: jsx.type,
+    props: jsx.props,
+    children: jsx.children.map((child) =>
       typeof child === "string" ||
       typeof child === "number" ||
       typeof child === "boolean" ||
@@ -37,7 +37,7 @@ export function toVNode(jsx: JSXElement): VNode {
         ? child
         : toVNode(child),
     ),
-    $key$: jsx.key ?? null,
+    key: jsx.key ?? null,
     $elm$: null,
   };
 }

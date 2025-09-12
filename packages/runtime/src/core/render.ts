@@ -1,6 +1,6 @@
-import { setAttributes } from "./attributes";
-import type { Props } from "./jsx";
-import type { VNode } from "./types";
+import { setAttributes } from "./attributes.ts";
+import type { Props } from "./jsx.ts";
+import type { VNode } from "./types.ts";
 
 export function render(
   vnode: VNode,
@@ -27,21 +27,21 @@ function createDOM(vnode: VNode): HTMLElement | Text {
     return document.createTextNode(String(vnode));
   }
 
-  if (typeof vnode.$type$ === "function") {
-    const result = (vnode.$type$ as (props: Props) => VNode)({
-      ...vnode.$props$,
-      children: vnode.$children$,
+  if (typeof vnode.type === "function") {
+    const result = (vnode.type as (props: Props) => VNode)({
+      ...vnode.props,
+      children: vnode.children,
     });
     return createDOM(result);
   }
 
-  const element = document.createElement(vnode.$type$ as string);
+  const element = document.createElement(vnode.type as string);
 
   // Set attributes and properties
-  setAttributes(element, vnode.$props$);
+  setAttributes(element, vnode.props);
 
   // Create and append children
-  vnode.$children$.forEach((child) => {
+  vnode.children?.forEach((child) => {
     if (child != null) {
       element.appendChild(createDOM(child as VNode));
     }
@@ -64,7 +64,7 @@ export function patch(oldVNode: VNode | null, newVNode: VNode): VNode {
   }
 
   // If nodes are different types, replace completely
-  if (oldVNode.$type$ !== newVNode.$type$) {
+  if (oldVNode.type !== newVNode.type) {
     const newNode = createDOM(newVNode);
     if (oldVNode.$elm$?.parentNode) {
       oldVNode.$elm$.parentNode.replaceChild(newNode, oldVNode.$elm$);
@@ -78,10 +78,10 @@ export function patch(oldVNode: VNode | null, newVNode: VNode): VNode {
   if (!elm) return newVNode;
 
   // Update props
-  setAttributes(elm as HTMLElement, newVNode.$props$);
+  setAttributes(elm as HTMLElement, newVNode.props);
 
   // Update children
-  patchChildren(oldVNode.$children$, newVNode.$children$, elm as HTMLElement);
+  patchChildren(oldVNode.children, newVNode.children, elm as HTMLElement);
 
   return newVNode;
 }

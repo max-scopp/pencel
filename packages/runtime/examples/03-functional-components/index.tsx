@@ -1,4 +1,5 @@
-import { type Component } from "../../src";
+import type { Component } from "../../src";
+import { h, render } from "../../src/index";
 
 interface ButtonProps {
   onClick: () => void;
@@ -71,3 +72,9 @@ const App = () => (
     </Card>
   </div>
 );
+
+// Render to DOM
+const root = document.getElementById("root");
+if (root) {
+  render(<App />, root);
+}

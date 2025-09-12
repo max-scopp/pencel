@@ -1,5 +1,6 @@
 import { type Component, render } from "../../src";
 import "../02-custom-elements/mx-card";
+import { h } from "../../src/index"
 
 // Utility function for state management (simple implementation)
 function useState<T>(initial: T): [T, (value: T) => void] {

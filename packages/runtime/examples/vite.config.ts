@@ -11,6 +11,7 @@ export default defineConfig({
     outDir: "dist",
     rollupOptions: {
       input: {
+        index: "index.html",
         basic: "01-basic/index.html",
         "custom-elements": "02-custom-elements/index.html",
         functional: "03-functional-components/index.html",
