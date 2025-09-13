@@ -1,4 +1,4 @@
-import type { PencilConfig } from "@pencil/core";
+import type { PencilConfig } from "@pencel/core";
 
 /**
  * Define a Pencil configuration with type safety

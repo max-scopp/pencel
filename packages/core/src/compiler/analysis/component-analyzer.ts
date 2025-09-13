@@ -1,4 +1,4 @@
-import type { PropOptions } from "@pencil/runtime";
+import type { PropOptions } from "@pencel/runtime";
 import * as ts from "typescript";
 import type {
   ComponentMetadata,

@@ -1,4 +1,4 @@
-import { type createPerformanceTree, throwConsumerError } from "@pencil/utils";
+import { type createPerformanceTree, throwConsumerError } from "@pencel/utils";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
 import {

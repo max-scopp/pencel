@@ -1,4 +1,4 @@
-import { createLog, createPerformanceTree, throwError } from "@pencil/utils";
+import { createLog, createPerformanceTree, throwError } from "@pencel/utils";
 import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
 import {
   componentCtrl,

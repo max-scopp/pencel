@@ -1,4 +1,4 @@
-import type { PencilRuntimeConfig } from "@pencil/runtime";
+import type { PencilRuntimeConfig } from "@pencel/runtime";
 
 export interface PencilConfig extends PencilRuntimeConfig {
   compiler?: {

@@ -1,14 +1,14 @@
 
-# ✏️ Pencil
+# ✏️ Pencel
 
 > Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.  
 > *Write once. Ship clean.*
 
-## Why Pencil?
+## Why Pencel?
 
-**Pencil** is a lightweight toolkit for authoring Web Components using familiar, decorator-based TypeScript syntax — very much inspired by the ergonomics of [Stencil](https://stenciljs.com).
+**Pencel** is a lightweight toolkit for authoring Web Components using familiar, decorator-based TypeScript syntax — very much inspired by the ergonomics of [Stencil](https://stenciljs.com).
 
-But unlike Stencil, Pencil takes a different approach under the hood:
+But unlike Stencil, Pencel takes a different approach under the hood:
 
 - 🛠 No compiler lock-in
 - 🧩 No enforced bundler or dev server
@@ -24,11 +24,11 @@ It’s ideal for teams building **design systems** that need to be:
 
 ---
 
-## ✨ What Makes Pencil Different?
+## ✨ What Makes Pencel Different?
 
-While **Pencil shares a lot of syntax and structure with Stencil**, it follows a different philosophy:
+While **Pencel shares a lot of syntax and structure with Stencil**, it follows a different philosophy:
 
-|                     | **Stencil**                                      | **Pencil**                                  |
+|                     | **Stencil**                                      | **Pencel**                                  |
 |---------------------|--------------------------------------------------|---------------------------------------------|
 | Syntax              | TypeScript + decorators                          | Same                                          |
 | Output              | Compiled JS bundles                              | Pure TS source (no compiler)                 |
@@ -38,15 +38,15 @@ While **Pencil shares a lot of syntax and structure with Stencil**, it follows a
 | Styling             | Scoped CSS, Shadow DOM                           | Same (configurable)                          |
 | Runtime             | Lightweight custom runtime (~4–7KB)             | None or minimal (~0–2KB)                     |
 
-> Pencil isn't meant to replace Stencil — it’s just a different spin.  
-> In fact, many Stencil components may run unmodified in Pencil.
+> Pencel isn't meant to replace Stencil — it’s just a different spin.  
+> In fact, many Stencil components may run unmodified in Pencel.
 
 ---
 
-## ✍️ Example: Writing a Component in Pencil
+## ✍️ Example: Writing a Component in Pencel
 
 ```tsx
-import { component, prop, event, h } from '@pencil/core';
+import { component, prop, event, h } from '@pencel/core';
 
 @Component('ui-button')
 export class UIButton extends HTMLElement {
@@ -85,7 +85,7 @@ export class UIButton extends HTMLElement {
 
 ## 🔄 Compatibility with Stencil
 
-Pencil aims to be **syntactically compatible** with Stencil for most use cases.
+Pencel aims to be **syntactically compatible** with Stencil for most use cases.
 
 * Many existing Stencil components can be used as-is or with minor changes
 * You can gradually migrate individual components
@@ -93,17 +93,17 @@ Pencil aims to be **syntactically compatible** with Stencil for most use cases.
 
 We’re not trying to be “better” than Stencil — just different.
 If Stencil fits your needs, it’s a great tool.
-If you want more transparency and less abstraction, Pencil might be a better fit for you.
+If you want more transparency and less abstraction, Pencel might be a better fit for you.
 
 ---
 
 ## 📦 Outputs
 
-From a Pencil component, you can optionally generate:
+From a Pencel component, you can optionally generate:
 
 * ✅ Plain TS Web Component code
-* ✅ Typed React bindings (`@pencil/react`)
-* ✅ Angular wrappers (`@pencil/angular`)
+* ✅ Typed React bindings (`@pencel/react`)
+* ✅ Angular wrappers (`@pencel/angular`)
 * ✅ Metadata for IDEs and documentation tools
 
 Nothing is mandatory. You own the output.
@@ -121,10 +121,10 @@ Nothing is mandatory. You own the output.
 
 ## 🚧 Status
 
-Pencil is currently in **active development**.
+Pencel is currently in **active development**.
 We’re working on:
 
-* [ ] First stable release of `@pencil/core`
+* [ ] First stable release of `@pencel/core`
 * [ ] React and Angular binding generators
 * [ ] CLI for generating components, bindings, and docs
 * [ ] Playground and testing tools
@@ -144,12 +144,12 @@ We welcome feedback, ideas, and contributions — especially from:
 
 ## 📜 License
 
-MIT © Pencil Authors
+MIT © Pencel Authors
 
 ---
 
 ## 🙏 Acknowledgements
 
-Pencil wouldn't exist without the inspiration and innovation behind [Stencil](https://stenciljs.com). We deeply respect the project and its community.
+Pencel wouldn't exist without the inspiration and innovation behind [Stencil](https://stenciljs.com). We deeply respect the project and its community.
 
 This is just a different path — for those who want to draw their components with a different tool.

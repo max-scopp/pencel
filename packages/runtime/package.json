@@ -1,5 +1,5 @@
 {
-  "name": "@pencil/runtime",
+  "name": "@pencel/runtime",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,7 +13,7 @@
     }
   },
   "dependencies": {
-    "@pencil/utils": "^0.0.0"
+    "@pencel/utils": "^0.0.0"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

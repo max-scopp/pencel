@@ -5,8 +5,6 @@
     "jsxFragmentFactory": "Fragment",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "paths": {
-      "@pencil/runtime": ["../src/index.ts"]
-    }
+    "paths": {}
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@pencil/runtime-examples",
+  "name": "@pencel/runtime-examples",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
-    "@pencil/runtime": "^0.0.1"
+    "@pencel/runtime": "^0.0.1"
   },
   "devDependencies": {
     "typescript": "^5.2.2",

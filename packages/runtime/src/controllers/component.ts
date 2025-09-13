@@ -1,4 +1,4 @@
-import { createLog, throwConsumerError, throwError } from "@pencil/utils";
+import { createLog, throwConsumerError, throwError } from "@pencel/utils";
 import type {
   ComponentInterfaceWithContext,
   ConstructablePencilComponent,

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { type PencilConfig, transformToWebComponent } from "@pencil/core";
+import { type PencilConfig, transformToWebComponent } from "@pencel/core";
 import { Cli, Command, Option } from "clipanion";
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";

@@ -2,7 +2,7 @@ import {
   createLog,
   createPerformanceTree,
   throwConsumerError,
-} from "@pencil/utils";
+} from "@pencel/utils";
 import {
   componentCtrl,
   PENCIL_COMPONENT_CONTEXT,

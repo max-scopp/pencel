@@ -1,4 +1,4 @@
-import { createPerformanceTree } from "@pencil/utils";
+import { createPerformanceTree } from "@pencel/utils";
 import { setAttributes } from "../attributes.ts";
 import { toVNode } from "../jsx.ts";
 import type { JSXElement, VNode } from "../types.ts";

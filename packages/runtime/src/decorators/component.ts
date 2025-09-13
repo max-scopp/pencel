@@ -2,7 +2,7 @@ import {
   createLog,
   getExtendsByInheritance,
   throwConsumerError,
-} from "@pencil/utils";
+} from "@pencel/utils";
 import { pencilConfig } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
 import { wrapComponentForRegistration } from "src/pencilCustomElementWrap.ts";

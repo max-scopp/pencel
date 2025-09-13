@@ -19,9 +19,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@pencil/source"],
+    "customConditions": ["@pencel/source"],
     "paths": {
-      "@pencil/*": ["./packages/*/src/index.ts"]
+      "@pencel/*": ["./packages/*/src/index.ts"]
     }
   }
 }

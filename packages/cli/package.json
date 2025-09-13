@@ -1,8 +1,8 @@
 {
-  "name": "@pencil/cli",
+  "name": "@pencel/cli",
   "version": "0.0.1",
   "dependencies": {
-    "@pencil/core": "workspace:*",
+    "@pencel/core": "workspace:*",
     "clipanion": "^4.0.0-rc.4",
     "c12": "^2.0.1"
   },
