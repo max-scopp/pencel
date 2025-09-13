@@ -2,11 +2,9 @@ import { getAnsiFromStyle } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
 const PENCIL_DO_LOGGING = () =>
-  import.meta.env?.PROD
-    ? false
-    : ((globalThis.PENCIL_DEBUG ||
-        new URLSearchParams(window.location.search).get("pencilDebug")) ??
-      true);
+  (globalThis.PENCIL_DEBUG ||
+    new URLSearchParams(window.location.search).get("pencilDebug")) ??
+  true;
 
 export function log(
   message: string,
