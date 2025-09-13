@@ -1,9 +1,29 @@
+import type { PropOptions } from "@pencil/runtime";
 import * as ts from "typescript";
-import type { ComponentMetadata, PencilConfig } from "../types/compiler-types";
+import type {
+  ComponentMetadata,
+  PencilConfig,
+} from "../types/compiler-types.ts";
 import {
   findClassWithDecorator,
   getComponentDecoratorOptions,
-} from "../utils/ast-utils";
+} from "../utils/ast-utils.ts";
+
+// TODO: Implement
+export interface PencilComponentPropMetadata {
+  name: string | symbol;
+  staticType?: string;
+}
+
+// TODO: Implement
+export interface PencilComponentMetadata {
+  tagName: string;
+  className: string;
+
+  props: Map<string, PencilComponentPropMetadata>;
+  states: string[];
+  // Add more metadata fields as needed
+}
 
 export function analyzeComponent(
   sourceFile: ts.SourceFile,
