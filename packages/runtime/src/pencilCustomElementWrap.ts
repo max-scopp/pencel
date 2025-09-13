@@ -3,7 +3,6 @@ import {
   createPerformanceTree,
   throwConsumerError,
 } from "@pencil/utils";
-import { create } from "domain";
 import {
   componentCtrl,
   PENCIL_COMPONENT_CONTEXT,
@@ -14,8 +13,12 @@ import type {
   ConstructablePencilComponent,
 } from "./core/types.ts";
 import type { ComponentOptions } from "./decorators/component.ts";
-import { convertAttributeValue } from "./utils/convertAttributeValue.ts";
-import { dashCase } from "./utils/dashCase.ts";
+import {
+  coerceAttributeValue,
+  reflectAttributeValue,
+  resolveAttribute,
+  resolveAttributeName,
+} from "./utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "./utils/simpleCustomElementDisplayText.ts";
 
 const log = createLog("PencilCustomElementWrap");
@@ -97,7 +100,7 @@ function interopStyleAttachment(
 export function wrapComponentForRegistration<
   T extends ConstructablePencilComponent,
 >(klass: T, options: ComponentOptions, customElementExtends?: string): T {
-  const Wrapper = class PencilCustomElementWrap extends klass {
+  return class PencilCustomElementWrap extends klass {
     #bootTracker = createPerformanceTree();
 
     constructor(...args: any[]) {
@@ -107,7 +110,7 @@ export function wrapComponentForRegistration<
 
     // Get observed attributes from the prop map
     static get observedAttributes() {
-      return Wrapper[PENCIL_OBSERVED_ATTRIBUTES];
+      return PencilCustomElementWrap[PENCIL_OBSERVED_ATTRIBUTES];
     }
 
     override async connectedCallback() {
@@ -126,17 +129,11 @@ export function wrapComponentForRegistration<
       const popts = ctx?.popts ?? [];
 
       for (const [propName, propOptions] of popts) {
-        const attrName = propOptions?.attr || dashCase(String(propName));
-        const attrValue = this.getAttribute(attrName);
-        const hasAttr = this.hasAttribute(attrName);
-
-        const convertedValue = convertAttributeValue(
-          attrValue,
-          propOptions,
-          hasAttr,
+        ctrl.setProp(
+          this,
+          propName,
+          resolveAttribute(this, propName, propOptions),
         );
-
-        ctrl.setProp(this, propName, convertedValue);
       }
 
       // Call original connectedCallback if it exists
@@ -170,20 +167,21 @@ export function wrapComponentForRegistration<
       newValue: string | null,
     ): void {
       const ctx = this[PENCIL_COMPONENT_CONTEXT];
-      const popts = ctx?.popts ?? [];
+      const props = ctx?.props ?? [];
 
-      for (const [propName, propOptions] of popts) {
-        const attrName = propOptions?.attr || dashCase(propName as string);
+      // TODO: This is O(n) on number of props; we could optimize this with a reverse map if needed
+      for (const [propName] of props) {
+        const propOptions = ctx?.popts.get(propName);
+        const attrName = resolveAttributeName(propName, propOptions);
 
         if (attrName === name) {
-          const hasAttr = this.hasAttribute(name);
-          const convertedValue = convertAttributeValue(
-            newValue,
-            propOptions,
-            hasAttr,
-          );
+          const ctrl = componentCtrl();
 
-          componentCtrl().setProp(this, propName, convertedValue);
+          ctrl.setProp(
+            this,
+            propName,
+            coerceAttributeValue(newValue, propOptions, Boolean(newValue)),
+          );
           break;
         }
       }
@@ -194,6 +192,31 @@ export function wrapComponentForRegistration<
 
     override disconnectedCallback(): void {
       componentCtrl().disconnectComponent(this);
+    }
+
+    override componentWillRender(): void | Promise<void> {
+      const ctx = this[PENCIL_COMPONENT_CONTEXT]!;
+      const popts = ctx?.popts ?? [];
+
+      popts.forEach((propOptions, propName) => {
+        if (propOptions?.reflect !== true) {
+          return;
+        }
+
+        const attrName = resolveAttributeName(
+          propName,
+          ctx.popts.get(propName),
+        );
+
+        reflectAttributeValue(
+          this,
+          attrName,
+          ctx.props.get(propName),
+          propOptions,
+        );
+      });
+
+      return super.componentWillRender?.();
     }
 
     override render() {
@@ -207,6 +230,4 @@ export function wrapComponentForRegistration<
       }
     }
   } as T;
-
-  return Wrapper;
 }

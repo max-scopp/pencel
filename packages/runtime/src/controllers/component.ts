@@ -1,9 +1,11 @@
 import { createLog } from "@pencil/utils";
 import type {
   ComponentInterfaceWithContext,
+  ConstructablePencilComponent,
   PencilComponentPhase,
 } from "src/core/types.ts";
 import type { PropOptions } from "src/decorators/prop.ts";
+import { resolveAttributeName } from "src/utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
 import { scheduler } from "../core/scheduler.ts";
 
@@ -106,11 +108,19 @@ class ComponentsController {
   initProp(
     component: ComponentInterfaceWithContext,
     propName: string | symbol,
-    options?: PropOptions,
+    propOptions?: PropOptions,
   ): void {
     this.announceInstance(component);
 
-    component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, options);
+    component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
+
+    const attrName = resolveAttributeName(propName, propOptions);
+
+    const cnstrctr = component.constructor as ConstructablePencilComponent;
+
+    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
+    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
+
     this.setProp(component, propName, undefined);
   }
 

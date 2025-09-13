@@ -8,6 +8,7 @@ import type { Props } from "./jsx.ts";
 export const NODE_TYPE_TEXT = "TEXT";
 export const NODE_TYPE_COMMENT = "COMMENT";
 export const NODE_TYPE_FRAGMENT = "FRAGMENT";
+export const NODE_TYPE_HOST = "HOST";
 
 export type ComponentFunction =
   | ((props: Record<string, unknown>) => JSXElement | null)
@@ -35,7 +36,7 @@ export type VNode = {
   $props$?: Props;
   $children$?: Array<VNode | null>;
   $key$: string | number | null;
-  $elm$?: HTMLElement | Text | Comment | DocumentFragment | null;
+  $elm$?: HTMLElement | Text | Comment | null;
   $text$?: string;
 };
 
@@ -45,13 +46,13 @@ export interface ErrorBoundary {
 }
 
 export const Fragment: FunctionalComponent = (_, children) => children;
-// export const Host: FunctionalComponent = (hostProps, children) => ({
-
-//   $type$: "HOST",
-//   $props$: hostProps,
-//   $children$: children as VNode[],
-//   $key$: null,
-// }) satisfies VNode;
+export const Host: FunctionalComponent = (hostProps, children) =>
+  ({
+    $type$: NODE_TYPE_HOST,
+    $props$: hostProps,
+    $children$: children,
+    $key$: null,
+  }) satisfies VNode;
 
 export type FunctionalComponent<TProps = {}> = (
   props: TProps,

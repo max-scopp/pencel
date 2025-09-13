@@ -29,12 +29,18 @@ import {
  */
 export type TypeCoercionFn<T> = (value: unknown) => T;
 
+/**
+ * Function that resolves attribute name from property name.
+ * e.g. myPropName → my-prop-name
+ */
+export type AttrResolver = (propName: string | symbol) => string;
+
 export interface PropOptions {
   /**
    * Name of the corresponding attribute.
    * If not provided, the property name is used in dash-case.
    */
-  attr?: string;
+  attr?: string | AttrResolver;
 
   /**
    * Whether to reflect property changes to attributes

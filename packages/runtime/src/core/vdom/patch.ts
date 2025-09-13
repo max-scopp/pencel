@@ -1,8 +1,13 @@
-import type { createPerformanceTree } from "@pencil/utils";
+import { type createPerformanceTree, throwConsumerError } from "@pencil/utils";
 import { getVNodeElement } from "src/utils/getVNodeElement.ts";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
-import { NODE_TYPE_FRAGMENT, NODE_TYPE_TEXT, type VNode } from "../types.ts";
+import {
+  NODE_TYPE_FRAGMENT,
+  NODE_TYPE_HOST,
+  NODE_TYPE_TEXT,
+  type VNode,
+} from "../types.ts";
 import { createDOM } from "./create-dom.ts";
 
 const PERF_UPDATE_PREFIX = "update-";
@@ -14,19 +19,36 @@ function reconcileChildrenByKey(
   oldChildren: (VNode | null)[],
   newChildren: (VNode | null)[],
   perf: ReturnType<typeof createPerformanceTree>,
-  isFragment: boolean,
 ): void {
   const oldKeyMap = new Map<string | number, VNode>();
   const newKeyMap = new Map<string | number, VNode>();
 
+  // Flatten children to handle fragments
+  const flattenChildren = (children: (VNode | null)[]): (VNode | null)[] => {
+    const flattened: (VNode | null)[] = [];
+    for (const child of children) {
+      if (child && isVNode(child) && child.$type$ === NODE_TYPE_FRAGMENT) {
+        if (child.$children$) {
+          flattened.push(...flattenChildren(child.$children$));
+        }
+      } else {
+        flattened.push(child);
+      }
+    }
+    return flattened;
+  };
+
+  const flatOldChildren = flattenChildren(oldChildren);
+  const flatNewChildren = flattenChildren(newChildren);
+
   // Build maps of keyed children
-  oldChildren.forEach((child) => {
+  flatOldChildren.forEach((child) => {
     if (child && isVNode(child) && child.$key$ != null) {
       oldKeyMap.set(child.$key$, child);
     }
   });
 
-  newChildren.forEach((child) => {
+  flatNewChildren.forEach((child) => {
     if (child && isVNode(child) && child.$key$ != null) {
       newKeyMap.set(child.$key$, child);
     }
@@ -35,7 +57,7 @@ function reconcileChildrenByKey(
   // Process new children
   let lastPlacedNode: Node | null = null;
 
-  newChildren.forEach((newChild) => {
+  flatNewChildren.forEach((newChild) => {
     if (!newChild || !isVNode(newChild)) return;
 
     const key = newChild.$key$;
@@ -48,33 +70,29 @@ function reconcileChildrenByKey(
       // Move to correct position if needed
       const oldElm = getVNodeElement(oldChild);
       if (oldElm && lastPlacedNode && oldElm !== lastPlacedNode.nextSibling) {
-        if (!isFragment) {
-          parentElm.insertBefore(oldElm, lastPlacedNode.nextSibling);
-        }
+        parentElm.insertBefore(oldElm, lastPlacedNode.nextSibling);
       }
       lastPlacedNode = oldElm;
     } else {
       // New child, create it
       const newElm = createDOM(newChild, perf);
-      newChild.$elm$ = newElm; // Ensure VNode is connected to DOM element
-      if (!isFragment) {
-        if (lastPlacedNode) {
-          parentElm.insertBefore(newElm, lastPlacedNode.nextSibling);
-        } else {
-          parentElm.appendChild(newElm);
-        }
+      newChild.$elm$ = newElm;
+      if (lastPlacedNode) {
+        parentElm.insertBefore(newElm, lastPlacedNode.nextSibling);
+      } else {
+        parentElm.appendChild(newElm);
       }
       lastPlacedNode = newElm;
     }
   });
 
   // Remove old children that are no longer present
-  oldChildren.forEach((oldChild) => {
+  flatOldChildren.forEach((oldChild) => {
     if (oldChild && isVNode(oldChild)) {
       const key = oldChild.$key$;
       if (key != null && !newKeyMap.has(key)) {
         const oldElm = getVNodeElement(oldChild);
-        if (oldElm && !isFragment) {
+        if (oldElm && oldElm.parentNode === parentElm) {
           parentElm.removeChild(oldElm);
         }
       }
@@ -88,16 +106,33 @@ function reconcileChildrenByIndex(
   oldChildren: (VNode | null)[],
   newChildren: (VNode | null)[],
   perf: ReturnType<typeof createPerformanceTree>,
-  isFragment: boolean,
 ): void {
-  const oldLen = oldChildren.length;
-  const newLen = newChildren.length;
+  // Flatten children to handle fragments
+  const flattenChildren = (children: (VNode | null)[]): (VNode | null)[] => {
+    const flattened: (VNode | null)[] = [];
+    for (const child of children) {
+      if (child && isVNode(child) && child.$type$ === NODE_TYPE_FRAGMENT) {
+        if (child.$children$) {
+          flattened.push(...flattenChildren(child.$children$));
+        }
+      } else {
+        flattened.push(child);
+      }
+    }
+    return flattened;
+  };
+
+  const flatOldChildren = flattenChildren(oldChildren);
+  const flatNewChildren = flattenChildren(newChildren);
+
+  const oldLen = flatOldChildren.length;
+  const newLen = flatNewChildren.length;
   const len = Math.min(oldLen, newLen);
 
   // Update existing children
   for (let i = 0; i < len; i++) {
-    const oldChild = oldChildren[i];
-    const newChild = newChildren[i];
+    const oldChild = flatOldChildren[i];
+    const newChild = flatNewChildren[i];
 
     if (
       oldChild != null &&
@@ -114,10 +149,10 @@ function reconcileChildrenByIndex(
     const removeName = `${PERF_REMOVE_PREFIX}children`;
     perf.start(removeName);
     for (let i = len; i < oldLen; i++) {
-      const child = oldChildren[i];
+      const child = flatOldChildren[i];
       if (child && isVNode(child)) {
         const childElement = getVNodeElement(child);
-        if (childElement && !isFragment) {
+        if (childElement && childElement.parentNode === parentElm) {
           parentElm.removeChild(childElement);
         }
       }
@@ -128,12 +163,10 @@ function reconcileChildrenByIndex(
   // Add new children
   if (newLen > oldLen) {
     for (let i = len; i < newLen; i++) {
-      const child = newChildren[i];
+      const child = flatNewChildren[i];
       if (child != null) {
         const dom = createDOM(child as VNode, perf);
-        if (!isFragment) {
-          parentElm.appendChild(dom);
-        }
+        parentElm.appendChild(dom);
         (child as VNode).$elm$ = dom;
       }
     }
@@ -147,6 +180,31 @@ export function patch(
   parentElm?: HTMLElement, // Add parent element parameter for fragments
 ): VNode {
   const newNodeType = String(newVNode.$type$);
+
+  // Special handling for Host element - it should update the parent container directly
+  if (newVNode.$type$ === NODE_TYPE_HOST) {
+    if (!parentElm) {
+      throwConsumerError(
+        "Host element must be used within a component render context",
+      );
+    }
+
+    // Host element updates the parent container directly
+    newVNode.$elm$ = parentElm;
+
+    // Apply Host props to the parent container
+    if (newVNode.$props$) {
+      setAttributes(parentElm, newVNode.$props$);
+    }
+
+    // Handle Host children by patching them against the parent
+    const oldChildren = oldVNode?.$children$ || [];
+    const newChildren = newVNode.$children$ || [];
+
+    reconcileChildrenByIndex(parentElm, oldChildren, newChildren, perf);
+
+    return newVNode;
+  }
 
   // If old node doesn't exist, create new DOM
   if (!oldVNode) {
@@ -188,11 +246,13 @@ export function patch(
     return newVNode;
   }
 
-  // Handle fragments - they pass through to children management
+  // Handle fragments - they are virtual containers that don't create DOM nodes
   if (newVNode.$type$ === NODE_TYPE_FRAGMENT) {
-    // For fragments, we treat the fragment's children as if they were the parent's children
-    // The parent element will handle the actual DOM operations
-    const oldChildren = oldVNode.$children$ || [];
+    // For fragments, we don't create a DOM node - we just manage children
+    // The fragment VNode doesn't have an $elm$ property set to any real DOM node
+    newVNode.$elm$ = null;
+
+    const oldChildren = oldVNode?.$children$ || [];
     const newChildren = newVNode.$children$ || [];
 
     // Use the parent element to manage fragment children
@@ -203,26 +263,12 @@ export function patch(
       );
 
       if (hasKeys) {
-        reconcileChildrenByKey(
-          parentElm,
-          oldChildren,
-          newChildren,
-          perf,
-          false, // Fragments shouldn't prevent DOM operations
-        );
+        reconcileChildrenByKey(parentElm, oldChildren, newChildren, perf);
       } else {
-        reconcileChildrenByIndex(
-          parentElm,
-          oldChildren,
-          newChildren,
-          perf,
-          false, // Fragments shouldn't prevent DOM operations
-        );
+        reconcileChildrenByIndex(parentElm, oldChildren, newChildren, perf);
       }
     }
 
-    // Update the fragment VNode
-    newVNode.$elm$ = oldVNode.$elm$; // Keep the same DocumentFragment reference
     return newVNode;
   }
 
@@ -242,13 +288,7 @@ export function patch(
   );
 
   if (hasKeys) {
-    reconcileChildrenByKey(
-      elm as HTMLElement,
-      oldChildren,
-      newChildren,
-      perf,
-      newVNode.$type$ === NODE_TYPE_FRAGMENT,
-    );
+    reconcileChildrenByKey(elm as HTMLElement, oldChildren, newChildren, perf);
   } else {
     // Simple index-based reconciliation for children without keys
     reconcileChildrenByIndex(
@@ -256,7 +296,6 @@ export function patch(
       oldChildren,
       newChildren,
       perf,
-      newVNode.$type$ === NODE_TYPE_FRAGMENT,
     );
   }
 

@@ -47,10 +47,10 @@ export class ComponentUpdateScheduler {
 
           await component.componentWillRender?.();
 
-          const jsx = component.render();
+          const jsx = component.render?.();
           const container = component.shadowRoot || component;
 
-          render(jsx, container);
+          render(jsx ?? null, container);
 
           if (!component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
             component.componentDidLoad?.();

@@ -4,9 +4,12 @@ import {
   Component,
   type ComponentInterface,
   Fragment,
+  Host,
   h,
   type JSXElement,
+  Prop,
   render,
+  State,
 } from "../../src";
 
 @Component({
@@ -23,17 +26,23 @@ import {
   `,
 })
 class FancyButton extends HTMLButtonElement implements ComponentInterface {
+  @Prop({
+    reflect: true,
+    type: Boolean,
+  })
+  isVisible = true;
+
   constructor() {
     super();
   }
 
   connectedCallback() {
-    console.log("Custom button connected!");
+    console.log("Custom button connected!", this.isVisible);
     // Apply the emotion CSS class
   }
 
   render(): JSXElement {
-    return <></>;
+    return <Host onClick={() => console.log("Host clicked!")}></Host>;
   }
 }
 
@@ -56,9 +65,21 @@ class CustomInput extends HTMLElement {
   tag: "simple",
   shadow: true,
 })
-class SimpleElement extends HTMLElement {
+class SimpleElement extends HTMLElement implements ComponentInterface {
+  @Prop({ reflect: true })
+  name: string;
+
   constructor() {
     super();
+  }
+
+  render(): JSXElement {
+    return (
+      <Host class="simple-element">
+        <slot></slot>
+        it works! {this.name}
+      </Host>
+    );
   }
 }
 

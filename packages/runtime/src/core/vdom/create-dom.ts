@@ -1,9 +1,10 @@
-import type { createPerformanceTree } from "@pencil/utils";
+import { type createPerformanceTree, throwConsumerError } from "@pencil/utils";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
 import {
   NODE_TYPE_COMMENT,
   NODE_TYPE_FRAGMENT,
+  NODE_TYPE_HOST,
   NODE_TYPE_TEXT,
   type VNode,
 } from "../types.ts";
@@ -13,7 +14,7 @@ const PERF_CREATE_PREFIX = "create-";
 export function createDOM(
   vnode: VNode,
   perf: ReturnType<typeof createPerformanceTree>,
-): HTMLElement | Text | Comment | DocumentFragment {
+): HTMLElement | Text | Comment {
   const nodeType = String(vnode.$type$);
 
   if (vnode.$type$ === NODE_TYPE_COMMENT) {
@@ -37,20 +38,18 @@ export function createDOM(
     return result;
   }
 
-  // Handle fragments - create DocumentFragment
+  // Handle fragments - they don't create DOM nodes, just render children
   if (vnode.$type$ === NODE_TYPE_FRAGMENT) {
-    const fragment = document.createDocumentFragment();
-    // Create all children and append them to the fragment
-    if (vnode.$children$ && vnode.$children$.length > 0) {
-      for (const child of vnode.$children$) {
-        if (child != null && isVNode(child)) {
-          const childElement = createDOM(child, perf);
-          fragment.appendChild(childElement);
-        }
-      }
-    }
-    vnode.$elm$ = fragment;
-    return fragment;
+    throwConsumerError(
+      "Fragment nodes should not be processed by createDOM directly. Fragments are virtual containers that only render their children.",
+    );
+  }
+
+  // this should not happen in createDOM, Host should be handled at render level
+  if (vnode.$type$ === NODE_TYPE_HOST) {
+    throwConsumerError(
+      "Host element should not be processed by createDOM. Host elements should only be used as the root element in component render() methods.",
+    );
   }
 
   // Only log performance for element creation (text/comment creation is negligible)
@@ -69,8 +68,20 @@ export function createDOM(
   if (vnode.$children$ && vnode.$children$.length > 0) {
     for (const child of vnode.$children$) {
       if (child != null && isVNode(child)) {
-        const childElement = createDOM(child, perf);
-        element.appendChild(childElement);
+        // Handle fragments - append their children directly to the parent
+        if (child.$type$ === NODE_TYPE_FRAGMENT) {
+          if (child.$children$) {
+            for (const fragChild of child.$children$) {
+              if (fragChild != null && isVNode(fragChild)) {
+                const childElement = createDOM(fragChild, perf);
+                element.appendChild(childElement);
+              }
+            }
+          }
+        } else {
+          const childElement = createDOM(child, perf);
+          element.appendChild(childElement);
+        }
       }
     }
   }
