@@ -1,6 +1,7 @@
 import { createLog, getExtendsByInheritance } from "@pencil/utils";
 import { pencilConfig } from "src/config.ts";
-import { scheduleComponentUpdate } from "../core/render.ts";
+import { scheduler } from "src/core/scheduler.ts";
+import { componentCtrl } from "../controllers/component.ts";
 import type { PropOptions } from "./prop.ts";
 
 // Reactive system for components
@@ -22,7 +23,7 @@ const componentLogger = createLog("Component");
 export function triggerUpdate(component: HTMLElement): void {
   const reactive = reactiveComponents.get(component);
   if (reactive) {
-    scheduleComponentUpdate(component, reactive.render);
+    scheduler().scheduleUpdate(reactive.render);
   }
 }
 
@@ -169,6 +170,20 @@ function generateTagName(options: ComponentOptions): string {
 }
 
 /**
+ * Wraps the component class to register instances with the component controller
+ */
+function wrapComponentForRegistration<T extends CustomElementConstructor>(
+  klass: T,
+): T {
+  return class PencilCustomElementWrap extends klass {
+    constructor(...args: any[]) {
+      super(...args);
+      componentCtrl().registerComponent(this as HTMLElement);
+    }
+  } as T;
+}
+
+/**
  * Component decorator that registers a class as a custom element.
  * Handles reactive props, attribute observation, and lifecycle management.
  *
@@ -188,7 +203,7 @@ function generateTagName(options: ComponentOptions): string {
  * ```
  */
 export const Component = (options: ComponentOptions): ClassDecorator => {
-  return <TFunction extends Function>(klass: TFunction) => {
+  return <TUnconstructedClass extends object>(klass: TUnconstructedClass) => {
     componentLogger(
       `Starting component registration for ${options.tagName || "unnamed component"}`,
     );
@@ -212,20 +227,26 @@ export const Component = (options: ComponentOptions): ClassDecorator => {
       },
     });
 
+    // Wrap the class to register component instances
+    const wrappedKlass = wrapComponentForRegistration(
+      klass as unknown as CustomElementConstructor,
+    );
+
     componentLogger(
       `Generated tag name: ${tagName}, extends: ${extendsByInheritance || "none"}`,
     );
 
-    setupAttributeObservation(klass as any);
+    setupAttributeObservation(wrappedKlass);
 
-    setupLifecycleCallbacks(klass as any);
+    setupLifecycleCallbacks(wrappedKlass);
 
-    registerComponent(klass as any, tagName, extendsByInheritance ?? null);
+    registerComponent(wrappedKlass, tagName, extendsByInheritance ?? null);
 
     componentLogger(
       `Component registration completed for ${tagName}`,
       "color: green",
     );
-    return klass;
+
+    return wrappedKlass as unknown as TUnconstructedClass;
   };
 };

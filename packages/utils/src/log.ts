@@ -1,7 +1,21 @@
 import { getAnsiFromStyle } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
-export function log(message: string, style?: string): void {
+const PENCIL_DO_LOGGING = () =>
+  import.meta.env?.PROD
+    ? false
+    : globalThis.PENCIL_DEBUG ||
+      new URLSearchParams(window.location.search).get("pencilDebug");
+
+export function log(
+  message: string,
+  style?: string,
+  ...other: unknown[]
+): void {
+  if (!PENCIL_DO_LOGGING()) {
+    return;
+  }
+
   const now = new Date();
   const timestamp =
     now.toLocaleTimeString("en-US", {
@@ -19,6 +33,7 @@ export function log(message: string, style?: string): void {
       "background: #118e67; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey;",
       style || "",
+      ...other,
     );
   } else {
     const ansiGrey = "\x1b[90m"; // ANSI grey
@@ -26,15 +41,16 @@ export function log(message: string, style?: string): void {
     const ansiCode = style ? getAnsiFromStyle(style) : "";
     console.log(
       `${ansiGrey}${timestamp}${ansiReset} ${ansiCode}${message}\x1b[0m`,
+      ...other,
     );
   }
 }
 
 export function createLog(
   namespace: string,
-): (message: string, style?: string) => void {
-  return (message: string, style?: string) => {
+): (message: string, style?: string, ...other: unknown[]) => void {
+  return (message: string, style?: string, ...other: unknown[]) => {
     const prefixedMessage = `[${namespace}] ${message}`;
-    log(prefixedMessage, style);
+    log(prefixedMessage, style, ...other);
   };
 }

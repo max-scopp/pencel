@@ -2,7 +2,7 @@ import {
   createPerformanceTree,
   type PerformanceTreeController,
 } from "@pencil/utils";
-import type { JSXElement, VNode } from "./types.ts";
+import type { JSXElement, VNode } from "src/index.ts";
 
 // Global performance tracker for JSX operations
 export const jsxPerf: PerformanceTreeController = createPerformanceTree();

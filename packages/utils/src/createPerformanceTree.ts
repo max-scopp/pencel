@@ -5,6 +5,8 @@ export interface TreeNode {
   name: string;
   time: number; // in microseconds
   children: TreeNode[];
+  startTime?: number;
+  endTime?: number;
 }
 
 export interface PerformanceNode {
@@ -82,10 +84,15 @@ function convertToTreeNode(perfNode: PerformanceNode): TreeNode {
     name: perfNode.name,
     time: exclusiveTime, // Use exclusive time for better breakdown
     children: perfNode.children.map(convertToTreeNode),
+    startTime: perfNode.startTime,
+    endTime: perfNode.endTime,
   };
 }
 function logPerformanceTree(root: TreeNode): void {
-  const totalTime = root.time;
+  // Calculate actual total time from root node timing
+  const rootEndTime = root.endTime || performance.now();
+  const rootStartTime = root.startTime || performance.now();
+  const totalTime = Math.max(0, (rootEndTime - rootStartTime) * 1000);
 
   function formatTime(us: number): string {
     if (us < 1000) {
@@ -103,20 +110,16 @@ function logPerformanceTree(root: TreeNode): void {
 
     const ratio = parentTime > 0 ? us / parentTime : 0;
 
-    // Gradient from red (slowest) to green (fastest)
-    // red → orange → yellow → blue → green
-    let color: string;
-    if (ratio >= 0.8) {
-      color = "#ff0000"; // red
-    } else if (ratio >= 0.6) {
-      color = "#ff8000"; // orange
-    } else if (ratio >= 0.4) {
-      color = "#ffff00"; // yellow
-    } else if (ratio >= 0.2) {
-      color = "#0080ff"; // blue
-    } else {
-      color = "#00ff00"; // green
-    }
+    // Create a smooth gradient using HSL color space
+    // Map ratio (0-1) to hue (0-120 degrees)
+    // 0 = red (0°), 0.5 = yellow (60°), 1 = green (120°)
+    const hue = Math.max(0, Math.min(120, ratio * 120));
+
+    // Use half saturation and full lightness for better readability
+    const saturation = 50; // 50% saturation (softer colors)
+    const lightness = 50; // 50% lightness (balanced)
+
+    const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 
     return `color: ${color}; font-weight: bold;`;
   }
@@ -165,9 +168,6 @@ function logPerformanceTree(root: TreeNode): void {
       });
     }
   }
-
-  const overallMessage = `Overall Time: ${formatTime(totalTime)}`;
-  log(overallMessage, "font-weight: bold;");
 
   root.children.forEach((child, index) => {
     const isLast = index === root.children.length - 1;

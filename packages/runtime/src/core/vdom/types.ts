@@ -1,3 +1,6 @@
+export const NODE_TYPE_TEXT = "TEXT";
+export const NODE_TYPE_COMMENT = "COMMENT";
+
 import type { Props } from "./jsx.ts";
 
 export type JSXElement = {
