@@ -1,4 +1,14 @@
+import { deepEqual } from "src/utils/equal.ts";
 import { componentCtrl } from "../controllers/component.ts";
+
+export interface StateOptions {
+  /**
+   * Smiliar to `shouldComponentUpdate`, but for this specific state property.
+   *
+   * This function is called whenever the setter of this state property is invoked.
+   */
+  equal?: (a: unknown, b: unknown) => boolean;
+}
 
 /**
  * Property decorator that makes component state reactive.
@@ -15,7 +25,7 @@ import { componentCtrl } from "../controllers/component.ts";
  * }
  * ```
  */
-export function State(): PropertyDecorator {
+export function State(options?: StateOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
@@ -24,7 +34,15 @@ export function State(): PropertyDecorator {
       },
 
       set(value: unknown) {
-        componentCtrl().setState(this, propertyKey, value);
+        const ctrl = componentCtrl();
+
+        const equalFn = options?.equal ?? deepEqual;
+
+        const isEqual = equalFn(value, ctrl.getState(this, propertyKey));
+
+        if (!isEqual) {
+          ctrl.setState(this, propertyKey, value);
+        }
       },
 
       enumerable: true,

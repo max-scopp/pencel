@@ -1,4 +1,4 @@
-import { createLog } from "@pencil/utils";
+import { createLog, throwConsumerError, throwError } from "@pencil/utils";
 import type {
   ComponentInterfaceWithContext,
   ConstructablePencilComponent,
@@ -26,6 +26,11 @@ export interface PencilComponentContext {
 
 class ComponentsController {
   private cmpts: Set<ComponentInterfaceWithContext> = new Set();
+
+  private stores = new WeakMap<
+    ComponentInterfaceWithContext,
+    Map<string, unknown>
+  >();
 
   announceInstance(
     component: ComponentInterfaceWithContext,
@@ -154,6 +159,74 @@ class ComponentsController {
 
     if (shouldUpdate) {
       this.markForChanges(component, [`state '${String(stateName)}' changed`]);
+    }
+  }
+
+  findStore<TStore>(
+    childComponent: ComponentInterfaceWithContext,
+    storeName: string,
+  ): { store: TStore; component: ComponentInterfaceWithContext } {
+    const component = Array.from(this.cmpts).find((cmp) =>
+      cmp.contains(childComponent),
+    );
+
+    if (!component) {
+      throwConsumerError(
+        `Could not find parent component for ${simpleCustomElementDisplayText(
+          childComponent,
+        )}. Make sure the component is rendered inside another Pencil component that does provide the store.`,
+      );
+    }
+
+    const storeContext = this.stores.get(component);
+
+    return {
+      component,
+      store:
+        (storeContext?.get(storeName) as TStore) ??
+        throwError("Store not found"),
+    };
+  }
+
+  getStore<TStore>(
+    component: ComponentInterfaceWithContext,
+    storeName: string | symbol,
+  ): TStore {
+    this.announceInstance(component);
+
+    const storeContext = this.stores.get(component) ?? new Map();
+
+    if (!this.stores.has(component)) {
+      this.stores.set(component, storeContext);
+    }
+
+    return storeContext.get(storeName) as TStore;
+  }
+
+  setStore<TStore>(
+    component: ComponentInterfaceWithContext,
+    storeName: string | symbol,
+    newValue: TStore,
+  ): void {
+    this.announceInstance(component);
+
+    const storeContext = this.stores.get(component) ?? new Map();
+
+    if (!this.stores.has(component)) {
+      this.stores.set(component, storeContext);
+    }
+
+    const oldValue = storeContext.get(storeName) as TStore;
+    storeContext.set(storeName, newValue);
+
+    const shouldUpdate = component.componentShouldUpdate?.(
+      newValue,
+      oldValue,
+      storeName,
+    );
+
+    if (shouldUpdate) {
+      this.markForChanges(component, [`store '${String(storeName)}' changed`]);
     }
   }
 
