@@ -1,6 +1,5 @@
 // biome-ignore lint/correctness/noUnusedImports: <explanation>
 
-import { css } from "@emotion/css";
 import {
   Component,
   type ComponentInterface,
@@ -10,21 +9,18 @@ import {
   render,
 } from "../../src";
 
-const fancyButtonStyles = css`
-  background: #007bff;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  padding: 8px 16px;
-  cursor: pointer;
-  
-  &:hover {
-    background: #0056b3;
-  }
-`;
-
 @Component({
-  tagName: "fancy-button",
+  tag: "fancy-button",
+  styles: `
+    button[is="pen-fancy-button"] {
+      background: #007bff;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  `,
 })
 class FancyButton extends HTMLButtonElement implements ComponentInterface {
   constructor() {
@@ -34,7 +30,6 @@ class FancyButton extends HTMLButtonElement implements ComponentInterface {
   connectedCallback() {
     console.log("Custom button connected!");
     // Apply the emotion CSS class
-    this.className = fancyButtonStyles;
   }
 
   render(): JSXElement {
@@ -44,7 +39,7 @@ class FancyButton extends HTMLButtonElement implements ComponentInterface {
 
 // Example using explicit extends option (doesn't need to inherit)
 @Component({
-  tagName: "custom-input",
+  tag: "custom-input",
 })
 class CustomInput extends HTMLElement {
   constructor() {
@@ -58,7 +53,8 @@ class CustomInput extends HTMLElement {
 
 // Example without explicit tagName (uses class name)
 @Component({
-  tagName: "simple",
+  tag: "simple",
+  shadow: true,
 })
 class SimpleElement extends HTMLElement {
   constructor() {

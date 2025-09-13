@@ -1,10 +1,18 @@
 // biome-ignore lint/correctness/noUnusedImports: JSX imports needed for runtime
-import { Component, h, Prop, render, State } from "../../src";
+/** biome-ignore-all lint/correctness/noUnusedVariables: <explanation> */
+import {
+  Component,
+  type ComponentInterface,
+  h,
+  Prop,
+  render,
+  State,
+} from "../../src";
 
 @Component({
-  tagName: "counter-component",
+  tag: "counter-component",
 })
-class CounterComponent extends HTMLElement {
+class CounterComponent extends HTMLElement implements ComponentInterface {
   @State()
   count = 0;
 
@@ -16,7 +24,6 @@ class CounterComponent extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
   }
 
   increment = () => {
@@ -30,6 +37,10 @@ class CounterComponent extends HTMLElement {
   reset = () => {
     this.count = 0;
   };
+
+  componentDidRender() {
+    console.log(`CounterComponent rendered with count: ${this.count}`);
+  }
 
   render() {
     return (
@@ -54,7 +65,7 @@ class CounterComponent extends HTMLElement {
 }
 
 @Component({
-  tagName: "user-card",
+  tag: "user-card",
 })
 class UserCard extends HTMLElement {
   @Prop({ reflect: true, defaultValue: "" })
@@ -74,7 +85,6 @@ class UserCard extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
   }
 
   connectedCallback() {
@@ -107,6 +117,10 @@ class UserCard extends HTMLElement {
   handleEmailChange = (event: Event) => {
     this.tempEmail = (event.target as HTMLInputElement).value;
   };
+
+  componentDidRender() {
+    console.log(`UserCard rendered for ${this.name}`);
+  }
 
   render() {
     const UserInformation = () => {

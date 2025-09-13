@@ -1,21 +1,19 @@
-import {
-  createLog,
-  createPerformanceTree,
-  throwConsumerError,
-  throwError,
-} from "@pencil/utils";
-import { debug } from "console";
+import { createLog, createPerformanceTree, throwError } from "@pencil/utils";
 import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
-import type { ComponentInterface } from "../controllers/component.ts";
+import {
+  componentCtrl,
+  PENCIL_COMPONENT_CONTEXT,
+} from "../controllers/component.ts";
+import type { ComponentInterfaceWithContext } from "./types.ts";
 import { render } from "./vdom/render.ts";
 
 const log = createLog("Scheduler");
 
 export class ComponentUpdateScheduler {
-  private pendingRenders = new Map<ComponentInterface, Error>();
+  private pendingRenders = new Map<ComponentInterfaceWithContext, Error>();
   private isScheduled = false;
 
-  schedule(component: ComponentInterface): void {
+  schedule(component: ComponentInterfaceWithContext): void {
     if (this.pendingRenders.has(component)) {
       return;
     }
@@ -28,24 +26,43 @@ export class ComponentUpdateScheduler {
   private scheduleFlush(): void {
     if (!this.isScheduled) {
       this.isScheduled = true;
-      queueMicrotask(() => this.flush());
+      queueMicrotask(() => void this.flush());
     }
   }
 
-  private flush(): void {
+  private async flush() {
     this.isScheduled = false;
 
     const perf = createPerformanceTree();
     perf.start("render-batch");
 
     try {
-      for (const [renderTarget, originalError] of this.pendingRenders) {
+      for (const [component, originalError] of this.pendingRenders) {
         try {
-          log("drain", undefined, simpleCustomElementDisplayText(renderTarget));
+          log("drain", undefined, simpleCustomElementDisplayText(component));
 
-          const jsx = renderTarget.render();
-          const container = renderTarget.shadowRoot || renderTarget;
+          if (component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+            component.componentWillUpdate?.();
+          }
+
+          await component.componentWillRender?.();
+
+          const jsx = component.render();
+          const container = component.shadowRoot || component;
+
           render(jsx, container);
+
+          if (!component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+            component.componentDidLoad?.();
+          }
+
+          component.componentDidRender?.();
+
+          if (component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+            component.componentDidUpdate?.();
+          } else {
+            component[PENCIL_COMPONENT_CONTEXT]!.wasRendered = true;
+          }
         } catch (error) {
           throwError(
             (error instanceof Error

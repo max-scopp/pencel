@@ -1,6 +1,6 @@
 import { createLog } from "@pencil/utils";
 import type {
-  ComponentInterface,
+  ComponentInterfaceWithContext,
   PencilComponentPhase,
 } from "src/core/types.ts";
 import type { PropOptions } from "src/decorators/prop.ts";
@@ -15,6 +15,7 @@ export const PENCIL_OBSERVED_ATTRIBUTES: unique symbol =
 
 export interface PencilComponentContext {
   phase: PencilComponentPhase;
+  wasRendered: boolean;
   extends?: string;
   props: Map<string | symbol, unknown>;
   popts: Map<string | symbol, PropOptions | undefined>;
@@ -22,15 +23,16 @@ export interface PencilComponentContext {
 }
 
 class ComponentsController {
-  private cmpts: Set<ComponentInterface> = new Set();
+  private cmpts: Set<ComponentInterfaceWithContext> = new Set();
 
   announceInstance(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     customElementExtends?: string,
   ): void {
     component[PENCIL_COMPONENT_CONTEXT] ??= {
       extends: customElementExtends,
       phase: "mounting",
+      wasRendered: false,
       props: new Map(),
       popts: new Map(),
       state: new Map(),
@@ -39,14 +41,7 @@ class ComponentsController {
     this.cmpts.add(component);
   }
 
-  /**
-   * The component did render - let's announce the component about it.
-   */
-  doComponentDidRender(component: ComponentInterface): void {
-    component.componentDidRender?.();
-  }
-
-  doStabilized(component: ComponentInterface): void {
+  doStabilized(component: ComponentInterfaceWithContext): void {
     this.announceInstance(component);
 
     const ctx = component[PENCIL_COMPONENT_CONTEXT]!;
@@ -56,7 +51,10 @@ class ComponentsController {
     this.markForChanges(component, ["mount"]);
   }
 
-  markForChanges(component: ComponentInterface, reasons: string[]): void {
+  markForChanges(
+    component: ComponentInterfaceWithContext,
+    reasons: string[],
+  ): void {
     // only mark and queue for re-render for components that have been mounted and are still connected
     if (component[PENCIL_COMPONENT_CONTEXT]?.phase !== "alive") {
       return;
@@ -72,7 +70,7 @@ class ComponentsController {
   }
 
   getProp<TValue>(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     propName: string | symbol,
   ): TValue {
     const ctx = component[PENCIL_COMPONENT_CONTEXT];
@@ -85,18 +83,28 @@ class ComponentsController {
   }
 
   setProp<TValue>(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     propName: string | symbol,
-    value: TValue,
+    newValue: TValue,
   ): void {
     this.announceInstance(component);
 
-    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, value);
-    this.markForChanges(component, [`prop '${String(propName)}' changed`]);
+    const oldValue = this.getProp<TValue>(component, propName);
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, newValue);
+
+    const shouldUpdate = component.componentShouldUpdate?.(
+      newValue,
+      oldValue,
+      propName,
+    );
+
+    if (shouldUpdate) {
+      this.markForChanges(component, [`prop '${String(propName)}' changed`]);
+    }
   }
 
   initProp(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     propName: string | symbol,
     options?: PropOptions,
   ): void {
@@ -107,7 +115,7 @@ class ComponentsController {
   }
 
   getState<TValue>(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     stateName: string | symbol,
   ): TValue {
     this.announceInstance(component);
@@ -116,25 +124,35 @@ class ComponentsController {
   }
 
   setState<TValue>(
-    component: ComponentInterface,
+    component: ComponentInterfaceWithContext,
     stateName: string | symbol,
-    value: TValue,
+    newValue: TValue,
   ): void {
-    component[PENCIL_COMPONENT_CONTEXT]?.state.set(stateName, value);
-    this.markForChanges(component, [`state '${String(stateName)}' changed`]);
+    const oldValue = this.getState<TValue>(component, stateName);
+    component[PENCIL_COMPONENT_CONTEXT]?.state.set(stateName, newValue);
+
+    const shouldUpdate = component.componentShouldUpdate?.(
+      newValue,
+      oldValue,
+      stateName,
+    );
+
+    if (shouldUpdate) {
+      this.markForChanges(component, [`state '${String(stateName)}' changed`]);
+    }
   }
 
   /**
    * Sets the phase of a component to "disconnected"
    */
-  disconnectComponent(component: ComponentInterface): void {
+  disconnectComponent(component: ComponentInterfaceWithContext): void {
     component.disconnectedCallback?.();
     component[PENCIL_COMPONENT_CONTEXT]!.phase = "disconnected";
     this.cmpts.delete(component);
     log(`Delete disconnected component`, undefined, component);
   }
 
-  doComponentWillLoad(component: ComponentInterface): void {
+  doComponentWillLoad(component: ComponentInterfaceWithContext): void {
     component.componentWillLoad?.();
     this.markForChanges(component, ["mount"]);
   }

@@ -5,138 +5,91 @@ import {
 } from "@pencil/utils";
 import { pencilConfig } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
-import { dashCase } from "src/utils/dashCase.ts";
-import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
-import {
-  componentCtrl,
-  PENCIL_COMPONENT_CONTEXT,
-  PENCIL_OBSERVED_ATTRIBUTES,
-} from "../controllers/component.ts";
-import type { PropOptions } from "./prop.ts";
-
-export interface ComponentOptions {
-  tagName?: string;
-}
+import { wrapComponentForRegistration } from "src/pencilCustomElementWrap.ts";
 
 const log = createLog("Component");
 
-/**
- * Handles type conversion for attribute values based on prop options
- */
-function convertAttributeValue(
-  value: string | null,
-  propOptions?: PropOptions,
-  hasAttribute = false,
-): unknown {
-  if (!propOptions?.type) {
-    return value;
-  }
+export interface ComponentOptions {
+  tag?: string;
+  /**
+   * @deprecated not implemented yet
+   */
+  assetsDirs?: string[];
+  formAssociated?: boolean;
+  /**
+   * Not implemented yet
+   */
+  scoped?: boolean;
 
-  if (propOptions.type === Boolean) {
-    if (hasAttribute) {
-      return true; // presence means true
-    }
+  shadow?: boolean;
 
-    return false; // absence means false
-  }
+  /**
+   * @deprecated not implemented yet
+   */
+  styleUrl?: string;
 
-  switch (propOptions.type) {
-    default:
-      return propOptions.type(value);
-  }
+  /**
+   * @deprecated not implemented yet
+   */
+  styleUrls?: string[];
+
+  styles?: string | string[];
+
+  /**
+   * Manual extends for custom-element's define options.
+   */
+  extends?: string;
 }
 
-/**
- * Wraps the component class to register instances with the component controller
- */
-function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
-  klass: T,
-  customElementExtends?: string,
-): T {
-  const Wrapper = class PencilCustomElementWrap extends klass {
-    constructor(...args: any[]) {
-      super(...args);
-      componentCtrl().announceInstance(this, customElementExtends);
-    }
+export type SafeComponentOptions = Omit<
+  Required<ComponentOptions>,
+  "styles" | "styleUrl" | "extends"
+> & {
+  styles: string[];
+  extends?: string;
+} & (
+    | { shadow: true; scoped: false }
+    | { shadow: false; scoped: true }
+    | { shadow: false; scoped: false }
+  );
 
-    // Get observed attributes from the prop map
-    static get observedAttributes() {
-      return Wrapper[PENCIL_OBSERVED_ATTRIBUTES];
-    }
+function interopOptionsByUsage(
+  options: ComponentOptions,
+): SafeComponentOptions {
+  if (options.scoped && options.shadow) {
+    throwConsumerError("Cannot use both scoped and shadow styles");
+  }
 
-    override connectedCallback(): void {
-      log("init props");
+  if (options.extends && options.shadow) {
+    throwConsumerError(
+      "Cannot use shadow DOM with customized built-in elements",
+    );
+  }
 
-      const ctrl = componentCtrl();
-      const ctx = this[PENCIL_COMPONENT_CONTEXT];
-      const popts = ctx?.popts ?? [];
+  const scopedShadowPair = options.extends
+    ? ({ scoped: false, shadow: false } as const)
+    : options.scoped
+      ? ({ scoped: true, shadow: false } as const)
+      : ({ scoped: false, shadow: true } as const);
 
-      for (const [propName, propOptions] of popts) {
-        const attrName = propOptions?.attr || dashCase(String(propName));
-        const attrValue = this.getAttribute(attrName);
-        const hasAttr = this.hasAttribute(attrName);
+  const styleUrls = [...(options.styleUrls || [])];
 
-        const convertedValue = convertAttributeValue(
-          attrValue,
-          propOptions,
-          hasAttr,
-        );
+  if (options.styleUrl) {
+    styleUrls.push(options.styleUrl);
+  }
 
-        ctrl.setProp(this, propName, convertedValue);
-      }
-
-      // Call original connectedCallback if it exists
-      super.connectedCallback?.();
-      super.componentWillLoad?.();
-
-      ctrl.doStabilized(this);
-    }
-
-    override attributeChangedCallback(
-      name: string,
-      oldValue: string | null,
-      newValue: string | null,
-    ): void {
-      const ctx = this[PENCIL_COMPONENT_CONTEXT];
-      const popts = ctx?.popts ?? [];
-
-      for (const [propName, propOptions] of popts) {
-        const attrName = propOptions?.attr || dashCase(propName as string);
-
-        if (attrName === name) {
-          const hasAttr = this.hasAttribute(name);
-          const convertedValue = convertAttributeValue(
-            newValue,
-            propOptions,
-            hasAttr,
-          );
-
-          componentCtrl().setProp(this, propName, convertedValue);
-          break;
-        }
-      }
-
-      // Call original attributeChangedCallback if it exists
-      super.attributeChangedCallback?.(name, oldValue, newValue);
-    }
-
-    override disconnectedCallback(): void {
-      componentCtrl().disconnectComponent(this);
-    }
-
-    override render() {
-      try {
-        return super.render?.() ?? null;
-      } catch (origin) {
-        throwConsumerError(
-          `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
-          origin,
-        );
-      }
-    }
-  } as T;
-
-  return Wrapper;
+  return {
+    ...scopedShadowPair,
+    extends: options.extends,
+    tag: options.tag ?? throwConsumerError("Tag is required"),
+    assetsDirs: options.assetsDirs || [],
+    formAssociated: options.formAssociated || false,
+    styleUrls,
+    styles:
+      typeof options.styles === "string"
+        ? [options.styles]
+        : options.styles || [],
+  };
 }
 
 /**
@@ -168,7 +121,7 @@ function defineCustomElement(
  * Generates a tag name for the component
  */
 function generateTagName(options: ComponentOptions): string {
-  return [pencilConfig.tagNamespace, options.tagName].filter(Boolean).join("-");
+  return [pencilConfig.tagNamespace, options.tag].filter(Boolean).join("-");
 }
 
 /**
@@ -190,18 +143,27 @@ function generateTagName(options: ComponentOptions): string {
  * }
  * ```
  */
-export const Component = (options: ComponentOptions): ClassDecorator => {
+export const Component = (userOptions: ComponentOptions): ClassDecorator => {
   return (klass: object) => {
     if (typeof customElements === "undefined") {
       log("skip define - no registry");
       return klass as any;
     }
 
+    const customElementExtends = userOptions.extends
+      ? userOptions.extends
+      : getExtendsByInheritance(klass);
+
+    const options = interopOptionsByUsage({
+      ...userOptions,
+      extends: customElementExtends,
+    });
+
     const tagName = generateTagName(options);
-    const customElementExtends = getExtendsByInheritance(klass);
 
     const wrappedKlass = wrapComponentForRegistration(
       klass as unknown as ConstructablePencilComponent,
+      options,
       customElementExtends,
     );
 
