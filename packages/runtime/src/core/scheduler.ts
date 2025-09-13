@@ -1,27 +1,26 @@
-import { createPerformanceTree } from "@pencil/utils";
+import {
+  createLog,
+  createPerformanceTree,
+  throwConsumerError,
+  throwError,
+} from "@pencil/utils";
+import { debug } from "console";
+import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
 import type { ComponentInterface } from "../controllers/component.ts";
 import { render } from "./vdom/render.ts";
+
+const log = createLog("Scheduler");
 
 export class ComponentUpdateScheduler {
   private pendingRenders = new Map<ComponentInterface, Error>();
   private isScheduled = false;
 
-  scheduleUpdate(component: ComponentInterface): void {
+  schedule(component: ComponentInterface): void {
     if (this.pendingRenders.has(component)) {
       return;
     }
 
-    const stackTrace = new Error("[UPDATE] Source of scheduling");
-    this.pendingRenders.set(component, stackTrace);
-    this.scheduleFlush();
-  }
-
-  scheduleRender(component: ComponentInterface): void {
-    if (this.pendingRenders.has(component)) {
-      return;
-    }
-
-    const stackTrace = new Error("[RENDER] Source of scheduling");
+    const stackTrace = new Error("(Scheduled Source)");
     this.pendingRenders.set(component, stackTrace);
     this.scheduleFlush();
   }
@@ -42,16 +41,19 @@ export class ComponentUpdateScheduler {
     try {
       for (const [renderTarget, originalError] of this.pendingRenders) {
         try {
+          log("drain", undefined, simpleCustomElementDisplayText(renderTarget));
+
           const jsx = renderTarget.render();
           const container = renderTarget.shadowRoot || renderTarget;
           render(jsx, container);
         } catch (error) {
-          // Create a new error that includes both the current error and the original scheduling context
-          const enhancedError = new Error(
-            `${String(error)}\n\n${originalError.stack}`,
+          throwError(
+            (error instanceof Error
+              ? (error.stack ?? String(error))
+              : String(error)) +
+              "\n\n" +
+              originalError,
           );
-
-          throw enhancedError;
         }
       }
     } finally {

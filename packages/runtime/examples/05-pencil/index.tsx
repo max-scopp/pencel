@@ -1,7 +1,14 @@
 // biome-ignore lint/correctness/noUnusedImports: <explanation>
 
 import { css } from "@emotion/css";
-import { Component, h, render } from "../../src";
+import {
+  Component,
+  type ComponentInterface,
+  Fragment,
+  h,
+  type JSXElement,
+  render,
+} from "../../src";
 
 const fancyButtonStyles = css`
   background: #007bff;
@@ -19,7 +26,7 @@ const fancyButtonStyles = css`
 @Component({
   tagName: "fancy-button",
 })
-class FancyButton extends HTMLButtonElement {
+class FancyButton extends HTMLButtonElement implements ComponentInterface {
   constructor() {
     super();
   }
@@ -28,6 +35,10 @@ class FancyButton extends HTMLButtonElement {
     console.log("Custom button connected!");
     // Apply the emotion CSS class
     this.className = fancyButtonStyles;
+  }
+
+  render(): JSXElement {
+    return <></>;
   }
 }
 

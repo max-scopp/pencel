@@ -1,8 +1,8 @@
 import { createPerformanceTree } from "@pencil/utils";
 import { toVNode } from "../jsx.ts";
+import type { JSXElement, VNode } from "../types.ts";
 import { createDOM } from "./create-dom.ts";
 import { patch } from "./patch.ts";
-import type { JSXElement, VNode } from "./types.ts";
 
 // Node types
 
@@ -40,7 +40,12 @@ export function render(jsx: JSXElement, container: RenderContainer): void {
 
   if (oldVNode) {
     // Update existing content using patch
-    const updatedVNode = patch(oldVNode, newVNode, renderPerf);
+    const updatedVNode = patch(
+      oldVNode,
+      newVNode,
+      renderPerf,
+      container as HTMLElement,
+    );
 
     // Store the updated VNode for future renders
     containerInternals.vnode = updatedVNode;

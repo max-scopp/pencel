@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Todo List</title>
+    <style>
+        .todo-list {
+            max-width: 400px;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .todo-input {
+            margin-bottom: 20px;
+        }
+        .todo-input input {
+            padding: 8px;
+            margin-right: 8px;
+            width: 200px;
+        }
+        .todo-input button {
+            padding: 8px 16px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            margin: 4px 0;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+        li.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="module">
+        // Import the runtime from the built dist
+        import { render, h } from './packages/runtime/dist/index.js';
+        
+        // Global state for debugging
+        const globalState = {};
+        let renderScheduled = false;
+        
+        function useState(initial, key) {
+            if (!(key in globalState)) {
+                globalState[key] = initial;
+            }
+            const state = globalState[key];
+            const setState = (value) => {
+                console.log(`Setting state for ${key}:`, value);
+                globalState[key] = value;
+                // Schedule render to batch multiple state updates
+                if (!renderScheduled) {
+                    renderScheduled = true;
+                    requestAnimationFrame(() => {
+                        console.log('Rendering with new state:', globalState);
+                        renderApp();
+                        renderScheduled = false;
+                    });
+                }
+            };
+            return [state, setState];
+        }
+        
+        const TodoList = () => {
+            const [todos, setTodos] = useState([], "todos");
+            const [input, setInput] = useState("", "input");
+
+            const addTodo = () => {
+                console.log('addTodo called, current input:', input);
+                if (input.trim()) {
+                    const newTodos = [...todos, { id: Date.now(), text: input, completed: false }];
+                    console.log('Adding new todo, new todos array:', newTodos);
+                    setTodos(newTodos);
+                    setInput("");
+                }
+            };
+
+            const toggleTodo = (id) => {
+                setTodos(
+                    todos.map((todo) =>
+                        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+                    ),
+                );
+            };
+
+            console.log('TodoList rendering with todos:', todos);
+
+            return h('div', { className: 'todo-list' }, [
+                h('div', { className: 'todo-input' }, [
+                    h('input', {
+                        type: 'text',
+                        value: input,
+                        onInput: (e) => {
+                            console.log('Input changed to:', e.target.value);
+                            setInput(e.target.value);
+                        },
+                        placeholder: 'Add a todo'
+                    }),
+                    h('button', { 
+                        type: 'button', 
+                        onClick: () => {
+                            console.log('Add button clicked');
+                            addTodo();
+                        }
+                    }, 'Add')
+                ]),
+                h('ul', {}, 
+                    todos.map((todo) => {
+                        console.log('Rendering todo:', todo);
+                        return h('li', {
+                            key: todo.id,
+                            className: todo.completed ? 'completed' : '',
+                            onClick: () => toggleTodo(todo.id)
+                        }, todo.text);
+                    })
+                )
+            ]);
+        };
+        
+        const root = document.getElementById('root');
+        
+        const renderApp = () => {
+            console.log('renderApp called');
+            render(h(TodoList), root);
+        };
+        
+        // Initial render
+        renderApp();
+    </script>
+</body>
+</html>

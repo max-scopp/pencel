@@ -1,11 +1,16 @@
-import { createLog, getExtendsByInheritance } from "@pencil/utils";
-import { pencilConfig } from "src/config.ts";
 import {
-  type ComponentInterface,
-  type ConstructablePencilComponent,
-  type CustomElement,
+  createLog,
+  getExtendsByInheritance,
+  throwConsumerError,
+} from "@pencil/utils";
+import { pencilConfig } from "src/config.ts";
+import type { ConstructablePencilComponent } from "src/core/types.ts";
+import { dashCase } from "src/utils/dashCase.ts";
+import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
+import {
   componentCtrl,
   PENCIL_COMPONENT_CONTEXT,
+  PENCIL_OBSERVED_ATTRIBUTES,
 } from "../controllers/component.ts";
 import type { PropOptions } from "./prop.ts";
 
@@ -13,123 +18,125 @@ export interface ComponentOptions {
   tagName?: string;
 }
 
-const componentLogger = createLog("Component");
-
-export const $extendsByInheritance: unique symbol = Symbol(
-  "extendsByInheritance",
-);
+const log = createLog("Component");
 
 /**
  * Handles type conversion for attribute values based on prop options
  */
 function convertAttributeValue(
   value: string | null,
-  propOptions: PropOptions,
+  propOptions?: PropOptions,
+  hasAttribute = false,
 ): unknown {
-  if (!propOptions.type) {
+  if (!propOptions?.type) {
     return value;
   }
 
-  if (value === null) {
-    return null;
+  if (propOptions.type === Boolean) {
+    if (hasAttribute) {
+      return true; // presence means true
+    }
+
+    return false; // absence means false
   }
 
   switch (propOptions.type) {
-    case Number:
-      return Number(value);
-    case Boolean:
-      return true; // Presence of attribute means true
-    case Date:
-      return new Date(value);
     default:
-      return value;
+      return propOptions.type(value);
   }
 }
 
 /**
- * Sets up attribute observation for reactive props
+ * Wraps the component class to register instances with the component controller
  */
-function setupAttributeObservation(klass: CustomElementConstructor) {
-  componentLogger("Adding observedAttributes getter for reactive props");
-
-  // Add observedAttributes getter to monitor attribute changes
-  Object.defineProperty(klass, "observedAttributes", {
-    get() {
-      const props = (
-        this as { [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions> }
-      )[PENCIL_COMPONENT_CONTEXT];
-      return props ? Array.from(props.keys()) : [];
-    },
-    enumerable: true,
-    configurable: true,
-  });
-
-  componentLogger("Adding attributeChangedCallback for prop updates");
-
-  // Add attributeChangedCallback to handle prop changes from attributes
-  const originalAttributeChangedCallback =
-    klass.prototype.attributeChangedCallback;
-  klass.prototype.attributeChangedCallback = function (
-    name: string,
-    oldValue: string,
-    newValue: string,
-  ) {
-    // Call original callback if it exists
-    if (originalAttributeChangedCallback) {
-      originalAttributeChangedCallback.call(this, name, oldValue, newValue);
+function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
+  klass: T,
+  customElementExtends?: string,
+): T {
+  const Wrapper = class PencilCustomElementWrap extends klass {
+    constructor(...args: any[]) {
+      super(...args);
+      componentCtrl().announceInstance(this, customElementExtends);
     }
 
-    // Handle prop updates from attributes
-    const propOptions = (
-      this.constructor as {
-        [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions>;
-      }
-    )[PENCIL_COMPONENT_CONTEXT]?.get(name);
-
-    if (propOptions) {
-      const convertedValue = convertAttributeValue(newValue, propOptions);
-      // Set the prop value (this will trigger the setter)
-      (this as Record<string, unknown>)[name] = convertedValue;
+    // Get observed attributes from the prop map
+    static get observedAttributes() {
+      return Wrapper[PENCIL_OBSERVED_ATTRIBUTES];
     }
-  };
-}
 
-/**
- * Sets up lifecycle callbacks for prop initialization
- */
-function setupLifecycleCallbacks(klass: CustomElementConstructor) {
-  componentLogger(
-    "Adding connectedCallback for prop initialization from attributes",
-  );
+    override connectedCallback(): void {
+      log("init props");
 
-  // Add connectedCallback to initialize props from attributes
-  const originalConnectedCallback = klass.prototype.connectedCallback;
-  klass.prototype.connectedCallback = function () {
-    componentLogger("Initializing component props from attributes");
+      const ctrl = componentCtrl();
+      const ctx = this[PENCIL_COMPONENT_CONTEXT];
+      const popts = ctx?.popts ?? [];
 
-    // Initialize props from attributes
-    const propMap = (
-      this.constructor as {
-        [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions>;
+      for (const [propName, propOptions] of popts) {
+        const attrName = propOptions?.attr || dashCase(String(propName));
+        const attrValue = this.getAttribute(attrName);
+        const hasAttr = this.hasAttribute(attrName);
+
+        const convertedValue = convertAttributeValue(
+          attrValue,
+          propOptions,
+          hasAttr,
+        );
+
+        ctrl.setProp(this, propName, convertedValue);
       }
-    )[PENCIL_COMPONENT_CONTEXT];
 
-    if (propMap) {
-      for (const [propName, propOptions] of propMap) {
-        if (this.hasAttribute(propName)) {
-          const attrValue = this.getAttribute(propName);
-          const convertedValue = convertAttributeValue(attrValue, propOptions);
-          // Set the prop value (this will trigger the setter)
-          (this as Record<string, unknown>)[propName] = convertedValue;
+      // Call original connectedCallback if it exists
+      super.connectedCallback?.();
+      super.componentWillLoad?.();
+
+      ctrl.doStabilized(this);
+    }
+
+    override attributeChangedCallback(
+      name: string,
+      oldValue: string | null,
+      newValue: string | null,
+    ): void {
+      const ctx = this[PENCIL_COMPONENT_CONTEXT];
+      const popts = ctx?.popts ?? [];
+
+      for (const [propName, propOptions] of popts) {
+        const attrName = propOptions?.attr || dashCase(propName as string);
+
+        if (attrName === name) {
+          const hasAttr = this.hasAttribute(name);
+          const convertedValue = convertAttributeValue(
+            newValue,
+            propOptions,
+            hasAttr,
+          );
+
+          componentCtrl().setProp(this, propName, convertedValue);
+          break;
         }
       }
+
+      // Call original attributeChangedCallback if it exists
+      super.attributeChangedCallback?.(name, oldValue, newValue);
     }
 
-    // Call original connectedCallback if it exists
-    if (originalConnectedCallback) {
-      originalConnectedCallback.call(this);
+    override disconnectedCallback(): void {
+      componentCtrl().disconnectComponent(this);
     }
-  };
+
+    override render() {
+      try {
+        return super.render?.() ?? null;
+      } catch (origin) {
+        throwConsumerError(
+          `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
+          origin,
+        );
+      }
+    }
+  } as T;
+
+  return Wrapper;
 }
 
 /**
@@ -140,8 +147,10 @@ function defineCustomElement(
   tagName: string,
   extendsByInheritance?: string,
 ) {
-  componentLogger(
-    `Define custom element: ${tagName}; extends: ${extendsByInheritance || "none"}`,
+  log(
+    "define",
+    undefined,
+    tagName + (extendsByInheritance ? ` extends ${extendsByInheritance}` : ""),
   );
 
   if (extendsByInheritance) {
@@ -160,28 +169,6 @@ function defineCustomElement(
  */
 function generateTagName(options: ComponentOptions): string {
   return [pencilConfig.tagNamespace, options.tagName].filter(Boolean).join("-");
-}
-
-/**
- * Wraps the component class to register instances with the component controller
- */
-function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
-  klass: T,
-): T {
-  return class PencilCustomElementWrap extends klass {
-    constructor(...args: any[]) {
-      super(...args);
-      componentCtrl().setInstance(this);
-    }
-
-    override disconnectedCallback(): void {
-      componentCtrl().disconnectComponent(this);
-    }
-
-    override render() {
-      return super.render();
-    }
-  } as T;
 }
 
 /**
@@ -204,50 +191,22 @@ function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
  * ```
  */
 export const Component = (options: ComponentOptions): ClassDecorator => {
-  return <TUnconstructedClass extends object>(klass: TUnconstructedClass) => {
-    componentLogger(
-      `Starting component registration for ${options.tagName || "unnamed component"}`,
-    );
-
-    // Skip registration if custom elements aren't supported
+  return (klass: object) => {
     if (typeof customElements === "undefined") {
-      componentLogger(
-        "Skipping customElements.define: not supported in this environment",
-        "color: orange",
-      );
-      return klass;
+      log("skip define - no registry");
+      return klass as any;
     }
 
     const tagName = generateTagName(options);
-    const extendsByInheritance = getExtendsByInheritance(klass);
+    const customElementExtends = getExtendsByInheritance(klass);
 
-    // Store inheritance info for later use
-    Object.defineProperty(klass, $extendsByInheritance, {
-      get() {
-        return extendsByInheritance;
-      },
-    });
-
-    // Wrap the class to register component instances
     const wrappedKlass = wrapComponentForRegistration(
       klass as unknown as ConstructablePencilComponent,
+      customElementExtends,
     );
 
-    componentLogger(
-      `Generated tag name: ${tagName}, extends: ${extendsByInheritance || "none"}`,
-    );
+    defineCustomElement(wrappedKlass, tagName, customElementExtends);
 
-    setupAttributeObservation(wrappedKlass);
-
-    setupLifecycleCallbacks(wrappedKlass);
-
-    defineCustomElement(wrappedKlass, tagName, extendsByInheritance);
-
-    componentLogger(
-      `Component registration completed for ${tagName}`,
-      "color: green",
-    );
-
-    return wrappedKlass as unknown as TUnconstructedClass;
+    return wrappedKlass as any;
   };
 };

@@ -1,82 +1,42 @@
-import { createLog, throwError } from "@pencil/utils";
-import type { JSXElement } from "dist/index.js";
+import { createLog } from "@pencil/utils";
+import type {
+  ComponentInterface,
+  PencilComponentPhase,
+} from "src/core/types.ts";
+import type { PropOptions } from "src/decorators/prop.ts";
+import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
 import { scheduler } from "../core/scheduler.ts";
 
 const log = createLog("ComponentsController");
 
 export const PENCIL_COMPONENT_CONTEXT: unique symbol = Symbol("__$pencil_ctx$");
-
-export interface CustomElement extends HTMLElement {
-  /**
-   * Called each time the element is appended into a document-connected element.
-   */
-  connectedCallback?(): void;
-
-  /**
-   * Called each time the element is disconnected from the document's DOM.
-   */
-  disconnectedCallback?(): void;
-
-  /**
-   * Called when one of the element’s observed attributes is added, removed, or changed.
-   */
-  attributeChangedCallback?(
-    name: string,
-    oldValue: string | null,
-    newValue: string | null,
-  ): void;
-
-  /**
-   * Called each time the element is moved to a new document.
-   */
-  adoptedCallback?(oldDocument: Document, newDocument: Document): void;
-}
-
-export type ConstructablePencilComponent = new (
-  ...args: any[]
-) => ComponentInterface;
-
-export interface ComponentInterface extends CustomElement {
-  [PENCIL_COMPONENT_CONTEXT]?: PencilComponentContext;
-
-  // Component's lifecycle method called after rendering
-  componentDidRender?(): void;
-  render(): JSXElement;
-}
-
-export type PencilComponentPhase = "mounting" | "alive" | "disconnected";
+export const PENCIL_OBSERVED_ATTRIBUTES: unique symbol =
+  Symbol("__$pencil_obsattr$");
 
 export interface PencilComponentContext {
   phase: PencilComponentPhase;
+  extends?: string;
   props: Map<string | symbol, unknown>;
+  popts: Map<string | symbol, PropOptions | undefined>;
   state: Map<string | symbol, unknown>;
 }
 
 class ComponentsController {
-  private componentInstances: WeakMap<
-    ComponentInterface,
-    PencilComponentContext
-  > = new WeakMap();
-  private totalComponents: number = 0;
-  private initialRenderComplete: boolean = false;
+  private cmpts: Set<ComponentInterface> = new Set();
 
-  setInstance(component: ComponentInterface): void {
-    if (this.componentInstances.has(component)) {
-      log(`Component instance already registered`, undefined, component);
-      return; // Already registered
-    }
-
-    this.totalComponents++;
-
-    component[PENCIL_COMPONENT_CONTEXT] = {
+  announceInstance(
+    component: ComponentInterface,
+    customElementExtends?: string,
+  ): void {
+    component[PENCIL_COMPONENT_CONTEXT] ??= {
+      extends: customElementExtends,
       phase: "mounting",
       props: new Map(),
+      popts: new Map(),
       state: new Map(),
     };
 
-    this.componentInstances.set(component, component[PENCIL_COMPONENT_CONTEXT]);
-
-    log(`Register ${component.constructor.name}`);
+    this.cmpts.add(component);
   }
 
   /**
@@ -86,41 +46,42 @@ class ComponentsController {
     component.componentDidRender?.();
   }
 
-  markForChanges(component: ComponentInterface, reasons: string[]): void {
-    log(
-      `Marking component for changes. Reasons: ${reasons.join(", ")}`,
-      undefined,
-      component,
-    );
-    scheduler().scheduleUpdate(component);
+  doStabilized(component: ComponentInterface): void {
+    this.announceInstance(component);
+
+    const ctx = component[PENCIL_COMPONENT_CONTEXT]!;
+    ctx.phase = "alive";
+
+    component.componentDidLoad?.();
+    this.markForChanges(component, ["mount"]);
   }
 
-  /**
-   * Gets or lazily registers a component and returns its reactive context
-   */
-  private getOrRegisterLazy(
-    component: ComponentInterface,
-  ): PencilComponentContext {
-    const ctx = this.componentInstances.get(component);
-
-    if (ctx) {
-      return ctx;
+  markForChanges(component: ComponentInterface, reasons: string[]): void {
+    // only mark and queue for re-render for components that have been mounted and are still connected
+    if (component[PENCIL_COMPONENT_CONTEXT]?.phase !== "alive") {
+      return;
     }
 
-    this.setInstance(component);
-
-    return (
-      this.componentInstances.get(component) ??
-      throwError(`Failed to register component: ${component.tagName}`)
+    log(
+      `🗣️ ${simpleCustomElementDisplayText(component)}`,
+      undefined,
+      reasons.join(" "),
     );
+
+    scheduler().schedule(component);
   }
 
   getProp<TValue>(
     component: ComponentInterface,
     propName: string | symbol,
   ): TValue {
-    const ctx = this.getOrRegisterLazy(component);
-    return ctx.props.get(propName) as TValue;
+    const ctx = component[PENCIL_COMPONENT_CONTEXT];
+    const meta = ctx?.popts;
+
+    const resolved =
+      ctx?.props.get(propName) ?? meta?.get(propName)?.defaultValue;
+
+    return resolved as TValue;
   }
 
   setProp<TValue>(
@@ -128,27 +89,30 @@ class ComponentsController {
     propName: string | symbol,
     value: TValue,
   ): void {
-    const ctx = this.getOrRegisterLazy(component);
-    ctx.props.set(propName, value);
-    this.markForChanges(component, [`prop '${String(propName)}' changed`]);
+    this.announceInstance(component);
 
-    // // Reflect to attribute if needed
-    // const propOptions = this[PENCIL_REACTIVE_CONTEXT]?.get(propertyName);
-    // if (propOptions?.reflect) {
-    //   if (value == null) {
-    //     this.removeAttribute(propertyName);
-    //   } else {
-    //     this.setAttribute(propertyName, String(value));
-    //   }
-    // }
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, value);
+    this.markForChanges(component, [`prop '${String(propName)}' changed`]);
+  }
+
+  initProp(
+    component: ComponentInterface,
+    propName: string | symbol,
+    options?: PropOptions,
+  ): void {
+    this.announceInstance(component);
+
+    component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, options);
+    this.setProp(component, propName, undefined);
   }
 
   getState<TValue>(
     component: ComponentInterface,
     stateName: string | symbol,
   ): TValue {
-    const ctx = this.getOrRegisterLazy(component);
-    return ctx.state.get(stateName) as TValue;
+    this.announceInstance(component);
+
+    return component[PENCIL_COMPONENT_CONTEXT]?.state.get(stateName) as TValue;
   }
 
   setState<TValue>(
@@ -156,8 +120,7 @@ class ComponentsController {
     stateName: string | symbol,
     value: TValue,
   ): void {
-    const ctx = this.getOrRegisterLazy(component);
-    ctx.state.set(stateName, value);
+    component[PENCIL_COMPONENT_CONTEXT]?.state.set(stateName, value);
     this.markForChanges(component, [`state '${String(stateName)}' changed`]);
   }
 
@@ -165,11 +128,15 @@ class ComponentsController {
    * Sets the phase of a component to "disconnected"
    */
   disconnectComponent(component: ComponentInterface): void {
-    const ctx = this.componentInstances.get(component);
-    if (ctx) {
-      ctx.phase = "disconnected";
-      log(`Component phase changed to "disconnected"`, undefined, component);
-    }
+    component.disconnectedCallback?.();
+    component[PENCIL_COMPONENT_CONTEXT]!.phase = "disconnected";
+    this.cmpts.delete(component);
+    log(`Delete disconnected component`, undefined, component);
+  }
+
+  doComponentWillLoad(component: ComponentInterface): void {
+    component.componentWillLoad?.();
+    this.markForChanges(component, ["mount"]);
   }
 }
 

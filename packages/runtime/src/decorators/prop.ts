@@ -1,7 +1,56 @@
 import {
+  type ComponentInterface,
   componentCtrl,
-  PENCIL_COMPONENT_CONTEXT,
 } from "../controllers/component.ts";
+
+/**
+ * Explicit type conversion function for attribute values.
+ *
+ * Examples:
+ * ```ts
+ * // Simple function-based caster
+ * const CustomInt = (value: unknown) => Number(value) + 10;
+ * const n = CustomInt("32"); // → 42
+ *
+ * // Class-based day-only date caster
+ * class DateDayOnly extends Date {
+ *   constructor(value: string | number | Date) {
+ *     super(value);
+ *     this.setHours(0, 0, 0, 0); // cut time to midnight
+ *   }
+ * }
+ * const d = new DateDayOnly("2025-09-13"); // → Date at midnight
+ *
+ * // Built-in constructors still usable
+ * const num = Number("123"); // → 123
+ * const str = String(456);   // → "456"
+ * const bool = Boolean(0);   // → false
+ * ```
+ */
+export type TypeCoercionFn<T> = (value: unknown) => T;
+
+export interface PropOptions {
+  /**
+   * Name of the corresponding attribute.
+   * If not provided, the property name is used in dash-case.
+   */
+  attr?: string;
+
+  /**
+   * Whether to reflect property changes to attributes
+   */
+  reflect?: boolean;
+
+  /**
+   * Default value for the property
+   */
+  defaultValue?: unknown;
+
+  /**
+   * Explicit type conversion function for attribute values.
+   */
+  type?: TypeCoercionFn<unknown>;
+}
 
 /**
  * Property decorator that makes component properties reactive.
@@ -11,12 +60,16 @@ export function Prop(options?: PropOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
     const propertyName = propertyKey as string;
 
+    componentCtrl().initProp(
+      target as ComponentInterface,
+      propertyName,
+      options,
+    );
+
     // Define getter/setter for the property
     Object.defineProperty(target, propertyName, {
       get() {
-        return (
-          componentCtrl().getProp(this, propertyName) ?? options?.defaultValue
-        );
+        return componentCtrl().getProp(this, propertyName);
       },
 
       set(value: unknown) {
@@ -27,10 +80,4 @@ export function Prop(options?: PropOptions): PropertyDecorator {
       configurable: true,
     });
   };
-}
-
-export interface PropOptions {
-  reflect?: boolean; // Whether to reflect property changes to attributes
-  type?: typeof Number | typeof String | typeof Boolean | typeof Date; // Type for attribute conversion
-  defaultValue?: unknown; // Default value for the property
 }

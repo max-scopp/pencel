@@ -1,17 +1,15 @@
-import type { Component } from "../../src";
+import type { FunctionalComponent } from "../../src";
 import { h, render } from "../../src/index";
 
 interface ButtonProps {
   onClick: () => void;
-  children: unknown;
   variant?: "primary" | "secondary";
 }
 
-const Button: Component<ButtonProps> = ({
-  onClick,
+const Button: FunctionalComponent<ButtonProps> = (
+  { onClick, variant = "primary" },
   children,
-  variant = "primary",
-}) => (
+) => (
   <button type="button" onClick={onClick} className={`button ${variant}`}>
     {children}
   </button>
@@ -19,15 +17,16 @@ const Button: Component<ButtonProps> = ({
 
 interface CardProps {
   title: string;
-  children: unknown;
 }
 
-const Card: Component<CardProps> = ({ title, children }) => (
-  <div className="card">
-    <div className="card-header">{title}</div>
-    <div className="card-body">{children}</div>
-  </div>
-);
+const Card: FunctionalComponent<CardProps> = (props, children) => {
+  return (
+    <div className="card">
+      <div className="card-header">{props.title}</div>
+      <div className="card-body">{children}</div>
+    </div>
+  );
+};
 
 interface UserProfileProps {
   name: string;
@@ -35,7 +34,11 @@ interface UserProfileProps {
   onEdit: () => void;
 }
 
-const UserProfile: Component<UserProfileProps> = ({ name, email, onEdit }) => (
+const UserProfile: FunctionalComponent<UserProfileProps> = ({
+  name,
+  email,
+  onEdit,
+}) => (
   <Card title="User Profile">
     <div className="profile-content">
       <p>

@@ -1,14 +1,19 @@
 import type { createPerformanceTree } from "@pencil/utils";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
-import { NODE_TYPE_COMMENT, NODE_TYPE_TEXT, type VNode } from "./types.ts";
+import {
+  NODE_TYPE_COMMENT,
+  NODE_TYPE_FRAGMENT,
+  NODE_TYPE_TEXT,
+  type VNode,
+} from "../types.ts";
 
 const PERF_CREATE_PREFIX = "create-";
 
 export function createDOM(
   vnode: VNode,
   perf: ReturnType<typeof createPerformanceTree>,
-): HTMLElement | Text | Comment {
+): HTMLElement | Text | Comment | DocumentFragment {
   const nodeType = String(vnode.$type$);
 
   if (vnode.$type$ === NODE_TYPE_COMMENT) {
@@ -30,6 +35,22 @@ export function createDOM(
   ) {
     const result = document.createTextNode(String(vnode));
     return result;
+  }
+
+  // Handle fragments - create DocumentFragment
+  if (vnode.$type$ === NODE_TYPE_FRAGMENT) {
+    const fragment = document.createDocumentFragment();
+    // Create all children and append them to the fragment
+    if (vnode.$children$ && vnode.$children$.length > 0) {
+      for (const child of vnode.$children$) {
+        if (child != null && isVNode(child)) {
+          const childElement = createDOM(child, perf);
+          fragment.appendChild(childElement);
+        }
+      }
+    }
+    vnode.$elm$ = fragment;
+    return fragment;
   }
 
   // Only log performance for element creation (text/comment creation is negligible)

@@ -109,10 +109,9 @@ class UserCard extends HTMLElement {
   };
 
   render() {
-    return (
-      <div class="user-card">
-        <h3>User Information</h3>
-        {this.isEditing ? (
+    const UserInformation = () => {
+      if (this.isEditing) {
+        return (
           <div>
             <input
               type="text"
@@ -135,19 +134,28 @@ class UserCard extends HTMLElement {
               </button>
             </div>
           </div>
-        ) : (
-          <div class="info">
-            <p>
-              <strong>Name:</strong> {this.name || "Not set"}
-            </p>
-            <p>
-              <strong>Email:</strong> {this.email || "Not set"}
-            </p>
-            <button type="button" onClick={this.startEdit}>
-              Edit
-            </button>
-          </div>
-        )}
+        );
+      }
+
+      return (
+        <div class="info">
+          <p>
+            <strong>Name:</strong> {this.name || "Not set"}
+          </p>
+          <p>
+            <strong>Email:</strong> {this.email || "Not set"}
+          </p>
+          <button type="button" onClick={this.startEdit}>
+            Edit
+          </button>
+        </div>
+      );
+    };
+
+    return (
+      <div class="user-card">
+        <h3>User Information</h3>
+        <UserInformation />
       </div>
     );
   }

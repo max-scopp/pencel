@@ -1,4 +1,4 @@
-import { type Component, render } from "../../src";
+import { type FunctionalComponent, render } from "../../src";
 import { h } from "../../src/index";
 
 // Define custom element
@@ -86,7 +86,11 @@ interface TabProps {
   onClick: () => void;
 }
 
-const Tab: Component = ({ label, isActive, onClick }: TabProps) => (
+const Tab: FunctionalComponent<TabProps> = ({
+  label,
+  isActive,
+  onClick,
+}: TabProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -98,13 +102,13 @@ const Tab: Component = ({ label, isActive, onClick }: TabProps) => (
 
 // Component with children
 interface TabPanelProps {
-  children: unknown;
   isActive: boolean;
 }
 
-const TabPanel: Component = ({ children, isActive }: TabPanelProps) => (
-  <div className={`tab-panel ${isActive ? "active" : ""}`}>{children}</div>
-);
+const TabPanel: FunctionalComponent<TabPanelProps> = (
+  { isActive }: TabPanelProps,
+  children,
+) => <div className={`tab-panel ${isActive ? "active" : ""}`}>{children}</div>;
 
 // Complex component with state
 interface TodoItem {
@@ -113,13 +117,17 @@ interface TodoItem {
   completed: boolean;
 }
 
-const TodoList: Component = () => {
+const TodoList: FunctionalComponent = () => {
   const [todos, setTodos] = useState<TodoItem[]>([], "todos");
   const [input, setInput] = useState("", "input");
 
   const addTodo = () => {
     if (input.trim()) {
-      setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+      const newTodos = [
+        ...todos,
+        { id: Date.now(), text: input, completed: false },
+      ];
+      setTodos(newTodos);
       setInput("");
     }
   };
@@ -147,25 +155,28 @@ const TodoList: Component = () => {
       </div>
 
       <ul>
-        {todos.map((todo) => (
-          <li
-            key={todo.id}
-            className={todo.completed ? "completed" : ""}
-            onClick={() => toggleTodo(todo.id)}
-            onKeyDown={(e: KeyboardEvent) => {
-              if (e.key === "Enter") toggleTodo(todo.id);
-            }}
-          >
-            {todo.text}
-          </li>
-        ))}
+        {(() => {
+          const todoElements = todos.map((todo) => (
+            <li
+              key={todo.id}
+              className={todo.completed ? "completed" : ""}
+              onClick={() => toggleTodo(todo.id)}
+              onKeyDown={(e: KeyboardEvent) => {
+                if (e.key === "Enter") toggleTodo(todo.id);
+              }}
+            >
+              {todo.text}
+            </li>
+          ));
+          return todoElements;
+        })()}
       </ul>
     </div>
   );
 };
 
 // Main App combining everything
-const App: Component = () => {
+const App: FunctionalComponent = () => {
   const [activeTab, setActiveTab] = useState(0, "activeTab");
   const tabs = ["Todo List", "Custom Elements", "Info"];
 
