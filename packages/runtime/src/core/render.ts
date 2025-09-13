@@ -133,7 +133,7 @@ const scheduler = new ComponentUpdateScheduler();
 export function scheduleComponentUpdate(
   component: HTMLElement,
   renderFn: () => void,
-) {
+): void {
   scheduler.scheduleComponentUpdate(component, renderFn);
 }
 

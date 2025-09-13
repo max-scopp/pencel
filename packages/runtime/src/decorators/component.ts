@@ -4,7 +4,8 @@ import { scheduleComponentUpdate } from "../core/render.ts";
 import type { PropOptions } from "./prop.ts";
 
 // Reactive system for components
-export const reactiveComponents = new WeakMap<HTMLElement, ReactiveComponent>();
+export const reactiveComponents: WeakMap<HTMLElement, ReactiveComponent> =
+  new WeakMap<HTMLElement, ReactiveComponent>();
 
 interface ReactiveComponent {
   render: () => void;
@@ -18,14 +19,16 @@ export interface ComponentOptions {
 
 const componentLogger = createLog("Component");
 
-export function triggerUpdate(component: HTMLElement) {
+export function triggerUpdate(component: HTMLElement): void {
   const reactive = reactiveComponents.get(component);
   if (reactive) {
     scheduleComponentUpdate(component, reactive.render);
   }
 }
 
-export const $extendsByInheritance = Symbol("extendsByInheritance");
+export const $extendsByInheritance: unique symbol = Symbol(
+  "extendsByInheritance",
+);
 
 /**
  * Handles type conversion for attribute values based on prop options

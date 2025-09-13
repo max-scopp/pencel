@@ -1,1 +1,1 @@
-export const isBrowser = typeof process === "undefined";
+export const isBrowser: boolean = typeof process === "undefined";

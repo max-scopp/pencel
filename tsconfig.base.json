@@ -4,6 +4,7 @@
     "jsx": "preserve",
     "declarationMap": true,
     "emitDeclarationOnly": true,
+    "isolatedDeclarations": true,
     "importHelpers": true,
     "isolatedModules": true,
     "lib": ["es2022"],

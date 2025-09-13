@@ -1,6 +1,6 @@
-export const build = () => {
+export const build = (): void => {
   console.log("done!");
 };
 
-export * from "./compiler/api";
-export * from "./compiler/types/compiler-types";
+export * from "./compiler/api/index.ts";
+export * from "./compiler/types/compiler-types.ts";

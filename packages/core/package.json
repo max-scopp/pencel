@@ -1,9 +1,16 @@
 {
   "name": "@pencil/core",
   "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "map": "./dist/index.js.map"
+    }
   },
   "nx": {
     "sourceRoot": "packages/core",
@@ -15,7 +22,7 @@
         ],
         "executor": "nx:run-commands",
         "options": {
-          "command": "bun build.ts",
+          "command": "tsdown",
           "cwd": "packages/core"
         }
       }

@@ -15,7 +15,13 @@ export interface PerformanceNode {
   parent?: PerformanceNode;
 }
 
-export function createPerformanceTree() {
+export interface PerformanceTreeController {
+  start(name: string): void;
+  end(name: string): void;
+  log(): void;
+}
+
+export function createPerformanceTree(): PerformanceTreeController {
   const root: PerformanceNode = {
     name: "root",
     startTime: performance.now(),
@@ -26,7 +32,7 @@ export function createPerformanceTree() {
   const activeNodes = new Map<string, PerformanceNode>();
 
   return {
-    start(name: string) {
+    start(name: string): void {
       const node: PerformanceNode = {
         name,
         startTime: performance.now(),
@@ -39,7 +45,7 @@ export function createPerformanceTree() {
       currentNode = node;
     },
 
-    end(name: string) {
+    end(name: string): void {
       const node = activeNodes.get(name);
       if (node) {
         node.endTime = performance.now();
@@ -50,7 +56,7 @@ export function createPerformanceTree() {
       }
     },
 
-    log() {
+    log(): void {
       root.endTime = performance.now();
       const tree: TreeNode = convertToTreeNode(root);
       logPerformanceTree(tree);

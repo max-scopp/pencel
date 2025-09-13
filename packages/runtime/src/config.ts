@@ -6,7 +6,7 @@ export const pencilConfig: PencilRuntimeConfig = {
   tagNamespace: "pen",
 };
 
-export const pencilInit = (userConfig: PencilRuntimeConfig) => {
+export const pencilInit = (userConfig: PencilRuntimeConfig): void => {
   Object.assign(pencilConfig, userConfig);
   console.log("Pencil initialized");
 };

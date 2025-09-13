@@ -31,4 +31,4 @@ export interface ErrorBoundary {
   renderError(error: Error): JSXElement | null;
 }
 
-export const Fragment = Symbol("Fragment");
+export const Fragment: unique symbol = Symbol("Fragment");
