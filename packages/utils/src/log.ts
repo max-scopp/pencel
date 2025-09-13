@@ -14,7 +14,12 @@ export function log(message: string, style?: string): void {
     now.getMilliseconds().toString().padStart(3, "0");
 
   if (isBrowser) {
-    console.log(`%c${timestamp} %c${message}`, "color: grey;", style || "");
+    console.log(
+      `%c✏️ pencil%c ${timestamp} %c${message}`,
+      "background: #118e67; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
+      "color: grey;",
+      style || "",
+    );
   } else {
     const ansiGrey = "\x1b[90m"; // ANSI grey
     const ansiReset = "\x1b[0m";

@@ -1,4 +1,4 @@
-import { getExtendsByInheritance } from "@pencil/utils";
+import { createLog, getExtendsByInheritance } from "@pencil/utils";
 import { pencilConfig } from "src/config.ts";
 import { scheduleComponentUpdate } from "../core/render.ts";
 import type { PropOptions } from "./prop.ts";
@@ -15,6 +15,8 @@ interface ReactiveComponent {
 export interface ComponentOptions {
   tagName?: string;
 }
+
+const componentLogger = createLog("Component");
 
 export function triggerUpdate(component: HTMLElement) {
   const reactive = reactiveComponents.get(component);
@@ -56,6 +58,8 @@ function convertAttributeValue(
  * Sets up attribute observation for reactive props
  */
 function setupAttributeObservation(klass: CustomElementConstructor) {
+  componentLogger("Adding observedAttributes getter for reactive props");
+
   // Add observedAttributes getter to monitor attribute changes
   Object.defineProperty(klass, "observedAttributes", {
     get() {
@@ -66,6 +70,8 @@ function setupAttributeObservation(klass: CustomElementConstructor) {
     enumerable: true,
     configurable: true,
   });
+
+  componentLogger("Adding attributeChangedCallback for prop updates");
 
   // Add attributeChangedCallback to handle prop changes from attributes
   const originalAttributeChangedCallback =
@@ -97,9 +103,15 @@ function setupAttributeObservation(klass: CustomElementConstructor) {
  * Sets up lifecycle callbacks for prop initialization
  */
 function setupLifecycleCallbacks(klass: CustomElementConstructor) {
+  componentLogger(
+    "Adding connectedCallback for prop initialization from attributes",
+  );
+
   // Add connectedCallback to initialize props from attributes
   const originalConnectedCallback = klass.prototype.connectedCallback;
   klass.prototype.connectedCallback = function () {
+    componentLogger("Initializing component props from attributes");
+
     // Initialize props from attributes
     const propMap = (
       this.constructor as { __pencilProps?: Map<string, PropOptions> }
@@ -131,6 +143,10 @@ function registerComponent(
   tagName: string,
   extendsByInheritance: string | null,
 ) {
+  componentLogger(
+    `Registering component with tag: ${tagName}; extends: ${extendsByInheritance || "none"}`,
+  );
+
   if (extendsByInheritance) {
     // Customized built-in element
     customElements.define(tagName, klass, {
@@ -170,10 +186,15 @@ function generateTagName(options: ComponentOptions): string {
  */
 export const Component = (options: ComponentOptions): ClassDecorator => {
   return <TFunction extends Function>(klass: TFunction) => {
+    componentLogger(
+      `Starting component registration for ${options.tagName || "unnamed component"}`,
+    );
+
     // Skip registration if custom elements aren't supported
     if (typeof customElements === "undefined") {
-      console.log(
+      componentLogger(
         "Skipping customElements.define: not supported in this environment",
+        "color: orange",
       );
       return klass;
     }
@@ -188,17 +209,20 @@ export const Component = (options: ComponentOptions): ClassDecorator => {
       },
     });
 
-    console.log("Registering:", tagName, "extends:", extendsByInheritance);
+    componentLogger(
+      `Generated tag name: ${tagName}, extends: ${extendsByInheritance || "none"}`,
+    );
 
-    // Set up reactive attribute observation
     setupAttributeObservation(klass as any);
 
-    // Set up lifecycle callbacks
     setupLifecycleCallbacks(klass as any);
 
-    // Register the component
     registerComponent(klass as any, tagName, extendsByInheritance ?? null);
 
+    componentLogger(
+      `Component registration completed for ${tagName}`,
+      "color: green",
+    );
     return klass;
   };
 };

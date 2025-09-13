@@ -20,6 +20,9 @@
     "projectType": "application",
     "targets": {
       "serve": {
+        "dependsOn": [
+          "^build"
+        ],
         "executor": "nx:run-commands",
         "options": {
           "command": "vite",
