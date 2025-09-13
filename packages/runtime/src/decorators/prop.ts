@@ -1,7 +1,5 @@
-import {
-  type ComponentInterface,
-  componentCtrl,
-} from "../controllers/component.ts";
+import type { ComponentInterface } from "src/core/types.ts";
+import { componentCtrl } from "../controllers/component.ts";
 
 /**
  * Explicit type conversion function for attribute values.
@@ -48,9 +46,9 @@ export interface PropOptions {
   reflect?: boolean;
 
   /**
-   * Default value for the property
+   * Value used when the property isn't initially set, or was unset by removing the attribute.
    */
-  defaultValue?: unknown;
+  fallbackValue?: unknown;
 
   /**
    * Explicit type conversion function for attribute values.

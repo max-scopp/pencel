@@ -112,6 +112,8 @@ function captureForVNodeProjection(
   }
 }
 
+let cid = 0;
+
 /**
  * Wraps the component class to register instances with the component controller
  */
@@ -132,6 +134,8 @@ export function wrapComponentForRegistration<
     }
 
     override async connectedCallback() {
+      this.setAttribute(`p.cid.${++cid}`, "");
+
       this.#bootTracker.start("boot");
       log(`👁️ ${simpleCustomElementDisplayText(this)}`);
 

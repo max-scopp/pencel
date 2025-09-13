@@ -16,11 +16,11 @@ class CounterComponent extends HTMLElement implements ComponentInterface {
   @State()
   count = 0;
 
-  @Prop({ reflect: true, type: Number, defaultValue: 1 })
-  step: number;
+  @Prop({ reflect: true, type: Number })
+  step: number = 1;
 
-  @Prop({ defaultValue: "Counter" })
-  title: string;
+  @Prop({})
+  title: string = "Counter 12312323";
 
   constructor() {
     super();
@@ -68,11 +68,11 @@ class CounterComponent extends HTMLElement implements ComponentInterface {
   tag: "user-card",
 })
 class UserCard extends HTMLElement {
-  @Prop({ reflect: true, defaultValue: "" })
-  name: string;
+  @Prop({ reflect: true })
+  name: string = "";
 
-  @Prop({ defaultValue: "" })
-  email: string;
+  @Prop({})
+  email: string = "";
 
   @State()
   isEditing = false;
@@ -181,9 +181,13 @@ const app = (
     <h1>Pencil Props & State Example</h1>
 
     <h2>Counter with Props and State</h2>
-    <pen-counter-component title="My Counter" step="2"></pen-counter-component>
     <pen-counter-component
-      title="Another Counter"
+      title="Another Counter 333"
+      step="2"
+    ></pen-counter-component>
+
+    <pen-counter-component
+      title="Another Counter 111"
       step="5"
     ></pen-counter-component>
 

@@ -40,6 +40,13 @@ class ComponentsController {
       state: new Map(),
     };
 
+    // TODO: Must be removed after debugging
+    if (component.constructor.name !== "PencilCustomElementWrap") {
+      throw new Error(
+        `Internal Error: component.constructor.name !== "PencilCustomElementWrap" --- got ${component.constructor.name} instead`,
+      );
+    }
+
     this.cmpts.add(component);
   }
 
@@ -79,7 +86,7 @@ class ComponentsController {
     const meta = ctx?.popts;
 
     const resolved =
-      ctx?.props.get(propName) ?? meta?.get(propName)?.defaultValue;
+      ctx?.props.get(propName) ?? meta?.get(propName)?.fallbackValue;
 
     return resolved as TValue;
   }
@@ -110,8 +117,6 @@ class ComponentsController {
     propName: string | symbol,
     propOptions?: PropOptions,
   ): void {
-    this.announceInstance(component);
-
     component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
 
     const attrName = resolveAttributeName(propName, propOptions);
@@ -121,7 +126,7 @@ class ComponentsController {
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
 
-    this.setProp(component, propName, undefined);
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, undefined);
   }
 
   getState<TValue>(
