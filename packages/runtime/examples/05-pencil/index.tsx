@@ -42,7 +42,12 @@ class FancyButton extends HTMLButtonElement implements ComponentInterface {
   }
 
   render(): JSXElement {
-    return <Host onClick={() => console.log("Host clicked!")}></Host>;
+    return (
+      <Host onClick={() => console.log("Host clicked!")}>
+        <slot />
+        Default Button
+      </Host>
+    );
   }
 }
 

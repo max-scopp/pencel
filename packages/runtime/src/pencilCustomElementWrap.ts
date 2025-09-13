@@ -95,6 +95,24 @@ function interopStyleAttachment(
 }
 
 /**
+ * Captures original children for VNode projection in non-shadow components.
+ * This enables slot projection by preserving the original DOM content before rendering.
+ *
+ * TODO: Still hacky
+ */
+function captureForVNodeProjection(
+  component: ComponentInterfaceWithContext,
+  options: ComponentOptions,
+): void {
+  if (!options.shadow && component.childNodes.length > 0) {
+    // Store original slot content before any rendering happens
+    (
+      component as HTMLElement & { __pencil_slot_content__?: Node[] }
+    ).__pencil_slot_content__ = Array.from(component.childNodes);
+  }
+}
+
+/**
  * Wraps the component class to register instances with the component controller
  */
 export function wrapComponentForRegistration<
@@ -116,6 +134,9 @@ export function wrapComponentForRegistration<
     override async connectedCallback() {
       this.#bootTracker.start("boot");
       log(`👁️ ${simpleCustomElementDisplayText(this)}`);
+
+      // Capture original children for VNode projection (slot support)
+      captureForVNodeProjection(this, options);
 
       if (options.shadow) {
         this.attachShadow({ mode: "open" });
