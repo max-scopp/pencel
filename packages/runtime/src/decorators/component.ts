@@ -1,31 +1,19 @@
 import { createLog, getExtendsByInheritance } from "@pencil/utils";
 import { pencilConfig } from "src/config.ts";
-import { scheduler } from "src/core/scheduler.ts";
-import { componentCtrl } from "../controllers/component.ts";
+import {
+  type ComponentInterface,
+  type ConstructablePencilComponent,
+  type CustomElement,
+  componentCtrl,
+  PENCIL_COMPONENT_CONTEXT,
+} from "../controllers/component.ts";
 import type { PropOptions } from "./prop.ts";
-
-// Reactive system for components
-export const reactiveComponents: WeakMap<HTMLElement, ReactiveComponent> =
-  new WeakMap<HTMLElement, ReactiveComponent>();
-
-interface ReactiveComponent {
-  render: () => void;
-  props: Map<string, unknown>;
-  state: Map<string, unknown>;
-}
 
 export interface ComponentOptions {
   tagName?: string;
 }
 
 const componentLogger = createLog("Component");
-
-export function triggerUpdate(component: HTMLElement): void {
-  const reactive = reactiveComponents.get(component);
-  if (reactive) {
-    scheduler().scheduleUpdate(reactive.render);
-  }
-}
 
 export const $extendsByInheritance: unique symbol = Symbol(
   "extendsByInheritance",
@@ -67,8 +55,9 @@ function setupAttributeObservation(klass: CustomElementConstructor) {
   // Add observedAttributes getter to monitor attribute changes
   Object.defineProperty(klass, "observedAttributes", {
     get() {
-      const props = (this as { __pencilProps?: Map<string, PropOptions> })
-        .__pencilProps;
+      const props = (
+        this as { [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions> }
+      )[PENCIL_COMPONENT_CONTEXT];
       return props ? Array.from(props.keys()) : [];
     },
     enumerable: true,
@@ -92,8 +81,10 @@ function setupAttributeObservation(klass: CustomElementConstructor) {
 
     // Handle prop updates from attributes
     const propOptions = (
-      this.constructor as { __pencilProps?: Map<string, PropOptions> }
-    ).__pencilProps?.get(name);
+      this.constructor as {
+        [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions>;
+      }
+    )[PENCIL_COMPONENT_CONTEXT]?.get(name);
 
     if (propOptions) {
       const convertedValue = convertAttributeValue(newValue, propOptions);
@@ -118,8 +109,10 @@ function setupLifecycleCallbacks(klass: CustomElementConstructor) {
 
     // Initialize props from attributes
     const propMap = (
-      this.constructor as { __pencilProps?: Map<string, PropOptions> }
-    ).__pencilProps;
+      this.constructor as {
+        [PENCIL_COMPONENT_CONTEXT]?: Map<string, PropOptions>;
+      }
+    )[PENCIL_COMPONENT_CONTEXT];
 
     if (propMap) {
       for (const [propName, propOptions] of propMap) {
@@ -142,13 +135,13 @@ function setupLifecycleCallbacks(klass: CustomElementConstructor) {
 /**
  * Registers the component with the custom elements registry
  */
-function registerComponent(
+function defineCustomElement(
   klass: CustomElementConstructor,
   tagName: string,
-  extendsByInheritance: string | null,
+  extendsByInheritance?: string,
 ) {
   componentLogger(
-    `Registering component with tag: ${tagName}; extends: ${extendsByInheritance || "none"}`,
+    `Define custom element: ${tagName}; extends: ${extendsByInheritance || "none"}`,
   );
 
   if (extendsByInheritance) {
@@ -172,13 +165,21 @@ function generateTagName(options: ComponentOptions): string {
 /**
  * Wraps the component class to register instances with the component controller
  */
-function wrapComponentForRegistration<T extends CustomElementConstructor>(
+function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
   klass: T,
 ): T {
   return class PencilCustomElementWrap extends klass {
     constructor(...args: any[]) {
       super(...args);
-      componentCtrl().registerComponent(this as HTMLElement);
+      componentCtrl().setInstance(this);
+    }
+
+    override disconnectedCallback(): void {
+      componentCtrl().disconnectComponent(this);
+    }
+
+    override render() {
+      return super.render();
     }
   } as T;
 }
@@ -229,7 +230,7 @@ export const Component = (options: ComponentOptions): ClassDecorator => {
 
     // Wrap the class to register component instances
     const wrappedKlass = wrapComponentForRegistration(
-      klass as unknown as CustomElementConstructor,
+      klass as unknown as ConstructablePencilComponent,
     );
 
     componentLogger(
@@ -240,7 +241,7 @@ export const Component = (options: ComponentOptions): ClassDecorator => {
 
     setupLifecycleCallbacks(wrappedKlass);
 
-    registerComponent(wrappedKlass, tagName, extendsByInheritance ?? null);
+    defineCustomElement(wrappedKlass, tagName, extendsByInheritance);
 
     componentLogger(
       `Component registration completed for ${tagName}`,

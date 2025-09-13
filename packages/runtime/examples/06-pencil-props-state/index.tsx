@@ -19,10 +19,6 @@ class CounterComponent extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  connectedCallback() {
-    this.render();
-  }
-
   increment = () => {
     this.count += this.step;
   };
@@ -36,9 +32,7 @@ class CounterComponent extends HTMLElement {
   };
 
   render() {
-    if (!this.shadowRoot) return;
-
-    const jsx = (
+    return (
       <div class="counter">
         <h3>{this.title}</h3>
         <div class="count">{this.count}</div>
@@ -56,8 +50,6 @@ class CounterComponent extends HTMLElement {
         <div>Step: {this.step}</div>
       </div>
     );
-
-    render(jsx, this.shadowRoot);
   }
 }
 
@@ -88,8 +80,6 @@ class UserCard extends HTMLElement {
   connectedCallback() {
     this.tempName = this.name;
     this.tempEmail = this.email;
-    debugger;
-    this.render();
   }
 
   startEdit = () => {
@@ -119,9 +109,7 @@ class UserCard extends HTMLElement {
   };
 
   render() {
-    if (!this.shadowRoot) return;
-
-    const jsx = (
+    return (
       <div class="user-card">
         <h3>User Information</h3>
         {this.isEditing ? (
@@ -162,8 +150,6 @@ class UserCard extends HTMLElement {
         )}
       </div>
     );
-
-    render(jsx, this.shadowRoot);
   }
 }
 

@@ -1,6 +1,6 @@
 export { pencilInit } from "./config.ts";
 export { h } from "./core/jsx.ts";
-export { scheduleRender as render } from "./core/vdom/schedule-render.ts";
+export { render } from "./core/vdom/render.ts";
 export type {
   ErrorBoundary,
   JSXElement,

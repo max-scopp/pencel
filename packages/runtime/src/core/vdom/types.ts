@@ -1,14 +1,19 @@
+import type { Props } from "../jsx.ts";
+
 export const NODE_TYPE_TEXT = "TEXT";
 export const NODE_TYPE_COMMENT = "COMMENT";
 
-import type { Props } from "./jsx.ts";
-
-export type JSXElement = {
-  type: string | ((props: Record<string, unknown>) => JSXElement | null);
-  props: Record<string, unknown>;
-  children?: Array<JSXElement | string | number | boolean | null>;
-  key?: string | number;
-};
+export type JSXElement =
+  | {
+      type: string | ((props: Record<string, unknown>) => JSXElement | null);
+      props: Record<string, unknown>;
+      children?: Array<JSXElement | string | number | boolean | null>;
+      key?: string | number;
+    }
+  | null
+  | string
+  | number
+  | boolean;
 
 export type VNode = {
   $type$: string | ((props: Record<string, unknown>) => JSXElement | null);
