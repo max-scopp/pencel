@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { VirtualFileSystem } from "./virtual-fs";
+import { VirtualFileSystem } from "./virtual-fs.ts";
 
 export class BuildFileSystem extends VirtualFileSystem {
   constructor(private readonly outputDir: string) {

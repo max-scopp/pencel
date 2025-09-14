@@ -1,6 +1,10 @@
 import * as path from "node:path";
-import type { FileOptions, FileSystem, FSOperation, Stats } from "./interfaces";
-import { OperationType } from "./interfaces";
+import {
+  type FileOptions,
+  type FSOperation,
+  OperationType,
+  type Stats,
+} from "./interfaces.ts";
 
 class VirtualStats implements Stats {
   constructor(

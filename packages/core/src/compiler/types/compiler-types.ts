@@ -43,3 +43,7 @@ export interface TransformResult {
   code: string;
   metadata: ComponentMetadata;
 }
+
+export interface TransformResults {
+  [filePath: string]: TransformResult;
+}

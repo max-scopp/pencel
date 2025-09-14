@@ -1,3 +1,3 @@
-export * from "./build-fs";
-export * from "./interfaces";
-export * from "./virtual-fs";
+export * from "./build-fs.ts";
+export * from "./interfaces.ts";
+export * from "./virtual-fs.ts";

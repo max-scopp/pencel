@@ -27,5 +27,11 @@
         }
       }
     }
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3"
   }
 }

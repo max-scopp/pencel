@@ -1,3 +1,5 @@
+import { isBrowser } from "./isBrowser.ts";
+
 export const throwConsumerError = (
   message: string,
   collapsedDetails?: any,
@@ -15,12 +17,14 @@ export const throwConsumerError = (
     "color: #f1cbcb81; font-style: italic;",
   );
 
-  console.groupCollapsed(`Show Details`);
-  console.dir(collapsedDetails ?? {});
-  console.groupEnd();
+  if (isBrowser) {
+    console.groupCollapsed(`Show Details`);
+    console.dir(collapsedDetails ?? {});
+    console.groupEnd();
 
-  // Still throw the actual error so dev tools / stack traces work
-  throw new Error(
-    `Pencil usage error: ${message}\n\nThis can likely be fixed by checking the component's props and their usage.`,
-  );
+    // Still throw the actual error so dev tools / stack traces work
+    throw new Error(
+      `Pencil usage error: ${message}\n\nThis can likely be fixed by checking the component's props and their usage.`,
+    );
+  }
 };

@@ -24,15 +24,20 @@ export interface ComponentOptions {
   shadow?: boolean;
 
   /**
-   * @deprecated not implemented yet
+   * A path, relative to the component file to always include
+   * to style the custom element.
    */
   styleUrl?: string;
 
   /**
-   * @deprecated not implemented yet
+   * A map of paths, relative to the component file to use when the
+   * key is matching the current mode to style the custom element.
    */
-  styleUrls?: string[];
+  styleUrls?: Record<string, string>;
 
+  /**
+   * CSS styles to include in the custom element.
+   */
   styles?: string | string[];
 
   /**
