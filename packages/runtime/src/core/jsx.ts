@@ -1,18 +1,59 @@
 import {
-  type ComponentFunction,
-  type JSXElement,
   NODE_TYPE_COMMENT,
   NODE_TYPE_FRAGMENT,
   NODE_TYPE_TEXT,
   type VNode,
-} from "src/core/types.ts";
+} from "./vdom/types.ts";
 
 export type Props = Record<string, unknown>;
+
+/**
+ * A JSX element can be:
+ * - A standard HTML element (e.g. 'div', 'span')
+ * - A functional component (a function that returns JSX)
+ * - A string, number, boolean, or null (for text nodes or empty nodes)
+ * - An array of JSX elements (to represent multiple children)
+ * - A VNode (for direct VNode usage)
+ */
+export type JSXElement =
+  | {
+      type: string | ComponentFunction;
+      props: Record<string, unknown>;
+      children?: Array<
+        JSXElement | string | number | boolean | null | VNode | VNode[]
+      >;
+      key?: string | number;
+    }
+  | JSXElement[]
+  | null
+  | string
+  | number
+  | boolean
+  | VNode
+  | VNode[];
+
+/**
+ * A component function that takes props and returns JSX.
+ */
+export type ComponentFunction =
+  | ((props: Record<string, unknown>) => JSXElement)
+  | FunctionalComponent;
+
+/**
+ * Consumer facing type for functional components.
+ */
+export type FunctionalComponent<TProps extends Props = Props> = (
+  props: TProps,
+  children: VNode[],
+) => VNode | VNode[];
 
 export type ComponentType =
   | ((props: Props) => JSXElement | null)
   | ((props: Props, children: VNode[]) => VNode | VNode[]);
 
+/**
+ * Internal function to support JSX syntax.
+ */
 export function h(
   type: string | ComponentType,
   _props?: Props | null,

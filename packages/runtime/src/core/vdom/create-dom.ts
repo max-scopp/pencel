@@ -7,7 +7,7 @@ import {
   NODE_TYPE_HOST,
   NODE_TYPE_TEXT,
   type VNode,
-} from "../types.ts";
+} from "./types.ts";
 
 const PERF_CREATE_PREFIX = "create-";
 

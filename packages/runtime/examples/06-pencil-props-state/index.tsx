@@ -1,8 +1,7 @@
-// biome-ignore lint/correctness/noUnusedImports: JSX imports needed for runtime
-/** biome-ignore-all lint/correctness/noUnusedVariables: <explanation> */
 import {
   Component,
   type ComponentInterface,
+  // biome-ignore lint/correctness/noUnusedImports: <explanation>
   h,
   Prop,
   render,

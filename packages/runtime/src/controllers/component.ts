@@ -1,11 +1,9 @@
 import { createLog, throwConsumerError, throwError } from "@pencel/utils";
 import type {
   ComponentInterfaceWithContext,
-  ConstructablePencilComponent,
   PencilComponentPhase,
 } from "src/core/types.ts";
 import type { PropOptions } from "src/decorators/prop.ts";
-import { resolveAttributeName } from "src/utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
 import { scheduler } from "../core/scheduler.ts";
 
@@ -32,7 +30,7 @@ class ComponentsController {
     Map<string, unknown>
   >();
 
-  announceInstance(
+  connect(
     component: ComponentInterfaceWithContext,
     customElementExtends?: string,
   ): void {
@@ -55,13 +53,22 @@ class ComponentsController {
     this.cmpts.add(component);
   }
 
-  doStabilized(component: ComponentInterfaceWithContext): void {
-    this.announceInstance(component);
+  /**
+   * Sets the phase of a component to "disconnected"
+   */
+  disconnect(component: ComponentInterfaceWithContext): void {
+    component[PENCIL_COMPONENT_CONTEXT]!.phase = "disconnected";
 
-    const ctx = component[PENCIL_COMPONENT_CONTEXT]!;
-    ctx.phase = "alive";
+    this.cmpts.delete(component);
+
+    log(`disconnected`, undefined, component);
+  }
+
+  markStableAndLoaded(component: ComponentInterfaceWithContext): void {
+    component[PENCIL_COMPONENT_CONTEXT]!.phase = "alive";
 
     component.componentDidLoad?.();
+
     this.markForChanges(component, ["mount"]);
   }
 
@@ -101,8 +108,6 @@ class ComponentsController {
     propName: string | symbol,
     newValue: TValue,
   ): void {
-    this.announceInstance(component);
-
     const oldValue = this.getProp<TValue>(component, propName);
     component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, newValue);
 
@@ -117,28 +122,11 @@ class ComponentsController {
     }
   }
 
-  initProp(
-    component: ComponentInterfaceWithContext,
-    propName: string | symbol,
-    propOptions?: PropOptions,
-  ): void {
-    component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
-
-    const attrName = resolveAttributeName(propName, propOptions);
-
-    const cnstrctr = component.constructor as ConstructablePencilComponent;
-
-    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
-    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
-
-    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, undefined);
-  }
-
   getState<TValue>(
     component: ComponentInterfaceWithContext,
     stateName: string | symbol,
   ): TValue {
-    this.announceInstance(component);
+    this.connect(component);
 
     return component[PENCIL_COMPONENT_CONTEXT]?.state.get(stateName) as TValue;
   }
@@ -192,7 +180,7 @@ class ComponentsController {
     component: ComponentInterfaceWithContext,
     storeName: string | symbol,
   ): TStore {
-    this.announceInstance(component);
+    this.connect(component);
 
     const storeContext = this.stores.get(component) ?? new Map();
 
@@ -208,7 +196,7 @@ class ComponentsController {
     storeName: string | symbol,
     newValue: TStore,
   ): void {
-    this.announceInstance(component);
+    this.connect(component);
 
     const storeContext = this.stores.get(component) ?? new Map();
 
@@ -229,21 +217,6 @@ class ComponentsController {
       this.markForChanges(component, [`store '${String(storeName)}' changed`]);
     }
   }
-
-  /**
-   * Sets the phase of a component to "disconnected"
-   */
-  disconnectComponent(component: ComponentInterfaceWithContext): void {
-    component.disconnectedCallback?.();
-    component[PENCIL_COMPONENT_CONTEXT]!.phase = "disconnected";
-    this.cmpts.delete(component);
-    log(`Delete disconnected component`, undefined, component);
-  }
-
-  doComponentWillLoad(component: ComponentInterfaceWithContext): void {
-    component.componentWillLoad?.();
-    this.markForChanges(component, ["mount"]);
-  }
 }
 
 let instance: ComponentsController;
@@ -252,5 +225,6 @@ export const componentCtrl = (): ComponentsController => {
   if (!instance) {
     instance = new ComponentsController();
   }
+
   return instance;
 };

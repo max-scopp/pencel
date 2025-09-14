@@ -1,4 +1,9 @@
-import type { ComponentInterface } from "src/core/types.ts";
+import {
+  ATTR_MAP,
+  type ComponentInterfaceBaseMeta,
+  PROP_NAMES,
+} from "src/core/types.ts";
+import { resolveAttributeName } from "src/utils/attributes.ts";
 import { componentCtrl } from "../controllers/component.ts";
 
 /**
@@ -62,22 +67,23 @@ export interface PropOptions {
  */
 export function Prop(options?: PropOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
+    const component = target as ComponentInterfaceBaseMeta;
     const propertyName = propertyKey as string;
+    const ctrl = componentCtrl();
 
-    componentCtrl().initProp(
-      target as ComponentInterface,
-      propertyName,
-      options,
-    );
+    component[PROP_NAMES] ??= new Map();
+    component[PROP_NAMES].set(propertyName, options);
 
-    // Define getter/setter for the property
-    Object.defineProperty(target, propertyName, {
+    component[ATTR_MAP] ??= new Map();
+    component[ATTR_MAP].set(resolveAttributeName(propertyName), propertyName);
+
+    Object.defineProperty(component, propertyName, {
       get() {
-        return componentCtrl().getProp(this, propertyName);
+        return ctrl.getProp(this, propertyName);
       },
 
       set(value: unknown) {
-        componentCtrl().setProp(this, propertyName, value);
+        ctrl.setProp(this, propertyName, value);
       },
 
       enumerable: true,

@@ -1,14 +1,14 @@
 import { createPerformanceTree } from "@pencel/utils";
 import { setAttributes } from "../attributes.ts";
-import { toVNode } from "../jsx.ts";
-import type { JSXElement, VNode } from "../types.ts";
+import { type JSXElement, toVNode } from "../jsx.ts";
+import { createDOM } from "./create-dom.ts";
+import { patch } from "./patch.ts";
 import {
   NODE_TYPE_FRAGMENT,
   NODE_TYPE_HOST,
   NODE_TYPE_TEXT,
-} from "../types.ts";
-import { createDOM } from "./create-dom.ts";
-import { patch } from "./patch.ts";
+  type VNode,
+} from "./types.ts";
 
 // Node types
 

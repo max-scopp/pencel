@@ -2,13 +2,13 @@ import { type createPerformanceTree, throwConsumerError } from "@pencel/utils";
 import { getVNodeElement } from "src/utils/getVNodeElement.ts";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
+import { createDOM } from "./create-dom.ts";
 import {
   NODE_TYPE_FRAGMENT,
   NODE_TYPE_HOST,
   NODE_TYPE_TEXT,
   type VNode,
-} from "../types.ts";
-import { createDOM } from "./create-dom.ts";
+} from "./types.ts";
 
 const PERF_UPDATE_PREFIX = "update-";
 const PERF_REMOVE_PREFIX = "remove-";

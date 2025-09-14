@@ -2,15 +2,18 @@ import {
   createLog,
   createPerformanceTree,
   throwConsumerError,
+  throwError,
 } from "@pencel/utils";
 import {
   componentCtrl,
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
 } from "./controllers/component.ts";
-import type {
-  ComponentInterfaceWithContext,
-  ConstructablePencilComponent,
+import {
+  ATTR_MAP,
+  type ComponentInterfaceWithContext,
+  type ConstructablePencilComponent,
+  PROP_NAMES,
 } from "./core/types.ts";
 import type { ComponentOptions } from "./decorators/component.ts";
 import {
@@ -125,7 +128,7 @@ export function wrapComponentForRegistration<
 
     constructor(...args: any[]) {
       super(...args);
-      componentCtrl().announceInstance(this, customElementExtends);
+      componentCtrl().connect(this, customElementExtends);
     }
 
     // Get observed attributes from the prop map
@@ -139,33 +142,20 @@ export function wrapComponentForRegistration<
       this.#bootTracker.start("boot");
       log(`👁️ ${simpleCustomElementDisplayText(this)}`);
 
-      // Capture original children for VNode projection (slot support)
-      captureForVNodeProjection(this, options);
-
       if (options.shadow) {
         this.attachShadow({ mode: "open" });
       }
 
-      const styles = buildStyles(this, options);
-      interopStyleAttachment(this, styles, options);
+      initializeProps(this);
+      initializeStyles(this, options);
 
-      const ctrl = componentCtrl();
-      const ctx = this[PENCIL_COMPONENT_CONTEXT];
-      const popts = ctx?.popts ?? [];
-
-      for (const [propName, propOptions] of popts) {
-        ctrl.setProp(
-          this,
-          propName,
-          resolveAttribute(this, propName, propOptions),
-        );
-      }
+      captureForVNodeProjection(this, options);
 
       // Call original connectedCallback if it exists
       await super.connectedCallback?.();
       await super.componentWillLoad?.();
 
-      ctrl.doStabilized(this);
+      componentCtrl().markStableAndLoaded(this);
     }
 
     override componentDidLoad(): void {
@@ -191,32 +181,13 @@ export function wrapComponentForRegistration<
       oldValue: string | null,
       newValue: string | null,
     ): void {
-      const ctx = this[PENCIL_COMPONENT_CONTEXT];
-      const props = ctx?.props ?? [];
-
-      // TODO: This is O(n) on number of props; we could optimize this with a reverse map if needed
-      for (const [propName] of props) {
-        const propOptions = ctx?.popts.get(propName);
-        const attrName = resolveAttributeName(propName, propOptions);
-
-        if (attrName === name) {
-          const ctrl = componentCtrl();
-
-          ctrl.setProp(
-            this,
-            propName,
-            coerceAttributeValue(newValue, propOptions, Boolean(newValue)),
-          );
-          break;
-        }
-      }
-
-      // Call original attributeChangedCallback if it exists
+      updatePropsByAttribute(this, name, newValue);
       super.attributeChangedCallback?.(name, oldValue, newValue);
     }
 
     override disconnectedCallback(): void {
-      componentCtrl().disconnectComponent(this);
+      componentCtrl().disconnect(this);
+      super.disconnectedCallback?.();
     }
 
     override componentWillRender(): void | Promise<void> {
@@ -255,4 +226,68 @@ export function wrapComponentForRegistration<
       }
     }
   } as T;
+}
+
+/**
+ * Registers props as attributes for the custom elements API and initializes prop metadata
+ */
+export function initializeProps(
+  component: ComponentInterfaceWithContext,
+): void {
+  const ctrl = componentCtrl();
+  const props = component[PROP_NAMES];
+
+  props?.forEach((propOptions, propName) => {
+    const attrName = resolveAttributeName(propName, propOptions);
+
+    // declare this prop as attr on the base class statically for `observedAttributes`
+    const cnstrctr = component.constructor as ConstructablePencilComponent;
+    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
+    cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
+
+    // TODO: This may be deleted
+    component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, undefined);
+
+    ctrl.setProp(
+      component,
+      propName,
+      resolveAttribute(component, propName, propOptions),
+    );
+  });
+}
+
+/**
+ * Initializes and attaches styles to the component instance
+ */
+export function initializeStyles(
+  component: ComponentInterfaceWithContext,
+  options: ComponentOptions,
+): void {
+  const styles = buildStyles(component, options);
+  interopStyleAttachment(component, styles, options);
+}
+
+export function updatePropsByAttribute(
+  component: ComponentInterfaceWithContext,
+  attrName: string,
+  newValue: string | null,
+): void {
+  const ctrl = componentCtrl();
+  const propName = component[ATTR_MAP]?.get(attrName);
+
+  if (!propName) {
+    throwError(
+      `Attribute "${attrName}" is not mapped to any property on ${simpleCustomElementDisplayText(component)}.`,
+    );
+  }
+
+  const propOptions = component[PROP_NAMES]?.get(propName);
+  const propValue = coerceAttributeValue(
+    newValue,
+    propOptions,
+    Boolean(newValue),
+  );
+
+  ctrl.setProp(component, propName, propValue);
 }
