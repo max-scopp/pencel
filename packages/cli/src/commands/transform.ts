@@ -22,7 +22,9 @@ export class TransformCommand extends Command {
 
       const result = await transform(config, cwd);
 
-      log(`${JSON.stringify(result, null, 2)}`);
+      console.dir(result, {
+        depth: null,
+      });
 
       return 0;
     } catch (error) {
