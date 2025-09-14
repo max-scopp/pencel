@@ -1,6 +1,9 @@
 {
   "name": "@pencel/cli",
   "version": "0.0.1",
+  "bin": {
+    "pencel": "out/cli"
+  },
   "dependencies": {
     "@pencel/core": "workspace:*",
     "clipanion": "^4.0.0-rc.4",

@@ -3,7 +3,9 @@ import { isBrowser } from "./isBrowser.ts";
 
 const PENCIL_DO_LOGGING = () =>
   (globalThis.PENCIL_DEBUG ||
-    new URLSearchParams(window.location.search).get("pencilDebug")) ??
+    (isBrowser
+      ? new URLSearchParams(window.location.search).get("pencilDebug")
+      : null)) ??
   true;
 
 export function log(

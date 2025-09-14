@@ -1,59 +1,50 @@
 #!/usr/bin/env bun
-import { type PencilConfig, transformToWebComponent } from "@pencel/core";
+import type { PencilConfig } from "@pencel/core";
+import { log } from "@pencel/utils";
+import { loadConfig } from "c12";
 import { Cli, Command, Option } from "clipanion";
-import { readFileSync, writeFileSync } from "fs";
-import { resolve } from "path";
+import pkg from "../package.json";
 import { defaultConfig } from "./pencil.config";
+
+/**
+ * Checks if a Pencel config file exists in the current directory
+ * @param configName The config file name to check
+ * @returns True if config exists, false otherwise
+ */
+async function checkConfigExists(
+  configName: string = "pencel.config",
+): Promise<boolean> {
+  try {
+    const { config } = await loadConfig<PencilConfig>({
+      name: "pencel",
+      configFile: configName,
+      defaults: defaultConfig,
+      cwd: process.cwd(),
+    });
+    return !!config;
+  } catch (_) {
+    return false;
+  }
+}
 
 class TransformCommand extends Command {
   static override paths = [["transform"]];
 
-  file = Option.String("--file,-f", {
-    description: "The file to transform",
-  });
-
-  output = Option.String("--output,-o", {
-    description: "Output file path (defaults to stdout)",
-  });
-
-  config = Option.String("--config,-c", {
-    description: "Path to config file",
-  });
+  config =
+    Option.String("--config,-C", {
+      description: "Path to config file (defaults to pencil.config)",
+    }) ?? "pencel.config";
 
   async execute() {
-    if (!this.file) {
-      console.error("Error: --file is required");
-      return 1;
-    }
-
     try {
-      // Load config
-      const config: PencilConfig = {
-        ...defaultConfig,
-        tagNamespace: this.config ? "my-app-" : "", // Demo: use namespace if config file specified
-      };
+      const { config } = await loadConfig<PencilConfig>({
+        name: "pencel",
+        configFile: this.config,
+        defaults: defaultConfig,
+        cwd: process.cwd(),
+      });
 
-      console.log(`Loaded config: ${JSON.stringify(config, null, 2)}\n`);
-
-      const filePath = resolve(this.file);
-      const fileContents = readFileSync(filePath, "utf-8");
-
-      const result = transformToWebComponent(fileContents, config);
-
-      if (this.output) {
-        const outputPath = resolve(this.output);
-        writeFileSync(outputPath, result.code);
-        console.log(`Transformed code written to ${outputPath}`);
-        console.log(`Metadata: ${JSON.stringify(result.metadata, null, 2)}`);
-      } else {
-        console.log("=== Original Code ===");
-        console.log(fileContents);
-        console.log("\n=== Transformed Code ===");
-        console.log(result.code);
-        console.log("\n=== Metadata ===");
-        console.log(JSON.stringify(result.metadata, null, 2));
-      }
-
+      log(`Final config: ${JSON.stringify(config, null, 2)}`);
       return 0;
     } catch (error) {
       console.error(
@@ -68,20 +59,36 @@ class PencilCli extends Command {
   static override paths = [Command.Default];
 
   async execute() {
-    console.log("Pencil Compiler CLI\n");
-    console.log("Commands:");
-    console.log("  transform - Transform a component file\n");
-    console.log("Use `<command> --help` for more information");
+    log("Commands:");
+    log("  transform - Transform a component file");
+    log("Use `<command> --help` for more information");
     return 0;
   }
 }
 
-const cli = new Cli({
-  binaryName: "pencil",
-  binaryVersion: "0.0.1",
-});
+/**
+ * Main CLI function that runs commands or defaults to transform if config exists
+ */
+async function runCli() {
+  log("✏️  Pencel Compiler CLI");
 
-cli.register(TransformCommand);
-cli.register(PencilCli);
+  const cli = new Cli({
+    binaryName: "pencel",
+    binaryVersion: pkg.version,
+  });
 
-cli.runExit(process.argv.slice(2));
+  cli.register(TransformCommand);
+  cli.register(PencilCli);
+
+  const args = process.argv.slice(2);
+
+  // If no command specified and config exists, default to transform
+  if (args.length === 0 && (await checkConfigExists())) {
+    log("Found configuration file. Running transform command...");
+    args.push("transform");
+  }
+
+  return cli.runExit(args);
+}
+
+runCli();

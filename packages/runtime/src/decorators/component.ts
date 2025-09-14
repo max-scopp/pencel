@@ -143,15 +143,15 @@ function generateTagName(options: ComponentOptions): string {
  * }
  * ```
  */
-export const Component = (userOptions: ComponentOptions): ClassDecorator => {
+export const Component = (userOptions?: ComponentOptions): ClassDecorator => {
   return (klass: object) => {
     if (typeof customElements === "undefined") {
       log("skip define - no registry");
       return klass as any;
     }
 
-    const customElementExtends = userOptions.extends
-      ? userOptions.extends
+    const customElementExtends = userOptions?.extends
+      ? userOptions?.extends
       : getExtendsByInheritance(klass);
 
     const options = interopOptionsByUsage({

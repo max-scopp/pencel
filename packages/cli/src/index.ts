@@ -1,5 +1,5 @@
+export type { PencilConfig } from "@pencel/core";
 export {
   defaultConfig,
   defineConfig,
-  type PencilConfig,
 } from "./pencil.config";

@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "nx": {
+    "sourceRoot": "example",
+    "projectType": "application",
+    "targets": {
+      "run": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "bun ../packages/cli/src/main.ts",
+          "cwd": "example"
+        }
+      }
+    }
+  }
+}

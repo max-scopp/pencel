@@ -1,7 +1,8 @@
-import { Component } from "../packages/runtime/src/index";
+import { Component } from "@pencel/runtime";
 
 @Component({
-  tagName: "fancy-button",
+  tag: "fancy-button",
+  styleUrl: "./my-component.css",
 })
 class FancyButton extends HTMLButtonElement {
   constructor() {
@@ -13,10 +14,7 @@ class FancyButton extends HTMLButtonElement {
   }
 }
 
-// Example without explicit tagName (uses class name)
-@Component({
-  tagName: "simple",
-})
+@Component()
 class SimpleElement extends HTMLElement {
   constructor() {
     super();

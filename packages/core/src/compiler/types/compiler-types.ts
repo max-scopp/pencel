@@ -1,24 +1,35 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
 
-export interface PencilConfig extends PencilRuntimeConfig {
-  compiler?: {
-    target?:
-      | "es5"
-      | "es2015"
-      | "es2017"
-      | "es2018"
-      | "es2019"
-      | "es2020"
-      | "es2021"
-      | "es2022";
-    experimentalDecorators?: boolean;
-    emitDecoratorMetadata?: boolean;
-  };
-  output?: {
-    dir?: string;
-    format?: "esm" | "cjs";
-  };
-  tagNamespace?: string;
+interface PencilOutputToFolder {
+  mode: "folder";
+  path: string;
+}
+
+interface PencilOutputAside {
+  mode: "aside";
+
+  /**
+   * A regular expression that's using the basename of the file
+   * to determine the output file name.
+   */
+  replace: RegExp;
+}
+
+export interface PencilConfig {
+  /**
+   * The input folder or glob pattern to process.
+   * Defaults to the tsconfig next to the config file.
+   */
+  input:
+    | string
+    | {
+        /**
+         * Path to the tsconfig.json file to use, relative to this config file.
+         */
+        tsconfig: string;
+      };
+  output?: PencilOutputToFolder | PencilOutputAside;
+  runtime?: PencilRuntimeConfig;
 }
 
 export interface ComponentMetadata {

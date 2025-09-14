@@ -12,15 +12,15 @@ export function defineConfig(config: PencilConfig): PencilConfig {
 /**
  * Default Pencil configuration
  */
-export const defaultConfig: PencilConfig = {
-  compiler: {
-    target: "es2022",
-    experimentalDecorators: true,
-    emitDecoratorMetadata: true,
+export const defaultConfig: Required<PencilConfig> = {
+  input: {
+    tsconfig: "tsconfig.json",
   },
   output: {
-    dir: "dist",
-    format: "esm",
+    mode: "aside",
+    replace: /(.+)(\.[^.]+)$/,
   },
-  tagNamespace: "",
+  runtime: {
+    tagNamespace: "pencel",
+  },
 };
