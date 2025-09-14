@@ -1,4 +1,8 @@
-import { createLog } from "@pencel/utils";
+import {
+  createLog,
+  createPerformanceTree,
+  type PerformanceTreeController,
+} from "@pencel/utils";
 import { extractMetaFromDict } from "../analysis/component-analyzer.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
 import type {
@@ -9,25 +13,41 @@ import type {
 
 const log = createLog("Transform");
 
+export const compilerTree: PerformanceTreeController =
+  createPerformanceTree("Compiler");
+
 export const transform = async (
   config: PencilConfig,
   cwd?: string,
 ): Promise<TransformResults> => {
-  log(`Processing dir: ${cwd}`);
-  log(`Using Config: ${JSON.stringify(config, null, 2)}`);
+  compilerTree.start("transform");
 
-  const inProg = await createPencilInputProgram(config, cwd ?? process.cwd());
+  try {
+    log(`Processing dir: ${cwd}`);
+    log(`Using Config: ${JSON.stringify(config, null, 2)}`);
 
-  const metas = await extractMetaFromDict(inProg, config);
+    compilerTree.start("program-creation");
+    const inProg = await createPencilInputProgram(config, cwd ?? process.cwd());
+    compilerTree.end("program-creation");
 
-  const result = new Map<string, TransformResult[]>();
+    compilerTree.start("metadata-extraction");
+    const metas = await extractMetaFromDict(inProg, config);
+    compilerTree.end("metadata-extraction");
 
-  metas.forEach((meta, file) => {
-    result.set(
-      file,
-      meta.map((m) => ({ meta: m })),
-    );
-  });
+    compilerTree.start("result-mapping");
+    const result = new Map<string, TransformResult[]>();
 
-  return result;
+    metas.forEach((meta, file) => {
+      result.set(
+        file,
+        meta.map((m) => ({ meta: m })),
+      );
+    });
+    compilerTree.end("result-mapping");
+
+    return result;
+  } finally {
+    compilerTree.end("transform");
+    compilerTree.log();
+  }
 };

@@ -11,6 +11,7 @@ import {
   type ProgramBuilder,
 } from "ts-flattered";
 import type ts from "typescript";
+import { compilerTree } from "../core/compiler.ts";
 import type {
   PencilComponentMetadata,
   PencilComponentPropMetadata,
@@ -22,9 +23,12 @@ export async function extractMetaFromDict(
   config: PencilConfig,
 ): Promise<Map<string, PencilComponentMetadata[]>> {
   const metadata = new Map<string, PencilComponentMetadata[]>();
+  const rootFileNames = program.getRootFileNames();
+
+  compilerTree.start(`analyze-${rootFileNames.length}-files`);
 
   await Promise.all(
-    program.getRootFileNames().map(async (relativePath) => {
+    rootFileNames.map(async (relativePath) => {
       const fileMetadata = await extractMetaFromFile(
         program,
         relativePath,
@@ -37,6 +41,8 @@ export async function extractMetaFromDict(
     }),
   );
 
+  compilerTree.end(`analyze-${rootFileNames.length}-files`);
+
   return metadata;
 }
 
@@ -48,8 +54,17 @@ export async function extractMetaFromFile(
   const sourceFile =
     program.getSourceFile(relativePath) ?? throwError("No source file");
 
+  compilerTree.start("find-classes");
   const klasses = findClasses(sourceFile);
+  compilerTree.end("find-classes");
+
   const metas: PencilComponentMetadata[] = [];
+
+  if (klasses.length === 0) {
+    return metas;
+  }
+
+  compilerTree.start(`analyze-${klasses.length}-classes`);
 
   for (const klass of klasses) {
     const decos = findDecorators(klass, {
@@ -82,6 +97,8 @@ export async function extractMetaFromFile(
       metas.push(meta);
     }
   }
+
+  compilerTree.end(`analyze-${klasses.length}-classes`);
 
   return metas;
 }

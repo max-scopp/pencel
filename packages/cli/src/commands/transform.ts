@@ -1,5 +1,4 @@
 import { type PencilConfig, transform } from "@pencel/core";
-import { log } from "@pencel/utils";
 import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
 import { defaultConfig } from "../pencil.config";

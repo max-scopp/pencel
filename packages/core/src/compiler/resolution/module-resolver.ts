@@ -6,6 +6,7 @@ import {
   programFromTsConfig,
 } from "ts-flattered";
 import type ts from "typescript";
+import { compilerTree } from "../core/compiler.ts";
 import type { PencilConfig } from "../types/config-types.ts";
 
 export async function createPencilInputProgram(
@@ -13,15 +14,25 @@ export async function createPencilInputProgram(
   cwd: string,
 ): Promise<ProgramBuilder & ts.Program> {
   if (typeof config.input === "string") {
+    compilerTree.start("glob-resolution");
     const files = await glob(config.input, { cwd, absolute: true });
+    compilerTree.end("glob-resolution");
 
-    return program({
+    compilerTree.start("program-creation-from-files");
+    const result = program({
       rootNames: files,
     });
+    compilerTree.end("program-creation-from-files");
+
+    return result;
   }
 
   if (config.input.tsconfig) {
-    return programFromTsConfig(config.input.tsconfig);
+    compilerTree.start("program-creation-from-tsconfig");
+    const result = programFromTsConfig(config.input.tsconfig);
+    compilerTree.end("program-creation-from-tsconfig");
+
+    return result;
   }
 
   throwConsumerError(
