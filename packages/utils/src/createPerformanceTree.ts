@@ -1,5 +1,5 @@
 import { isBrowser } from "./isBrowser.ts";
-import { log } from "./log.ts";
+import { createLog } from "./log.ts";
 
 export interface TreeNode {
   name: string;
@@ -23,7 +23,12 @@ export interface PerformanceTreeController {
   log(): void;
 }
 
-export function createPerformanceTree(): PerformanceTreeController {
+export function createPerformanceTree(
+  namespace = "Perf",
+): PerformanceTreeController {
+  // Create namespaced logger for performance metrics
+  const logger = createLog(namespace);
+
   const root: PerformanceNode = {
     name: "root",
     startTime: performance.now(),
@@ -61,41 +66,49 @@ export function createPerformanceTree(): PerformanceTreeController {
     log(): void {
       root.endTime = performance.now();
       const tree: TreeNode = convertToTreeNode(root);
-      logPerformanceTree(tree);
+      logPerformanceTree(tree, logger);
     },
   };
 }
 function convertToTreeNode(perfNode: PerformanceNode): TreeNode {
   const endTime = perfNode.endTime || performance.now();
-  const totalTime = Math.max(0, (endTime - perfNode.startTime) * 1000); // Total time including children
+  const startTime = perfNode.startTime;
 
-  // Calculate exclusive time (time spent only in this operation, excluding children)
-  let exclusiveTime = totalTime;
-  for (const child of perfNode.children) {
-    const childEndTime = child.endTime || performance.now();
-    const childStartTime = child.startTime;
-    if (childEndTime > childStartTime) {
-      exclusiveTime -= (childEndTime - childStartTime) * 1000;
-    }
-  }
-  exclusiveTime = Math.max(0, exclusiveTime);
+  // Calculate total time in microseconds (1ms = 1000μs)
+  const totalTimeUs = Math.max(0, (endTime - startTime) * 1000); // Convert ms to μs
+
+  // Convert children recursively first so we can calculate their total time
+  const convertedChildren = perfNode.children.map((child) =>
+    convertToTreeNode(child),
+  );
+
+  // Calculate total time spent in children
+  const childrenTimeUs = convertedChildren.reduce(
+    (sum, child) => sum + child.time,
+    0,
+  );
 
   return {
     name: perfNode.name,
-    time: exclusiveTime, // Use exclusive time for better breakdown
-    children: perfNode.children.map(convertToTreeNode),
+    time: Math.max(0, totalTimeUs - childrenTimeUs), // Exclusive time
+    children: convertedChildren,
     startTime: perfNode.startTime,
     endTime: perfNode.endTime,
   };
 }
-function logPerformanceTree(root: TreeNode): void {
+function logPerformanceTree(
+  root: TreeNode,
+  logger: ReturnType<typeof createLog>,
+): void {
   // Calculate actual total time from root node timing
   const rootEndTime = root.endTime || performance.now();
   const rootStartTime = root.startTime || performance.now();
   const totalTime = Math.max(0, (rootEndTime - rootStartTime) * 1000);
 
   function formatTime(us: number): string {
-    if (us < 1000) {
+    if (us === 0) {
+      return "0.0μs";
+    } else if (us < 1000) {
       // For sub-millisecond times, show microseconds
       return `${us.toFixed(1)}μs`;
     } else {
@@ -105,23 +118,32 @@ function logPerformanceTree(root: TreeNode): void {
   }
 
   function getStyle(us: number, parentTime: number): string {
-    // Ignore coloring anything < 0.1ms (100μs)
-    if (us < 100) return "";
+    // Only skip coloring if the time is exactly 0
+    if (us === 0) return "";
 
     const ratio = parentTime > 0 ? us / parentTime : 0;
 
     // Create a smooth gradient using HSL color space
     // Map ratio (0-1) to hue (0-120 degrees)
-    // 0 = red (0°), 0.5 = yellow (60°), 1 = green (120°)
-    const hue = Math.max(0, Math.min(120, ratio * 120));
+    // 1 = red (0°), 0.5 = yellow (60°), 0 = green (120°)
+    const hue = Math.max(0, Math.min(120, (1 - ratio) * 120));
 
-    // Use half saturation and full lightness for better readability
-    const saturation = 50; // 50% saturation (softer colors)
-    const lightness = 50; // 50% lightness (balanced)
+    // Use higher saturation for more vibrant colors and balanced lightness
+    const saturation = 65; // 65% saturation for more vivid colors
+    const lightness = 45; // 45% lightness for better contrast
 
     const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 
     return `color: ${color}; font-weight: bold;`;
+  }
+
+  // Helper function to calculate total time including children
+  function calculateTotalTime(node: TreeNode): number {
+    const childrenTime = node.children.reduce(
+      (sum, child) => sum + calculateTotalTime(child),
+      0,
+    );
+    return node.time + childrenTime;
   }
 
   function logNode(
@@ -131,10 +153,18 @@ function logPerformanceTree(root: TreeNode): void {
     isLast: boolean = false,
     prefix: string = "",
   ): void {
-    const percentage =
-      parentTime > 0 ? ((node.time / parentTime) * 100).toFixed(2) : "100.00";
-    const message = `${node.name}: ${formatTime(node.time)} (${percentage}%)`;
-    const style = getStyle(node.time, parentTime);
+    // Calculate total time including all nested children
+    const nodeTotal = calculateTotalTime(node);
+
+    // Calculate percentage based on parent's total time
+    const isGroupHeader = isBrowser && node.children.length > 0 && depth === 0;
+
+    const percentage = Math.min(
+      100,
+      parentTime > 0 ? (nodeTotal / parentTime) * 100 : 100,
+    ).toFixed(2);
+    const message = `${node.name}: ${formatTime(nodeTotal)}${isGroupHeader ? "" : ` (${percentage}%)`}`;
+    const style = getStyle(nodeTotal, parentTime);
 
     // Create tree structure with ASCII characters
     let treePrefix = prefix;
@@ -145,26 +175,39 @@ function logPerformanceTree(root: TreeNode): void {
     const fullMessage = `${treePrefix}${message}`;
 
     if (isBrowser && node.children.length > 0 && depth === 0) {
-      console.groupCollapsed(fullMessage);
+      // console.groupCollapsed(fullMessage);
+      logger(fullMessage);
+      const childrenTotal = node.children.reduce(
+        (sum, child) => sum + calculateTotalTime(child),
+        0,
+      );
       node.children.forEach((child, index) => {
         const childIsLast = index === node.children.length - 1;
         const childPrefix = prefix + (isLast ? "    " : "│   ");
-        logNode(child, depth + 1, node.time, childIsLast, childPrefix);
+        logNode(child, depth + 1, childrenTotal, childIsLast, childPrefix);
       });
-      console.groupEnd();
+      // console.groupEnd();
     } else if (isBrowser && node.children.length > 0) {
-      log(fullMessage);
+      logger(fullMessage);
+      const childrenTotal = node.children.reduce(
+        (sum, child) => sum + calculateTotalTime(child),
+        0,
+      );
       node.children.forEach((child, index) => {
         const childIsLast = index === node.children.length - 1;
         const childPrefix = prefix + (isLast ? "    " : "│   ");
-        logNode(child, depth + 1, node.time, childIsLast, childPrefix);
+        logNode(child, depth + 1, childrenTotal, childIsLast, childPrefix);
       });
     } else {
-      log(fullMessage, style);
+      logger(fullMessage, style);
+      const childrenTotal = node.children.reduce(
+        (sum, child) => sum + calculateTotalTime(child),
+        0,
+      );
       node.children.forEach((child, index) => {
         const childIsLast = index === node.children.length - 1;
         const childPrefix = prefix + (isLast ? "    " : "│   ");
-        logNode(child, depth + 1, node.time, childIsLast, childPrefix);
+        logNode(child, depth + 1, childrenTotal, childIsLast, childPrefix);
       });
     }
   }

@@ -1,9 +1,5 @@
 import { createLog, createPerformanceTree, throwError } from "@pencel/utils";
-import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
-import {
-  componentCtrl,
-  PENCIL_COMPONENT_CONTEXT,
-} from "../controllers/component.ts";
+import { PENCIL_COMPONENT_CONTEXT } from "../controllers/component.ts";
 import type { ComponentInterfaceWithContext } from "./types.ts";
 import { render } from "./vdom/render.ts";
 
@@ -33,14 +29,12 @@ export class ComponentUpdateScheduler {
   private async flush() {
     this.isScheduled = false;
 
-    const perf = createPerformanceTree();
-    perf.start("render-batch");
+    const perf = createPerformanceTree("Scheduler");
+    perf.start("total-render-time");
 
     try {
       for (const [component, originalError] of this.pendingRenders) {
         try {
-          log("drain", undefined, simpleCustomElementDisplayText(component));
-
           if (component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
             component.componentWillUpdate?.();
           }
@@ -74,7 +68,7 @@ export class ComponentUpdateScheduler {
         }
       }
     } finally {
-      perf.end("render-batch");
+      perf.end("total-render-time");
       perf.log();
       this.pendingRenders.clear();
     }

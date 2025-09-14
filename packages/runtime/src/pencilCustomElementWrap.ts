@@ -1,5 +1,4 @@
 import {
-  createLog,
   createPerformanceTree,
   throwConsumerError,
   throwError,
@@ -23,8 +22,6 @@ import {
   resolveAttributeName,
 } from "./utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "./utils/simpleCustomElementDisplayText.ts";
-
-const log = createLog("PencilCustomElementWrap");
 
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
@@ -124,7 +121,7 @@ export function wrapComponentForRegistration<
   T extends ConstructablePencilComponent,
 >(klass: T, options: ComponentOptions, customElementExtends?: string): T {
   return class PencilCustomElementWrap extends klass {
-    #bootTracker = createPerformanceTree();
+    #hydratePerf = createPerformanceTree("Hydration");
 
     constructor(...args: any[]) {
       super(...args);
@@ -137,32 +134,44 @@ export function wrapComponentForRegistration<
     }
 
     override async connectedCallback() {
+      this.#hydratePerf.start("hydrate");
+
+      // Setup phase
       this.setAttribute(`p.cid.${++cid}`, "");
 
-      this.#bootTracker.start("boot");
-      log(`👁️ ${simpleCustomElementDisplayText(this)}`);
-
+      // Shadow DOM initialization if needed
       if (options.shadow) {
         this.attachShadow({ mode: "open" });
       }
 
+      // Props initialization
+      this.#hydratePerf.start("props");
       initializeProps(this);
+      this.#hydratePerf.end("props");
+
+      // Styles initialization
+      this.#hydratePerf.start("styles");
       initializeStyles(this, options);
+      this.#hydratePerf.end("styles");
 
+      // Content projection setup
+      this.#hydratePerf.start("slots");
       captureForVNodeProjection(this, options);
+      this.#hydratePerf.end("slots");
 
-      // Call original connectedCallback if it exists
+      // Lifecycle methods
+      this.#hydratePerf.start("lifecycle");
       await super.connectedCallback?.();
       await super.componentWillLoad?.();
+      this.#hydratePerf.end("lifecycle");
 
       componentCtrl().markStableAndLoaded(this);
+      this.#hydratePerf.end("hydrate");
     }
 
     override componentDidLoad(): void {
       this.setAttribute("p.hydrated", "");
-      this.#bootTracker.end("boot");
-      this.#bootTracker.log();
-      log(`🚀 ${simpleCustomElementDisplayText(this)} hydrated`);
+      this.#hydratePerf.log();
       super.componentDidLoad?.();
     }
 

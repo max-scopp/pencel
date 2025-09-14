@@ -181,7 +181,7 @@ export function render(jsx: JSXElement, container: RenderContainer): void {
   // Get the previously rendered VNode from the container
   const oldVNode = containerInternals.vnode;
 
-  const renderPerf = createPerformanceTree();
+  const renderPerf = createPerformanceTree("Render");
 
   renderPerf.start("render");
 
