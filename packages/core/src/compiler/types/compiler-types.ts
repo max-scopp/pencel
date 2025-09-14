@@ -1,5 +1,28 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
 
+/**
+ * Metadata for a component property decorated with @Prop
+ */
+export interface PencilComponentPropMetadata {
+  computedType: string;
+  coerce: string | null;
+}
+
+/**
+ * Complete metadata extracted from a component class decorated with @Component
+ */
+export interface PencilComponentMetadata {
+  className: string;
+  tagName?: string;
+  states: string[];
+  props: Map<string, PencilComponentPropMetadata>;
+  styles: {
+    defaultUrl?: string;
+    modeUrls?: Record<string, string>;
+    inline?: string[];
+  };
+}
+
 interface PencilOutputToFolder {
   mode: "folder";
   path: string;

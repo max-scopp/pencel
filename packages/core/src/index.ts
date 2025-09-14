@@ -17,8 +17,6 @@ import type ts from "typescript";
 import type {
   PencilComponentMetadata,
   PencilComponentPropMetadata,
-} from "./compiler/analysis/component-analyzer.ts";
-import type {
   PencilConfig,
   TransformResults,
 } from "./compiler/types/compiler-types.ts";
@@ -180,5 +178,4 @@ export async function createPencilInputProgram(
   );
 }
 
-export * from "./compiler/api/index.ts";
 export * from "./compiler/types/compiler-types.ts";
