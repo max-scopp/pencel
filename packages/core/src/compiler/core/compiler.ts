@@ -24,7 +24,6 @@ export const transform = async (
 
   try {
     log(`Processing dir: ${cwd}`);
-    log(`Using Config: ${JSON.stringify(config, null, 2)}`);
 
     compilerTree.start("program-creation");
     const inProg = await createPencilInputProgram(config, cwd ?? process.cwd());
