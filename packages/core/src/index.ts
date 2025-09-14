@@ -4,3 +4,4 @@ export const build = (): void => {
 
 export * from "./compiler/api/index.ts";
 export * from "./compiler/types/compiler-types.ts";
+export * from "./features.ts";

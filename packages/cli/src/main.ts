@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
-import { type PencilConfig, transformToWebComponent } from "@pencel/core";
+import { type PencilConfig, transformToWebComponent, enableFeatureForAllClients, disableFeatureForAllClients, listFeatures } from "@pencel/core";
+import { discoverProjects, listProjects } from "@pencel/utils";
 import { Cli, Command, Option } from "clipanion";
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
@@ -64,13 +65,109 @@ class TransformCommand extends Command {
   }
 }
 
+class ProjectsCommand extends Command {
+  static override paths = [["projects"]];
+
+  async execute() {
+    try {
+      const workspaceInfo = discoverProjects();
+      listProjects(workspaceInfo);
+      return 0;
+    } catch (error) {
+      console.error(
+        `Error discovering projects: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return 1;
+    }
+  }
+}
+
+class EnableFeatureCommand extends Command {
+  static override paths = [["enable"]];
+
+  feature = Option.String("--feature,-f", {
+    description: "The feature to enable",
+    required: true,
+  });
+
+  description = Option.String("--description,-d", {
+    description: "Optional description for the feature",
+  });
+
+  clientTypes = Option.Array("--client-types,-c", {
+    description: "Client types to enable the feature for (defaults to 'all')",
+  });
+
+  async execute() {
+    try {
+      const workspaceRoot = process.cwd();
+      const clientTypes = this.clientTypes && this.clientTypes.length > 0 ? this.clientTypes : ['all'];
+      
+      // Discover projects first
+      const workspaceInfo = discoverProjects(workspaceRoot);
+      const projectNames = workspaceInfo.projects.map(p => p.name);
+      
+      enableFeatureForAllClients(workspaceRoot, this.feature, this.description, clientTypes, projectNames);
+      return 0;
+    } catch (error) {
+      console.error(
+        `Error enabling feature: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return 1;
+    }
+  }
+}
+
+class DisableFeatureCommand extends Command {
+  static override paths = [["disable"]];
+
+  feature = Option.String("--feature,-f", {
+    description: "The feature to disable",
+    required: true,
+  });
+
+  async execute() {
+    try {
+      const workspaceRoot = process.cwd();
+      disableFeatureForAllClients(workspaceRoot, this.feature);
+      return 0;
+    } catch (error) {
+      console.error(
+        `Error disabling feature: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return 1;
+    }
+  }
+}
+
+class FeaturesCommand extends Command {
+  static override paths = [["features"]];
+
+  async execute() {
+    try {
+      const workspaceRoot = process.cwd();
+      listFeatures(workspaceRoot);
+      return 0;
+    } catch (error) {
+      console.error(
+        `Error listing features: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return 1;
+    }
+  }
+}
+
 class PencilCli extends Command {
   static override paths = [Command.Default];
 
   async execute() {
     console.log("Pencil Compiler CLI\n");
     console.log("Commands:");
-    console.log("  transform - Transform a component file\n");
+    console.log("  projects              - List all projects in the workspace");
+    console.log("  features              - List all enabled features");
+    console.log("  enable                - Enable a feature for all clients");
+    console.log("  disable               - Disable a feature for all clients");
+    console.log("  transform             - Transform a component file\n");
     console.log("Use `<command> --help` for more information");
     return 0;
   }
@@ -82,6 +179,10 @@ const cli = new Cli({
 });
 
 cli.register(TransformCommand);
+cli.register(ProjectsCommand);
+cli.register(EnableFeatureCommand);
+cli.register(DisableFeatureCommand);
+cli.register(FeaturesCommand);
 cli.register(PencilCli);
 
 cli.runExit(process.argv.slice(2));

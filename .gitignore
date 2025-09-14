@@ -46,3 +46,6 @@ Thumbs.db
 
 out
 *.tsbuildinfo
+
+# Pencil workspace configuration
+.pencil/
