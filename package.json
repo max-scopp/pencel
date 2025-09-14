@@ -8,7 +8,7 @@
     "packages/**"
   ],
   "dependencies": {
-    "vite": "^7.1.5"
+    "vite": "npm:rolldown-vite@latest"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
