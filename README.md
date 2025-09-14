@@ -119,6 +119,39 @@ Nothing is mandatory. You own the output.
 
 ---
 
+## 🛠 CLI Usage
+
+Pencel provides a command-line interface for project management and feature enablement.
+
+### Project Discovery
+
+```bash
+# List all projects in the workspace
+pencil projects
+```
+
+### Feature Management
+
+```bash
+# Enable a feature for all clients
+pencil enable --feature "GPT-5 mini" --description "Enable GPT-5 mini for all clients"
+
+# Disable a feature for all clients  
+pencil disable --feature "GPT-5 mini"
+
+# Show feature status across all projects
+pencil features
+```
+
+### Code Transformation
+
+```bash
+# Transform a component file
+pencil transform --file src/component.ts --output dist/component.js
+```
+
+---
+
 ## 🚧 Status
 
 Pencel is currently in **active development**.
