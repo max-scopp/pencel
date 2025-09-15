@@ -122,7 +122,7 @@ interface LifecycleHooks {
 ```typescript
 {
   "compilerOptions": {
-    "jsx": "react",
+    "jsx": "preserve",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment"
   }

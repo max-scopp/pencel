@@ -20,6 +20,7 @@ export default defineConfig({
         complex: "04-complex/index.html",
         pencil: "05-pencil/index.html",
         pencilPropsState: "06-pencil-props-state/index.html",
+        eventsAndElement: "09-events-and-element/index.html",
         test: "test-multiple-renders.html",
       },
     },
