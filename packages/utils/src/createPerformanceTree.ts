@@ -106,11 +106,9 @@ function logPerformanceTree(
   const totalTime = Math.max(0, (rootEndTime - rootStartTime) * 1000);
 
   function formatTime(us: number): string {
-    if (us === 0) {
-      return "0.0μs";
-    } else if (us < 1000) {
+    if (us < 1000) {
       // For sub-millisecond times, show microseconds
-      return `${us.toFixed(1)}μs`;
+      return `${us.toFixed(0)}μs`;
     } else {
       // For millisecond and above, show milliseconds
       return `${(us / 1000).toFixed(3)}ms`;

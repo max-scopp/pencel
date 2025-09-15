@@ -1,18 +1,22 @@
 import { throwConsumerError } from "@pencel/utils";
+import type { ComponentInterface } from "dist/index.js";
 import { dashCase } from "src/utils/dashCase.ts";
 
 export class EventEmitter<T = never> {
   constructor(
+    protected readonly getElement: () => HTMLElement,
     protected readonly options: EventOptions &
       Required<Pick<EventOptions, "eventName">>,
   ) {}
 
-  emit(data: T): CustomEvent<T> {
+  emit(data: T): boolean {
     const { eventName, ...eventInit } = this.options;
-    return new CustomEvent<T>(eventName, {
+    const evt = new CustomEvent<T>(eventName, {
       detail: data,
       ...eventInit,
     });
+
+    return this.getElement().dispatchEvent(evt);
   }
 }
 
@@ -58,12 +62,14 @@ export interface EventOptions {
  */
 export function Event(userOptions?: string | EventOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
+    let instance: ComponentInterface;
+
     const { eventName, ...options } =
       typeof userOptions === "string"
         ? { eventName: userOptions }
         : (userOptions ?? {});
 
-    const emitter = new EventEmitter({
+    const emitter = new EventEmitter(() => instance, {
       eventName: eventName ?? dashCase(String(propertyKey)),
       ...options,
     });
@@ -71,6 +77,7 @@ export function Event(userOptions?: string | EventOptions): PropertyDecorator {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {
+        instance = this;
         return emitter;
       },
 

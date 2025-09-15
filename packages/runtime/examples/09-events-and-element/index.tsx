@@ -1,12 +1,20 @@
-import { Component, type ComponentInterface, render, State } from "../../src";
+import {
+  Component,
+  type ComponentInterface,
+  h,
+  Prop,
+  render,
+  State,
+} from "../../src";
 import { Element } from "../../src/decorators/element";
 import { Event, type EventEmitter } from "../../src/decorators/event";
+import { Listen } from "../../src/decorators/listen";
 
 @Component({
   tag: "event-button",
 })
 class EventButton extends HTMLElement implements ComponentInterface {
-  @Event({ bubbles: true })
+  @Event({ composed: true })
   clickEvent: EventEmitter<{ timestamp: number }>;
 
   @Element()
@@ -22,7 +30,6 @@ class EventButton extends HTMLElement implements ComponentInterface {
 
   handleClick = () => {
     const event = this.clickEvent.emit({ timestamp: Date.now() });
-    this.dispatchEvent(event);
     console.log("Emitted custom event:", event);
   };
 
@@ -30,6 +37,9 @@ class EventButton extends HTMLElement implements ComponentInterface {
     return (
       <button type="button" onClick={this.handleClick}>
         Emit Custom Event
+        <p>
+          <slot></slot>
+        </p>
       </button>
     );
   }
@@ -39,30 +49,15 @@ class EventButton extends HTMLElement implements ComponentInterface {
   tag: "event-counter",
 })
 class EventCounter extends HTMLElement implements ComponentInterface {
-  @State()
-  eventCount = 0;
+  @Prop()
+  eventCount: number = 0;
 
-  @State()
+  @Prop()
   lastEventData: { timestamp: number } | null = null;
 
   constructor() {
     super();
   }
-
-  connectedCallback() {
-    // Listen for custom events from event-button
-    this.addEventListener("clickevent", this.handleCustomEvent);
-  }
-
-  disconnectedCallback() {
-    this.removeEventListener("clickevent", this.handleCustomEvent);
-  }
-
-  handleCustomEvent = (event: CustomEvent) => {
-    this.eventCount++;
-    this.lastEventData = event.detail;
-    console.log("Received custom event:", event.detail);
-  };
 
   render() {
     return (
@@ -86,27 +81,32 @@ class EventDemo extends HTMLElement implements ComponentInterface {
   @State()
   log: string[] = [];
 
+  @State()
+  eventCount = 0;
+
+  @State()
+  lastEventData: { timestamp: number } | null = null;
+
   constructor() {
     super();
   }
 
-  connectedCallback() {
-    // Listen for events from child components
-    this.addEventListener("clickevent", this.handleGlobalEvent);
+  @Listen("click-event")
+  handleCustomEvent(event: CustomEvent) {
+    this.eventCount++;
+    this.lastEventData = event.detail;
+    console.log("Received custom event:", event.detail);
   }
 
-  disconnectedCallback() {
-    this.removeEventListener("clickevent", this.handleGlobalEvent);
-  }
-
-  handleGlobalEvent = (event: CustomEvent) => {
+  @Listen("click-event")
+  handleGlobalEvent(event: CustomEvent) {
     this.log.push(
       `Global event at ${new Date().toLocaleTimeString()}: ${JSON.stringify(event.detail)}`,
     );
     if (this.log.length > 5) {
       this.log.shift();
     }
-  };
+  }
 
   clearLog = () => {
     this.log = [];
@@ -116,8 +116,13 @@ class EventDemo extends HTMLElement implements ComponentInterface {
     return (
       <div class="event-demo">
         <h3>Event Demo</h3>
-        <event-button></event-button>
-        <event-counter></event-counter>
+        <pen-event-button>1</pen-event-button>
+        <pen-event-button>2</pen-event-button>
+        <pen-event-button>3</pen-event-button>
+        <pen-event-counter
+          eventCount={this.eventCount}
+          lastEventData={this.lastEventData}
+        ></pen-event-counter>
         <div class="log">
           <h4>Event Log:</h4>
           {this.log.length === 0 ? (
@@ -149,7 +154,7 @@ const app = (
       </li>
       <li>Event bubbling and listening between components</li>
     </ul>
-    <event-demo></event-demo>
+    <pen-event-demo></pen-event-demo>
   </div>
 );
 

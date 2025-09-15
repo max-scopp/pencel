@@ -1,3 +1,33 @@
+
+# Reminder: `target` is not `this` in property decorators
+
+Every time I write a property decorator, I keep forgetting this:
+
+* The `target` argument in a decorator is **not** the class instance.
+* It is the **class prototype** for instance members.
+* So I can’t access `this` directly inside the decorator — because the instance doesn’t exist yet.
+
+Decorators are executed when the class is **defined**, not when it is **instantiated**.
+
+## Fix
+
+Use a getter to capture `this` at runtime:
+
+```ts
+let instance: ComponentInterface;
+
+const emitter = new EventEmitter(() => instance);
+
+Object.defineProperty(target, propertyKey, {
+  get() {
+    instance = this;
+    return emitter;
+  },
+});
+```
+
+
+
 # Component API
 The whole API provided by stencil can be condensed in a set of decorators, lifecycles hooks and rendering methods.
 

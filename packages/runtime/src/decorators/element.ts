@@ -26,7 +26,7 @@ export function Element(): PropertyDecorator {
         console.warn(
           "[Pencel] Accessing @Element property is no longer necessary. You can directly use 'this' to refer to the element in the DOM.",
         );
-        return target;
+        return this;
       },
 
       set() {

@@ -3,7 +3,7 @@ import {
   PENCIL_OBSERVED_ATTRIBUTES,
   type PencilComponentContext,
 } from "src/controllers/component.ts";
-import type { AttrResolver, PropOptions } from "src/decorators/prop.ts";
+import type { PropOptions } from "src/decorators/prop.ts";
 import type { JSXElement } from "./jsx.ts";
 
 /**
@@ -44,11 +44,13 @@ export interface CustomElement extends HTMLElement {
  *
  * @public
  */
-export type ConstructablePencilComponent = {
-  [PENCIL_OBSERVED_ATTRIBUTES]: string[];
-} & (new (
-  ...args: any[]
-) => ComponentInterfaceWithContext);
+export type ConstructablePencilComponent = ComponentProtoMeta &
+  (new (
+    ...args: any[]
+  ) => ComponentInterfaceWithContext);
+
+export const PROP_NAMES: unique symbol = Symbol("__$pencil_prop_names$");
+export const ATTR_MAP: unique symbol = Symbol("__$pencil_attr_map$");
 
 /**
  * Each consumer facing component registration using `@Component` decorator
@@ -61,23 +63,21 @@ export type ConstructablePencilComponent = {
  *
  * @private
  */
-export interface ComponentInterfaceWithContext
-  extends ComponentInterfaceBaseMeta {
+export interface ComponentInterfaceWithContext extends ComponentInterface {
   [PENCIL_COMPONENT_CONTEXT]?: PencilComponentContext;
 }
 
-export const PROP_NAMES: unique symbol = Symbol("__$pencil_prop_names$");
-export const ATTR_MAP: unique symbol = Symbol("__$pencil_attr_map$");
-
 /**
- * Applied to the consumer component instance to include metadata
+ * Applied to the consumer component class to include metadata
  * about the decorated properties, making them easier to access later.
  *
  * Currently, this is mainly required to cleanly initialize the props.
  *
  * @private
  */
-export interface ComponentInterfaceBaseMeta extends ComponentInterface {
+export interface ComponentProtoMeta {
+  [PENCIL_OBSERVED_ATTRIBUTES]: string[];
+
   [PROP_NAMES]?: Map<string, PropOptions | undefined>;
   [ATTR_MAP]?: Map<string, string>;
 }

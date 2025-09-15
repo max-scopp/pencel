@@ -5,7 +5,7 @@
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",
-    "jsx": "preserve",
+    "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "allowJs": true,

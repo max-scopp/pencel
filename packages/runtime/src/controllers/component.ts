@@ -126,6 +126,7 @@ class ComponentsController {
     component: ComponentInterfaceWithContext,
     stateName: string | symbol,
   ): TValue {
+    // TODO: This should be gone
     this.connect(component);
 
     return component[PENCIL_COMPONENT_CONTEXT]?.state.get(stateName) as TValue;
@@ -180,6 +181,7 @@ class ComponentsController {
     component: ComponentInterfaceWithContext,
     storeName: string | symbol,
   ): TStore {
+    // TODO: This should be gone
     this.connect(component);
 
     const storeContext = this.stores.get(component) ?? new Map();
@@ -196,6 +198,7 @@ class ComponentsController {
     storeName: string | symbol,
     newValue: TStore,
   ): void {
+    // TODO: This should be gone
     this.connect(component);
 
     const storeContext = this.stores.get(component) ?? new Map();
