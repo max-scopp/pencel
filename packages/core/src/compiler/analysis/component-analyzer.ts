@@ -16,40 +16,12 @@ import type {
   PencilComponentMetadata,
   PencilComponentPropMetadata,
 } from "../types/compiler-types.ts";
-import type { PencilConfig } from "../types/config-types.ts";
-
-export async function extractMetaFromDict(
-  program: ts.Program & ProgramBuilder,
-  config: PencilConfig,
-): Promise<Map<string, PencilComponentMetadata[]>> {
-  const metadata = new Map<string, PencilComponentMetadata[]>();
-  const rootFileNames = program.getRootFileNames();
-
-  compilerTree.start(`analyze-${rootFileNames.length}-files`);
-
-  await Promise.all(
-    rootFileNames.map(async (relativePath) => {
-      const fileMetadata = await extractMetaFromFile(
-        program,
-        relativePath,
-        config,
-      );
-
-      if (fileMetadata.length) {
-        metadata.set(relativePath, fileMetadata);
-      }
-    }),
-  );
-
-  compilerTree.end(`analyze-${rootFileNames.length}-files`);
-
-  return metadata;
-}
+import type { PencelConfig } from "../types/config-types.ts";
 
 export async function extractMetaFromFile(
   program: ts.Program & ProgramBuilder,
   relativePath: string,
-  _config: PencilConfig,
+  _config: PencelConfig,
 ): Promise<PencilComponentMetadata[]> {
   const sourceFile =
     program.getSourceFile(relativePath) ?? throwError("No source file");

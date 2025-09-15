@@ -1,4 +1,5 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
+import type { PluginsList } from "./plugins.js";
 
 interface PencilOutputToFolder {
   mode: "folder";
@@ -15,12 +16,12 @@ interface PencilOutputAside {
   replace: RegExp;
 }
 
-export interface PencilConfig {
+export interface PencelConfig {
   /**
    * The input folder or glob pattern to process.
    * Defaults to the tsconfig next to the config file.
    */
-  input:
+  input?:
     | string
     | {
         /**
@@ -28,6 +29,9 @@ export interface PencilConfig {
          */
         tsconfig: string;
       };
+
+  plugins: PluginsList;
+
   output?: PencilOutputToFolder | PencilOutputAside;
   runtime?: PencilRuntimeConfig;
 }

@@ -7,10 +7,10 @@ import {
 } from "ts-flattered";
 import type ts from "typescript";
 import { compilerTree } from "../core/compiler.ts";
-import type { PencilConfig } from "../types/config-types.ts";
+import type { PencelConfig } from "../types/config-types.ts";
 
 export async function createPencilInputProgram(
-  config: PencilConfig,
+  config: PencelConfig,
   cwd: string,
 ): Promise<ProgramBuilder & ts.Program> {
   if (typeof config.input === "string") {

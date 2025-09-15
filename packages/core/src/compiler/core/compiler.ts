@@ -3,13 +3,10 @@ import {
   createPerformanceTree,
   type PerformanceTreeController,
 } from "@pencel/utils";
-import { extractMetaFromDict } from "../analysis/component-analyzer.ts";
+import { print } from "ts-flattered";
+import { transformComponents } from "../codegen/transform-components.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
-import type {
-  PencilConfig,
-  TransformResult,
-  TransformResults,
-} from "../types/config-types.ts";
+import type { PencelConfig, TransformResults } from "../types/config-types.ts";
 
 const log = createLog("Transform");
 
@@ -17,7 +14,7 @@ export const compilerTree: PerformanceTreeController =
   createPerformanceTree("Compiler");
 
 export const transform = async (
-  config: PencilConfig,
+  config: PencelConfig,
   cwd?: string,
 ): Promise<TransformResults> => {
   compilerTree.start("transform");
@@ -25,26 +22,19 @@ export const transform = async (
   try {
     log(`Processing dir: ${cwd}`);
 
-    compilerTree.start("program-creation");
+    compilerTree.start("analyzer-creation");
     const inProg = await createPencilInputProgram(config, cwd ?? process.cwd());
-    compilerTree.end("program-creation");
+    compilerTree.end("analyzer-creation");
 
     compilerTree.start("metadata-extraction");
-    const metas = await extractMetaFromDict(inProg, config);
+    const newSourceFiles = await transformComponents(inProg, config);
     compilerTree.end("metadata-extraction");
 
-    compilerTree.start("result-mapping");
-    const result = new Map<string, TransformResult[]>();
-
-    metas.forEach((meta, file) => {
-      result.set(
-        file,
-        meta.map((m) => ({ meta: m })),
-      );
+    newSourceFiles.forEach((sf) => {
+      console.log(print(sf));
     });
-    compilerTree.end("result-mapping");
 
-    return result;
+    return {} as any;
   } finally {
     compilerTree.end("transform");
     compilerTree.log();

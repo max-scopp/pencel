@@ -1,12 +1,20 @@
 export { transform } from "../core/compiler.ts";
+export { registerPlugin } from "../core/plugin.ts";
 export type {
   PencilComponentMetadata,
   PencilComponentPropMetadata,
 } from "../types/compiler-types.ts";
-
 export type {
   ComponentMetadata,
-  PencilConfig,
+  PencelConfig as PencilConfig,
   TransformResult,
   TransformResults,
 } from "../types/config-types.ts";
+export type {
+  PluginConfig,
+  PluginContext,
+  PluginFunction,
+  PluginName,
+  PluginOptions,
+  PluginsList,
+} from "../types/plugins.ts";

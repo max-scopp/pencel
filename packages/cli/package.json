@@ -1,13 +1,26 @@
 {
   "name": "@pencel/cli",
   "version": "0.0.1",
-  "bin": {
-    "pencel": "out/cli"
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "pencel": "dist/main.mjs"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@pencel/core": "workspace:*",
-    "clipanion": "^4.0.0-rc.4",
-    "c12": "^2.0.1"
+    "c12": "^2.0.1",
+    "clipanion": "^4.0.0-rc.4"
   },
   "private": true,
   "devDependencies": {
@@ -23,7 +36,7 @@
         ],
         "executor": "nx:run-commands",
         "options": {
-          "command": "bun build --compile src/main.ts --outfile out/cli --target node",
+          "command": "tsdown",
           "cwd": "packages/cli"
         }
       },
