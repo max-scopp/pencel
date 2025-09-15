@@ -1,13 +1,36 @@
-import { createLog } from "@pencel/utils";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import type { ComponentOptions } from "@pencel/runtime";
 import type ts from "typescript";
 
-const log = createLog("CSS Processor");
-
-export function processCss(
+export function processStyles(
   sourceFile: ts.SourceFile,
-  cssSourceText: string,
-): Promise<string> {
-  log(`Transform ${sourceFile.fileName}`);
+  componentOptions: ComponentOptions,
+): Pick<ComponentOptions, "styles" | "styleUrls"> {
+  let alwaysStyles = "";
 
-  return cssSourceText.replace(/\/\*[\s\S]*?\*\//g, "").trim();
+  if (Array.isArray(componentOptions.styles)) {
+    alwaysStyles += componentOptions.styles.join("\n");
+  } else {
+    alwaysStyles += componentOptions.styles ?? "";
+  }
+
+  const inlineRelativePath = (path: string) =>
+    readFileSync(resolve(dirname(sourceFile.fileName), path), "utf-8");
+
+  if (componentOptions.styleUrl) {
+    alwaysStyles += inlineRelativePath(componentOptions.styleUrl);
+  }
+
+  const inlinedStyleUrls = Object.entries(
+    componentOptions.styleUrls ?? {},
+  ).reduce(
+    (acc, [media, styleUrl]) => {
+      acc[media] = inlineRelativePath(styleUrl);
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
+  return { styles: alwaysStyles, styleUrls: inlinedStyleUrls };
 }

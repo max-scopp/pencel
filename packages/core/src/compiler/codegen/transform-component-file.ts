@@ -1,18 +1,18 @@
+import { basename } from "node:path";
 import type { ComponentOptions } from "@pencel/runtime";
-import { dashCase, log, throwConsumerError } from "@pencel/utils";
-import { readFileSync } from "fs";
-import { basename, dirname, resolve } from "path";
+import { dashCase, throwConsumerError } from "@pencel/utils";
 import { throwTooManyComponentDecoratorsOnClass } from "src/panics/throwTooManyComponentDecoratorsOnClass.ts";
-import { fileFromString, findClasses, findDecorators } from "ts-flattered";
+import {
+  fileFromString,
+  findClasses,
+  findDecorators,
+  type SourceFile,
+} from "ts-flattered";
 import type ts from "typescript";
 import { compilerTree } from "../core/compiler.ts";
+import { processStyles } from "../transforms/transform-css.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
-import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
-import {
-  createPencelMarker,
-  isPencelGeneratedFile,
-  isPencelSourceUpToDate,
-} from "../utils/marker.ts";
+import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
 
 export const PENCEL_RUNTIME_MODULE_NAME = "@pencel/runtime" as const;
 export const PENCEL_COMPONENT_DECORATOR_NAME = "Component" as const;
@@ -25,42 +25,9 @@ export async function transformComponentFile(
   sourceFile: ts.SourceFile,
   ctx: PencelContext,
 ): Promise<ts.SourceFile | null> {
-  // don't touch our own generated files
-  if (isPencelGeneratedFile(sourceFile)) {
+  if (!fileShouldBeProcessed(sourceFile, ctx)) {
     return null;
   }
-
-  const sourceDecorators = findClasses(sourceFile).flatMap((klass) => {
-    const componentDecoratorsOnClass = findDecorators(klass, {
-      sourceFile,
-      // TODO: Enable module checking again
-      // module: PENCEL_RUNTIME_MODULE_NAME,
-      name: PENCEL_COMPONENT_DECORATOR_NAME,
-    });
-
-    if (componentDecoratorsOnClass.length > 1) {
-      throwTooManyComponentDecoratorsOnClass(
-        sourceFile,
-        componentDecoratorsOnClass,
-      );
-    }
-
-    return componentDecoratorsOnClass;
-  });
-
-  if (sourceDecorators.length < 1) {
-    return null;
-  }
-
-  // TODO: Parameterize this
-  // if (
-  //   isPencelSourceUpToDate(
-  //     sourceFile,
-  //     program.getSourceFile(getOutputPathForSource(sourceFile, ctx)),
-  //   )
-  // ) {
-  //   return null;
-  // }
 
   const fileNameBased = basename(sourceFile.fileName);
   compilerTree.start(fileNameBased);
@@ -73,6 +40,19 @@ export async function transformComponentFile(
 
   newSourceFile.prependBanner(createPencelMarker(sourceFile), "line");
 
+  transformComponentDecorators(newSourceFile, program, ctx);
+  transformComponentPropsDecorators(newSourceFile, program, ctx);
+
+  compilerTree.end(fileNameBased);
+
+  return newSourceFile;
+}
+
+export function transformComponentDecorators(
+  newSourceFile: ts.SourceFile & SourceFile,
+  program: ts.Program,
+  ctx: PencelContext,
+): void {
   newSourceFile.updateClasses((cls) => {
     cls.updateDecoratorByFilter(
       {
@@ -85,7 +65,7 @@ export async function transformComponentFile(
         decorator.updateArgumentObject(0, (obj) => {
           const componentOptions = obj.toRecord() as ComponentOptions;
           const { styles, styleUrls } = processStyles(
-            sourceFile,
+            newSourceFile,
             componentOptions,
           );
 
@@ -107,44 +87,93 @@ export async function transformComponentFile(
       },
     );
 
-    // cls.rename(`${cls.name?.text}Generated`);
+    return cls;
+  });
+}
+
+export function transformComponentPropsDecorators(
+  newSourceFile: ts.SourceFile & SourceFile,
+  program: ts.Program,
+  ctx: PencelContext,
+): void {
+  newSourceFile.updateClasses((cls) => {
+    cls.updateDecoratorByFilter(
+      {
+        sourceFile: newSourceFile,
+        // TODO: Enable module checking again
+        // module: PENCEL_RUNTIME_MODULE_NAME,
+        name: PENCEL_COMPONENT_DECORATOR_NAME,
+      },
+      (decorator) => {
+        decorator.updateArgumentObject(0, (obj) => {
+          const componentOptions = obj.toRecord() as ComponentOptions;
+          const { styles, styleUrls } = processStyles(
+            newSourceFile,
+            componentOptions,
+          );
+
+          obj.setMany({
+            tag: dashCase(
+              cls.name?.text ??
+                throwConsumerError("Anonymous classes must have a tag."),
+            ),
+            styles,
+            styleUrls,
+          } satisfies ComponentOptions);
+
+          obj.remove("styleUrl" as keyof ComponentOptions);
+
+          return obj;
+        });
+
+        return decorator;
+      },
+    );
 
     return cls;
   });
-
-  compilerTree.end(fileNameBased);
-
-  return newSourceFile;
 }
 
-export function processStyles(
+export function fileShouldBeProcessed(
   sourceFile: ts.SourceFile,
-  componentOptions: ComponentOptions,
-): Pick<ComponentOptions, "styles" | "styleUrls"> {
-  let alwaysStyles = "";
-
-  if (Array.isArray(componentOptions.styles)) {
-    alwaysStyles += componentOptions.styles.join("\n");
-  } else {
-    alwaysStyles += componentOptions.styles ?? "";
+  ctx: PencelContext,
+): boolean {
+  // don't touch our own generated files
+  if (isPencelGeneratedFile(sourceFile)) {
+    return false;
   }
 
-  const inlineRelativePath = (path: string) =>
-    readFileSync(resolve(dirname(sourceFile.fileName), path), "utf-8");
+  const sourceDecorators = findClasses(sourceFile).flatMap((klass) => {
+    const componentDecoratorsOnClass = findDecorators(klass, {
+      sourceFile,
+      // TODO: Enable module checking again
+      // module: PENCEL_RUNTIME_MODULE_NAME,
+      name: PENCEL_COMPONENT_DECORATOR_NAME,
+    });
 
-  if (componentOptions.styleUrl) {
-    alwaysStyles += inlineRelativePath(componentOptions.styleUrl);
+    if (componentDecoratorsOnClass.length > 1) {
+      throwTooManyComponentDecoratorsOnClass(
+        sourceFile,
+        componentDecoratorsOnClass,
+      );
+    }
+
+    return componentDecoratorsOnClass;
+  });
+
+  if (sourceDecorators.length < 1) {
+    return false;
   }
 
-  const inlinedStyleUrls = Object.entries(
-    componentOptions.styleUrls ?? {},
-  ).reduce(
-    (acc, [media, styleUrl]) => {
-      acc[media] = inlineRelativePath(styleUrl);
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  // TODO: Parameterize this
+  // if (
+  //   isPencelSourceUpToDate(
+  //     sourceFile,
+  //     program.getSourceFile(getOutputPathForSource(sourceFile, ctx)),
+  //   )
+  // ) {
+  //   return null;
+  // }
 
-  return { styles: alwaysStyles, styleUrls: inlinedStyleUrls };
+  return true;
 }
