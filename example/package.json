@@ -7,7 +7,7 @@
     "@pencel/cli": "workspace:*"
   },
   "scripts": {
-    "generate": "bun ../packages/cli/dist/main.mjs"
+    "generate": "bun ../packages/cli/src/main.ts"
   },
   "peerDependencies": {
     "typescript": "^5"
