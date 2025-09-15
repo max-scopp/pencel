@@ -1,6 +1,6 @@
+import { dashCase } from "@pencel/utils";
 import type { ComponentInterfaceWithContext } from "src/core/types.ts";
 import type { PropOptions } from "../decorators/prop.ts";
-import { dashCase } from "./dashCase.ts";
 
 /**
  * Handles type conversion for attribute values based on prop options

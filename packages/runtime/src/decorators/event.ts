@@ -1,6 +1,5 @@
-import { throwConsumerError } from "@pencel/utils";
-import type { ComponentInterface } from "dist/index.js";
-import { dashCase } from "src/utils/dashCase.ts";
+import { dashCase, throwConsumerError } from "@pencel/utils";
+import type { ComponentInterface } from "src/core/types.ts";
 
 export class EventEmitter<T = never> {
   constructor(

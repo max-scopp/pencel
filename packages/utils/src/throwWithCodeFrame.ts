@@ -3,15 +3,11 @@ import { error } from "./log.ts";
 
 export const throwWithCodeFrame = (
   errorMessage: string | string[],
-  fileName: string,
   codeFrame: string,
 ): never => {
   const message = Array.isArray(errorMessage)
     ? errorMessage.join("\n")
     : errorMessage;
-
-  // Use our fancy error logging function for the main error message
-  error(message, "font-weight: bold; color: #ff6b6b;");
 
   // Show the code frame with styling
   if (isBrowser) {
@@ -23,6 +19,9 @@ export const throwWithCodeFrame = (
     // For code frame in CLI, use plain console.error to preserve formatting
     console.error(codeFrame);
   }
+
+  // Use our fancy error logging function for the main error message
+  error(message, "font-weight: bold; color: #ff6b6b;");
 
   process.exit(1);
 };

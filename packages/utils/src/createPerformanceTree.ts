@@ -1,3 +1,4 @@
+import { ANSI_RESET, getAnsiFromStyle } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 import { createLog } from "./log.ts";
 
@@ -135,6 +136,14 @@ function logPerformanceTree(
     return `color: ${color}; font-weight: bold;`;
   }
 
+  function getPercentageColor(percentage: number): string {
+    // Green for low percentages (efficient), red for high percentages (inefficient)
+    if (percentage <= 10) return "green";
+    if (percentage <= 30) return "yellow";
+    if (percentage <= 60) return "orange";
+    return "red";
+  }
+
   // Helper function to calculate total time including children
   function calculateTotalTime(node: TreeNode): number {
     const childrenTime = node.children.reduce(
@@ -161,7 +170,17 @@ function logPerformanceTree(
       100,
       parentTime > 0 ? (nodeTotal / parentTime) * 100 : 100,
     ).toFixed(2);
-    const message = `${node.name}: ${formatTime(nodeTotal)}${isGroupHeader ? "" : ` (${percentage}%)`}`;
+
+    // Format percentage with ANSI colors for CLI use
+    const percentageNum = parseFloat(percentage);
+    const percentageColor = getPercentageColor(percentageNum);
+    const ansiColor = getAnsiFromStyle(percentageColor);
+    const coloredPercentage =
+      !isBrowser && ansiColor
+        ? `${ansiColor}(${percentage}%)${ANSI_RESET}`
+        : `(${percentage}%)`;
+
+    const message = `${node.name}: ${formatTime(nodeTotal)}${isGroupHeader ? "" : ` ${coloredPercentage}`}`;
     const style = getStyle(nodeTotal, parentTime);
 
     // Create tree structure with ASCII characters

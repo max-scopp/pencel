@@ -2,7 +2,7 @@
 import { log } from "@pencel/utils";
 import { Cli } from "clipanion";
 import pkg from "../package.json";
-import { TransformCommand } from "./commands/transform";
+import { TransformCommand } from "./commands/transform.ts";
 
 const [node, app, ...args] = process.argv;
 

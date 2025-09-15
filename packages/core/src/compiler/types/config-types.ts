@@ -1,5 +1,4 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
-import type { PluginsList } from "./plugins.js";
 
 interface PencilOutputToFolder {
   mode: "folder";
@@ -13,7 +12,7 @@ interface PencilOutputAside {
    * A regular expression that's using the basename of the file
    * to determine the output file name.
    */
-  replace: RegExp;
+  replace: [RegExp, string];
 }
 
 export interface PencelConfig {
@@ -30,7 +29,7 @@ export interface PencelConfig {
         tsconfig: string;
       };
 
-  plugins: PluginsList;
+  // plugins?: PluginsList;
 
   output?: PencilOutputToFolder | PencilOutputAside;
   runtime?: PencilRuntimeConfig;

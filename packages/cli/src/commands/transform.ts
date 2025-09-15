@@ -1,7 +1,7 @@
 import { type PencilConfig, transform } from "@pencel/core";
 import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
-import { defaultConfig } from "../pencil.config";
+import { defaultConfig } from "src/index.ts";
 
 export class TransformCommand extends Command {
   static override paths: string[][] = [Command.Default, ["transform"]];
@@ -13,7 +13,7 @@ export class TransformCommand extends Command {
 
   async execute(): Promise<0 | 1> {
     try {
-      const { config, cwd } = await loadConfig<PencilConfig>({
+      const { config, cwd } = await loadConfig<Required<PencilConfig>>({
         name: "pencel",
         configFile: this.config,
         defaults: defaultConfig,

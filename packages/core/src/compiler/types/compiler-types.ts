@@ -1,3 +1,10 @@
+import type { PencilConfig } from "../api/index.ts";
+
+export interface PencelContext {
+  cwd: string;
+  config: Required<PencilConfig>;
+}
+
 /**
  * Metadata for a component property decorated with @Prop
  */

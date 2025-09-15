@@ -1,25 +1,26 @@
 import { throwError } from "@pencel/utils";
-import type { PencilConfig } from "dist/index.js";
 import type { ProgramBuilder } from "ts-flattered";
 import type ts from "typescript";
-import { compilerTree } from "../core/compiler.ts";
+import type { PencelContext } from "../types/compiler-types.ts";
+import { omitPreviousArtifacts } from "../utils/omitPreviousArtifacts.ts";
 import { transformComponentFile } from "./transform-component-file.ts";
 
 export async function transformComponents(
   program: ts.Program & ProgramBuilder,
-  config: PencilConfig,
+  ctx: PencelContext,
 ): Promise<Map<string, ts.SourceFile>> {
   const newComponentsMap = new Map<string, ts.SourceFile>();
-  const rootFileNames = program.getRootFileNames();
-
-  compilerTree.start(`transform`);
+  const rootFileNames = program
+    .getRootFileNames()
+    .filter(omitPreviousArtifacts(program, ctx));
 
   await Promise.all(
     rootFileNames.map(async (filePath) => {
       const newComponentFile = await transformComponentFile(
+        program,
         program.getSourceFile(filePath) ??
           throwError("Cannot find source file"),
-        config,
+        ctx,
       );
 
       if (newComponentFile) {
@@ -27,8 +28,6 @@ export async function transformComponents(
       }
     }),
   );
-
-  compilerTree.end(`transform`);
 
   return newComponentsMap;
 }

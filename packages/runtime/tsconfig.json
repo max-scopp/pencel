@@ -8,6 +8,6 @@
     "baseUrl": ".",
     "lib": ["es2022", "dom"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../utils/src/dashCase.ts"],
   "exclude": ["node_modules", "dist"]
 }

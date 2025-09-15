@@ -18,9 +18,9 @@
     "dist"
   ],
   "dependencies": {
-    "@pencel/core": "workspace:*",
     "c12": "^2.0.1",
-    "clipanion": "^4.0.0-rc.4"
+    "clipanion": "^4.0.0-rc.4",
+    "ts-flattered": "link:ts-flattered"
   },
   "private": true,
   "devDependencies": {
