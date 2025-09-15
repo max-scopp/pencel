@@ -12,7 +12,7 @@ But unlike Stencil, Pencel takes a different approach under the hood:
 
 - 🛠 No compiler lock-in
 - 🧩 No enforced bundler or dev server
-- 🚫 No automatic polyfills
+- 🚫 No automatic polyfills (handled by your bundler if needed)
 - 🎯 Build-agnostic, framework-friendly
 - 📦 Output: just standard TypeScript Web Components — nothing hidden
 
@@ -33,10 +33,11 @@ While **Pencel shares a lot of syntax and structure with Stencil**, it follows a
 | Syntax              | TypeScript + decorators                          | Same                                          |
 | Output              | Compiled JS bundles                              | Pure TS source (no compiler)                 |
 | Build system        | Custom compiler + Rollup                         | Bring your own (Vite, Rollup, esbuild, etc.) |
-| Polyfills           | Included automatically                           | Opt-in only                                   |
+| Polyfills           | Included automatically                           | Not included; handled by your bundler         |
 | Framework bindings  | Auto-generated                                  | Source-level generation             |
 | Styling             | Scoped CSS, Shadow DOM                           | Same (configurable)                          |
-| Runtime             | Lightweight custom runtime (~4–7KB)             | None or minimal (~0–2KB)                     |
+| Runtime             | Lightweight custom runtime (**up to ~4–7KB**, if all features are used) | None or minimal (~0–2KB)                     |
+> **Note:** The reported runtime size (~4–7KB) is the maximum if all features are included. Most modern bundlers (Vite, Rollup, esbuild, etc.) will tree-shake unused features, so your actual shipped runtime will likely be smaller depending on what you use.
 
 > Pencel isn't meant to replace Stencil — it’s just a different spin.  
 > In fact, many Stencil components may run unmodified in Pencel.
@@ -114,7 +115,7 @@ Nothing is mandatory. You own the output.
 
 * **Source-first**: your output is plain, readable code — no magic
 * **Framework-optional**: bindings are additive, not required
-* **No polyfills**: we don’t assume what your consumers need
+* **No polyfills**: Pencil does not include or inject any polyfills. If your target environment requires polyfills (e.g., for older browsers), configure your bundler (Vite, Rollup, esbuild, etc.) to include them as needed.
 * **Open and minimal**: you see what you ship
 
 ---

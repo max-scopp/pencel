@@ -5,5 +5,7 @@ export default defineConfig({
   outDir: "./dist",
   format: ["esm"],
   sourcemap: true,
+  banner: `/* Pencel Runtime v0.0.0 - License: MIT */`,
+  minify: true,
   platform: "browser",
 });

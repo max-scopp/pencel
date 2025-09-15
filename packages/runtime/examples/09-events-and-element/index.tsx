@@ -49,7 +49,7 @@ class EventButton extends HTMLElement implements ComponentInterface {
   tag: "event-counter",
 })
 class EventCounter extends HTMLElement implements ComponentInterface {
-  @Prop()
+  @Prop({ reflect: true })
   eventCount: number = 0;
 
   @Prop()
@@ -95,7 +95,7 @@ class EventDemo extends HTMLElement implements ComponentInterface {
   handleCustomEvent(event: CustomEvent) {
     this.eventCount++;
     this.lastEventData = event.detail;
-    console.log("Received custom event:", event.detail);
+    console.log("Received custom event:", event);
   }
 
   @Listen("click-event")
@@ -151,6 +151,10 @@ const app = (
       <li>
         <code>@Element</code> decorator for accessing the host element
         (deprecated, use <code>this</code> instead)
+      </li>
+      <li>
+        <code>@Listen</code> decorator for listening to custom events on the
+        component or globally
       </li>
       <li>Event bubbling and listening between components</li>
     </ul>
