@@ -7,6 +7,7 @@ import { fileFromString, findClasses, findDecorators } from "ts-flattered";
 import type ts from "typescript";
 import { compilerTree } from "../core/compiler.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
+import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
 import {
   createPencelMarker,
   isPencelGeneratedFile,
@@ -51,10 +52,15 @@ export async function transformComponentFile(
     return null;
   }
 
-  if (isPencelSourceUpToDate(sourceFile)) {
-    log(`Skipping up-to-date file: ${sourceFile.fileName}`);
-    return null;
-  }
+  // TODO: Parameterize this
+  // if (
+  //   isPencelSourceUpToDate(
+  //     sourceFile,
+  //     program.getSourceFile(getOutputPathForSource(sourceFile, ctx)),
+  //   )
+  // ) {
+  //   return null;
+  // }
 
   const fileNameBased = basename(sourceFile.fileName);
   compilerTree.start(fileNameBased);
