@@ -32,7 +32,8 @@ export async function transformComponentFile(
   const sourceDecorators = findClasses(sourceFile).flatMap((klass) => {
     const componentDecoratorsOnClass = findDecorators(klass, {
       sourceFile,
-      module: PENCEL_RUNTIME_MODULE_NAME,
+      // TODO: Enable module checking again
+      // module: PENCEL_RUNTIME_MODULE_NAME,
       name: PENCEL_COMPONENT_DECORATOR_NAME,
     });
 
@@ -70,7 +71,8 @@ export async function transformComponentFile(
     cls.updateDecoratorByFilter(
       {
         sourceFile: newSourceFile,
-        module: PENCEL_RUNTIME_MODULE_NAME,
+        // TODO: Enable module checking again
+        // module: PENCEL_RUNTIME_MODULE_NAME,
         name: PENCEL_COMPONENT_DECORATOR_NAME,
       },
       (decorator) => {
