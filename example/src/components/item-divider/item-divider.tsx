@@ -2,8 +2,8 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Prop, h } from '@stencil/core';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -49,12 +49,12 @@ export class ItemDivider implements ComponentInterface {
           item: true,
         })}
       >
-        <slot name="start"></slot>
+        <slot name="start" />
         <div class="item-divider-inner">
           <div class="item-divider-wrapper">
-            <slot></slot>
+            <slot />
           </div>
-          <slot name="end"></slot>
+          <slot name="end" />
         </div>
       </Host>
     );

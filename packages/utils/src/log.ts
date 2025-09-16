@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConsole: its logging */
 import {
   ansiStackTrace,
   ansiTimestamp,
@@ -8,12 +9,13 @@ import {
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
-const PENCIL_DO_LOGGING = () =>
-  (globalThis.PENCIL_DEBUG ||
-    (isBrowser
-      ? new URLSearchParams(window.location.search).get("pencilDebug")
-      : null)) ??
-  true;
+const PENCIL_DO_LOGGING = (): boolean => true;
+// Boolean(
+//     globalThis.PENCIL_DEBUG ||
+//       (isBrowser
+//         ? new URLSearchParams(window.location.search).get("pencilDebug")
+//         : null),
+//   ) ?? true;
 
 export function log(
   message: string,
@@ -61,14 +63,15 @@ export function createLog(
   };
 }
 
-export function error(error: Error): void;
+export function error(err: unknown): void;
+export function error(err: Error): void;
 export function error(
   message: string,
   style?: string,
   ...other: unknown[]
 ): void;
 export function error(
-  messageOrError: string | Error,
+  messageOrError: string | Error | unknown,
   style?: string,
   ...other: unknown[]
 ): void {
@@ -83,7 +86,7 @@ export function error(
     message = messageOrError.message;
     errorObj = messageOrError;
   } else {
-    message = messageOrError;
+    message = String(messageOrError);
     errorObj = new Error(message);
   }
 
@@ -132,9 +135,9 @@ export function error(
 
 export function createError(
   namespace: string,
-): ((error: Error) => void) &
+): ((err: Error) => void) &
   ((message: string, style?: string, ...other: unknown[]) => void) {
-  const prefixedError = (err: Error) => {
+  const prefixedError = (err: Error): void => {
     const prefixedMessage = `[${namespace}] ${err.message}`;
     const newError = new Error(prefixedMessage);
     newError.stack = err.stack;
@@ -145,7 +148,7 @@ export function createError(
     message: string,
     style?: string,
     ...other: unknown[]
-  ) => {
+  ): void => {
     const prefixedMessage = `[${namespace}] ${message}`;
     error(prefixedMessage, style, ...other);
   };

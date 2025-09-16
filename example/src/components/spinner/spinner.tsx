@@ -2,13 +2,13 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Host, Prop, h } from '@stencil/core';
 import { createColorClasses } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
-import type { SpinnerTypes } from './spinner-configs';
-import { SPINNERS } from './spinner-configs';
-import type { SpinnerConfig } from './spinner-interface';
+import type { SpinnerTypes } from "./spinner-configs.ts";
+import { SPINNERS } from "./spinner-configs.ts";
+import type { SpinnerConfig } from "./spinner-interface.ts";
 
 @Component({
   tag: 'ion-spinner',
@@ -49,11 +49,10 @@ export class Spinner implements ComponentInterface {
   }
 
   render() {
-    const self = this;
-    const mode = getIonMode(self);
-    const spinnerName = self.getName();
+    const mode = getIonMode(this);
+    const spinnerName = this.getName();
     const spinner = SPINNERS[spinnerName] ?? SPINNERS['lines'];
-    const duration = typeof self.duration === 'number' && self.duration > 10 ? self.duration : spinner.dur;
+    const duration = typeof this.duration === 'number' && this.duration > 10 ? this.duration : spinner.dur;
     const svgs: SVGElement[] = [];
 
     if (spinner.circles !== undefined) {
@@ -68,10 +67,10 @@ export class Spinner implements ComponentInterface {
 
     return (
       <Host
-        class={createColorClasses(self.color, {
+        class={createColorClasses(this.color, {
           [mode]: true,
           [`spinner-${spinnerName}`]: true,
-          'spinner-paused': self.paused || config.getBoolean('_testing'),
+          'spinner-paused': this.paused || config.getBoolean('_testing'),
         })}
         role="progressbar"
         style={spinner.elmDuration ? { animationDuration: duration + 'ms' } : {}}

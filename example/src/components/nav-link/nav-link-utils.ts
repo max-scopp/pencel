@@ -1,6 +1,6 @@
-import type { AnimationBuilder, ComponentProps } from '../../interface';
-import type { NavComponent } from '../nav/nav-interface';
-import type { RouterDirection } from '../router/utils/interface';
+import type { AnimationBuilder, ComponentProps } from "../../interface.ts";
+import type { NavComponent } from "../nav/nav-interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
 export const navLink = (
   el: HTMLElement,

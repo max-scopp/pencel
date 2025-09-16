@@ -18,15 +18,15 @@ import {
 } from '@utils/overlays';
 import { getClassMap } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, CssClassMap, FrameworkDelegate, OverlayInterface } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, CssClassMap, FrameworkDelegate, OverlayInterface } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
 
-import type { ActionSheetButton } from './action-sheet-interface';
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
+import type { ActionSheetButton } from "./action-sheet-interface.ts";
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -384,7 +384,7 @@ export class ActionSheet implements ComponentInterface, OverlayInterface {
       >
         <ion-backdrop tappable={this.backdropDismiss} />
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
 
         <div class="action-sheet-wrapper ion-overlay-wrapper" ref={(el) => (this.wrapperEl = el)}>
           <div class="action-sheet-container">
@@ -414,7 +414,7 @@ export class ActionSheet implements ComponentInterface, OverlayInterface {
                     {b.icon && <ion-icon icon={b.icon} aria-hidden="true" lazy={false} class="action-sheet-icon" />}
                     {b.text}
                   </span>
-                  {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+                  {mode === 'md' && <ion-ripple-effect />}
                 </button>
               ))}
             </div>
@@ -438,14 +438,14 @@ export class ActionSheet implements ComponentInterface, OverlayInterface {
                     )}
                     {cancelButton.text}
                   </span>
-                  {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+                  {mode === 'md' && <ion-ripple-effect />}
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
       </Host>
     );
   }

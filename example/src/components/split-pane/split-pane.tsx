@@ -2,7 +2,7 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Build, Component, Element, Event, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import { printIonWarning } from '@utils/logging';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 // TODO(FW-2832): types
 
@@ -157,10 +157,9 @@ export class SplitPane implements ComponentInterface {
         if (foundMain) {
           printIonWarning('[ion-split-pane] - Cannot have more than one main node.');
           return;
-        } else {
+        }
           setPaneClass(child, isMain);
           foundMain = true;
-        }
       }
     }
     if (!foundMain) {
@@ -181,7 +180,7 @@ export class SplitPane implements ComponentInterface {
           'split-pane-visible': this.visible,
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

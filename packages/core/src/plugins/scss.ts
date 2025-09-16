@@ -1,7 +1,7 @@
 import { createLog } from "@pencel/utils";
 import sass from "sass";
-import { registerPlugin } from "src/compiler/core/plugin.ts";
-import { PLUGIN_SKIP } from "src/compiler/types/plugins.ts";
+import { registerPlugin } from "../compiler/core/plugin.ts";
+import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("SCSS");
 
@@ -20,24 +20,24 @@ registerPlugin(
     enabled: true,
     scssOptions: {},
   },
-  async (options) => {
+  (options) => {
     if (!options.enabled) {
-      return null;
+      return Promise.resolve(null);
     }
 
     log("Using SCSS plugin");
 
-    return {
+    return Promise.resolve({
       transform: async (handle) => {
         if (handle.aspect === "css:preprocess") {
           log(`Handle ${handle.path}`);
           const result = await sass.compileStringAsync(handle.input);
 
-          return result.css;
+          return Promise.resolve(result.css);
         }
 
-        return PLUGIN_SKIP;
+        return Promise.resolve(PLUGIN_SKIP);
       },
-    };
+    });
   },
 );

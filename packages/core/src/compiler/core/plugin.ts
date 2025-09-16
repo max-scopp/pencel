@@ -9,11 +9,11 @@ import {
   type PluginRegistry,
   type TransformHandler,
 } from "../types/plugins.ts";
-import { compilerTree } from "./compiler.ts";
+import { compilerTree } from "../utils/compilerTree.ts";
 
 export const pluginsToInitialize: Map<
   string,
-  { pluginFn: PluginFunction<any>; defaults: any }
+  { pluginFn: PluginFunction<PluginNames>; defaults: object }
 > = new Map();
 
 const plugins = new Map<string, PluginHandler>();
@@ -27,7 +27,10 @@ export function registerPlugin<TPlugin extends PluginNames>(
     throwError(`Plugin '${name}' is already registered`);
   }
 
-  pluginsToInitialize.set(name, { pluginFn: pluginFn, defaults });
+  pluginsToInitialize.set(name, {
+    pluginFn: pluginFn as PluginFunction<PluginNames>,
+    defaults,
+  });
 }
 
 export async function initializePlugins(
@@ -36,7 +39,7 @@ export async function initializePlugins(
 ): Promise<void> {
   compilerTree.start("initialize-plugins");
 
-  pluginsToInitialize.forEach(async ({ pluginFn, defaults }, name) => {
+  for (const [name, { pluginFn, defaults }] of pluginsToInitialize.entries()) {
     const userEntry = config.plugins?.find((p) => {
       return typeof p === "string" ? p === name : p.name === name;
     });
@@ -57,14 +60,14 @@ export async function initializePlugins(
         plugins.set(name, plugin);
       }
     }
-  });
+  }
 
   compilerTree.end("initialize-plugins");
 }
 
-export async function handleTransform<THandle extends TransformHandler>(
-  handle: THandle,
-): Promise<THandle["input"]> {
+export async function handlePluginTransformation<
+  THandle extends TransformHandler,
+>(handle: THandle): Promise<THandle["input"]> {
   let intermediate = handle.input;
 
   compilerTree.start("handle-plugins");

@@ -1,5 +1,5 @@
-import { render } from "../../src";
-import { h } from "../../src/index";
+import { render } from "../../src/index.ts";
+import { h } from "../../src/index.ts";
 
 // Define custom element
 class MxCard extends HTMLElement {
@@ -48,7 +48,7 @@ customElements.define("mx-card", MxCard);
 
 // Example using custom elements
 const app = (
-  <div className="container">
+  <div class="container">
     <mx-card title="Custom Card 1">
       <p>This is a custom web component example.</p>
       <button type="button" onClick={() => alert("Card 1 clicked!")}>
@@ -58,7 +58,7 @@ const app = (
 
     <mx-card title="Custom Card 2">
       <p>Another custom card example with different content.</p>
-      <div className="card-footer">
+      <div class="card-footer">
         <button type="button" onClick={() => alert("Card 2 clicked!")}>
           Click Me
         </button>

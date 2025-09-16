@@ -5,8 +5,8 @@ import type { GestureDetail } from '@utils/gesture';
 import { getElementRoot } from '@utils/helpers';
 import { OVERLAY_GESTURE_PRIORITY } from '@utils/overlays';
 
-import { getOffsetForMiddlePosition } from '../animations/utils';
-import type { ToastAnimationPosition } from '../toast-interface';
+import { getOffsetForMiddlePosition } from "../animations/utils.ts";
+import type { ToastAnimationPosition } from "../toast-interface.ts";
 
 /**
  * Create a gesture that allows the Toast
@@ -71,7 +71,7 @@ export const createSwipeToDismissGesture = (
   const topPosition = getOffsetForMiddlePosition(hostElHeight, wrapperElBox.height);
   const SWIPE_UP_DOWN_KEYFRAMES = [
     { offset: 0, transform: `translateY(-${topPosition + wrapperElBox.height}px)` },
-    { offset: 0.5, transform: `translateY(0px)` },
+    { offset: 0.5, transform: "translateY(0px)" },
     { offset: 1, transform: `translateY(${topPosition + wrapperElBox.height}px)` },
   ];
 
@@ -149,7 +149,7 @@ export const createSwipeToDismissGesture = (
 
     let shouldDismiss = true;
     let playTo: 0 | 1 = 1;
-    let step: number = 0;
+    let step = 0;
     let remainingDistance = 0;
 
     if (el.position === 'middle') {

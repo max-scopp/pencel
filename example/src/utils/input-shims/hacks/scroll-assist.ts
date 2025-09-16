@@ -1,13 +1,13 @@
 import type { KeyboardResizeOptions } from '@capacitor/keyboard';
 import { win } from '@utils/browser';
 
-import { getScrollElement, scrollByPoint } from '../../content';
-import { raf } from '../../helpers';
-import { KeyboardResize } from '../../native/keyboard';
+import { getScrollElement, scrollByPoint } from "../../content/index.ts";
+import { raf } from "../../helpers.ts";
+import { KeyboardResize } from "../../native/keyboard.ts";
 
-import { relocateInput, SCROLL_AMOUNT_PADDING } from './common';
-import { getScrollData } from './scroll-data';
-import { setScrollPadding, setClearScrollPaddingListener } from './scroll-padding';
+import { relocateInput, SCROLL_AMOUNT_PADDING } from "./common.ts";
+import { getScrollData } from "./scroll-data.ts";
+import { setScrollPadding, setClearScrollPaddingListener } from "./scroll-padding.ts";
 
 let currentPadding = 0;
 
@@ -220,7 +220,7 @@ const jsSetFocus = async (
   platformHeight = 0,
   waitForResize = true
 ) => {
-  if (!contentEl && !footerEl) {
+  if (!(contentEl || footerEl)) {
     return;
   }
   const scrollData = getScrollData(componentEl, (contentEl || footerEl)!, keyboardHeight, platformHeight);

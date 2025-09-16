@@ -20,18 +20,18 @@ import {
 import { sanitizeDOMString } from '@utils/sanitization';
 import { createColorClasses, getClassMap } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color, CssClassMap, OverlayInterface, FrameworkDelegate } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
-import type { IonicSafeString } from '../../utils/sanitization';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color, CssClassMap, OverlayInterface, FrameworkDelegate } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
 
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
-import { getAnimationPosition } from './animations/utils';
-import { createSwipeToDismissGesture } from './gestures/swipe-to-dismiss';
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
+import { getAnimationPosition } from "./animations/utils.ts";
+import { createSwipeToDismissGesture } from "./gestures/swipe-to-dismiss.ts";
 import type {
   ToastButton,
   ToastPosition,
@@ -40,7 +40,7 @@ import type {
   ToastDismissOptions,
   ToastAnimationPosition,
   ToastSwipeGestureDirection,
-} from './toast-interface';
+} from "./toast-interface.ts";
 
 // TODO(FW-2832): types
 
@@ -498,7 +498,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
 
     if (position === 'middle' && positionAnchor !== undefined) {
       printIonWarning('[ion-toast] - The positionAnchor property is ignored when using position="middle".', this.el);
-      return undefined;
+      return ;
     }
 
     if (typeof positionAnchor === 'string') {
@@ -514,7 +514,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
           `[ion-toast] - An anchor element with an ID of "${positionAnchor}" was not found in the DOM.`,
           el
         );
-        return undefined;
+        return ;
       }
 
       return foundEl;
@@ -525,7 +525,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
     }
 
     printIonWarning('[ion-toast] - Invalid positionAnchor value:', positionAnchor, el);
-    return undefined;
+    return ;
   }
 
   private async buttonClick(button: ToastButton) {
@@ -642,7 +642,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
             {mode === 'md' && (
               <ion-ripple-effect
                 type={b.icon !== undefined && b.text === undefined ? 'unbounded' : 'bounded'}
-              ></ion-ripple-effect>
+              />
             )}
           </button>
         ))}
@@ -665,7 +665,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
           class="toast-message"
           part="message"
           innerHTML={sanitizeDOMString(message)}
-        ></div>
+        />
       );
     }
 
@@ -732,7 +732,7 @@ export class Toast implements ComponentInterface, OverlayInterface {
             {this.renderButtons(startButtons, 'start')}
 
             {this.icon !== undefined && (
-              <ion-icon class="toast-icon" part="icon" icon={this.icon} lazy={false} aria-hidden="true"></ion-icon>
+              <ion-icon class="toast-icon" part="icon" icon={this.icon} lazy={false} aria-hidden="true" />
             )}
 
             {/*

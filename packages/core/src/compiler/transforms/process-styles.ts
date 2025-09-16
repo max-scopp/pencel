@@ -2,11 +2,12 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { ComponentOptions } from "@pencel/runtime";
 import type ts from "typescript";
+import { handlePluginTransformation } from "../core/plugin.ts";
 
-export function processStyles(
+export async function processStyles(
   sourceFile: ts.SourceFile,
   componentOptions: ComponentOptions,
-): Pick<ComponentOptions, "styles" | "styleUrls"> {
+): Promise<Pick<ComponentOptions, "styles" | "styleUrls">> {
   let alwaysStyles = "";
 
   if (Array.isArray(componentOptions.styles)) {
@@ -15,22 +16,49 @@ export function processStyles(
     alwaysStyles += componentOptions.styles ?? "";
   }
 
-  const inlineRelativePath = (path: string) =>
-    readFileSync(resolve(dirname(sourceFile.fileName), path), "utf-8");
+  const getPath = (path: string) => {
+    return resolve(dirname(sourceFile.fileName), path);
+  };
+
+  const getContent = (fullPath: string) => {
+    return readFileSync(fullPath, "utf-8");
+  };
 
   if (componentOptions.styleUrl) {
-    alwaysStyles += inlineRelativePath(componentOptions.styleUrl);
+    const path = getPath(componentOptions.styleUrl);
+    const input = getContent(path);
+
+    alwaysStyles += await handlePluginTransformation({
+      aspect: "css:postprocess",
+      input: await handlePluginTransformation({
+        aspect: "css:preprocess",
+        input,
+        path,
+      }),
+      path,
+    });
   }
 
-  const inlinedStyleUrls = Object.entries(
-    componentOptions.styleUrls ?? {},
-  ).reduce(
-    (acc, [media, styleUrl]) => {
-      acc[media] = inlineRelativePath(styleUrl);
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  const inlinedStyleUrls: Record<string, string> = {};
+
+  if (componentOptions.styleUrls) {
+    for (const [media, styleUrl] of Object.entries(
+      componentOptions.styleUrls,
+    )) {
+      const path = getPath(styleUrl);
+      const input = getContent(path);
+
+      inlinedStyleUrls[media] = await handlePluginTransformation({
+        aspect: "css:postprocess",
+        input: await handlePluginTransformation({
+          aspect: "css:preprocess",
+          input,
+          path,
+        }),
+        path,
+      });
+    }
+  }
 
   return { styles: alwaysStyles, styleUrls: inlinedStyleUrls };
 }

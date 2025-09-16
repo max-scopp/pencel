@@ -5,7 +5,7 @@ import type { Attributes } from '@utils/helpers';
 import { inheritAriaAttributes } from '@utils/helpers';
 import { hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 import {
   cloneElement,
@@ -15,7 +15,7 @@ import {
   handleToolbarIntersection,
   setHeaderActive,
   setToolbarBackgroundOpacity,
-} from './header.utils';
+} from "./header.utils.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -142,7 +142,7 @@ export class Header implements ComponentInterface {
   }
 
   private async setupCondenseHeader(contentEl: HTMLElement | null, pageEl: Element | null) {
-    if (!contentEl || !pageEl) {
+    if (!(contentEl && pageEl)) {
       printIonContentErrorMsg(this.el);
       return;
     }
@@ -164,7 +164,7 @@ export class Header implements ComponentInterface {
     const mainHeaderIndex = createHeaderIndex(this.collapsibleMainHeader);
     const scrollHeaderIndex = createHeaderIndex(this.el);
 
-    if (!mainHeaderIndex || !scrollHeaderIndex) {
+    if (!(mainHeaderIndex && scrollHeaderIndex)) {
       return;
     }
 
@@ -221,14 +221,14 @@ export class Header implements ComponentInterface {
           // Used internally for styling
           [`header-${mode}`]: true,
 
-          [`header-translucent`]: this.translucent,
+          ["header-translucent"]: this.translucent,
           [`header-collapse-${collapse}`]: true,
           [`header-translucent-${mode}`]: this.translucent,
         }}
         {...inheritedAttributes}
       >
-        {mode === 'ios' && translucent && <div class="header-background"></div>}
-        <slot></slot>
+        {mode === 'ios' && translucent && <div class="header-background" />}
+        <slot />
       </Host>
     );
   }

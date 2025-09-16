@@ -21,8 +21,8 @@ import {
 import { getClassMap } from '@utils/theme';
 import { deepReady, waitForMount } from '@utils/transition';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
 import type {
   Animation,
   AnimationBuilder,
@@ -31,20 +31,20 @@ import type {
   FrameworkDelegate,
   Gesture,
   OverlayInterface,
-} from '../../interface';
-import { KEYBOARD_DID_OPEN } from '../../utils/keyboard/keyboard';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
+} from "../../interface.ts";
+import { KEYBOARD_DID_OPEN } from "../../utils/keyboard/keyboard.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
 
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { portraitToLandscapeTransition, landscapeToPortraitTransition } from './animations/ios.transition';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
-import type { MoveSheetToBreakpointOptions } from './gestures/sheet';
-import { createSheetGesture } from './gestures/sheet';
-import { createSwipeToCloseGesture, SwipeToCloseDefaults } from './gestures/swipe-to-close';
-import type { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from './modal-interface';
-import { setCardStatusBarDark, setCardStatusBarDefault } from './utils';
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { portraitToLandscapeTransition, landscapeToPortraitTransition } from "./animations/ios.transition.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
+import type { MoveSheetToBreakpointOptions } from "./gestures/sheet.ts";
+import { createSheetGesture } from "./gestures/sheet.ts";
+import { createSwipeToCloseGesture, SwipeToCloseDefaults } from "./gestures/swipe-to-close.ts";
+import type { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from "./modal-interface.ts";
+import { setCardStatusBarDark, setCardStatusBarDefault } from "./utils.ts";
 
 // TODO(FW-2832): types
 
@@ -1126,9 +1126,8 @@ export class Modal implements ComponentInterface, OverlayInterface {
       const isPortrait = window.innerWidth < 768;
 
       if (isPortrait) {
-        const transformOffset = !CSS.supports('width', 'max(0px, 1px)')
-          ? '30px'
-          : 'max(30px, var(--ion-safe-area-top))';
+        const transformOffset = CSS.supports('width', 'max(0px, 1px)')
+          ? 'max(30px, var(--ion-safe-area-top))' : '30px';
         const scale = SwipeToCloseDefaults.MIN_PRESENTING_SCALE;
         presentingElement.style.transform = `translateY(${transformOffset}) scale(${scale})`;
       } else {
@@ -1239,7 +1238,7 @@ export class Modal implements ComponentInterface, OverlayInterface {
 
     return (
       <Host
-        no-router
+        no-router={true}
         // Allow the modal to be navigable when the handle is focusable
         tabIndex={isHandleCycle && isSheetModalWithHandle ? 0 : -1}
         {...(htmlAttributes as any)}
@@ -1248,10 +1247,10 @@ export class Modal implements ComponentInterface, OverlayInterface {
         }}
         class={{
           [mode]: true,
-          ['modal-default']: !isCardModal && !isSheetModal,
-          [`modal-card`]: isCardModal,
-          [`modal-sheet`]: isSheetModal,
-          [`modal-no-expand-scroll`]: isSheetModal && !expandToScroll,
+          ['modal-default']: !(isCardModal || isSheetModal),
+          ["modal-card"]: isCardModal,
+          ["modal-sheet"]: isSheetModal,
+          ["modal-no-expand-scroll"]: isSheetModal && !expandToScroll,
           'overlay-hidden': true,
           [FOCUS_TRAP_DISABLE_CLASS]: focusTrap === false,
           ...getClassMap(this.cssClass),
@@ -1270,7 +1269,7 @@ export class Modal implements ComponentInterface, OverlayInterface {
           part="backdrop"
         />
 
-        {mode === 'ios' && <div class="modal-shadow"></div>}
+        {mode === 'ios' && <div class="modal-shadow" />}
 
         <div
           /*
@@ -1290,14 +1289,14 @@ export class Modal implements ComponentInterface, OverlayInterface {
             <button
               class="modal-handle"
               // Prevents the handle from receiving keyboard focus when it does not cycle
-              tabIndex={!isHandleCycle ? -1 : 0}
+              tabIndex={isHandleCycle ? 0 : -1}
               aria-label="Activate to adjust the size of the dialog overlaying the screen"
               onClick={isHandleCycle ? this.onHandleClick : undefined}
               part="handle"
               ref={(el) => (this.dragHandleEl = el)}
-            ></button>
+            />
           )}
-          <slot onSlotchange={this.onSlotChange}></slot>
+          <slot onSlotchange={this.onSlotChange} />
         </div>
       </Host>
     );

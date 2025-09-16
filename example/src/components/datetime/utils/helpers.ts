@@ -1,4 +1,4 @@
-import type { DatetimeHourCycle } from '../datetime-interface';
+import type { DatetimeHourCycle } from "../datetime-interface.ts";
 
 /**
  * Determines if given year is a

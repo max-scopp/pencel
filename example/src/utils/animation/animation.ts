@@ -1,6 +1,6 @@
 import { printIonError } from '@utils/logging';
 
-import { win } from '../browser';
+import { win } from "../browser/index.ts";
 
 import type {
   Animation,
@@ -12,8 +12,8 @@ import type {
   AnimationKeyFrames,
   AnimationLifecycle,
   AnimationPlayOptions,
-} from './animation-interface';
-import { addClassToArray, setStyleProperty } from './animation-utils';
+} from "./animation-interface.ts";
+import { addClassToArray, setStyleProperty } from "./animation-utils.ts";
 
 // TODO(FW-2832): types
 
@@ -541,7 +541,7 @@ export const createAnimation = (animationId?: string): Animation => {
 
       for (const property in styles) {
         // eslint-disable-next-line no-prototype-builtins
-        if (styles.hasOwnProperty(property)) {
+        if (Object.hasOwn(styles, property)) {
           setStyleProperty(el, property, styles[property]);
         }
       }
@@ -574,7 +574,7 @@ export const createAnimation = (animationId?: string): Animation => {
 
       for (const property in styles) {
         // eslint-disable-next-line no-prototype-builtins
-        if (styles.hasOwnProperty(property)) {
+        if (Object.hasOwn(styles, property)) {
           setStyleProperty(el, property, styles[property]);
         }
       }
@@ -650,11 +650,9 @@ export const createAnimation = (animationId?: string): Animation => {
   const initializeAnimation = () => {
     beforeAnimation();
 
-    if (_keyframes.length > 0) {
-      if (supportsWebAnimations) {
+    if (_keyframes.length > 0 && supportsWebAnimations) {
         initializeWebAnimation();
       }
-    }
 
     initialized = true;
   };

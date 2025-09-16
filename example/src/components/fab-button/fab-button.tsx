@@ -6,9 +6,9 @@ import type { Attributes } from '@utils/helpers';
 import { createColorClasses, hostContext, openURL } from '@utils/theme';
 import { close } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color } from '../../interface';
-import type { RouterDirection } from '../router/utils/interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color } from "../../interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -198,11 +198,11 @@ export class FabButton implements ComponentInterface, AnchorInterface, ButtonInt
             part="close-icon"
             class="close-icon"
             lazy={false}
-          ></ion-icon>
+          />
           <span class="button-inner">
-            <slot></slot>
+            <slot />
           </span>
-          {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect />}
         </TagType>
       </Host>
     );

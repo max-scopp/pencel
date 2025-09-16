@@ -1,4 +1,4 @@
-import { addEventListener } from './listener';
+import { addEventListener } from "./listener.ts";
 
 const MOUSE_WAIT = 2000;
 
@@ -106,7 +106,14 @@ export const createPointerEvents = (
   };
 
   const enable = (isEnabled = true) => {
-    if (!isEnabled) {
+    if (isEnabled) {
+      if (!rmTouchStart) {
+        rmTouchStart = addEventListener(el, 'touchstart', handleTouchStart, options);
+      }
+      if (!rmMouseStart) {
+        rmMouseStart = addEventListener(el, 'mousedown', handleMouseDown, options);
+      }
+    } else {
       if (rmTouchStart) {
         rmTouchStart();
       }
@@ -115,13 +122,6 @@ export const createPointerEvents = (
       }
       rmTouchStart = rmMouseStart = undefined;
       stop();
-    } else {
-      if (!rmTouchStart) {
-        rmTouchStart = addEventListener(el, 'touchstart', handleTouchStart, options);
-      }
-      if (!rmMouseStart) {
-        rmMouseStart = addEventListener(el, 'mousedown', handleMouseDown, options);
-      }
     }
   };
 

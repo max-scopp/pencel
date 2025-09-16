@@ -3,11 +3,11 @@ import { createGesture } from '@utils/gesture';
 import { clamp, getElementRoot, raf } from '@utils/helpers';
 import { FOCUS_TRAP_DISABLE_CLASS } from '@utils/overlays';
 
-import type { Animation } from '../../../interface';
-import type { GestureDetail } from '../../../utils/gesture';
-import { getBackdropValueForSheet } from '../utils';
+import type { Animation } from "../../../interface.ts";
+import type { GestureDetail } from "../../../utils/gesture/index.ts";
+import { getBackdropValueForSheet } from "../utils.ts";
 
-import { calculateSpringStep, handleCanDismiss } from './utils';
+import { calculateSpringStep, handleCanDismiss } from "./utils.ts";
 
 export interface MoveSheetToBreakpointOptions {
   /**

@@ -16,17 +16,17 @@ import {
 import { sanitizeDOMString } from '@utils/sanitization';
 import { getClassMap } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, FrameworkDelegate, OverlayInterface } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
-import type { IonicSafeString } from '../../utils/sanitization';
-import type { SpinnerTypes } from '../spinner/spinner-configs';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, FrameworkDelegate, OverlayInterface } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
+import type { SpinnerTypes } from "../spinner/spinner-configs.ts";
 
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
 
 // TODO(FW-2832): types
 
@@ -315,7 +315,7 @@ export class Loading implements ComponentInterface, OverlayInterface {
   private renderLoadingMessage(msgId: string) {
     const { customHTMLEnabled, message } = this;
     if (customHTMLEnabled) {
-      return <div class="loading-content" id={msgId} innerHTML={sanitizeDOMString(message)}></div>;
+      return <div class="loading-content" id={msgId} innerHTML={sanitizeDOMString(message)} />;
     }
 
     return (
@@ -355,7 +355,7 @@ export class Loading implements ComponentInterface, OverlayInterface {
       >
         <ion-backdrop visible={this.showBackdrop} tappable={this.backdropDismiss} />
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
 
         <div class="loading-wrapper ion-overlay-wrapper">
           {spinner && (
@@ -367,7 +367,7 @@ export class Loading implements ComponentInterface, OverlayInterface {
           {message !== undefined && this.renderLoadingMessage(msgId)}
         </div>
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
       </Host>
     );
   }

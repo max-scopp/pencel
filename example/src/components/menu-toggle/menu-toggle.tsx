@@ -2,9 +2,9 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
 import { menuController } from '@utils/menu-controller';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
-import { updateVisibility } from './menu-toggle-util';
+import { updateVisibility } from "./menu-toggle-util.ts";
 
 /**
  * @slot - Content is placed inside the toggle to act as the click target.
@@ -62,7 +62,7 @@ export class MenuToggle implements ComponentInterface {
           'menu-toggle-hidden': hidden,
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

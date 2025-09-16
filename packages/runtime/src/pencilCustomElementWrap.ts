@@ -1,6 +1,7 @@
 import {
+  ConsumerError,
   createPerformanceTree,
-  throwConsumerError,
+  error,
   throwError,
 } from "@pencel/utils";
 import {
@@ -8,6 +9,7 @@ import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
 } from "./controllers/component.ts";
+import type { JSXElement } from "./core/jsx.ts";
 import {
   ATTR_MAP,
   type ComponentInterfaceWithContext,
@@ -29,7 +31,7 @@ import { simpleCustomElementDisplayText } from "./utils/simpleCustomElementDispl
 function buildStyles(
   component: ComponentInterfaceWithContext,
   options: ComponentOptions,
-) {
+): CSSStyleSheet[] {
   const styles = new Set<CSSStyleSheet>();
 
   const raws = options.styles
@@ -38,20 +40,23 @@ function buildStyles(
       : [options.styles]
     : [];
 
-  raws.forEach((style) => {
-    const sheet = new CSSStyleSheet();
-    try {
-      sheet.replaceSync(style);
-      styles.add(sheet);
-    } catch (e) {
-      console.warn(
-        `Could not parse CSS string for ${simpleCustomElementDisplayText(
-          component,
-        )}:`,
-        e,
-      );
+  for (const i in raws) {
+    if (Object.hasOwn(raws, i)) {
+      const style = raws[i];
+      const sheet = new CSSStyleSheet();
+      try {
+        sheet.replaceSync(style);
+        styles.add(sheet);
+      } catch (e) {
+        console.warn(
+          `Could not parse CSS string for ${simpleCustomElementDisplayText(
+            component,
+          )}:`,
+          e,
+        );
+      }
     }
-  });
+  }
 
   return Array.from(styles);
 }
@@ -77,20 +82,19 @@ function interopStyleAttachment(
   styles: CSSStyleSheet[],
   options: ComponentOptions,
 ) {
-  if (options.shadow) {
-    component.shadowRoot!.adoptedStyleSheets = styles;
+  if (options.shadow && component.shadowRoot) {
+    component.shadowRoot.adoptedStyleSheets = styles;
   } else {
-    if (!styles.length) {
+    if (styles.length === 0) {
       return;
     }
 
     const stylesElm = mergeStyleSheetsToStyleTag(styles);
 
     if (options.scoped) {
-      throwConsumerError("Scoped styles are not implemented yet");
-    } else {
-      component.insertBefore(stylesElm, component.firstChild);
+      throw new ConsumerError("Scoped styles are not implemented yet");
     }
+    component.insertBefore(stylesElm, component.firstChild);
   }
 }
 
@@ -123,17 +127,18 @@ export function wrapComponentForRegistration<
   return class PencilCustomElementWrap extends klass {
     #hydratePerf = createPerformanceTree("Hydration");
 
+    // biome-ignore lint/suspicious/noExplicitAny: must be any for super()
     constructor(...args: any[]) {
       super(...args);
       componentCtrl().connect(this, customElementExtends);
     }
 
     // Get observed attributes from the prop map
-    static get observedAttributes() {
+    static get observedAttributes(): string[] {
       return PencilCustomElementWrap[PENCIL_OBSERVED_ATTRIBUTES];
     }
 
-    override async connectedCallback() {
+    override async connectedCallback(): Promise<void> {
       this.#hydratePerf.start("hydrate");
 
       // Setup phase
@@ -200,8 +205,14 @@ export function wrapComponentForRegistration<
     }
 
     override componentWillRender(): void | Promise<void> {
-      const ctx = this[PENCIL_COMPONENT_CONTEXT]!;
+      const ctx = this[PENCIL_COMPONENT_CONTEXT];
       const popts = ctx?.popts ?? [];
+
+      if (!ctx) {
+        throw new ConsumerError(
+          `Missing component context on ${simpleCustomElementDisplayText(this)}. Did you forget to call super() in the constructor?`,
+        );
+      }
 
       popts.forEach((propOptions, propName) => {
         if (propOptions?.reflect !== true) {
@@ -224,13 +235,13 @@ export function wrapComponentForRegistration<
       return super.componentWillRender?.();
     }
 
-    override render() {
+    override render(): JSXElement {
       try {
         return super.render?.() ?? null;
       } catch (origin) {
-        throwConsumerError(
+        error(origin);
+        throw new ConsumerError(
           `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
-          origin,
         );
       }
     }

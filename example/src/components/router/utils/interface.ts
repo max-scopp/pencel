@@ -1,5 +1,5 @@
-import type { AnimationBuilder, ComponentProps, HTMLStencilElement } from '../../../interface';
-import type { NavigationHookCallback } from '../../route/route-interface';
+import type { AnimationBuilder, ComponentProps, HTMLStencilElement } from "../../../interface.ts";
+import type { NavigationHookCallback } from "../../route/route-interface.ts";
 
 export interface NavOutlet {
   setRouteId(

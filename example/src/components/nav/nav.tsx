@@ -6,12 +6,12 @@ import { printIonWarning } from '@utils/logging';
 import type { TransitionOptions } from '@utils/transition';
 import { lifecycle, setPageHidden, transition } from '@utils/transition';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Animation, AnimationBuilder, ComponentProps, FrameworkDelegate, Gesture } from '../../interface';
-import type { NavOutlet, RouteID, RouteWrite, RouterDirection } from '../router/utils/interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Animation, AnimationBuilder, ComponentProps, FrameworkDelegate, Gesture } from "../../interface.ts";
+import type { NavOutlet, RouteID, RouteWrite, RouterDirection } from "../router/utils/interface.ts";
 
-import { LIFECYCLE_DID_LEAVE, LIFECYCLE_WILL_LEAVE, LIFECYCLE_WILL_UNLOAD } from './constants';
+import { LIFECYCLE_DID_LEAVE, LIFECYCLE_WILL_LEAVE, LIFECYCLE_WILL_UNLOAD } from "./constants.ts";
 import type {
   NavComponent,
   NavComponentWithProps,
@@ -19,9 +19,9 @@ import type {
   NavResult,
   TransitionDoneFn,
   TransitionInstruction,
-} from './nav-interface';
-import type { ViewController } from './view-controller';
-import { VIEW_STATE_ATTACHED, VIEW_STATE_DESTROYED, VIEW_STATE_NEW, convertToViews, matches } from './view-controller';
+} from "./nav-interface.ts";
+import type { ViewController } from "./view-controller.ts";
+import { VIEW_STATE_ATTACHED, VIEW_STATE_DESTROYED, VIEW_STATE_NEW, convertToViews, matches } from "./view-controller.ts";
 
 @Component({
   tag: 'ion-nav',
@@ -132,7 +132,7 @@ export class Nav implements NavOutlet {
 
     this.rootChanged();
 
-    this.gesture = (await import('../../utils/gesture/swipe-back')).createSwipeBackGesture(
+    this.gesture = (await import("../../utils/gesture/swipe-back.ts")).createSwipeBackGesture(
       this.el,
       this.canStart.bind(this),
       this.onStart.bind(this),
@@ -442,7 +442,7 @@ export class Nav implements NavOutlet {
         element: active.element,
       };
     }
-    return undefined;
+    return ;
   }
 
   /**
@@ -501,7 +501,7 @@ export class Nav implements NavOutlet {
 
   private getPreviousSync(view = this.getActiveSync()): ViewController | undefined {
     if (!view) {
-      return undefined;
+      return ;
     }
     const views = this.views;
     const index = views.indexOf(view);
@@ -637,7 +637,7 @@ export class Nav implements NavOutlet {
       const leavingView = this.getActiveSync();
       const enteringView = this.getEnteringView(ti, leavingView);
 
-      if (!leavingView && !enteringView) {
+      if (!(leavingView || enteringView)) {
         throw new Error('no views in the stack to be removed');
       }
 
@@ -776,7 +776,7 @@ export class Nav implements NavOutlet {
       }
     }
 
-    return undefined;
+    return ;
   }
 
   /**
@@ -1081,11 +1081,11 @@ export class Nav implements NavOutlet {
        * to the new easing curve, as `stepValue` is going to be given
        * in terms of a linear curve.
        */
-      if (!shouldComplete) {
+      if (shouldComplete) {
+        newStepValue += getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], stepValue)[0];
+      } else {
         this.sbAni.easing('cubic-bezier(1, 0, 0.68, 0.28)');
         newStepValue += getTimeGivenProgression([0, 0], [1, 0], [0.68, 0.28], [1, 1], stepValue)[0];
-      } else {
-        newStepValue += getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], stepValue)[0];
       }
 
       this.sbAni.progressEnd(shouldComplete ? 1 : 0, newStepValue, dur);
@@ -1095,6 +1095,6 @@ export class Nav implements NavOutlet {
   }
 
   render() {
-    return <slot></slot>;
+    return <slot />;
   }
 }

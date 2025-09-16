@@ -4,8 +4,8 @@ import { isOptionSelected } from '@utils/forms';
 import { addEventListener, removeEventListener } from '@utils/helpers';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -207,7 +207,7 @@ export class Radio implements ComponentInterface {
     return (
       <div class="radio-icon" part="container">
         <div class="radio-inner" part="mark" />
-        <div class="radio-ripple"></div>
+        <div class="radio-ripple" />
       </div>
     );
   }
@@ -247,7 +247,7 @@ export class Radio implements ComponentInterface {
             }}
             part="label"
           >
-            <slot></slot>
+            <slot />
           </div>
           <div class="native-wrapper">{this.renderRadioControl()}</div>
         </label>

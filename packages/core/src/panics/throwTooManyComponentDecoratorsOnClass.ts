@@ -9,7 +9,7 @@ export function throwTooManyComponentDecoratorsOnClass(
   throwWithCodeFrame(
     [
       `Multiple @Component decorators found on class ${sourceFile.fileName}.`,
-      `Only one is allowed per class.`,
+      "Only one is allowed per class.",
     ],
     highlightDecorators(sourceFile, decorators, {
       message: "Multiple @Component decorators found here.",

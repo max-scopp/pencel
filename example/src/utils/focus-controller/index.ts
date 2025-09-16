@@ -73,27 +73,30 @@ export const createFocusController = (): FocusController => {
          * new selectors to rule in core.scss.
          */
         switch (priority) {
-          case 'content':
+          case 'content': {
             const content = referenceEl.querySelector<HTMLElement>('main, [role="main"]');
             if (content && isVisible(content)) {
               moveFocus(content);
               return;
             }
             break;
-          case 'heading':
+          }
+          case 'heading': {
             const headingOne = referenceEl.querySelector<HTMLElement>('h1, [role="heading"][aria-level="1"]');
             if (headingOne && isVisible(headingOne)) {
               moveFocus(headingOne);
               return;
             }
             break;
-          case 'banner':
+          }
+          case 'banner': {
             const header = referenceEl.querySelector<HTMLElement>('header, [role="banner"]');
             if (header && isVisible(header)) {
               moveFocus(header);
               return;
             }
             break;
+          }
           default:
             printIonWarning(`Unrecognized focus manager priority value ${priority}`);
             break;

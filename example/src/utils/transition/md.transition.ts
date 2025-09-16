@@ -1,7 +1,7 @@
-import type { Animation } from '../../interface';
-import { createAnimation } from '../animation/animation';
-import type { TransitionOptions } from '../transition';
-import { getIonPageElement } from '../transition';
+import type { Animation } from "../../interface.ts";
+import { createAnimation } from "../animation/animation.ts";
+import type { TransitionOptions } from "../transition/index.ts";
+import { getIonPageElement } from "../transition/index.ts";
 
 export const mdTransitionAnimation = (_: HTMLElement, opts: TransitionOptions): Animation => {
   const OFF_BOTTOM = '40px';

@@ -4,13 +4,13 @@ import type { AnchorInterface } from '@utils/element-interface';
 import type { Attributes } from '@utils/helpers';
 import { inheritAttributes } from '@utils/helpers';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
 import type {
   TabBarChangedEventDetail,
   TabButtonClickEventDetail,
   TabButtonLayout,
-} from '../tab-bar/tab-bar-interface';
+} from "../tab-bar/tab-bar-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -176,9 +176,9 @@ export class TabButton implements ComponentInterface, AnchorInterface {
           {...inheritedAttributes}
         >
           <span class="button-inner">
-            <slot></slot>
+            <slot />
           </span>
-          {mode === 'md' && <ion-ripple-effect type="unbounded"></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect type="unbounded" />}
         </a>
       </Host>
     );

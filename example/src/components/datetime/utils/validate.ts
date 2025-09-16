@@ -1,6 +1,6 @@
 import { printIonWarning } from '@utils/logging';
 
-import type { DatetimePresentation, FormatOptions } from '../datetime-interface';
+import type { DatetimePresentation, FormatOptions } from "../datetime-interface.ts";
 
 /**
  * If a time zone is provided in the format options, the rendered text could

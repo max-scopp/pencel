@@ -1,5 +1,5 @@
-import type { AnimationBuilder, Color, LiteralUnion, Mode } from '../../interface';
-import type { IonicSafeString } from '../../utils/sanitization';
+import type { AnimationBuilder, Color, LiteralUnion, Mode } from "../../interface.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
 
 export interface ToastOptions {
   header?: string;

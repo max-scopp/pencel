@@ -1,7 +1,7 @@
 import { createAnimation } from '@utils/animation/animation';
 import { getElementRoot } from '@utils/helpers';
 
-import type { Animation, ToastDismissOptions } from '../../../interface';
+import type { Animation, ToastDismissOptions } from "../../../interface.ts";
 
 /**
  * iOS Toast Leave Animation

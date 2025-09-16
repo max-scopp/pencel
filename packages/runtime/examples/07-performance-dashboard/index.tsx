@@ -1,5 +1,5 @@
 // biome-ignore lint/correctness/noUnusedImports: JSX imports needed for runtime
-import { h, render } from "../../src";
+import { h, render } from "../../src/index.ts";
 
 // Application state (no charts)
 const state = {
@@ -238,7 +238,7 @@ function renderApp() {
               value={state.rowsPerTable}
               onInput={(e) => {
                 state.rowsPerTable =
-                  parseInt((e.target as HTMLInputElement).value) || 25;
+                  Number.parseInt((e.target as HTMLInputElement).value) || 25;
                 updateTables();
               }}
               style="width: 70px; padding: 4px; border: 1px solid #ddd; border-radius: 4px;"
@@ -269,7 +269,7 @@ function renderApp() {
               value={state.tilesPerGrid}
               onInput={(e) => {
                 state.tilesPerGrid =
-                  parseInt((e.target as HTMLInputElement).value) || 100;
+                  Number.parseInt((e.target as HTMLInputElement).value) || 100;
                 updateGrids();
               }}
               style="width: 70px; padding: 4px; border: 1px solid #ddd; border-radius: 4px;"

@@ -1,16 +1,16 @@
 import { createAnimation } from '@utils/animation/animation';
 import { getElementRoot } from '@utils/helpers';
 
-import type { Animation } from '../../../interface';
-import type { ModalAnimationOptions } from '../modal-interface';
+import type { Animation } from "../../../interface.ts";
+import type { ModalAnimationOptions } from "../modal-interface.ts";
 
-import { createSheetLeaveAnimation } from './sheet';
+import { createSheetLeaveAnimation } from "./sheet.ts";
 
 const createLeaveAnimation = () => {
   const backdropAnimation = createAnimation().fromTo('opacity', 'var(--backdrop-opacity)', 0);
 
   const wrapperAnimation = createAnimation().keyframes([
-    { offset: 0, opacity: 0.99, transform: `translateY(0px)` },
+    { offset: 0, opacity: 0.99, transform: "translateY(0px)" },
     { offset: 1, opacity: 0, transform: 'translateY(40px)' },
   ]);
 

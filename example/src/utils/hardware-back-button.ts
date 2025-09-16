@@ -2,7 +2,7 @@ import { win } from '@utils/browser';
 import type { CloseWatcher } from '@utils/browser';
 import { printIonError } from '@utils/logging';
 
-import { config } from '../global/config';
+import { config } from "../global/config.ts";
 
 // TODO(FW-2832): type
 type Handler = (processNextHandler: () => void) => Promise<any> | void | null;
@@ -86,7 +86,7 @@ export const startHardwareBackButton = () => {
       if (handlers.length > 0) {
         let selectedHandler: HandlerRegister = {
           priority: Number.MIN_SAFE_INTEGER,
-          handler: () => undefined,
+          handler: () => {},
           id: -1,
         };
         handlers.forEach((handler) => {

@@ -1,7 +1,7 @@
 import {
+  ConsumerError,
   createLog,
   getExtendsByInheritance,
-  throwConsumerError,
 } from "@pencel/utils";
 import { pencilConfig } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
@@ -62,11 +62,11 @@ function interopOptionsByUsage(
   options: ComponentOptions,
 ): SafeComponentOptions {
   if (options.scoped && options.shadow) {
-    throwConsumerError("Cannot use both scoped and shadow styles");
+    throw new ConsumerError("Cannot use both scoped and shadow styles");
   }
 
   if (options.extends && options.shadow) {
-    throwConsumerError(
+    throw new ConsumerError(
       "Cannot use shadow DOM with customized built-in elements",
     );
   }
@@ -86,9 +86,13 @@ function interopOptionsByUsage(
   return {
     ...scopedShadowPair,
     extends: options.extends,
-    tag: options.tag ?? throwConsumerError("Tag is required"),
+    tag:
+      options.tag ??
+      (() => {
+        throw new ConsumerError("Tag is required");
+      })(),
     assetsDirs: options.assetsDirs || [],
-    formAssociated: options.formAssociated || false,
+    formAssociated: options.formAssociated,
     styleUrls,
     styles:
       typeof options.styles === "string"

@@ -1,11 +1,11 @@
 import { createAnimation } from '@utils/animation/animation';
 import { getElementRoot } from '@utils/helpers';
 
-import type { Animation } from '../../../interface';
-import { SwipeToCloseDefaults } from '../gestures/swipe-to-close';
-import type { ModalAnimationOptions } from '../modal-interface';
+import type { Animation } from "../../../interface.ts";
+import { SwipeToCloseDefaults } from "../gestures/swipe-to-close.ts";
+import type { ModalAnimationOptions } from "../modal-interface.ts";
 
-import { createSheetEnterAnimation } from './sheet';
+import { createSheetEnterAnimation } from "./sheet.ts";
 
 const createEnterAnimation = () => {
   const backdropAnimation = createAnimation()
@@ -67,7 +67,7 @@ export const iosEnterAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
        * No need to worry about statusbar padding since engines like Gecko
        * are not used as the engine for standalone Cordova/Capacitor apps
        */
-      const transformOffset = !CSS.supports('width', 'max(0px, 1px)') ? '30px' : 'max(30px, var(--ion-safe-area-top))';
+      const transformOffset = CSS.supports('width', 'max(0px, 1px)') ? 'max(30px, var(--ion-safe-area-top))' : '30px';
       const modalTransform = hasCardModal ? '-10px' : transformOffset;
       const toPresentingScale = SwipeToCloseDefaults.MIN_PRESENTING_SCALE;
       const finalTransform = `translateY(${modalTransform}) scale(${toPresentingScale})`;
@@ -87,9 +87,7 @@ export const iosEnterAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
     } else {
       baseAnimation.addAnimation(backdropAnimation);
 
-      if (!hasCardModal) {
-        wrapperAnimation.fromTo('opacity', '0', '1');
-      } else {
+      if (hasCardModal) {
         const toPresentingScale = hasCardModal ? SwipeToCloseDefaults.MIN_PRESENTING_SCALE : 1;
         const finalTransform = `translateY(-10px) scale(${toPresentingScale})`;
 
@@ -114,6 +112,8 @@ export const iosEnterAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
           ]);
 
         baseAnimation.addAnimation([presentingAnimation, shadowAnimation]);
+      } else {
+        wrapperAnimation.fromTo('opacity', '0', '1');
       }
     }
   } else {

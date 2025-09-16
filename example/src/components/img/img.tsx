@@ -3,7 +3,7 @@ import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil
 import type { Attributes } from '@utils/helpers';
 import { inheritAttributes } from '@utils/helpers';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 /**
  * @part image - The inner `img` element.
@@ -140,6 +140,6 @@ const isDraggable = (draggable?: string): boolean | undefined => {
     case 'false':
       return false;
     default:
-      return undefined;
+      return ;
   }
 };

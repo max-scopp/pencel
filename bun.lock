@@ -5,6 +5,7 @@
       "name": "@pencel/source",
       "dependencies": {
         "c12": "^3.2.0",
+        "ts-flattered": "link:ts-flattered",
         "vite": "npm:rolldown-vite@latest",
       },
       "devDependencies": {
@@ -48,12 +49,19 @@
       },
       "devDependencies": {
         "@types/bun": "^1.2.21",
+        "tsdown": "^0.15.2",
+      },
+      "peerDependencies": {
+        "@pencel/core": "workspace:*",
+        "@pencel/utils": "workspace:*",
       },
     },
     "packages/core": {
       "name": "@pencel/core",
       "version": "0.0.0",
       "dependencies": {
+        "@pencel/runtime": "workspace:*",
+        "@pencel/utils": "workspace:*",
         "csso": "^5.0.5",
         "fast-glob": "^3.3.3",
         "sass": "^1.92.1",
@@ -61,6 +69,7 @@
       },
       "devDependencies": {
         "@types/csso": "~5.0.4",
+        "tsdown": "^0.15.2",
       },
       "peerDependencies": {
         "typescript": "*",
@@ -92,6 +101,9 @@
     "packages/utils": {
       "name": "@pencel/utils",
       "version": "0.0.0",
+      "dependencies": {
+        "tsdown": "^0.15.2",
+      },
       "devDependencies": {
         "typescript": "*",
       },

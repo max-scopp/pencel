@@ -1,7 +1,7 @@
 import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Event, Prop, Watch } from '@stencil/core';
 
-import type { NavigationHookCallback } from './route-interface';
+import type { NavigationHookCallback } from "./route-interface.ts";
 
 // TODO(FW-2832): types
 

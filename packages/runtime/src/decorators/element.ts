@@ -1,4 +1,4 @@
-import { throwConsumerError } from "@pencel/utils";
+import { ConsumerError } from "@pencel/utils";
 
 /**
  * This Decorator exists for backward compatibility.
@@ -30,7 +30,7 @@ export function Element(): PropertyDecorator {
       },
 
       set() {
-        throwConsumerError("You cannot override the @Element property.");
+        throw new ConsumerError("You cannot override the @Element property.");
       },
 
       enumerable: true,

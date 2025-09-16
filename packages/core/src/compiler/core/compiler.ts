@@ -1,19 +1,16 @@
-import {
-  createLog,
-  createPerformanceTree,
-  type PerformanceTreeController,
-} from "@pencel/utils";
+import { createLog } from "@pencel/utils";
 import { transformComponents } from "../codegen/transform-components.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
-import type { PencelContext } from "../types/compiler-types.ts";
-import type { PencelConfig, TransformResults } from "../types/config-types.ts";
+import type {
+  PencelContext,
+  TransformResults,
+} from "../types/compiler-types.ts";
+import type { PencelConfig } from "../types/config-types.ts";
+import { compilerTree } from "../utils/compilerTree.ts";
 import { initializePlugins } from "./plugin.ts";
 
 const log = createLog("Transform");
-
-export const compilerTree: PerformanceTreeController =
-  createPerformanceTree("Compiler");
 
 // TODO: Refactor to compiler context
 export const transform = async (
@@ -54,6 +51,7 @@ export const transform = async (
     //   );
     // });
 
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     return {} as any;
   } finally {
     compilerTree.end("transform");

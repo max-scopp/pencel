@@ -131,10 +131,10 @@ export function getExtendsByInheritance(klass: object): string | undefined {
         break;
     }
 
-    if (ctor === HTMLElement) return undefined; // reached base HTMLElement → autonomous
+    if (ctor === HTMLElement) return; // reached base HTMLElement → autonomous
 
     proto = Object.getPrototypeOf(proto);
   }
 
-  return undefined;
+  return;
 }

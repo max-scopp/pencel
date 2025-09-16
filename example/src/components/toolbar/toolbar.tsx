@@ -2,8 +2,8 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Listen, Prop, forceUpdate, h } from '@stencil/core';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, CssClassMap, StyleEventDetail } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, CssClassMap, StyleEventDetail } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -101,15 +101,15 @@ export class Toolbar implements ComponentInterface {
           }),
         }}
       >
-        <div class="toolbar-background" part="background"></div>
+        <div class="toolbar-background" part="background" />
         <div class="toolbar-container" part="container">
-          <slot name="start"></slot>
-          <slot name="secondary"></slot>
+          <slot name="start" />
+          <slot name="secondary" />
           <div class="toolbar-content" part="content">
-            <slot></slot>
+            <slot />
           </div>
-          <slot name="primary"></slot>
-          <slot name="end"></slot>
+          <slot name="primary" />
+          <slot name="end" />
         </div>
       </Host>
     );

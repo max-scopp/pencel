@@ -2,9 +2,9 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, h } from '@stencil/core';
 import { hostContext } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { StyleEventDetail } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { StyleEventDetail } from "../../interface.ts";
 
 @Component({
   tag: 'ion-skeleton-text',

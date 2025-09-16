@@ -1,10 +1,10 @@
+import { componentCtrl } from "../controllers/component.ts";
 import {
   ATTR_MAP,
-  type ComponentInterfaceBaseMeta,
+  type ComponentProtoMeta,
   PROP_NAMES,
-} from "src/core/types.ts";
-import { resolveAttributeName } from "src/utils/attributes.ts";
-import { componentCtrl } from "../controllers/component.ts";
+} from "../core/types.ts";
+import { resolveAttributeName } from "../utils/attributes.ts";
 
 /**
  * Explicit type conversion function for attribute values.
@@ -67,7 +67,7 @@ export interface PropOptions {
  */
 export function Prop(options?: PropOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
-    const component = target as ComponentInterfaceBaseMeta;
+    const component = target as ComponentProtoMeta;
     const propertyName = propertyKey as string;
     const ctrl = componentCtrl();
 

@@ -3,13 +3,13 @@ import type { BackButtonEvent } from '@utils/hardware-back-button';
 import { MENU_BACK_BUTTON_PRIORITY } from '@utils/hardware-back-button';
 import { printIonWarning } from '@utils/logging';
 
-import type { MenuI, MenuControllerI } from '../../components/menu/menu-interface';
-import type { AnimationBuilder } from '../../interface';
-import { componentOnReady } from '../helpers';
+import type { MenuI, MenuControllerI } from "../../components/menu/menu-interface.ts";
+import type { AnimationBuilder } from "../../interface.ts";
+import { componentOnReady } from "../helpers.ts";
 
-import { menuOverlayAnimation } from './animations/overlay';
-import { menuPushAnimation } from './animations/push';
-import { menuRevealAnimation } from './animations/reveal';
+import { menuOverlayAnimation } from "./animations/overlay.ts";
+import { menuPushAnimation } from "./animations/push.ts";
+import { menuRevealAnimation } from "./animations/reveal.ts";
 
 const createMenuController = (): MenuControllerI => {
   const menuAnimations = new Map<string, AnimationBuilder>();
@@ -60,10 +60,9 @@ const createMenuController = (): MenuControllerI => {
       const menuEl = await get(menu);
       // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
       return menuEl !== undefined && menuEl.isOpen();
-    } else {
+    }
       const menuEl = await getOpen();
       return menuEl !== undefined;
-    }
   };
 
   const isEnabled = async (menu?: string | null): Promise<boolean> => {
@@ -84,7 +83,7 @@ const createMenuController = (): MenuControllerI => {
    */
   const get = async (
     menu?: string | null,
-    logOnMultipleSideMenus: boolean = false
+    logOnMultipleSideMenus = false
   ): Promise<HTMLIonMenuElement | undefined> => {
     await waitUntilReady();
 
@@ -214,7 +213,7 @@ const createMenuController = (): MenuControllerI => {
     if (instance !== undefined) {
       return instance.el;
     }
-    return undefined;
+    return ;
   };
 
   const waitUntilReady = () => {

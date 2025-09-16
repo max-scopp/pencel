@@ -10,7 +10,7 @@ export class SegmentContent implements ComponentInterface {
   render() {
     return (
       <Host>
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

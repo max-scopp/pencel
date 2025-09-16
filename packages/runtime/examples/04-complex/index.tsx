@@ -1,5 +1,5 @@
-import { type FunctionalComponent, render } from "../../src";
-import { h } from "../../src/index";
+import { type FunctionalComponent, render } from "../../src/index.ts";
+import { h } from "../../src/index.ts";
 
 // Define custom element
 class MxCard extends HTMLElement {
@@ -94,7 +94,7 @@ const Tab: FunctionalComponent<TabProps> = ({
   <button
     type="button"
     onClick={onClick}
-    className={`tab ${isActive ? "active" : ""}`}
+    class={`tab ${isActive ? "active" : ""}`}
   >
     {label}
   </button>
@@ -108,7 +108,7 @@ interface TabPanelProps {
 const TabPanel: FunctionalComponent<TabPanelProps> = (
   { isActive }: TabPanelProps,
   children,
-) => <div className={`tab-panel ${isActive ? "active" : ""}`}>{children}</div>;
+) => <div class={`tab-panel ${isActive ? "active" : ""}`}>{children}</div>;
 
 // Complex component with state
 interface TodoItem {
@@ -141,8 +141,8 @@ const TodoList: FunctionalComponent = () => {
   };
 
   return (
-    <div className="todo-list">
-      <div className="todo-input">
+    <div class="todo-list">
+      <div class="todo-input">
         <input
           type="text"
           value={input}
@@ -159,7 +159,7 @@ const TodoList: FunctionalComponent = () => {
           const todoElements = todos.map((todo) => (
             <li
               key={todo.id}
-              className={todo.completed ? "completed" : ""}
+              class={todo.completed ? "completed" : ""}
               onClick={() => toggleTodo(todo.id)}
               onKeyDown={(e: KeyboardEvent) => {
                 if (e.key === "Enter") toggleTodo(todo.id);
@@ -181,15 +181,15 @@ const App: FunctionalComponent = () => {
   const tabs = ["Todo List", "Custom Elements", "Info"];
 
   return (
-    <div className={`app ${ThemeContext.current}`}>
-      <header className="header">
+    <div class={`app ${ThemeContext.current}`}>
+      <header class="header">
         <h1>Complex JSX Example</h1>
         <button type="button" onClick={ThemeContext.toggle}>
           Toggle Theme
         </button>
       </header>
 
-      <nav className="tabs">
+      <nav class="tabs">
         {tabs.map((tab, index) => (
           <Tab
             key={index}
@@ -200,7 +200,7 @@ const App: FunctionalComponent = () => {
         ))}
       </nav>
 
-      <main className="content">
+      <main class="content">
         <TabPanel isActive={activeTab === 0}>
           <TodoList />
         </TabPanel>
@@ -218,7 +218,7 @@ const App: FunctionalComponent = () => {
         </TabPanel>
 
         <TabPanel isActive={activeTab === 2}>
-          <div className="info-panel">
+          <div class="info-panel">
             <h2>About This Example</h2>
             <p>This example demonstrates:</p>
             <ul>

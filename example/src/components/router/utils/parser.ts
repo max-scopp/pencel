@@ -1,5 +1,5 @@
-import type { RouteChain, RouteNode, RouteRedirect, RouteTree } from './interface';
-import { parsePath } from './path';
+import type { RouteChain, RouteNode, RouteRedirect, RouteTree } from "./interface.ts";
+import { parsePath } from "./path.ts";
 
 const readProp = (el: HTMLElement, prop: string): string | null | undefined => {
   if (prop in el) {

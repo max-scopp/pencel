@@ -5,9 +5,9 @@ import type { Attributes } from '@utils/helpers';
 import { inheritAttributes } from '@utils/helpers';
 import { createColorClasses, openURL } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color, Mode } from '../../interface';
-import type { RouterDirection } from '../router/utils/interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color, Mode } from "../../interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -99,7 +99,7 @@ export class Card implements ComponentInterface, AnchorInterface, ButtonInterfac
     const clickable = this.isClickable();
 
     if (!clickable) {
-      return [<slot></slot>];
+      return [<slot />];
     }
     const { href, routerAnimation, routerDirection, inheritedAriaAttributes } = this;
     const TagType = clickable ? (href === undefined ? 'button' : 'a') : ('div' as any);
@@ -122,8 +122,8 @@ export class Card implements ComponentInterface, AnchorInterface, ButtonInterfac
         disabled={this.disabled}
         onClick={(ev: Event) => openURL(href, ev, routerDirection, routerAnimation)}
       >
-        <slot></slot>
-        {clickable && mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+        <slot />
+        {clickable && mode === 'md' && <ion-ripple-effect />}
       </TagType>
     );
   }

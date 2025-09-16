@@ -168,9 +168,8 @@ const isSanitizerEnabled = (): boolean => {
   if (config) {
     if (config.get) {
       return config.get('sanitizerEnabled', true);
-    } else {
-      return config.sanitizerEnabled === true || config.sanitizerEnabled === undefined;
     }
+      return config.sanitizerEnabled === true || config.sanitizerEnabled === undefined;
   }
   return true;
 };

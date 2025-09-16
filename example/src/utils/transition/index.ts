@@ -6,14 +6,14 @@ import {
   LIFECYCLE_DID_LEAVE,
   LIFECYCLE_WILL_ENTER,
   LIFECYCLE_WILL_LEAVE,
-} from '../../components/nav/constants';
-import type { NavOptions, NavDirection } from '../../components/nav/nav-interface';
-import type { Animation, AnimationBuilder } from '../animation/animation-interface';
-import { createFocusController } from '../focus-controller';
-import { raf } from '../helpers';
+} from "../../components/nav/constants.ts";
+import type { NavOptions, NavDirection } from "../../components/nav/nav-interface.ts";
+import type { Animation, AnimationBuilder } from "../animation/animation-interface.ts";
+import { createFocusController } from "../focus-controller/index.ts";
+import { raf } from "../helpers.ts";
 
-const iosTransitionAnimation = () => import('./ios.transition');
-const mdTransitionAnimation = () => import('./md.transition');
+const iosTransitionAnimation = () => import("./ios.transition.ts");
+const mdTransitionAnimation = () => import("./md.transition.ts");
 const focusController = createFocusController();
 
 // TODO(FW-2832): types
@@ -90,8 +90,8 @@ const afterTransition = (opts: TransitionOptions) => {
 };
 
 const getAnimationBuilder = async (opts: TransitionOptions): Promise<AnimationBuilder | undefined> => {
-  if (!opts.leavingEl || !opts.animated || opts.duration === 0) {
-    return undefined;
+  if (!(opts.leavingEl && opts.animated ) || opts.duration === 0) {
+    return ;
   }
 
   if (opts.animationBuilder) {

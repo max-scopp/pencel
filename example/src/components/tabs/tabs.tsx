@@ -2,8 +2,8 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Method, Prop, State, h } from '@stencil/core';
 import { printIonError } from '@utils/logging';
 
-import type { NavOutlet, RouteID, RouteWrite } from '../router/utils/interface';
-import type { TabButtonClickEventDetail } from '../tab-bar/tab-bar-interface';
+import type { NavOutlet, RouteID, RouteWrite } from "../router/utils/interface.ts";
+import type { TabButtonClickEventDetail } from "../tab-bar/tab-bar-interface.ts";
 
 /**
  * @slot - Content is placed between the named slots if provided without a slot.
@@ -217,11 +217,11 @@ export class Tabs implements NavOutlet {
   render() {
     return (
       <Host onIonTabButtonClick={this.onTabClicked}>
-        <slot name="top"></slot>
+        <slot name="top" />
         <div class="tabs-inner">
-          <slot></slot>
+          <slot />
         </div>
-        <slot name="bottom"></slot>
+        <slot name="bottom" />
       </Host>
     );
   }

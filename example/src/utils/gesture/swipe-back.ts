@@ -1,8 +1,8 @@
-import { clamp } from '../helpers';
-import { isRTL } from '../rtl';
+import { clamp } from "../helpers.ts";
+import { isRTL } from "../rtl/index.ts";
 
-import type { Gesture, GestureDetail } from './index';
-import { createGesture } from './index';
+import type { Gesture, GestureDetail } from "./index.ts";
+import { createGesture } from "./index.ts";
 
 export const createSwipeBackGesture = (
   el: HTMLElement,

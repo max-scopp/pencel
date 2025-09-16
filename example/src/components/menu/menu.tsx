@@ -12,11 +12,11 @@ import { BACKDROP, GESTURE, getPresentedOverlay } from '@utils/overlays';
 import { isPlatform } from '@utils/platform';
 import { hostContext } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Animation, Gesture, GestureDetail } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Animation, Gesture, GestureDetail } from "../../interface.ts";
 
-import type { MenuChangeEventDetail, MenuCloseEventDetail, MenuI, MenuType, Side } from './menu-interface';
+import type { MenuChangeEventDetail, MenuCloseEventDetail, MenuI, MenuType, Side } from "./menu-interface.ts";
 
 const iosEasing = 'cubic-bezier(0.32,0.72,0,1)';
 const mdEasing = 'cubic-bezier(0.0,0.0,0.2,1)';
@@ -238,7 +238,7 @@ export class Menu implements ComponentInterface, MenuI {
     menuController._register(this);
 
     this.menuChanged();
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: document,
       gestureName: 'menu-swipe',
       gesturePriority: 30,
@@ -547,7 +547,7 @@ export class Menu implements ComponentInterface, MenuI {
   }
 
   private _isActive() {
-    return !this.disabled && !this.isPaneVisible;
+    return !(this.disabled || this.isPaneVisible);
   }
 
   private canSwipe(): boolean {
@@ -562,7 +562,7 @@ export class Menu implements ComponentInterface, MenuI {
     }
     if (this._isOpen) {
       return true;
-    } else if (menuController._getOpenSync()) {
+    }if (menuController._getOpenSync()) {
       return false;
     }
     return checkEdgeSide(window, detail.currentX, this.isEndSide, this.maxEdgeStart);
@@ -574,7 +574,7 @@ export class Menu implements ComponentInterface, MenuI {
   }
 
   private onStart() {
-    if (!this.isAnimating || !this.animation) {
+    if (!(this.isAnimating && this.animation)) {
       assert(false, 'isAnimating has to be true');
       return;
     }
@@ -584,7 +584,7 @@ export class Menu implements ComponentInterface, MenuI {
   }
 
   private onMove(detail: GestureDetail) {
-    if (!this.isAnimating || !this.animation) {
+    if (!(this.isAnimating && this.animation)) {
       assert(false, 'isAnimating has to be true');
       return;
     }
@@ -596,7 +596,7 @@ export class Menu implements ComponentInterface, MenuI {
   }
 
   private onEnd(detail: GestureDetail) {
-    if (!this.isAnimating || !this.animation) {
+    if (!(this.isAnimating && this.animation)) {
       assert(false, 'isAnimating has to be true');
       return;
     }
@@ -852,7 +852,7 @@ export class Menu implements ComponentInterface, MenuI {
         }}
       >
         <div class="menu-inner" part="container" ref={(el) => (this.menuInnerEl = el)}>
-          <slot></slot>
+          <slot />
         </div>
 
         <ion-backdrop
@@ -874,9 +874,8 @@ const computeDelta = (deltaX: number, isOpen: boolean, isEndSide: boolean): numb
 const checkEdgeSide = (win: Window, posX: number, isEndSide: boolean, maxEdgeStart: number): boolean => {
   if (isEndSide) {
     return posX >= win.innerWidth - maxEdgeStart;
-  } else {
-    return posX <= maxEdgeStart;
   }
+    return posX <= maxEdgeStart;
 };
 
 const SHOW_MENU = 'show-menu';

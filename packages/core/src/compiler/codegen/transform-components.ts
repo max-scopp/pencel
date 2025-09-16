@@ -1,4 +1,5 @@
 import { throwError } from "@pencel/utils";
+import { basename } from "path";
 import type { ProgramBuilder } from "ts-flattered";
 import type ts from "typescript";
 import type { PencelContext } from "../types/compiler-types.ts";
@@ -16,6 +17,8 @@ export async function transformComponents(
 
   await Promise.all(
     rootFileNames.map(async (filePath) => {
+      const fileNameBased = basename(filePath);
+
       const newComponentFile = await transformComponentFile(
         program,
         program.getSourceFile(filePath) ??

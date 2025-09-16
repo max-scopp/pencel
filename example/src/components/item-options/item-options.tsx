@@ -2,8 +2,8 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Method, Prop, h } from '@stencil/core';
 import { isEndSide } from '@utils/helpers';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Side } from '../menu/menu-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Side } from "../menu/menu-interface.ts";
 
 @Component({
   tag: 'ion-item-options',
@@ -56,7 +56,7 @@ export class ItemOptions implements ComponentInterface {
           'item-options-start': !isEnd,
           'item-options-end': isEnd,
         }}
-      ></Host>
+      />
     );
   }
 }

@@ -4,8 +4,8 @@ import { printIonWarning } from '@utils/logging';
 import { createColorClasses } from '@utils/theme';
 import { eyeOff, eye } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, TextFieldTypes } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, TextFieldTypes } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -144,7 +144,7 @@ export class InputPasswordToggle implements ComponentInterface {
             slot="icon-only"
             aria-hidden="true"
             icon={isPasswordVisible ? hidePasswordIcon : showPasswordIcon}
-          ></ion-icon>
+          />
         </ion-button>
       </Host>
     );

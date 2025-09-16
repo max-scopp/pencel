@@ -1,6 +1,6 @@
 import { getElementRoot, raf } from '@utils/helpers';
 
-import type { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from './popover-interface';
+import type { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from "./popover-interface.ts";
 
 interface InteractionCallback {
   eventName: string;
@@ -169,7 +169,7 @@ export const configureTriggerInteraction = (
    * listeners.
    */
   switch (triggerAction) {
-    case 'hover':
+    case 'hover': {
       let hoverTimeout: ReturnType<typeof setTimeout> | undefined;
 
       triggerCallbacks = [
@@ -231,6 +231,7 @@ export const configureTriggerInteraction = (
       ];
 
       break;
+    }
     case 'context-menu':
       triggerCallbacks = [
         {
@@ -372,16 +373,17 @@ export const configureKeyboardInteraction = (popoverEl: HTMLIonPopoverElement) =
        * focus to the popover that presented
        * this one.
        */
-      case 'ArrowLeft':
+      case 'ArrowLeft': {
         const parentPopover = await popoverEl.getParentPopover();
         if (parentPopover) {
           popoverEl.dismiss(undefined, undefined, false);
         }
         break;
+      }
       /**
        * ArrowDown should move focus to the next focusable ion-item.
        */
-      case 'ArrowDown':
+      case 'ArrowDown': {
         // Disable movement/scroll with keyboard
         ev.preventDefault();
         const nextItem = getNextItem(items, activeElement);
@@ -389,10 +391,11 @@ export const configureKeyboardInteraction = (popoverEl: HTMLIonPopoverElement) =
           focusItem(nextItem);
         }
         break;
+      }
       /**
        * ArrowUp should move focus to the previous focusable ion-item.
        */
-      case 'ArrowUp':
+      case 'ArrowUp': {
         // Disable movement/scroll with keyboard
         ev.preventDefault();
         const prevItem = getPrevItem(items, activeElement);
@@ -400,26 +403,29 @@ export const configureKeyboardInteraction = (popoverEl: HTMLIonPopoverElement) =
           focusItem(prevItem);
         }
         break;
+      }
       /**
        * Home should move focus to the first focusable ion-item.
        */
-      case 'Home':
+      case 'Home': {
         ev.preventDefault();
         const firstItem = items[0];
         if (firstItem !== undefined) {
           focusItem(firstItem);
         }
         break;
+      }
       /**
        * End should move focus to the last focusable ion-item.
        */
-      case 'End':
+      case 'End': {
         ev.preventDefault();
         const lastItem = items[items.length - 1];
         if (lastItem !== undefined) {
           focusItem(lastItem);
         }
         break;
+      }
       /**
        * ArrowRight, Spacebar, or Enter should activate
        * the currently focused trigger item to open a
@@ -473,7 +479,7 @@ export const getPopoverPosition = (
    * was passed in
    */
   switch (reference) {
-    case 'event':
+    case 'event': {
       if (!event) {
         return defaultPosition;
       }
@@ -488,6 +494,7 @@ export const getPopoverPosition = (
       };
 
       break;
+    }
 
     /**
      * Calculate position relative to the bounding
@@ -497,7 +504,7 @@ export const getPopoverPosition = (
      * that was passed in.
      */
     case 'trigger':
-    default:
+    default: {
       const customEv = event as CustomEvent;
 
       /**
@@ -524,6 +531,7 @@ export const getPopoverPosition = (
       };
 
       break;
+    }
   }
 
   /**
@@ -912,7 +920,7 @@ export const shouldShowArrow = (side: PositionSide, didAdjustBounds = false, ev?
    * In this case, the arrow should not be
    * shown as we do not have a reference.
    */
-  if (!ev && !trigger) {
+  if (!(ev || trigger)) {
     return false;
   }
 

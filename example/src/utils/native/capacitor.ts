@@ -13,5 +13,5 @@ export const getCapacitor = () => {
   if (win !== undefined) {
     return (win as any).Capacitor as CustomCapacitorGlobal;
   }
-  return undefined;
+  return ;
 };

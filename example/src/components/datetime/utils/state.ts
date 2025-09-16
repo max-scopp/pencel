@@ -5,11 +5,11 @@ import type {
   DatetimeHighlightCallback,
   DatetimeHighlightStyle,
   DatetimeParts,
-} from '../datetime-interface';
+} from "../datetime-interface.ts";
 
-import { isAfter, isBefore, isSameDay } from './comparison';
-import { generateDayAriaLabel, getDay } from './format';
-import { getNextMonth, getPreviousMonth } from './manipulation';
+import { isAfter, isBefore, isSameDay } from "./comparison.ts";
+import { generateDayAriaLabel, getDay } from "./format.ts";
+import { getNextMonth, getPreviousMonth } from "./manipulation.ts";
 
 export const isYearDisabled = (refYear: number, minParts?: DatetimeParts, maxParts?: DatetimeParts) => {
   if (minParts && minParts.year > refYear) {
@@ -226,5 +226,5 @@ export const getHighlightStyles = (
     }
   }
 
-  return undefined;
+  return ;
 };

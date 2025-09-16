@@ -6,9 +6,9 @@ import { inheritAttributes, raf } from '@utils/helpers';
 import { createColorClasses, hostContext, openURL } from '@utils/theme';
 import { chevronForward } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color, CssClassMap, StyleEventDetail } from '../../interface';
-import type { RouterDirection } from '../router/utils/interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color, CssClassMap, StyleEventDetail } from "../../interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -389,12 +389,12 @@ export class Item implements ComponentInterface, AnchorInterface, ButtonInterfac
           disabled={disabled}
           {...clickFn}
         >
-          <slot name="start" onSlotchange={this.updateInteractivityOnSlotChange}></slot>
+          <slot name="start" onSlotchange={this.updateInteractivityOnSlotChange} />
           <div class="item-inner">
             <div class="input-wrapper">
-              <slot onSlotchange={this.updateInteractivityOnSlotChange}></slot>
+              <slot onSlotchange={this.updateInteractivityOnSlotChange} />
             </div>
-            <slot name="end" onSlotchange={this.updateInteractivityOnSlotChange}></slot>
+            <slot name="end" onSlotchange={this.updateInteractivityOnSlotChange} />
             {showDetail && (
               <ion-icon
                 icon={detailIcon}
@@ -403,10 +403,10 @@ export class Item implements ComponentInterface, AnchorInterface, ButtonInterfac
                 part="detail-icon"
                 aria-hidden="true"
                 flip-rtl={detailIcon === chevronForward}
-              ></ion-icon>
+              />
             )}
           </div>
-          {canActivate && mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+          {canActivate && mode === 'md' && <ion-ripple-effect />}
         </TagType>
       </Host>
     );

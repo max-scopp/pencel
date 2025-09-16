@@ -1,6 +1,6 @@
 import { basename } from "node:path";
 import type { ComponentOptions, PropOptions } from "@pencel/runtime";
-import { dashCase, throwConsumerError } from "@pencel/utils";
+import { ConsumerError, dashCase } from "@pencel/utils";
 import {
   computeConstructorType,
   fileFromString,
@@ -10,9 +10,9 @@ import {
 } from "ts-flattered";
 import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
-import { compilerTree } from "../core/compiler.ts";
 import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
+import { compilerTree } from "../utils/compilerTree.ts";
 import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
 
 export const PENCEL_RUNTIME_MODULE_NAME = "@pencel/runtime" as const;
@@ -38,9 +38,6 @@ export async function transformComponentFile(
     return null;
   }
 
-  const fileNameBased = basename(sourceFile.fileName);
-  compilerTree.start(fileNameBased);
-
   const newSourceFile = fileFromString(
     sourceFile.fileName,
     sourceFile.getFullText(),
@@ -49,31 +46,30 @@ export async function transformComponentFile(
 
   newSourceFile.prependBanner(createPencelMarker(sourceFile), "line");
 
-  transformComponentDecorators(newSourceFile, program, ctx);
-  transformComponentPropsDecorators(newSourceFile, program, ctx);
-
-  compilerTree.end(fileNameBased);
+  await transformComponentDecorators(newSourceFile, program, ctx);
+  await transformComponentPropsDecorators(newSourceFile, program, ctx);
 
   return newSourceFile;
 }
 
-export function transformComponentDecorators(
+export async function transformComponentDecorators(
   newSourceFile: ts.SourceFile & SourceFile,
   program: ts.Program,
   ctx: PencelContext,
-): void {
-  newSourceFile.updateClasses((cls) => {
-    cls.updateDecoratorByFilter(
+): Promise<void> {
+  await newSourceFile.updateClassesAsync(async (cls) => {
+    await cls.updateDecoratorsByFilterAsync(
       {
         sourceFile: newSourceFile,
         // TODO: Enable module checking again
         // module: PENCEL_RUNTIME_MODULE_NAME,
         name: PENCEL_DECORATORS.Component,
       },
-      (decorator) => {
-        decorator.updateArgumentObject(0, (obj) => {
+      async (decorator) => {
+        await decorator.updateArgumentObjectAsync(0, async (obj) => {
           const componentOptions = obj.toRecord() as ComponentOptions;
-          const { styles, styleUrls } = processStyles(
+
+          const { styles, styleUrls } = await processStyles(
             newSourceFile,
             componentOptions,
           );
@@ -81,7 +77,9 @@ export function transformComponentDecorators(
           obj.setMany({
             tag: dashCase(
               cls.name?.text ??
-                throwConsumerError("Anonymous classes must have a tag."),
+                (() => {
+                  throw new ConsumerError("Anonymous classes must have a tag.");
+                })(),
             ),
             styles,
             styleUrls,
@@ -100,13 +98,13 @@ export function transformComponentDecorators(
   });
 }
 
-export function transformComponentPropsDecorators(
+export async function transformComponentPropsDecorators(
   newSourceFile: ts.SourceFile & SourceFile,
   program: ts.Program,
   ctx: PencelContext,
-): void {
-  newSourceFile.updateClasses((cls) => {
-    cls.updatePropertiesByFilter(
+): Promise<void> {
+  await newSourceFile.updateClassesAsync(async (cls) => {
+    await cls.updatePropertiesByFilter(
       (prop) =>
         findDecorators(prop, {
           sourceFile: newSourceFile,
@@ -162,7 +160,7 @@ export function fileShouldBeProcessed(
     return componentDecoratorsOnClass;
   });
 
-  if (sourceDecorators.length < 1) {
+  if (sourceDecorators.length === 0) {
     return false;
   }
 

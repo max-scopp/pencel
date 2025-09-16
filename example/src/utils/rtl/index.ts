@@ -1,1 +1,1 @@
-export * from './dir';
+export * from "./dir.ts";

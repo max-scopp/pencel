@@ -1,9 +1,9 @@
-import type { SpinnerTypes } from '../components/spinner/spinner-configs';
-import type { TabButtonLayout } from '../components/tab-bar/tab-bar-interface';
-import type { AnimationBuilder, Mode } from '../interface';
+import type { SpinnerTypes } from "../components/spinner/spinner-configs.ts";
+import type { TabButtonLayout } from "../components/tab-bar/tab-bar-interface.ts";
+import type { AnimationBuilder, Mode } from "../interface.ts";
 
-import type { LogLevel } from './logging';
-import type { PlatformConfig } from './platform';
+import type { LogLevel } from "./logging/index.ts";
+import type { PlatformConfig } from "./platform.ts";
 
 export interface IonicConfig {
   /**
@@ -269,9 +269,8 @@ export const getMode = (): Mode => {
   if (config) {
     if (config.mode) {
       return config.mode;
-    } else {
-      return config.get('mode');
     }
+      return config.get('mode');
   }
   return 'md';
 };

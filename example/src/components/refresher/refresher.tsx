@@ -11,10 +11,10 @@ import { clamp, componentOnReady, getElementRoot, raf, transitionEndAsync } from
 import { printIonError } from '@utils/logging';
 import { ImpactStyle, hapticImpact } from '@utils/native/haptic';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Animation, Gesture, GestureDetail } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Animation, Gesture, GestureDetail } from "../../interface.ts";
 
-import type { RefresherEventDetail } from './refresher-interface';
+import type { RefresherEventDetail } from "./refresher-interface.ts";
 import {
   createPullingAnimation,
   createSnapBackAnimation,
@@ -24,7 +24,7 @@ import {
   setSpinnerOpacity,
   shouldUseNativeRefresher,
   translateElement,
-} from './refresher.utils';
+} from "./refresher.utils.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -279,7 +279,7 @@ export class Refresher implements ComponentInterface {
 
     this.scrollEl!.addEventListener('scroll', this.scrollListenerCallback);
 
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: this.scrollEl!,
       gestureName: 'refresher',
       gesturePriority: 31,
@@ -342,7 +342,7 @@ export class Refresher implements ComponentInterface {
       });
     }
 
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: this.scrollEl!,
       gestureName: 'refresher',
       gesturePriority: 31,
@@ -497,7 +497,7 @@ export class Refresher implements ComponentInterface {
       if (await shouldUseNativeRefresher(this.el, getIonMode(this))) {
         this.setupNativeRefresher(contentEl);
       } else {
-        this.gesture = (await import('../../utils/gesture')).createGesture({
+        this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
           el: contentEl,
           gestureName: 'refresher',
           gesturePriority: 31,
@@ -866,12 +866,12 @@ export class Refresher implements ComponentInterface {
           'refresher-cancelling': this.state === RefresherState.Cancelling,
           'refresher-completing': this.state === RefresherState.Completing,
         }}
-      ></Host>
+      />
     );
   }
 }
 
-const enum RefresherState {
+enum RefresherState {
   Inactive = 1 << 0,
   Pulling = 1 << 1,
   Ready = 1 << 2,

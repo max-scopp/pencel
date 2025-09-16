@@ -1,5 +1,5 @@
-import type { FunctionalComponent } from "../../src";
-import { h, render } from "../../src/index";
+import type { FunctionalComponent } from "../../src/index.ts";
+import { h, render } from "../../src/index.ts";
 
 interface ButtonProps {
   onClick: () => void;
@@ -10,7 +10,7 @@ const Button: FunctionalComponent<ButtonProps> = (
   { onClick, variant = "primary" },
   children,
 ) => (
-  <button type="button" onClick={onClick} className={`button ${variant}`}>
+  <button type="button" onClick={onClick} class={`button ${variant}`}>
     {children}
   </button>
 );
@@ -21,9 +21,9 @@ interface CardProps {
 
 const Card: FunctionalComponent<CardProps> = (props, children) => {
   return (
-    <div className="card">
-      <div className="card-header">{props.title}</div>
-      <div className="card-body">{children}</div>
+    <div class="card">
+      <div class="card-header">{props.title}</div>
+      <div class="card-body">{children}</div>
     </div>
   );
 };
@@ -40,7 +40,7 @@ const UserProfile: FunctionalComponent<UserProfileProps> = ({
   onEdit,
 }) => (
   <Card title="User Profile">
-    <div className="profile-content">
+    <div class="profile-content">
       <p>
         <strong>Name:</strong> {name}
       </p>
@@ -54,7 +54,7 @@ const UserProfile: FunctionalComponent<UserProfileProps> = ({
 
 // Example usage
 const App = () => (
-  <div className="container">
+  <div class="container">
     <h1>Functional Components Example</h1>
 
     <UserProfile
@@ -64,7 +64,7 @@ const App = () => (
     />
 
     <Card title="Actions">
-      <div className="button-group">
+      <div class="button-group">
         <Button onClick={() => alert("Primary clicked!")} variant="primary">
           Primary Action
         </Button>

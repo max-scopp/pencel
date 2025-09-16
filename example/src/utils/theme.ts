@@ -1,5 +1,5 @@
-import type { RouterDirection } from '../components/router/utils/interface';
-import type { AnimationBuilder, Color, CssClassMap } from '../interface';
+import type { RouterDirection } from "../components/router/utils/interface.ts";
+import type { AnimationBuilder, Color, CssClassMap } from "../interface.ts";
 
 export const hostContext = (selector: string, el: HTMLElement): boolean => {
   return el.closest(selector) !== null;

@@ -1,4 +1,4 @@
-import { type createPerformanceTree, throwConsumerError } from "@pencel/utils";
+import { ConsumerError, type createPerformanceTree } from "@pencel/utils";
 import { isVNode } from "src/utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
 import {
@@ -40,14 +40,14 @@ export function createDOM(
 
   // Handle fragments - they don't create DOM nodes, just render children
   if (vnode.$type$ === NODE_TYPE_FRAGMENT) {
-    throwConsumerError(
+    throw new ConsumerError(
       "Fragment nodes should not be processed by createDOM directly. Fragments are virtual containers that only render their children.",
     );
   }
 
   // this should not happen in createDOM, Host should be handled at render level
   if (vnode.$type$ === NODE_TYPE_HOST) {
-    throwConsumerError(
+    throw new ConsumerError(
       "Host element should not be processed by createDOM. Host elements should only be used as the root element in component render() methods.",
     );
   }

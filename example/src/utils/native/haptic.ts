@@ -4,7 +4,7 @@ import type {
   ImpactStyle as CapacitorImpactStyle,
 } from '@capacitor/haptics';
 
-import { getCapacitor } from './capacitor';
+import { getCapacitor } from "./capacitor.ts";
 
 export enum ImpactStyle {
   /**
@@ -64,7 +64,7 @@ const HapticEngine = {
       // Capacitor
       return capacitor.Plugins.Haptics as HapticsPlugin;
     }
-    return undefined;
+    return ;
   },
   available() {
     const engine = this.getEngine();

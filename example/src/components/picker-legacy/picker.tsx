@@ -17,13 +17,13 @@ import {
 } from '@utils/overlays';
 import { getClassMap } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, CssClassMap, OverlayInterface, FrameworkDelegate } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, CssClassMap, OverlayInterface, FrameworkDelegate } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
 
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import type { PickerButton, PickerColumn } from './picker-interface';
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import type { PickerButton, PickerColumn } from "./picker-interface.ts";
 
 // TODO(FW-2832): types
 
@@ -373,9 +373,9 @@ export class Picker implements ComponentInterface, OverlayInterface {
         onIonBackdropTap={this.onBackdropTap}
         onIonPickerWillDismiss={this.dispatchCancelHandler}
       >
-        <ion-backdrop visible={this.showBackdrop} tappable={this.backdropDismiss}></ion-backdrop>
+        <ion-backdrop visible={this.showBackdrop} tappable={this.backdropDismiss} />
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
 
         <div class="picker-wrapper ion-overlay-wrapper" role="dialog">
           <div class="picker-toolbar">
@@ -389,13 +389,13 @@ export class Picker implements ComponentInterface, OverlayInterface {
           </div>
 
           <div class="picker-columns">
-            <div class="picker-above-highlight"></div>
-            {this.presented && this.columns.map((c) => <ion-picker-legacy-column col={c}></ion-picker-legacy-column>)}
-            <div class="picker-below-highlight"></div>
+            <div class="picker-above-highlight" />
+            {this.presented && this.columns.map((c) => <ion-picker-legacy-column col={c} />)}
+            <div class="picker-below-highlight" />
           </div>
         </div>
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
       </Host>
     );
   }

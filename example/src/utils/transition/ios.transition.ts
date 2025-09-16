@@ -1,7 +1,7 @@
-import type { Animation } from '../../interface';
-import { createAnimation } from '../animation/animation';
-import type { TransitionOptions } from '../transition';
-import { getIonPageElement } from '../transition';
+import type { Animation } from "../../interface.ts";
+import { createAnimation } from "../animation/animation.ts";
+import type { TransitionOptions } from "../transition/index.ts";
+import { getIonPageElement } from "../transition/index.ts";
 
 const DURATION = 540;
 
@@ -666,10 +666,10 @@ export const iosTransitionAnimation = (navEl: HTMLElement, opts: TransitionOptio
         enteringToolBarBg.beforeClearStyles([OPACITY, 'transform']);
 
         const translucentHeader = parentHeader?.translucent;
-        if (!translucentHeader) {
-          enteringToolBarBg.fromTo(OPACITY, 0.01, 'var(--opacity)');
-        } else {
+        if (translucentHeader) {
           enteringToolBarBg.fromTo('transform', isRTL ? 'translateX(-100%)' : 'translateX(100%)', 'translateX(0px)');
+        } else {
+          enteringToolBarBg.fromTo(OPACITY, 0.01, 'var(--opacity)');
         }
 
         // forward direction, entering page has a back button
@@ -681,7 +681,7 @@ export const iosTransitionAnimation = (navEl: HTMLElement, opts: TransitionOptio
           const enteringBackBtnText = createAnimation();
           enteringBackBtnText
             .addElement(shadow(backButtonEl).querySelector('.button-text')!) // REVIEW
-            .fromTo(`transform`, isRTL ? 'translateX(-100px)' : 'translateX(100px)', 'translateX(0px)');
+            .fromTo("transform", isRTL ? 'translateX(-100px)' : 'translateX(100px)', 'translateX(0px)');
 
           enteringToolBar.addAnimation(enteringBackBtnText);
         }
@@ -825,10 +825,10 @@ export const iosTransitionAnimation = (navEl: HTMLElement, opts: TransitionOptio
           // leaving toolbar, back direction, and there's no entering toolbar
           // should just slide out, no fading out
           const translucentHeader = parentHeader?.translucent;
-          if (!translucentHeader) {
-            leavingToolBarBg.fromTo(OPACITY, 'var(--opacity)', 0);
-          } else {
+          if (translucentHeader) {
             leavingToolBarBg.fromTo('transform', 'translateX(0px)', isRTL ? 'translateX(-100%)' : 'translateX(100%)');
+          } else {
+            leavingToolBarBg.fromTo(OPACITY, 'var(--opacity)', 0);
           }
 
           if (backButtonEl && !backward) {

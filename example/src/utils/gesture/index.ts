@@ -1,6 +1,6 @@
-import { GESTURE_CONTROLLER } from './gesture-controller';
-import { createPointerEvents } from './pointer-events';
-import { createPanRecognizer } from './recognizers';
+import { GESTURE_CONTROLLER } from "./gesture-controller.ts";
+import { createPointerEvents } from "./pointer-events.ts";
+import { createPanRecognizer } from "./recognizers.ts";
 
 // TODO(FW-2832): types
 
@@ -101,11 +101,9 @@ export const createGesture = (config: GestureConfig): Gesture => {
 
     // gesture is currently being detected
     calcGestureData(detail, ev);
-    if (pan.detect(detail.currentX, detail.currentY)) {
-      if (!pan.isGesture() || !tryToCapturePan()) {
+    if (pan.detect(detail.currentX, detail.currentY) && (!(pan.isGesture() && tryToCapturePan()))) {
         abortGesture();
       }
-    }
   };
 
   const fireOnMove = () => {

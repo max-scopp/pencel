@@ -1,7 +1,7 @@
 import { readTask, writeTask } from '@stencil/core';
 
-import { findClosestIonContent, scrollToTop } from './content';
-import { componentOnReady } from './helpers';
+import { findClosestIonContent, scrollToTop } from "./content/index.ts";
+import { componentOnReady } from "./helpers.ts";
 
 export const startStatusTap = () => {
   const win = window;

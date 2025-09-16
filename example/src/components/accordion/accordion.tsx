@@ -3,10 +3,10 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 import { addEventListener, getElementRoot, raf, removeEventListener, transitionEndAsync } from '@utils/helpers';
 import { chevronDown } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
 
-const enum AccordionState {
+enum AccordionState {
   Collapsed = 1 << 0,
   Collapsing = 1 << 1,
   Expanded = 1 << 2,
@@ -434,7 +434,7 @@ export class Accordion implements ComponentInterface {
           aria-controls="content"
           ref={(headerEl) => (this.headerEl = headerEl)}
         >
-          <slot name="header"></slot>
+          <slot name="header" />
         </div>
 
         <div
@@ -445,7 +445,7 @@ export class Accordion implements ComponentInterface {
           ref={(contentEl) => (this.contentEl = contentEl)}
         >
           <div id="content-wrapper" ref={(contentElWrapper) => (this.contentElWrapper = contentElWrapper)}>
-            <slot name="content"></slot>
+            <slot name="content" />
           </div>
         </div>
       </Host>

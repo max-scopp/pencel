@@ -5,21 +5,21 @@ import { isEndSide } from '@utils/helpers';
 import { printIonWarning } from '@utils/logging';
 import { watchForOptions } from '@utils/watch-options';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Gesture, GestureDetail } from '../../interface';
-import type { Side } from '../menu/menu-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Gesture, GestureDetail } from "../../interface.ts";
+import type { Side } from "../menu/menu-interface.ts";
 
 const SWIPE_MARGIN = 30;
 const ELASTIC_FACTOR = 0.55;
 
-const enum ItemSide {
+enum ItemSide {
   None = 0,
   Start = 1 << 0,
   End = 1 << 1,
   Both = Start | End,
 }
 
-const enum SlidingState {
+enum SlidingState {
   Disabled = 1 << 1,
   Enabled = 1 << 2,
   End = 1 << 3,
@@ -90,7 +90,7 @@ export class ItemSliding implements ComponentInterface {
 
     await this.updateOptions();
 
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el,
       gestureName: 'item-swipe',
       gesturePriority: 100,
@@ -237,11 +237,10 @@ export class ItemSliding implements ComponentInterface {
   private getOptions(side?: string): HTMLIonItemOptionsElement | undefined {
     if (side === undefined) {
       return this.leftOptions || this.rightOptions;
-    } else if (side === 'start') {
+    }if (side === 'start') {
       return this.leftOptions;
-    } else {
-      return this.rightOptions;
     }
+      return this.rightOptions;
   }
 
   private async updateOptions() {
@@ -475,11 +474,10 @@ export class ItemSliding implements ComponentInterface {
   private getSlidingRatioSync(): number {
     if (this.openAmount > 0) {
       return this.openAmount / this.optsWidthRightSide;
-    } else if (this.openAmount < 0) {
+    }if (this.openAmount < 0) {
       return this.openAmount / this.optsWidthLeftSide;
-    } else {
-      return 0;
     }
+      return 0;
   }
 
   render() {
@@ -494,7 +492,7 @@ export class ItemSliding implements ComponentInterface {
           'item-sliding-active-swipe-end': (this.state & SlidingState.SwipeEnd) !== 0,
           'item-sliding-active-swipe-start': (this.state & SlidingState.SwipeStart) !== 0,
         }}
-      ></Host>
+      />
     );
   }
 }

@@ -4,13 +4,13 @@ import { componentOnReady, addEventListener } from '@utils/helpers';
 import { printIonError } from '@utils/logging';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
-import type { DatetimePresentation } from '../datetime/datetime-interface';
-import { getToday } from '../datetime/utils/data';
-import { getLocalizedDateTime, getLocalizedTime } from '../datetime/utils/format';
-import { getHourCycle } from '../datetime/utils/helpers';
-import { parseDate } from '../datetime/utils/parse';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
+import type { DatetimePresentation } from "../datetime/datetime-interface.ts";
+import { getToday } from "../datetime/utils/data.ts";
+import { getLocalizedDateTime, getLocalizedTime } from "../datetime/utils/format.ts";
+import { getHourCycle } from "../datetime/utils/helpers.ts";
+import { parseDate } from "../datetime/utils/parse.ts";
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
  *
@@ -224,7 +224,7 @@ export class DatetimeButton implements ComponentInterface {
 
     switch (datetimePresentation) {
       case 'date-time':
-      case 'time-date':
+      case 'time-date': {
         const dateText = getLocalizedDateTime(
           locale,
           firstParsedDatetime,
@@ -238,6 +238,7 @@ export class DatetimeButton implements ComponentInterface {
           this.timeText = timeText;
         }
         break;
+      }
       case 'date':
         if (multiple && parsedValues.length !== 1) {
           let headerText = `${parsedValues.length} days`; // default/fallback for multiple selection
@@ -310,7 +311,7 @@ export class DatetimeButton implements ComponentInterface {
      */
     switch (datetimePresentation) {
       case 'date-time':
-      case 'time-date':
+      case 'time-date': {
         const needsChange = datetimeEl.presentation !== 'date';
         /**
          * The date+time wheel picker
@@ -323,6 +324,7 @@ export class DatetimeButton implements ComponentInterface {
           needsPresentationChange = true;
         }
         break;
+      }
     }
 
     /**
@@ -355,13 +357,14 @@ export class DatetimeButton implements ComponentInterface {
      */
     switch (datetimePresentation) {
       case 'date-time':
-      case 'time-date':
+      case 'time-date': {
         const needsChange = datetimeEl.presentation !== 'time';
         if (needsChange) {
           datetimeEl.presentation = 'time';
           needsPresentationChange = true;
         }
         break;
+      }
     }
 
     /**
@@ -446,7 +449,7 @@ export class DatetimeButton implements ComponentInterface {
             ref={(el) => (this.dateTargetEl = el)}
           >
             <slot name="date-target">{dateText}</slot>
-            {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+            {mode === 'md' && <ion-ripple-effect />}
           </button>
         )}
 
@@ -461,7 +464,7 @@ export class DatetimeButton implements ComponentInterface {
             ref={(el) => (this.timeTargetEl = el)}
           >
             <slot name="time-target">{timeText}</slot>
-            {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+            {mode === 'md' && <ion-ripple-effect />}
           </button>
         )}
       </Host>

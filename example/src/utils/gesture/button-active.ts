@@ -1,9 +1,9 @@
 import { writeTask } from '@stencil/core';
 
-import { hapticSelectionChanged, hapticSelectionEnd, hapticSelectionStart } from '../native/haptic';
+import { hapticSelectionChanged, hapticSelectionEnd, hapticSelectionStart } from "../native/haptic.ts";
 
-import type { Gesture } from './index';
-import { createGesture } from './index';
+import type { Gesture } from "./index.ts";
+import { createGesture } from "./index.ts";
 
 export const createButtonActiveGesture = (el: HTMLElement, isButton: (refEl: HTMLElement) => boolean): Gesture => {
   let currentTouchedButton: HTMLElement | undefined;
@@ -14,7 +14,7 @@ export const createButtonActiveGesture = (el: HTMLElement, isButton: (refEl: HTM
       return;
     }
     const target = document.elementFromPoint(x, y) as HTMLElement | null;
-    if (!target || !isButton(target) || (target as HTMLButtonElement).disabled) {
+    if (!(target && isButton(target) ) || (target as HTMLButtonElement).disabled) {
       clearActiveButton();
       return;
     }

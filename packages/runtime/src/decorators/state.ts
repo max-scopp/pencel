@@ -1,5 +1,5 @@
-import { deepEqual } from "src/utils/equal.ts";
 import { componentCtrl } from "../controllers/component.ts";
+import { deepEqual } from "../utils/equal.ts";
 
 export interface StateOptions {
   /**

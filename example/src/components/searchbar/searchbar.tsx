@@ -6,11 +6,11 @@ import { isRTL } from '@utils/rtl';
 import { createColorClasses } from '@utils/theme';
 import { arrowBackSharp, closeCircle, closeSharp, searchOutline, searchSharp } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { AutocompleteTypes, Color, StyleEventDetail } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AutocompleteTypes, Color, StyleEventDetail } from "../../interface.ts";
 
-import type { SearchbarChangeEventDetail, SearchbarInputEventDetail } from './searchbar-interface';
+import type { SearchbarChangeEventDetail, SearchbarInputEventDetail } from "./searchbar-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -82,7 +82,7 @@ export class Searchbar implements ComponentInterface {
    * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.
    * Available options: `"off"`, `"none"`, `"on"`, `"sentences"`, `"words"`, `"characters"`.
    */
-  @Prop() autocapitalize: string = 'off';
+  @Prop() autocapitalize = 'off';
 
   /**
    * Set the input's autocomplete property.
@@ -626,7 +626,7 @@ export class Searchbar implements ComponentInterface {
       >
         <div aria-hidden="true">
           {mode === 'md' ? (
-            <ion-icon aria-hidden="true" mode={mode} icon={this.cancelButtonIcon} lazy={false}></ion-icon>
+            <ion-icon aria-hidden="true" mode={mode} icon={this.cancelButtonIcon} lazy={false} />
           ) : (
             cancelButtonText
           )}
@@ -683,12 +683,12 @@ export class Searchbar implements ComponentInterface {
             icon={searchIcon}
             lazy={false}
             class="searchbar-search-icon"
-          ></ion-icon>
+          />
 
           <button
             aria-label="reset"
             type="button"
-            no-blur
+            no-blur={true}
             class="searchbar-clear-button"
             onPointerDown={(ev) => {
               /**
@@ -706,7 +706,7 @@ export class Searchbar implements ComponentInterface {
               icon={clearIcon}
               lazy={false}
               class="searchbar-clear-icon"
-            ></ion-icon>
+            />
           </button>
         </div>
         {mode === 'ios' && cancelButton}

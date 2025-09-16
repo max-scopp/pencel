@@ -1,4 +1,4 @@
-import { isRTL } from './dir';
+import { isRTL } from "./dir.ts";
 
 describe('rtl: dir', () => {
   describe('with host element', () => {

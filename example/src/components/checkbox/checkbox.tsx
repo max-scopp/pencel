@@ -4,10 +4,10 @@ import type { Attributes } from '@utils/helpers';
 import { inheritAriaAttributes, renderHiddenInput } from '@utils/helpers';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, Mode } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, Mode } from "../../interface.ts";
 
-import type { CheckboxChangeEventDetail } from './checkbox-interface';
+import type { CheckboxChangeEventDetail } from "./checkbox-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -218,7 +218,7 @@ export class Checkbox implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   /**
@@ -298,7 +298,7 @@ export class Checkbox implements ComponentInterface {
         })}
         onClick={this.onClick}
       >
-        <label class="checkbox-wrapper" htmlFor={inputId}>
+        <label class="checkbox-wrapper" for={inputId}>
           {/*
             The native control must be rendered
             before the visible label text due to https://bugs.webkit.org/show_bug.cgi?id=251951
@@ -324,7 +324,7 @@ export class Checkbox implements ComponentInterface {
             id={this.inputLabelId}
             onClick={this.onDivLabelClick}
           >
-            <slot></slot>
+            <slot />
             {this.renderHintText()}
           </div>
           <div class="native-wrapper">

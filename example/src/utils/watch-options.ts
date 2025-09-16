@@ -40,7 +40,7 @@ export const findCheckedOption = <T extends HTMLElement & { value?: any | null }
    * The above check ensures "node" is an Element (nodeType 1).
    */
   if (node.nodeType !== 1) {
-    return undefined;
+    return ;
   }
 
   // HTMLElement inherits from Element, so we cast "el" as T.

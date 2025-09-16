@@ -1,4 +1,4 @@
-import { Keyboard } from '../native/keyboard';
+import { Keyboard } from "../native/keyboard.ts";
 
 export const KEYBOARD_DID_OPEN = 'ionKeyboardDidShow';
 export const KEYBOARD_DID_CLOSE = 'ionKeyboardDidHide';

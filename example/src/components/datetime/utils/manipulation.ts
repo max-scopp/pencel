@@ -1,8 +1,8 @@
-import type { DatetimeParts } from '../datetime-interface';
+import type { DatetimeParts } from "../datetime-interface.ts";
 
-import { isAfter, isBefore, isSameDay } from './comparison';
-import { getNumDaysInMonth } from './helpers';
-import { clampDate, parseAmPm } from './parse';
+import { isAfter, isBefore, isSameDay } from "./comparison.ts";
+import { getNumDaysInMonth } from "./helpers.ts";
+import { clampDate, parseAmPm } from "./parse.ts";
 
 const twoDigit = (val: number | undefined): string => {
   return ('0' + (val !== undefined ? Math.abs(val) : '0')).slice(-2);

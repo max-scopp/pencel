@@ -2,7 +2,7 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Method, Prop, State, Watch, h, readTask, writeTask } from '@stencil/core';
 import { findClosestIonContent, getScrollElement, printIonContentErrorMsg } from '@utils/content';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-infinite-scroll',
@@ -42,9 +42,9 @@ export class InfiniteScroll implements ComponentInterface {
     const val = this.threshold;
     if (val.lastIndexOf('%') > -1) {
       this.thrPx = 0;
-      this.thrPc = parseFloat(val) / 100;
+      this.thrPc = Number.parseFloat(val) / 100;
     } else {
-      this.thrPx = parseFloat(val);
+      this.thrPx = Number.parseFloat(val);
       this.thrPc = 0;
     }
   }
@@ -109,7 +109,7 @@ export class InfiniteScroll implements ComponentInterface {
 
   private onScroll = () => {
     const scrollEl = this.scrollEl;
-    if (!scrollEl || !this.canStart()) {
+    if (!(scrollEl && this.canStart())) {
       return 1;
     }
 
@@ -128,14 +128,12 @@ export class InfiniteScroll implements ComponentInterface {
         ? scrollHeight - infiniteHeight - scrollTop - threshold - height
         : scrollTop - infiniteHeight - threshold;
 
-    if (distanceFromInfinite < 0) {
-      if (!this.didFire) {
+    if (distanceFromInfinite < 0 && !this.didFire) {
         this.isLoading = true;
         this.didFire = true;
         this.ionInfinite.emit();
         return 3;
       }
-    }
 
     return 4;
   };
@@ -153,7 +151,7 @@ export class InfiniteScroll implements ComponentInterface {
   @Method()
   async complete() {
     const scrollEl = this.scrollEl;
-    if (!this.isLoading || !scrollEl) {
+    if (!(this.isLoading && scrollEl)) {
       return;
     }
     this.isLoading = false;
@@ -207,7 +205,7 @@ export class InfiniteScroll implements ComponentInterface {
   }
 
   private canStart(): boolean {
-    return !this.disabled && !this.isBusy && !!this.scrollEl && !this.isLoading;
+    return !(this.disabled || this.isBusy ) && !!this.scrollEl && !this.isLoading;
   }
 
   private enableScrollEvents(shouldListen: boolean) {

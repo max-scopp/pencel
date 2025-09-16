@@ -3,11 +3,11 @@ import { Element, Component, Host, Prop, h, forceUpdate } from '@stencil/core';
 import { safeCall } from '@utils/overlays';
 import { getClassMap } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { CheckboxCustomEvent } from '../checkbox/checkbox-interface';
-import type { RadioGroupCustomEvent } from '../radio-group/radio-group-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { CheckboxCustomEvent } from "../checkbox/checkbox-interface.ts";
+import type { RadioGroupCustomEvent } from "../radio-group/radio-group-interface.ts";
 
-import type { SelectPopoverOption } from './select-popover-interface';
+import type { SelectPopoverOption } from "./select-popover-interface.ts";
 
 /**
  * @internal

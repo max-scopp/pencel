@@ -5,10 +5,10 @@ import {
   Prop,
   render,
   State,
-} from "../../src";
-import { Element } from "../../src/decorators/element";
-import { Event, type EventEmitter } from "../../src/decorators/event";
-import { Listen } from "../../src/decorators/listen";
+} from "../../src/index.ts";
+import { Element } from "../../src/decorators/element.ts";
+import { Event, type EventEmitter } from "../../src/decorators/event.ts";
+import { Listen } from "../../src/decorators/listen.ts";
 
 @Component({
   tag: "event-button",
@@ -38,7 +38,7 @@ class EventButton extends HTMLElement implements ComponentInterface {
       <button type="button" onClick={this.handleClick}>
         Emit Custom Event
         <p>
-          <slot></slot>
+          <slot />
         </p>
       </button>
     );
@@ -50,7 +50,7 @@ class EventButton extends HTMLElement implements ComponentInterface {
 })
 class EventCounter extends HTMLElement implements ComponentInterface {
   @Prop({ reflect: true })
-  eventCount: number = 0;
+  eventCount = 0;
 
   @Prop()
   lastEventData: { timestamp: number } | null = null;
@@ -122,7 +122,7 @@ class EventDemo extends HTMLElement implements ComponentInterface {
         <pen-event-counter
           eventCount={this.eventCount}
           lastEventData={this.lastEventData}
-        ></pen-event-counter>
+        />
         <div class="log">
           <h4>Event Log:</h4>
           {this.log.length === 0 ? (
@@ -158,7 +158,7 @@ const app = (
       </li>
       <li>Event bubbling and listening between components</li>
     </ul>
-    <pen-event-demo></pen-event-demo>
+    <pen-event-demo />
   </div>
 );
 

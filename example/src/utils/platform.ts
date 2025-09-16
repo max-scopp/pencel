@@ -1,4 +1,4 @@
-import { config } from '../global/config';
+import { config } from "../global/config.ts";
 
 export type Platforms = keyof typeof PLATFORMS_MAP;
 

@@ -2,9 +2,9 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Method, Prop, Watch, h } from '@stencil/core';
 import { renderHiddenInput } from '@utils/helpers';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
-import type { RadioGroupChangeEventDetail, RadioGroupCompareFn } from './radio-group-interface';
+import type { RadioGroupChangeEventDetail, RadioGroupCompareFn } from "./radio-group-interface.ts";
 
 @Component({
   tag: 'ion-radio-group',
@@ -97,7 +97,7 @@ export class RadioGroup implements ComponentInterface {
     const first = radios.find((radio) => !radio.disabled);
     const checked = radios.find((radio) => radio.value === value && !radio.disabled);
 
-    if (!first && !checked) {
+    if (!(first || checked)) {
       return;
     }
 
@@ -274,7 +274,7 @@ export class RadioGroup implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   render() {
@@ -299,7 +299,7 @@ export class RadioGroup implements ComponentInterface {
           blur event on focus, instead of waiting for them to be blurred.
         */}
         <div class="radio-group-wrapper">
-          <slot></slot>
+          <slot />
         </div>
       </Host>
     );

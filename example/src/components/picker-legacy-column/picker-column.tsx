@@ -4,9 +4,9 @@ import { clamp } from '@utils/helpers';
 import { hapticSelectionChanged, hapticSelectionEnd, hapticSelectionStart } from '@utils/native/haptic';
 import { getClassMap } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Gesture, GestureDetail } from '../../interface';
-import type { PickerColumn } from '../picker-legacy/picker-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Gesture, GestureDetail } from "../../interface.ts";
+import type { PickerColumn } from "../picker-legacy/picker-interface.ts";
 
 /**
  * @internal
@@ -71,7 +71,7 @@ export class PickerColumnCmp implements ComponentInterface {
     this.rotateFactor = pickerRotateFactor;
     this.scaleFactor = pickerScaleFactor;
 
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: this.el,
       gestureName: 'picker-swipe',
       gesturePriority: 100,
@@ -301,11 +301,11 @@ export class PickerColumnCmp implements ComponentInterface {
 
     if (y > this.minY) {
       // scrolling up higher than scroll area
-      y = Math.pow(y, 0.8);
+      y = y ** 0.8;
       this.bounceFrom = y;
     } else if (y < this.maxY) {
       // scrolling down below scroll area
-      y += Math.pow(this.maxY - y, 0.9);
+      y += (this.maxY - y) ** 0.9;
       this.bounceFrom = y;
     } else {
       this.bounceFrom = 0;
@@ -320,7 +320,7 @@ export class PickerColumnCmp implements ComponentInterface {
       this.update(this.minY, 100, true);
       this.emitColChange();
       return;
-    } else if (this.bounceFrom < 0) {
+    }if (this.bounceFrom < 0) {
       // bounce back down
       this.update(this.maxY, 100, true);
       this.emitColChange();
@@ -331,7 +331,7 @@ export class PickerColumnCmp implements ComponentInterface {
     if (this.velocity === 0 && detail.deltaY === 0) {
       const opt = (detail.event.target as Element).closest('.picker-opt');
       if (opt?.hasAttribute('opt-index')) {
-        this.setSelected(parseInt(opt.getAttribute('opt-index')!, 10), TRANSITION_DURATION);
+        this.setSelected(Number.parseInt(opt.getAttribute('opt-index')!, 10), TRANSITION_DURATION);
       }
     } else {
       this.y += detail.deltaY;

@@ -1,13 +1,13 @@
 import { doc } from '@utils/browser';
 
-import type { Config } from '../../interface';
-import { findClosestIonContent } from '../content';
-import { componentOnReady } from '../helpers';
-import { Keyboard } from '../native/keyboard';
+import type { Config } from "../../interface.ts";
+import { findClosestIonContent } from "../content/index.ts";
+import { componentOnReady } from "../helpers.ts";
+import { Keyboard } from "../native/keyboard.ts";
 
-import { enableHideCaretOnScroll } from './hacks/hide-caret';
-import { enableInputBlurring } from './hacks/input-blurring';
-import { enableScrollAssist } from './hacks/scroll-assist';
+import { enableHideCaretOnScroll } from "./hacks/hide-caret.ts";
+import { enableInputBlurring } from "./hacks/input-blurring.ts";
+import { enableScrollAssist } from "./hacks/scroll-assist.ts";
 
 const INPUT_BLURRING = true;
 const SCROLL_ASSIST = true;
@@ -64,7 +64,7 @@ export const startInputShims = async (config: Config, platform: 'ios' | 'android
     const inputRoot = componentEl.shadowRoot || componentEl;
     const inputEl = inputRoot.querySelector('input') || inputRoot.querySelector('textarea');
     const scrollEl = findClosestIonContent(componentEl);
-    const footerEl = !scrollEl ? (componentEl.closest('ion-footer') as HTMLIonFooterElement | null) : null;
+    const footerEl = scrollEl ? null : (componentEl.closest('ion-footer') as HTMLIonFooterElement | null);
 
     if (!inputEl) {
       return;

@@ -51,10 +51,10 @@ function projectSlots(vnode: VNode, slotContent: VNode[]): VNode {
         $elm$: null,
         $text$: "",
       };
-    } else if (slotContent.length === 1) {
+    }if (slotContent.length === 1) {
       // Single item - return it directly
       return { ...slotContent[0], $key$: vnode.$key$ };
-    } else {
+    }
       // Multiple items - wrap in fragment
       return {
         $type$: NODE_TYPE_FRAGMENT,
@@ -63,7 +63,6 @@ function projectSlots(vnode: VNode, slotContent: VNode[]): VNode {
         $key$: vnode.$key$,
         $elm$: null,
       };
-    }
   }
 
   // Recursively process children

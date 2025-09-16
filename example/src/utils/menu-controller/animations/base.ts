@@ -1,5 +1,5 @@
-import { createAnimation } from '../../animation/animation';
-import type { Animation } from '../../animation/animation-interface';
+import { createAnimation } from "../../animation/animation.ts";
+import type { Animation } from "../../animation/animation-interface.ts";
 
 /**
  * baseAnimation

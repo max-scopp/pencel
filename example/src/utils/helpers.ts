@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { printIonError } from '@utils/logging';
 
-import type { Side } from '../components/menu/menu-interface';
+import type { Side } from "../components/menu/menu-interface.ts";
 
 // TODO(FW-2832): types
 

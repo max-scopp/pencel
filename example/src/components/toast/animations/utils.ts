@@ -2,7 +2,7 @@ import { win } from '@utils/browser';
 import { printIonWarning } from '@utils/logging';
 import type { Mode } from 'src/interface';
 
-import type { ToastAnimationPosition, ToastPosition } from '../toast-interface';
+import type { ToastAnimationPosition, ToastPosition } from "../toast-interface.ts";
 
 /**
  * Calculate the CSS top and bottom position of the toast, to be used
@@ -67,12 +67,11 @@ export function getAnimationPosition(
       top: `${offset}px`,
       bottom: `${offset}px`,
     };
-  } else {
+  }
     return {
       top: `calc(${offset}px + var(--ion-safe-area-top, 0px))`,
       bottom: `calc(${offset}px - var(--ion-safe-area-bottom, 0px))`,
     };
-  }
 }
 
 /**

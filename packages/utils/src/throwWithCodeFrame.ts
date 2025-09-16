@@ -12,7 +12,7 @@ export const throwWithCodeFrame = (
   // Show the code frame with styling
   if (isBrowser) {
     console.error(
-      "%c" + codeFrame,
+      `%c${codeFrame}`,
       "font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; background: #2d2d2d; color: #f8f8f2; padding: 8px; border-radius: 4px; white-space: pre;",
     );
   } else {

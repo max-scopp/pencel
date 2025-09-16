@@ -1,9 +1,11 @@
-import { createLog, createPerformanceTree, throwError } from "@pencel/utils";
-import { PENCIL_COMPONENT_CONTEXT } from "../controllers/component.ts";
+import {
+  ConsumerError,
+  createPerformanceTree,
+  throwError,
+} from "@pencel/utils";
+import { PENCIL_COMPONENT_CONTEXT } from "./symbols.ts";
 import type { ComponentInterfaceWithContext } from "./types.ts";
 import { render } from "./vdom/render.ts";
-
-const log = createLog("Scheduler");
 
 export class ComponentUpdateScheduler {
   private pendingRenders = new Map<ComponentInterfaceWithContext, Error>();
@@ -22,11 +24,11 @@ export class ComponentUpdateScheduler {
   private scheduleFlush(): void {
     if (!this.isScheduled) {
       this.isScheduled = true;
-      queueMicrotask(() => void this.flush());
+      queueMicrotask(() => this.flush());
     }
   }
 
-  private async flush() {
+  private async flush(): Promise<void> {
     this.isScheduled = false;
 
     const perf = createPerformanceTree("Scheduler");
@@ -35,7 +37,15 @@ export class ComponentUpdateScheduler {
     try {
       for (const [component, originalError] of this.pendingRenders) {
         try {
-          if (component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+          const ctx = component[PENCIL_COMPONENT_CONTEXT];
+
+          if (!ctx) {
+            throw new ConsumerError(
+              `Missing component context on ${component.constructor.name}. Did you forget to call super() in the constructor?`,
+            );
+          }
+
+          if (ctx.wasRendered) {
             component.componentWillUpdate?.();
           }
 
@@ -46,16 +56,16 @@ export class ComponentUpdateScheduler {
 
           render(jsx ?? null, container);
 
-          if (!component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+          if (!ctx.wasRendered) {
             component.componentDidLoad?.();
           }
 
           component.componentDidRender?.();
 
-          if (component[PENCIL_COMPONENT_CONTEXT]?.wasRendered) {
+          if (ctx.wasRendered) {
             component.componentDidUpdate?.();
           } else {
-            component[PENCIL_COMPONENT_CONTEXT]!.wasRendered = true;
+            ctx.wasRendered = true;
           }
         } catch (error) {
           throwError(

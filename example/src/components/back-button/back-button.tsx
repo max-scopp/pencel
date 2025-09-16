@@ -6,9 +6,9 @@ import { inheritAriaAttributes } from '@utils/helpers';
 import { createColorClasses, hostContext, openURL } from '@utils/theme';
 import { arrowBackSharp, chevronBack } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -162,7 +162,7 @@ export class BackButton implements ComponentInterface, ButtonInterface {
                 aria-hidden="true"
                 lazy={false}
                 flip-rtl={icon === undefined}
-              ></ion-icon>
+              />
             )}
             {backButtonText && (
               <span part="text" aria-hidden="true" class="button-text">
@@ -170,7 +170,7 @@ export class BackButton implements ComponentInterface, ButtonInterface {
               </span>
             )}
           </span>
-          {mode === 'md' && <ion-ripple-effect type={this.rippleType}></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect type={this.rippleType} />}
         </button>
       </Host>
     );

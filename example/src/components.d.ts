@@ -5,82 +5,82 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AccordionGroupChangeEventDetail } from "./components/accordion-group/accordion-group-interface";
-import { AnimationBuilder, AutocompleteTypes, Color, ComponentProps, ComponentRef, FrameworkDelegate, StyleEventDetail, TextFieldTypes } from "./interface";
-import { ActionSheetButton } from "./components/action-sheet/action-sheet-interface";
-import { OverlayEventDetail } from "./utils/overlays-interface";
-import { IonicSafeString } from "./utils/sanitization";
-import { AlertButton, AlertInput } from "./components/alert/alert-interface";
-import { RouteID, RouterDirection, RouterEventDetail, RouteWrite } from "./components/router/utils/interface";
-import { BreadcrumbCollapsedClickEventDetail } from "./components/breadcrumb/breadcrumb-interface";
-import { CheckboxChangeEventDetail } from "./components/checkbox/checkbox-interface";
-import { ScrollBaseDetail, ScrollDetail } from "./components/content/content-interface";
-import { DatetimeChangeEventDetail, DatetimeHighlight, DatetimeHighlightCallback, DatetimeHourCycle, DatetimePresentation, FormatOptions, TitleSelectedDatesFormatter } from "./components/datetime/datetime-interface";
-import { SpinnerTypes } from "./components/spinner/spinner-configs";
-import { InputChangeEventDetail, InputInputEventDetail } from "./components/input/input-interface";
-import { InputOtpChangeEventDetail, InputOtpCompleteEventDetail, InputOtpInputEventDetail } from "./components/input-otp/input-otp-interface";
-import { MenuChangeEventDetail, MenuCloseEventDetail, MenuType, Side } from "./components/menu/menu-interface";
-import { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from "./components/modal/modal-interface";
-import { NavComponent, NavComponentWithProps, NavOptions, RouterOutletOptions, SwipeGestureHandler, TransitionDoneFn, TransitionInstruction } from "./components/nav/nav-interface";
-import { ViewController } from "./components/nav/view-controller";
-import { PickerChangeEventDetail } from "./components/picker/picker-interfaces";
-import { PickerColumnChangeEventDetail, PickerColumnValue } from "./components/picker-column/picker-column-interfaces";
-import { PickerButton, PickerColumn } from "./components/picker-legacy/picker-interface";
-import { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from "./components/popover/popover-interface";
-import { RadioGroupChangeEventDetail, RadioGroupCompareFn } from "./components/radio-group/radio-group-interface";
-import { PinFormatter, RangeChangeEventDetail, RangeKnobMoveEndEventDetail, RangeKnobMoveStartEventDetail, RangeValue } from "./components/range/range-interface";
-import { RefresherEventDetail } from "./components/refresher/refresher-interface";
-import { ItemReorderEventDetail, ReorderEndEventDetail, ReorderMoveEventDetail } from "./components/reorder-group/reorder-group-interface";
-import { NavigationHookCallback } from "./components/route/route-interface";
-import { SearchbarChangeEventDetail, SearchbarInputEventDetail } from "./components/searchbar/searchbar-interface";
-import { SegmentChangeEventDetail, SegmentValue } from "./components/segment/segment-interface";
-import { SegmentButtonLayout } from "./components/segment-button/segment-button-interface";
-import { SegmentViewScrollEvent } from "./components/segment-view/segment-view-interface";
-import { SelectChangeEventDetail, SelectCompareFn, SelectInterface } from "./components/select/select-interface";
-import { SelectModalOption } from "./components/select-modal/select-modal-interface";
-import { SelectPopoverOption } from "./components/select-popover/select-popover-interface";
-import { TabBarChangedEventDetail, TabButtonClickEventDetail, TabButtonLayout } from "./components/tab-bar/tab-bar-interface";
-import { TextareaChangeEventDetail, TextareaInputEventDetail } from "./components/textarea/textarea-interface";
-import { ToastButton, ToastDismissOptions, ToastLayout, ToastPosition, ToastPresentOptions, ToastSwipeGestureDirection } from "./components/toast/toast-interface";
-import { ToggleChangeEventDetail } from "./components/toggle/toggle-interface";
-export { AccordionGroupChangeEventDetail } from "./components/accordion-group/accordion-group-interface";
-export { AnimationBuilder, AutocompleteTypes, Color, ComponentProps, ComponentRef, FrameworkDelegate, StyleEventDetail, TextFieldTypes } from "./interface";
-export { ActionSheetButton } from "./components/action-sheet/action-sheet-interface";
-export { OverlayEventDetail } from "./utils/overlays-interface";
-export { IonicSafeString } from "./utils/sanitization";
-export { AlertButton, AlertInput } from "./components/alert/alert-interface";
-export { RouteID, RouterDirection, RouterEventDetail, RouteWrite } from "./components/router/utils/interface";
-export { BreadcrumbCollapsedClickEventDetail } from "./components/breadcrumb/breadcrumb-interface";
-export { CheckboxChangeEventDetail } from "./components/checkbox/checkbox-interface";
-export { ScrollBaseDetail, ScrollDetail } from "./components/content/content-interface";
-export { DatetimeChangeEventDetail, DatetimeHighlight, DatetimeHighlightCallback, DatetimeHourCycle, DatetimePresentation, FormatOptions, TitleSelectedDatesFormatter } from "./components/datetime/datetime-interface";
-export { SpinnerTypes } from "./components/spinner/spinner-configs";
-export { InputChangeEventDetail, InputInputEventDetail } from "./components/input/input-interface";
-export { InputOtpChangeEventDetail, InputOtpCompleteEventDetail, InputOtpInputEventDetail } from "./components/input-otp/input-otp-interface";
-export { MenuChangeEventDetail, MenuCloseEventDetail, MenuType, Side } from "./components/menu/menu-interface";
-export { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from "./components/modal/modal-interface";
-export { NavComponent, NavComponentWithProps, NavOptions, RouterOutletOptions, SwipeGestureHandler, TransitionDoneFn, TransitionInstruction } from "./components/nav/nav-interface";
-export { ViewController } from "./components/nav/view-controller";
-export { PickerChangeEventDetail } from "./components/picker/picker-interfaces";
-export { PickerColumnChangeEventDetail, PickerColumnValue } from "./components/picker-column/picker-column-interfaces";
-export { PickerButton, PickerColumn } from "./components/picker-legacy/picker-interface";
-export { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from "./components/popover/popover-interface";
-export { RadioGroupChangeEventDetail, RadioGroupCompareFn } from "./components/radio-group/radio-group-interface";
-export { PinFormatter, RangeChangeEventDetail, RangeKnobMoveEndEventDetail, RangeKnobMoveStartEventDetail, RangeValue } from "./components/range/range-interface";
-export { RefresherEventDetail } from "./components/refresher/refresher-interface";
-export { ItemReorderEventDetail, ReorderEndEventDetail, ReorderMoveEventDetail } from "./components/reorder-group/reorder-group-interface";
-export { NavigationHookCallback } from "./components/route/route-interface";
-export { SearchbarChangeEventDetail, SearchbarInputEventDetail } from "./components/searchbar/searchbar-interface";
-export { SegmentChangeEventDetail, SegmentValue } from "./components/segment/segment-interface";
-export { SegmentButtonLayout } from "./components/segment-button/segment-button-interface";
-export { SegmentViewScrollEvent } from "./components/segment-view/segment-view-interface";
-export { SelectChangeEventDetail, SelectCompareFn, SelectInterface } from "./components/select/select-interface";
-export { SelectModalOption } from "./components/select-modal/select-modal-interface";
-export { SelectPopoverOption } from "./components/select-popover/select-popover-interface";
-export { TabBarChangedEventDetail, TabButtonClickEventDetail, TabButtonLayout } from "./components/tab-bar/tab-bar-interface";
-export { TextareaChangeEventDetail, TextareaInputEventDetail } from "./components/textarea/textarea-interface";
-export { ToastButton, ToastDismissOptions, ToastLayout, ToastPosition, ToastPresentOptions, ToastSwipeGestureDirection } from "./components/toast/toast-interface";
-export { ToggleChangeEventDetail } from "./components/toggle/toggle-interface";
+import { AccordionGroupChangeEventDetail } from "./components/accordion-group/accordion-group-interface.ts";
+import { AnimationBuilder, AutocompleteTypes, Color, ComponentProps, ComponentRef, FrameworkDelegate, StyleEventDetail, TextFieldTypes } from "./interface.ts";
+import { ActionSheetButton } from "./components/action-sheet/action-sheet-interface.ts";
+import { OverlayEventDetail } from "./utils/overlays-interface.ts";
+import { IonicSafeString } from "./utils/sanitization/index.ts";
+import { AlertButton, AlertInput } from "./components/alert/alert-interface.ts";
+import { RouteID, RouterDirection, RouterEventDetail, RouteWrite } from "./components/router/utils/interface.ts";
+import { BreadcrumbCollapsedClickEventDetail } from "./components/breadcrumb/breadcrumb-interface.ts";
+import { CheckboxChangeEventDetail } from "./components/checkbox/checkbox-interface.ts";
+import { ScrollBaseDetail, ScrollDetail } from "./components/content/content-interface.ts";
+import { DatetimeChangeEventDetail, DatetimeHighlight, DatetimeHighlightCallback, DatetimeHourCycle, DatetimePresentation, FormatOptions, TitleSelectedDatesFormatter } from "./components/datetime/datetime-interface.ts";
+import { SpinnerTypes } from "./components/spinner/spinner-configs.ts";
+import { InputChangeEventDetail, InputInputEventDetail } from "./components/input/input-interface.ts";
+import { InputOtpChangeEventDetail, InputOtpCompleteEventDetail, InputOtpInputEventDetail } from "./components/input-otp/input-otp-interface.ts";
+import { MenuChangeEventDetail, MenuCloseEventDetail, MenuType, Side } from "./components/menu/menu-interface.ts";
+import { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from "./components/modal/modal-interface.ts";
+import { NavComponent, NavComponentWithProps, NavOptions, RouterOutletOptions, SwipeGestureHandler, TransitionDoneFn, TransitionInstruction } from "./components/nav/nav-interface.ts";
+import { ViewController } from "./components/nav/view-controller.ts";
+import { PickerChangeEventDetail } from "./components/picker/picker-interfaces.ts";
+import { PickerColumnChangeEventDetail, PickerColumnValue } from "./components/picker-column/picker-column-interfaces.ts";
+import { PickerButton, PickerColumn } from "./components/picker-legacy/picker-interface.ts";
+import { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from "./components/popover/popover-interface.ts";
+import { RadioGroupChangeEventDetail, RadioGroupCompareFn } from "./components/radio-group/radio-group-interface.ts";
+import { PinFormatter, RangeChangeEventDetail, RangeKnobMoveEndEventDetail, RangeKnobMoveStartEventDetail, RangeValue } from "./components/range/range-interface.ts";
+import { RefresherEventDetail } from "./components/refresher/refresher-interface.ts";
+import { ItemReorderEventDetail, ReorderEndEventDetail, ReorderMoveEventDetail } from "./components/reorder-group/reorder-group-interface.ts";
+import { NavigationHookCallback } from "./components/route/route-interface.ts";
+import { SearchbarChangeEventDetail, SearchbarInputEventDetail } from "./components/searchbar/searchbar-interface.ts";
+import { SegmentChangeEventDetail, SegmentValue } from "./components/segment/segment-interface.ts";
+import { SegmentButtonLayout } from "./components/segment-button/segment-button-interface.ts";
+import { SegmentViewScrollEvent } from "./components/segment-view/segment-view-interface.ts";
+import { SelectChangeEventDetail, SelectCompareFn, SelectInterface } from "./components/select/select-interface.ts";
+import { SelectModalOption } from "./components/select-modal/select-modal-interface.ts";
+import { SelectPopoverOption } from "./components/select-popover/select-popover-interface.ts";
+import { TabBarChangedEventDetail, TabButtonClickEventDetail, TabButtonLayout } from "./components/tab-bar/tab-bar-interface.ts";
+import { TextareaChangeEventDetail, TextareaInputEventDetail } from "./components/textarea/textarea-interface.ts";
+import { ToastButton, ToastDismissOptions, ToastLayout, ToastPosition, ToastPresentOptions, ToastSwipeGestureDirection } from "./components/toast/toast-interface.ts";
+import { ToggleChangeEventDetail } from "./components/toggle/toggle-interface.ts";
+export { AccordionGroupChangeEventDetail } from "./components/accordion-group/accordion-group-interface.ts";
+export { AnimationBuilder, AutocompleteTypes, Color, ComponentProps, ComponentRef, FrameworkDelegate, StyleEventDetail, TextFieldTypes } from "./interface.ts";
+export { ActionSheetButton } from "./components/action-sheet/action-sheet-interface.ts";
+export { OverlayEventDetail } from "./utils/overlays-interface.ts";
+export { IonicSafeString } from "./utils/sanitization/index.ts";
+export { AlertButton, AlertInput } from "./components/alert/alert-interface.ts";
+export { RouteID, RouterDirection, RouterEventDetail, RouteWrite } from "./components/router/utils/interface.ts";
+export { BreadcrumbCollapsedClickEventDetail } from "./components/breadcrumb/breadcrumb-interface.ts";
+export { CheckboxChangeEventDetail } from "./components/checkbox/checkbox-interface.ts";
+export { ScrollBaseDetail, ScrollDetail } from "./components/content/content-interface.ts";
+export { DatetimeChangeEventDetail, DatetimeHighlight, DatetimeHighlightCallback, DatetimeHourCycle, DatetimePresentation, FormatOptions, TitleSelectedDatesFormatter } from "./components/datetime/datetime-interface.ts";
+export { SpinnerTypes } from "./components/spinner/spinner-configs.ts";
+export { InputChangeEventDetail, InputInputEventDetail } from "./components/input/input-interface.ts";
+export { InputOtpChangeEventDetail, InputOtpCompleteEventDetail, InputOtpInputEventDetail } from "./components/input-otp/input-otp-interface.ts";
+export { MenuChangeEventDetail, MenuCloseEventDetail, MenuType, Side } from "./components/menu/menu-interface.ts";
+export { ModalBreakpointChangeEventDetail, ModalHandleBehavior } from "./components/modal/modal-interface.ts";
+export { NavComponent, NavComponentWithProps, NavOptions, RouterOutletOptions, SwipeGestureHandler, TransitionDoneFn, TransitionInstruction } from "./components/nav/nav-interface.ts";
+export { ViewController } from "./components/nav/view-controller.ts";
+export { PickerChangeEventDetail } from "./components/picker/picker-interfaces.ts";
+export { PickerColumnChangeEventDetail, PickerColumnValue } from "./components/picker-column/picker-column-interfaces.ts";
+export { PickerButton, PickerColumn } from "./components/picker-legacy/picker-interface.ts";
+export { PopoverSize, PositionAlign, PositionReference, PositionSide, TriggerAction } from "./components/popover/popover-interface.ts";
+export { RadioGroupChangeEventDetail, RadioGroupCompareFn } from "./components/radio-group/radio-group-interface.ts";
+export { PinFormatter, RangeChangeEventDetail, RangeKnobMoveEndEventDetail, RangeKnobMoveStartEventDetail, RangeValue } from "./components/range/range-interface.ts";
+export { RefresherEventDetail } from "./components/refresher/refresher-interface.ts";
+export { ItemReorderEventDetail, ReorderEndEventDetail, ReorderMoveEventDetail } from "./components/reorder-group/reorder-group-interface.ts";
+export { NavigationHookCallback } from "./components/route/route-interface.ts";
+export { SearchbarChangeEventDetail, SearchbarInputEventDetail } from "./components/searchbar/searchbar-interface.ts";
+export { SegmentChangeEventDetail, SegmentValue } from "./components/segment/segment-interface.ts";
+export { SegmentButtonLayout } from "./components/segment-button/segment-button-interface.ts";
+export { SegmentViewScrollEvent } from "./components/segment-view/segment-view-interface.ts";
+export { SelectChangeEventDetail, SelectCompareFn, SelectInterface } from "./components/select/select-interface.ts";
+export { SelectModalOption } from "./components/select-modal/select-modal-interface.ts";
+export { SelectPopoverOption } from "./components/select-popover/select-popover-interface.ts";
+export { TabBarChangedEventDetail, TabButtonClickEventDetail, TabButtonLayout } from "./components/tab-bar/tab-bar-interface.ts";
+export { TextareaChangeEventDetail, TextareaInputEventDetail } from "./components/textarea/textarea-interface.ts";
+export { ToastButton, ToastDismissOptions, ToastLayout, ToastPosition, ToastPresentOptions, ToastSwipeGestureDirection } from "./components/toast/toast-interface.ts";
+export { ToggleChangeEventDetail } from "./components/toggle/toggle-interface.ts";
 export namespace Components {
     interface IonAccordion {
         /**
@@ -344,8 +344,7 @@ export namespace Components {
          */
         "setFocus": (elements: HTMLElement[]) => Promise<void>;
     }
-    interface IonAvatar {
-    }
+    type IonAvatar = {}
     interface IonBackButton {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
@@ -1610,8 +1609,7 @@ export namespace Components {
          */
         "sticky": boolean;
     }
-    interface IonItemGroup {
-    }
+    type IonItemGroup = {}
     interface IonItemOption {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
@@ -2779,8 +2777,7 @@ export namespace Components {
          */
         "refreshingText"?: string | IonicSafeString;
     }
-    interface IonReorder {
-    }
+    type IonReorder = {}
     interface IonReorderGroup {
         /**
           * Completes the reorder operation. Must be called by the `ionReorderEnd` event.  If a list of items is passed, the list will be reordered and returned in the proper order.  If no parameters are passed or if `true` is passed in, the reorder will complete and the item will remain in the position it was dragged to. If `false` is passed, the reorder will complete and the item will bounce back to its original position.
@@ -2913,8 +2910,7 @@ export namespace Components {
         "setRouteId": (id: string, params: ComponentProps | undefined, direction: RouterDirection, animation?: AnimationBuilder) => Promise<RouteWrite>;
         "swipeHandler"?: SwipeGestureHandler;
     }
-    interface IonRow {
-    }
+    type IonRow = {}
     interface IonSearchbar {
         /**
           * If `true`, enable searchbar animation.
@@ -3096,8 +3092,7 @@ export namespace Components {
          */
         "value": SegmentValue;
     }
-    interface IonSegmentContent {
-    }
+    type IonSegmentContent = {}
     interface IonSegmentView {
         /**
           * If `true`, the segment view cannot be interacted with.
@@ -3551,8 +3546,7 @@ export namespace Components {
          */
         "wrap"?: 'hard' | 'soft' | 'off';
     }
-    interface IonThumbnail {
-    }
+    type IonThumbnail = {}
     interface IonTitle {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
@@ -5572,10 +5566,8 @@ declare namespace LocalJSX {
          */
         "trigger"?: string | undefined;
     }
-    interface IonApp {
-    }
-    interface IonAvatar {
-    }
+    type IonApp = {}
+    type IonAvatar = {}
     interface IonBackButton {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
@@ -6907,8 +6899,7 @@ declare namespace LocalJSX {
          */
         "sticky"?: boolean;
     }
-    interface IonItemGroup {
-    }
+    type IonItemGroup = {}
     interface IonItemOption {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
@@ -8047,8 +8038,7 @@ declare namespace LocalJSX {
          */
         "refreshingText"?: string | IonicSafeString;
     }
-    interface IonReorder {
-    }
+    type IonReorder = {}
     interface IonReorderGroup {
         /**
           * If `true`, the reorder will be hidden.
@@ -8189,8 +8179,7 @@ declare namespace LocalJSX {
         "onIonNavWillLoad"?: (event: IonRouterOutletCustomEvent<void>) => void;
         "swipeHandler"?: SwipeGestureHandler;
     }
-    interface IonRow {
-    }
+    type IonRow = {}
     interface IonSearchbar {
         /**
           * If `true`, enable searchbar animation.
@@ -8403,8 +8392,7 @@ declare namespace LocalJSX {
          */
         "value"?: SegmentValue;
     }
-    interface IonSegmentContent {
-    }
+    type IonSegmentContent = {}
     interface IonSegmentView {
         /**
           * If `true`, the segment view cannot be interacted with.
@@ -8889,8 +8877,7 @@ declare namespace LocalJSX {
          */
         "wrap"?: 'hard' | 'soft' | 'off';
     }
-    interface IonThumbnail {
-    }
+    type IonThumbnail = {}
     interface IonTitle {
         /**
           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).

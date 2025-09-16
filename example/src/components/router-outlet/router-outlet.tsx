@@ -7,8 +7,8 @@ import { createLockController } from '@utils/lock-controller';
 import { printIonError } from '@utils/logging';
 import { transition } from '@utils/transition';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
 import type {
   Animation,
   AnimationBuilder,
@@ -16,9 +16,9 @@ import type {
   ComponentRef,
   FrameworkDelegate,
   Gesture,
-} from '../../interface';
-import type { RouterOutletOptions, SwipeGestureHandler } from '../nav/nav-interface';
-import type { RouteID, RouterDirection, RouteWrite, NavOutlet } from '../router/utils/interface';
+} from "../../interface.ts";
+import type { RouterOutletOptions, SwipeGestureHandler } from "../nav/nav-interface.ts";
+import type { RouteID, RouterDirection, RouteWrite, NavOutlet } from "../router/utils/interface.ts";
 
 @Component({
   tag: 'ion-router-outlet',
@@ -79,7 +79,7 @@ export class RouterOutlet implements ComponentInterface, NavOutlet {
       }
     };
 
-    this.gesture = (await import('../../utils/gesture/swipe-back')).createSwipeBackGesture(
+    this.gesture = (await import("../../utils/gesture/swipe-back.ts")).createSwipeBackGesture(
       this.el,
       () => !this.gestureOrAnimationInProgress && !!this.swipeHandler && this.swipeHandler.canStart(),
       () => onStart(),
@@ -108,11 +108,11 @@ export class RouterOutlet implements ComponentInterface, NavOutlet {
            * to the new easing curve, as `stepValue` is going to be given
            * in terms of a linear curve.
            */
-          if (!shouldComplete) {
+          if (shouldComplete) {
+            newStepValue += getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], step)[0];
+          } else {
             this.ani.easing('cubic-bezier(1, 0, 0.68, 0.28)');
             newStepValue += getTimeGivenProgression([0, 0], [1, 0], [0.68, 0.28], [1, 1], step)[0];
-          } else {
-            newStepValue += getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], step)[0];
           }
 
           this.ani.progressEnd(shouldComplete ? 1 : 0, newStepValue, dur);
@@ -288,6 +288,6 @@ export class RouterOutlet implements ComponentInterface, NavOutlet {
   }
 
   render() {
-    return <slot></slot>;
+    return <slot />;
   }
 }

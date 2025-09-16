@@ -4,8 +4,8 @@ import type { BackButtonEvent } from '@utils/hardware-back-button';
 import { shouldUseCloseWatcher } from '@utils/hardware-back-button';
 import { printIonError, printIonWarning } from '@utils/logging';
 
-import { config } from '../global/config';
-import { getIonMode } from '../global/ionic-global';
+import { config } from "../global/config.ts";
+import { getIonMode } from "../global/ionic-global.ts";
 import type {
   ActionSheetOptions,
   AlertOptions,
@@ -20,18 +20,18 @@ import type {
   PickerOptions,
   PopoverOptions,
   ToastOptions,
-} from '../interface';
+} from "../interface.ts";
 
-import { CoreDelegate } from './framework-delegate';
-import { BACKDROP_NO_SCROLL } from './gesture/gesture-controller';
-import { OVERLAY_BACK_BUTTON_PRIORITY } from './hardware-back-button';
+import { CoreDelegate } from "./framework-delegate.ts";
+import { BACKDROP_NO_SCROLL } from "./gesture/gesture-controller.ts";
+import { OVERLAY_BACK_BUTTON_PRIORITY } from "./hardware-back-button.ts";
 import {
   addEventListener,
   componentOnReady,
   focusVisibleElement,
   getElementRoot,
   removeEventListener,
-} from './helpers';
+} from "./helpers.ts";
 
 let lastOverlayIndex = 0;
 let lastId = 0;
@@ -186,7 +186,7 @@ const trapKeyboardFocus = (ev: Event, doc: Document) => {
    * We need to add a listener to the shadow root
    * itself to ensure the focus trap works.
    */
-  if (!lastOverlay || !target) {
+  if (!(lastOverlay && target)) {
     return;
   }
 
@@ -742,7 +742,7 @@ const overlayAnimation = async (
   const aniRoot = overlay.el;
   const animation = animationBuilder(aniRoot, opts);
 
-  if (!overlay.animated || !config.getBoolean('animated', true)) {
+  if (!(overlay.animated && config.getBoolean('animated', true))) {
     animation.duration(0);
   }
 
@@ -804,7 +804,7 @@ export const safeCall = (handler: any, arg?: any) => {
       }
     });
   }
-  return undefined;
+  return ;
 };
 
 export const BACKDROP = 'backdrop';

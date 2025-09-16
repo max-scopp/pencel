@@ -1,7 +1,7 @@
 import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Prop, Watch, h } from '@stencil/core';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-fab-list',
@@ -42,7 +42,7 @@ export class FabList implements ComponentInterface {
           [`fab-list-side-${this.side}`]: true,
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

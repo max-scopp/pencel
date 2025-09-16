@@ -1,4 +1,4 @@
-import { inheritAriaAttributes } from './helpers';
+import { inheritAriaAttributes } from "./helpers.ts";
 
 describe('inheritAriaAttributes', () => {
   it('should inherit aria attributes', () => {

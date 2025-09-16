@@ -1,5 +1,5 @@
-import { componentOnReady } from '../helpers';
-import { printRequiredElementError } from '../logging';
+import { componentOnReady } from "../helpers.ts";
+import { printRequiredElementError } from "../logging/index.ts";
 
 const ION_CONTENT_TAG_NAME = 'ION-CONTENT';
 export const ION_CONTENT_ELEMENT_SELECTOR = 'ion-content';
@@ -121,11 +121,10 @@ export const disableContentScrollY = (contentEl: HTMLElement): boolean => {
      * when we call resetContentScrollY.
      */
     return initialScrollY;
-  } else {
+  }
     contentEl.style.setProperty('overflow', 'hidden');
 
     return true;
-  }
 };
 
 export const resetContentScrollY = (contentEl: HTMLElement, initialScrollY: boolean) => {

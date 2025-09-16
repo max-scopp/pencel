@@ -18,14 +18,14 @@ import { isPlatform } from '@utils/platform';
 import { getClassMap } from '@utils/theme';
 import { deepReady, waitForMount } from '@utils/transition';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
 
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
 import type {
   PopoverInterface,
   PopoverSize,
@@ -33,8 +33,8 @@ import type {
   PositionReference,
   PositionSide,
   TriggerAction,
-} from './popover-interface';
-import { configureDismissInteraction, configureKeyboardInteraction, configureTriggerInteraction } from './utils';
+} from "./popover-interface.ts";
+import { configureDismissInteraction, configureKeyboardInteraction, configureTriggerInteraction } from "./utils.ts";
 
 // TODO(FW-2832): types
 
@@ -671,7 +671,7 @@ export class Popover implements ComponentInterface, PopoverInterface {
   private configureDismissInteraction = () => {
     const { destroyDismissInteraction, parentPopover, triggerAction, triggerEl, el } = this;
 
-    if (!parentPopover || !triggerEl) {
+    if (!(parentPopover && triggerEl)) {
       return;
     }
 
@@ -691,7 +691,7 @@ export class Popover implements ComponentInterface, PopoverInterface {
     return (
       <Host
         aria-modal="true"
-        no-router
+        no-router={true}
         tabindex="-1"
         {...(htmlAttributes as any)}
         style={{
@@ -716,9 +716,9 @@ export class Popover implements ComponentInterface, PopoverInterface {
         {!parentPopover && <ion-backdrop tappable={this.backdropDismiss} visible={this.showBackdrop} part="backdrop" />}
 
         <div class="popover-wrapper ion-overlay-wrapper" onClick={dismissOnSelect ? () => this.dismiss() : undefined}>
-          {enableArrow && <div class="popover-arrow" part="arrow"></div>}
+          {enableArrow && <div class="popover-arrow" part="arrow" />}
           <div class="popover-content" part="content">
-            <slot></slot>
+            <slot />
           </div>
         </div>
       </Host>

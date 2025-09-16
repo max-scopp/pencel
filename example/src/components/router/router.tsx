@@ -4,16 +4,16 @@ import type { BackButtonEvent } from '@utils/hardware-back-button';
 import { debounce } from '@utils/helpers';
 import { printIonError, printIonWarning } from '@utils/logging';
 
-import type { AnimationBuilder } from '../../interface';
-import type { NavigationHookResult } from '../route/route-interface';
+import type { AnimationBuilder } from "../../interface.ts";
+import type { NavigationHookResult } from "../route/route-interface.ts";
 
-import { ROUTER_INTENT_BACK, ROUTER_INTENT_FORWARD, ROUTER_INTENT_NONE } from './utils/constants';
-import { printRedirects, printRoutes } from './utils/debug';
-import { readNavState, waitUntilNavNode, writeNavState } from './utils/dom';
-import type { RouteChain, RouterDirection, RouterEventDetail } from './utils/interface';
-import { findChainForIDs, findChainForSegments, findRouteRedirect } from './utils/matching';
-import { readRedirects, readRoutes } from './utils/parser';
-import { chainToSegments, generatePath, parsePath, readSegments, writeSegments } from './utils/path';
+import { ROUTER_INTENT_BACK, ROUTER_INTENT_FORWARD, ROUTER_INTENT_NONE } from "./utils/constants.ts";
+import { printRedirects, printRoutes } from "./utils/debug.ts";
+import { readNavState, waitUntilNavNode, writeNavState } from "./utils/dom.ts";
+import type { RouteChain, RouterDirection, RouterEventDetail } from "./utils/interface.ts";
+import { findChainForIDs, findChainForSegments, findRouteRedirect } from "./utils/matching.ts";
+import { readRedirects, readRoutes } from "./utils/parser.ts";
+import { chainToSegments, generatePath, parsePath, readSegments, writeSegments } from "./utils/path.ts";
 
 @Component({
   tag: 'ion-router',
@@ -111,9 +111,8 @@ export class Router implements ComponentInterface {
     if (canProceed !== true) {
       if (typeof canProceed === 'object') {
         return canProceed.redirect;
-      } else {
-        return false;
       }
+        return false;
     }
 
     return true;
@@ -308,7 +307,7 @@ export class Router implements ComponentInterface {
       from = parsePath(this.previousPath).segments;
     }
 
-    if (!to || !from) {
+    if (!(to && from)) {
       return true;
     }
 

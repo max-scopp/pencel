@@ -3,8 +3,8 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 import { inheritAttributes } from '@utils/helpers';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 @Component({
   tag: 'ion-picker-column-option',
@@ -125,7 +125,7 @@ export class PickerColumnOption implements ComponentInterface {
         })}
       >
         <div class={'picker-column-option-button'} role="button" aria-label={ariaLabel} onClick={() => this.onClick()}>
-          <slot></slot>
+          <slot />
         </div>
       </Host>
     );

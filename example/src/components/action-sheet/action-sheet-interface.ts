@@ -1,4 +1,4 @@
-import type { AnimationBuilder, LiteralUnion, Mode } from '../../interface';
+import type { AnimationBuilder, LiteralUnion, Mode } from "../../interface.ts";
 
 export interface ActionSheetOptions {
   header?: string;

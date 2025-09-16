@@ -1,7 +1,7 @@
 import type { ComponentInterface } from '@stencil/core';
 import { Component, Host, h } from '@stencil/core';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-item-group',
@@ -24,7 +24,7 @@ export class ItemGroup implements ComponentInterface {
 
           item: true,
         }}
-      ></Host>
+      />
     );
   }
 }

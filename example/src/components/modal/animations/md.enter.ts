@@ -1,10 +1,10 @@
 import { createAnimation } from '@utils/animation/animation';
 import { getElementRoot } from '@utils/helpers';
 
-import type { Animation } from '../../../interface';
-import type { ModalAnimationOptions } from '../modal-interface';
+import type { Animation } from "../../../interface.ts";
+import type { ModalAnimationOptions } from "../modal-interface.ts";
 
-import { createSheetEnterAnimation } from './sheet';
+import { createSheetEnterAnimation } from "./sheet.ts";
 
 const createEnterAnimation = () => {
   const backdropAnimation = createAnimation()
@@ -16,7 +16,7 @@ const createEnterAnimation = () => {
 
   const wrapperAnimation = createAnimation().keyframes([
     { offset: 0, opacity: 0.01, transform: 'translateY(40px)' },
-    { offset: 1, opacity: 1, transform: `translateY(0px)` },
+    { offset: 1, opacity: 1, transform: "translateY(0px)" },
   ]);
 
   return { backdropAnimation, wrapperAnimation, contentAnimation: undefined };

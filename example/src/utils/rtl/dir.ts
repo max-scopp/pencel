@@ -4,10 +4,8 @@
  * take priority over the root document value.
  */
 export const isRTL = (hostEl?: Pick<HTMLElement, 'dir'>) => {
-  if (hostEl) {
-    if (hostEl.dir !== '') {
+  if (hostEl && hostEl.dir !== '') {
       return hostEl.dir.toLowerCase() === 'rtl';
     }
-  }
   return document?.dir.toLowerCase() === 'rtl';
 };

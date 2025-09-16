@@ -10,6 +10,7 @@
   ],
   "dependencies": {
     "c12": "^3.2.0",
+    "ts-flattered": "link:ts-flattered",
     "vite": "npm:rolldown-vite@latest"
   },
   "devDependencies": {

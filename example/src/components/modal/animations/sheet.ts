@@ -1,7 +1,7 @@
 import { createAnimation } from '@utils/animation/animation';
 
-import type { ModalAnimationOptions } from '../modal-interface';
-import { getBackdropValueForSheet } from '../utils';
+import type { ModalAnimationOptions } from "../modal-interface.ts";
+import { getBackdropValueForSheet } from "../utils.ts";
 
 export const createSheetEnterAnimation = (opts: ModalAnimationOptions) => {
   const { currentBreakpoint, backdropBreakpoint, expandToScroll } = opts;
@@ -32,12 +32,11 @@ export const createSheetEnterAnimation = (opts: ModalAnimationOptions) => {
   /**
    * This allows the content to be scrollable at any breakpoint.
    */
-  const contentAnimation = !expandToScroll
-    ? createAnimation('contentAnimation').keyframes([
+  const contentAnimation = expandToScroll
+    ? undefined : createAnimation('contentAnimation').keyframes([
         { offset: 0, opacity: 1, maxHeight: `${(1 - currentBreakpoint!) * 100}%` },
         { offset: 1, opacity: 1, maxHeight: `${currentBreakpoint! * 100}%` },
-      ])
-    : undefined;
+      ]);
 
   return { wrapperAnimation, backdropAnimation, contentAnimation };
 };
@@ -71,7 +70,7 @@ export const createSheetLeaveAnimation = (opts: ModalAnimationOptions) => {
 
   const wrapperAnimation = createAnimation('wrapperAnimation').keyframes([
     { offset: 0, opacity: 1, transform: `translateY(${100 - currentBreakpoint! * 100}%)` },
-    { offset: 1, opacity: 1, transform: `translateY(100%)` },
+    { offset: 1, opacity: 1, transform: "translateY(100%)" },
   ]);
 
   return { wrapperAnimation, backdropAnimation };

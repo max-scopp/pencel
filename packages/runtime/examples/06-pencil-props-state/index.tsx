@@ -6,7 +6,7 @@ import {
   Prop,
   render,
   State,
-} from "../../src";
+} from "../../src/index.ts";
 
 @Component({
   tag: "counter-component",
@@ -16,10 +16,10 @@ class CounterComponent extends HTMLElement implements ComponentInterface {
   count = 0;
 
   @Prop({ reflect: true, type: Number })
-  step: number = 1;
+  step = 1;
 
   @Prop({})
-  title: string = "Counter 12312323";
+  title = "Counter 12312323";
 
   constructor() {
     super();
@@ -68,10 +68,10 @@ class CounterComponent extends HTMLElement implements ComponentInterface {
 })
 class UserCard extends HTMLElement {
   @Prop({ reflect: true })
-  name: string = "";
+  name = "";
 
   @Prop({})
-  email: string = "";
+  email = "";
 
   @State()
   isEditing = false;
@@ -183,16 +183,16 @@ const app = (
     <pen-counter-component
       title="Another Counter 333"
       step="2"
-    ></pen-counter-component>
+    />
 
     <pen-counter-component
       title="Another Counter 111"
       step="5"
-    ></pen-counter-component>
+    />
 
     <h2>User Card with Reactive Props and State</h2>
-    <pen-user-card name="John Doe" email="john@example.com"></pen-user-card>
-    <pen-user-card name="Jane Smith" email="jane@example.com"></pen-user-card>
+    <pen-user-card name="John Doe" email="john@example.com" />
+    <pen-user-card name="Jane Smith" email="jane@example.com" />
 
     <h2>Dynamic Updates</h2>
     <p>Open browser console and try:</p>

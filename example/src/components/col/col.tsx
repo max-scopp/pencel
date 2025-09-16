@@ -2,7 +2,7 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Host, Listen, Prop, forceUpdate, h } from '@stencil/core';
 import { matchBreakpoint } from '@utils/media';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 const win = typeof (window as any) !== 'undefined' ? (window as any) : undefined;
 // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -262,7 +262,7 @@ export class Col implements ComponentInterface {
           ...this.calculateSize(),
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

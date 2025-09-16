@@ -2,7 +2,7 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Listen, Method, Host, h } from '@stencil/core';
 import { getElementRoot } from '@utils/helpers';
 
-import type { PickerChangeEventDetail } from './picker-interfaces';
+import type { PickerChangeEventDetail } from "./picker-interfaces.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -286,7 +286,7 @@ export class Picker implements ComponentInterface {
   @Method()
   async exitInputMode() {
     const { inputEl, useInputMode } = this;
-    if (!useInputMode || !inputEl) {
+    if (!(useInputMode && inputEl)) {
       return;
     }
 
@@ -309,7 +309,7 @@ export class Picker implements ComponentInterface {
       return;
     }
 
-    const parsedValue = parseInt(ev.key, 10);
+    const parsedValue = Number.parseInt(ev.key, 10);
 
     /**
      * Only numbers should be allowed
@@ -323,7 +323,7 @@ export class Picker implements ComponentInterface {
 
   private selectSingleColumn = () => {
     const { inputEl, inputModeColumn, singleColumnSearchTimeout } = this;
-    if (!inputEl || !inputModeColumn) {
+    if (!(inputEl && inputModeColumn)) {
       return;
     }
 
@@ -508,7 +508,7 @@ export class Picker implements ComponentInterface {
    */
   private onInputChange = () => {
     const { useInputMode, inputEl, inputModeColumn } = this;
-    if (!useInputMode || !inputEl) {
+    if (!(useInputMode && inputEl)) {
       return;
     }
 
@@ -560,10 +560,10 @@ export class Picker implements ComponentInterface {
           onInput={() => this.onInputChange()}
           onBlur={() => this.exitInputMode()}
         />
-        <div class="picker-before"></div>
-        <div class="picker-after"></div>
-        <div class="picker-highlight" ref={(el) => (this.highlightEl = el)}></div>
-        <slot></slot>
+        <div class="picker-before" />
+        <div class="picker-after" />
+        <div class="picker-highlight" ref={(el) => (this.highlightEl = el)} />
+        <slot />
       </Host>
     );
   }

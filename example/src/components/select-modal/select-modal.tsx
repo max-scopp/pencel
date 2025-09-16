@@ -4,10 +4,10 @@ import { Component, Element, Host, Prop, forceUpdate, h } from '@stencil/core';
 import { safeCall } from '@utils/overlays';
 import { getClassMap } from '@utils/theme';
 
-import type { CheckboxCustomEvent } from '../checkbox/checkbox-interface';
-import type { RadioGroupCustomEvent } from '../radio-group/radio-group-interface';
+import type { CheckboxCustomEvent } from "../checkbox/checkbox-interface.ts";
+import type { RadioGroupCustomEvent } from "../radio-group/radio-group-interface.ts";
 
-import type { SelectModalOption } from './select-modal-interface';
+import type { SelectModalOption } from "./select-modal-interface.ts";
 
 @Component({
   tag: 'ion-select-modal',

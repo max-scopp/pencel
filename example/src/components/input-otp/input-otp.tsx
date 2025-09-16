@@ -7,14 +7,14 @@ import { isRTL } from '@utils/rtl';
 import { createColorClasses } from '@utils/theme';
 import { Method } from 'ionicons/dist/types/stencil-public-runtime';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 import type {
   InputOtpChangeEventDetail,
   InputOtpCompleteEventDetail,
   InputOtpInputEventDetail,
-} from './input-otp-interface';
+} from "./input-otp-interface.ts";
 
 @Component({
   tag: 'ion-input-otp',
@@ -237,7 +237,7 @@ export class InputOTP implements ComponentInterface {
     } else {
       separatorValues = separators
         .split(',')
-        .map((pos) => parseInt(pos, 10))
+        .map((pos) => Number.parseInt(pos, 10))
         .filter((pos) => !isNaN(pos));
     }
 
@@ -307,9 +307,8 @@ export class InputOTP implements ComponentInterface {
 
     if (this.type == 'number') {
       return 'numeric';
-    } else {
-      return 'text';
     }
+      return 'text';
   }
 
   /**
@@ -575,7 +574,7 @@ export class InputOTP implements ComponentInterface {
       this.isKeyboardNavigation = true;
       event.preventDefault();
       const isLeft = event.key === 'ArrowLeft';
-      const shouldMoveNext = (isLeft && rtl) || (!isLeft && !rtl);
+      const shouldMoveNext = (isLeft && rtl) || (!(isLeft || rtl));
 
       // Only allow moving to the next input if the current has a value
       if (shouldMoveNext) {
@@ -851,7 +850,7 @@ export class InputOTP implements ComponentInterface {
             'input-otp-description-hidden': !hasDescription,
           }}
         >
-          <slot></slot>
+          <slot />
         </div>
       </Host>
     );

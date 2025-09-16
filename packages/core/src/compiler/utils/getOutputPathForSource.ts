@@ -1,4 +1,5 @@
 import { basename, dirname, resolve } from "node:path";
+import { ConsumerError } from "@pencel/utils";
 import type ts from "typescript";
 import type { PencelContext } from "../types/compiler-types.ts";
 
@@ -19,5 +20,8 @@ export function getOutputPathForSource(
       const absDir = dirname(resolve(ctx.cwd, ctx.config.output.path));
       return resolve(absDir, sf.fileName);
     }
+
+    default:
+      throw new ConsumerError("Invalid output mode");
   }
 }

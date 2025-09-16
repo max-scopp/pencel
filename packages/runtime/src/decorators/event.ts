@@ -1,5 +1,5 @@
-import { dashCase, throwConsumerError } from "@pencel/utils";
-import type { ComponentInterface } from "src/core/types.ts";
+import { ConsumerError, dashCase } from "@pencel/utils";
+import type { ComponentInterface } from "../core/types.ts";
 
 export class EventEmitter<T = never> {
   constructor(
@@ -81,7 +81,7 @@ export function Event(userOptions?: string | EventOptions): PropertyDecorator {
       },
 
       set() {
-        throwConsumerError(
+        throw new ConsumerError(
           "You cannot set the value of an @Event property. You should use new EventEmitter(options).emit(data) instead.",
         );
       },

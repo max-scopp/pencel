@@ -6,10 +6,10 @@ import { addEventListener, removeEventListener, inheritAttributes } from '@utils
 import { printIonError, printIonWarning } from '@utils/logging';
 import { hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { SegmentValue } from '../segment/segment-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { SegmentValue } from "../segment/segment-interface.ts";
 
-import type { SegmentButtonLayout } from './segment-button-interface';
+import type { SegmentButtonLayout } from "./segment-button-interface.ts";
 
 let ids = 0;
 
@@ -77,7 +77,7 @@ export class SegmentButton implements ComponentInterface, ButtonInterface {
     // Prevent buttons from being disabled when associated with segment content
     if (this.contentId && this.disabled) {
       printIonWarning(
-        `[ion-segment-button] - Segment buttons cannot be disabled when associated with an <ion-segment-content>.`
+        "[ion-segment-button] - Segment buttons cannot be disabled when associated with an <ion-segment-content>."
       );
       this.disabled = false;
     }
@@ -191,12 +191,12 @@ export class SegmentButton implements ComponentInterface, ButtonInterface {
           {...this.inheritedAttributes}
         >
           <span class="button-inner">
-            <slot></slot>
+            <slot />
           </span>
-          {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect />}
         </button>
         <div part="indicator" class="segment-button-indicator segment-button-indicator-animated">
-          <div part="indicator-background" class="segment-button-indicator-background"></div>
+          <div part="indicator-background" class="segment-button-indicator-background" />
         </div>
       </Host>
     );

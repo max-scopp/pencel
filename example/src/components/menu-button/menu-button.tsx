@@ -7,10 +7,10 @@ import { menuController } from '@utils/menu-controller';
 import { createColorClasses, hostContext } from '@utils/theme';
 import { menuOutline, menuSharp } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
-import { updateVisibility } from '../menu-toggle/menu-toggle-util';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
+import { updateVisibility } from "../menu-toggle/menu-toggle-util.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -109,10 +109,10 @@ export class MenuButton implements ComponentInterface, ButtonInterface {
         <button {...attrs} disabled={disabled} class="button-native" part="native" aria-label={ariaLabel}>
           <span class="button-inner">
             <slot>
-              <ion-icon part="icon" icon={menuIcon} mode={mode} lazy={false} aria-hidden="true"></ion-icon>
+              <ion-icon part="icon" icon={menuIcon} mode={mode} lazy={false} aria-hidden="true" />
             </slot>
           </span>
-          {mode === 'md' && <ion-ripple-effect type="unbounded"></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect type="unbounded" />}
         </button>
       </Host>
     );

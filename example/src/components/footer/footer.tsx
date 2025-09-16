@@ -4,9 +4,9 @@ import { findIonContent, getScrollElement, printIonContentErrorMsg } from '@util
 import type { KeyboardController } from '@utils/keyboard/keyboard-controller';
 import { createKeyboardController } from '@utils/keyboard/keyboard-controller';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
-import { handleFooterFade } from './footer.utils';
+import { handleFooterFade } from "./footer.utils.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -132,15 +132,15 @@ export class Footer implements ComponentInterface {
           // Used internally for styling
           [`footer-${mode}`]: true,
 
-          [`footer-translucent`]: translucent,
+          ["footer-translucent"]: translucent,
           [`footer-translucent-${mode}`]: translucent,
           ['footer-toolbar-padding']: !this.keyboardVisible && (!tabBar || tabBar.slot !== 'bottom'),
 
           [`footer-collapse-${collapse}`]: collapse !== undefined,
         }}
       >
-        {mode === 'ios' && translucent && <div class="footer-background"></div>}
-        <slot></slot>
+        {mode === 'ios' && translucent && <div class="footer-background" />}
+        <slot />
       </Host>
     );
   }

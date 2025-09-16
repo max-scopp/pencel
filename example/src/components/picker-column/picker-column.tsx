@@ -6,11 +6,11 @@ import { hapticSelectionChanged, hapticSelectionEnd, hapticSelectionStart } from
 import { isPlatform } from '@utils/platform';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
-import type { PickerCustomEvent } from '../picker/picker-interfaces';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
+import type { PickerCustomEvent } from "../picker/picker-interfaces.ts";
 
-import type { PickerColumnChangeEventDetail, PickerColumnValue } from './picker-column-interfaces';
+import type { PickerColumnChangeEventDetail, PickerColumnValue } from "./picker-column-interfaces.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -273,7 +273,7 @@ export class PickerColumn implements ComponentInterface {
      */
     const isColumnActive = inputModeColumn === undefined || inputModeColumn === this.el;
 
-    if (!useInputMode || !isColumnActive) {
+    if (!(useInputMode && isColumnActive)) {
       this.setInputModeActive(false);
       return;
     }
@@ -572,7 +572,7 @@ export class PickerColumn implements ComponentInterface {
    * the enabled option 5 options before the active one. Note that the actual option selected
    *  may be past the stride if the option at the stride is disabled.
    */
-  private findPreviousOption = (stride: number = 1) => {
+  private findPreviousOption = (stride = 1) => {
     const { activeItem } = this;
     if (!activeItem) return null;
 
@@ -666,7 +666,7 @@ export class PickerColumn implements ComponentInterface {
           ['picker-column-disabled']: disabled,
         })}
       >
-        <slot name="prefix"></slot>
+        <slot name="prefix" />
         <div
           class="picker-opts"
           ref={(el) => {
@@ -691,7 +691,7 @@ export class PickerColumn implements ComponentInterface {
           <div class="picker-item-empty" aria-hidden="true">
             &nbsp;
           </div>
-          <slot></slot>
+          <slot />
           <div class="picker-item-empty" aria-hidden="true">
             &nbsp;
           </div>
@@ -702,7 +702,7 @@ export class PickerColumn implements ComponentInterface {
             &nbsp;
           </div>
         </div>
-        <slot name="suffix"></slot>
+        <slot name="suffix" />
       </Host>
     );
   }

@@ -1,6 +1,6 @@
 import { printIonWarning } from '@utils/logging';
 
-import type { DatetimeParts } from '../datetime-interface';
+import type { DatetimeParts } from "../datetime-interface.ts";
 
 /**
  * Returns true if the selected day is equal to the reference day

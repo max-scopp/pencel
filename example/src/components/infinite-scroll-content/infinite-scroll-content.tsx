@@ -3,10 +3,10 @@ import { Component, Host, Prop, h } from '@stencil/core';
 import { ENABLE_HTML_CONTENT_DEFAULT } from '@utils/config';
 import { sanitizeDOMString } from '@utils/sanitization';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { IonicSafeString } from '../../utils/sanitization';
-import type { SpinnerTypes } from '../spinner/spinner-configs';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
+import type { SpinnerTypes } from "../spinner/spinner-configs.ts";
 
 @Component({
   tag: 'ion-infinite-scroll-content',
@@ -52,7 +52,7 @@ export class InfiniteScrollContent implements ComponentInterface {
   private renderLoadingText() {
     const { customHTMLEnabled, loadingText } = this;
     if (customHTMLEnabled) {
-      return <div class="infinite-loading-text" innerHTML={sanitizeDOMString(loadingText)}></div>;
+      return <div class="infinite-loading-text" innerHTML={sanitizeDOMString(loadingText)} />;
     }
 
     return <div class="infinite-loading-text">{this.loadingText}</div>;

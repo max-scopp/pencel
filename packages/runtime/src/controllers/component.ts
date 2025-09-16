@@ -1,17 +1,15 @@
-import { createLog, throwConsumerError, throwError } from "@pencel/utils";
+import { ConsumerError, createLog, throwError } from "@pencel/utils";
+import { scheduler } from "../core/scheduler.ts";
+import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import type {
   ComponentInterfaceWithContext,
   PencilComponentPhase,
-} from "src/core/types.ts";
-import type { PropOptions } from "src/decorators/prop.ts";
-import { simpleCustomElementDisplayText } from "src/utils/simpleCustomElementDisplayText.ts";
-import { scheduler } from "../core/scheduler.ts";
+} from "../core/types.ts";
+import type { PropOptions } from "../decorators/prop.ts";
+import { throwNoContext } from "../panics/throwNoContext.ts";
+import { simpleCustomElementDisplayText } from "../utils/simpleCustomElementDisplayText.ts";
 
-const log = createLog("ComponentsController");
-
-export const PENCIL_COMPONENT_CONTEXT: unique symbol = Symbol("__$pencil_ctx$");
-export const PENCIL_OBSERVED_ATTRIBUTES: unique symbol =
-  Symbol("__$pencil_obsattr$");
+const log = createLog("Components Controller");
 
 export interface PencilComponentContext {
   phase: PencilComponentPhase;
@@ -57,15 +55,17 @@ class ComponentsController {
    * Sets the phase of a component to "disconnected"
    */
   disconnect(component: ComponentInterfaceWithContext): void {
-    component[PENCIL_COMPONENT_CONTEXT]!.phase = "disconnected";
+    const ctx = component[PENCIL_COMPONENT_CONTEXT] ?? throwNoContext();
+    ctx.phase = "disconnected";
 
     this.cmpts.delete(component);
 
-    log(`disconnected`, undefined, component);
+    log("disconnected", undefined, component);
   }
 
   markStableAndLoaded(component: ComponentInterfaceWithContext): void {
-    component[PENCIL_COMPONENT_CONTEXT]!.phase = "alive";
+    const ctx = component[PENCIL_COMPONENT_CONTEXT] ?? throwNoContext();
+    ctx.phase = "alive";
 
     component.componentDidLoad?.();
 
@@ -160,7 +160,7 @@ class ComponentsController {
     );
 
     if (!component) {
-      throwConsumerError(
+      throw new ConsumerError(
         `Could not find parent component for ${simpleCustomElementDisplayText(
           childComponent,
         )}. Make sure the component is rendered inside another Pencil component that does provide the store.`,

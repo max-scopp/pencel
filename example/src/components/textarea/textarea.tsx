@@ -22,11 +22,11 @@ import { createSlotMutationController } from '@utils/slot-mutation-controller';
 import type { SlotMutationController } from '@utils/slot-mutation-controller';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
-import { getCounterText } from '../input/input.utils';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
+import { getCounterText } from "../input/input.utils.ts";
 
-import type { TextareaChangeEventDetail, TextareaInputEventDetail } from './textarea-interface';
+import type { TextareaChangeEventDetail, TextareaInputEventDetail } from "./textarea-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -593,7 +593,7 @@ export class Textarea implements ComponentInterface {
           'label-text-wrapper-hidden': !this.hasLabel,
         }}
       >
-        {label === undefined ? <slot name="label"></slot> : <div class="label-text">{label}</div>}
+        {label === undefined ? <slot name="label" /> : <div class="label-text">{label}</div>}
       </div>
     );
   }
@@ -645,7 +645,7 @@ export class Textarea implements ComponentInterface {
        */
       return [
         <div class="textarea-outline-container">
-          <div class="textarea-outline-start"></div>
+          <div class="textarea-outline-start" />
           <div
             class={{
               'textarea-outline-notch': true,
@@ -656,7 +656,7 @@ export class Textarea implements ComponentInterface {
               {this.label}
             </div>
           </div>
-          <div class="textarea-outline-end"></div>
+          <div class="textarea-outline-end" />
         </div>,
         this.renderLabel(),
       ];
@@ -676,7 +676,7 @@ export class Textarea implements ComponentInterface {
 
     return [
       <div id={helperTextId} class="helper-text" aria-live="polite">
-        {!isInvalid ? helperText : null}
+        {isInvalid ? null : helperText}
       </div>,
       <div id={errorTextId} class="error-text" role="alert">
         {isInvalid ? errorText : null}
@@ -695,7 +695,7 @@ export class Textarea implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   private renderCounter() {
@@ -721,7 +721,7 @@ export class Textarea implements ComponentInterface {
      */
     const hasHintText = !!helperText || !!errorText;
     const hasCounter = counter === true && maxlength !== undefined;
-    if (!hasHintText && !hasCounter) {
+    if (!(hasHintText || hasCounter)) {
       return;
     }
 
@@ -782,7 +782,7 @@ export class Textarea implements ComponentInterface {
          * interactable, clicking the label would focus that instead
          * since it comes before the textarea in the DOM.
          */}
-        <label class="textarea-wrapper" htmlFor={inputId} onClick={this.onLabelClick}>
+        <label class="textarea-wrapper" for={inputId} onClick={this.onLabelClick}>
           {this.renderLabelContainer()}
           <div class="textarea-wrapper-inner">
             {/**
@@ -793,7 +793,7 @@ export class Textarea implements ComponentInterface {
              * elements and apply our padding styles to that instead.
              */}
             <div class="start-slot-wrapper">
-              <slot name="start"></slot>
+              <slot name="start" />
             </div>
             <div class="native-wrapper" ref={(el) => (this.textareaWrapper = el)}>
               <textarea
@@ -828,10 +828,10 @@ export class Textarea implements ComponentInterface {
               </textarea>
             </div>
             <div class="end-slot-wrapper">
-              <slot name="end"></slot>
+              <slot name="end" />
             </div>
           </div>
-          {shouldRenderHighlight && <div class="textarea-highlight"></div>}
+          {shouldRenderHighlight && <div class="textarea-highlight" />}
         </label>
         {this.renderBottomContent()}
       </Host>

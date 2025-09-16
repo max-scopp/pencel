@@ -1,4 +1,4 @@
-import type { RouteChain, RouteID, RouteRedirect } from './interface';
+import type { RouteChain, RouteID, RouteRedirect } from "./interface.ts";
 
 /**
  * Returns whether the given redirect matches the given path segments.
@@ -214,9 +214,9 @@ export const computePriority = (chain: RouteChain): number => {
   for (const route of chain) {
     for (const segment of route.segments) {
       if (segment[0] === ':') {
-        score += Math.pow(1, level);
+        score += 1 ** level;
       } else if (segment !== '') {
-        score += Math.pow(2, level);
+        score += 2 ** level;
       }
       level++;
     }

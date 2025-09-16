@@ -1,13 +1,13 @@
-import { addEventListener, removeEventListener } from '../../helpers';
+import { addEventListener, removeEventListener } from "../../helpers.ts";
 
-import { isFocused, relocateInput } from './common';
+import { isFocused, relocateInput } from "./common.ts";
 
 export const enableHideCaretOnScroll = (
   componentEl: HTMLElement,
   inputEl: HTMLInputElement | HTMLTextAreaElement | undefined,
   scrollEl: HTMLElement | undefined
 ) => {
-  if (!scrollEl || !inputEl) {
+  if (!(scrollEl && inputEl)) {
     return () => {
       return;
     };

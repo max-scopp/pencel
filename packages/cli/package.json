@@ -24,7 +24,12 @@
   },
   "private": true,
   "devDependencies": {
-    "@types/bun": "^1.2.21"
+    "@types/bun": "^1.2.21",
+    "tsdown": "^0.15.2"
+  },
+  "peerDependencies": {
+    "@pencel/core": "workspace:*",
+    "@pencel/utils": "workspace:*"
   },
   "nx": {
     "sourceRoot": "packages/cli",

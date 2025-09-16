@@ -1,10 +1,10 @@
 import { getMode, setMode } from '@stencil/core';
 import { printIonWarning } from '@utils/logging';
 
-import type { IonicConfig, Mode } from '../interface';
-import { isPlatform, setupPlatforms } from '../utils/platform';
+import type { IonicConfig, Mode } from "../interface.ts";
+import { isPlatform, setupPlatforms } from "../utils/platform.ts";
 
-import { config, configFromSession, configFromURL, saveConfig } from './config';
+import { config, configFromSession, configFromURL, saveConfig } from "./config.ts";
 
 // TODO(FW-2832): types
 
@@ -67,7 +67,7 @@ export const initialize = (userConfig: IonicConfig = {}) => {
       if (elmMode) {
         if (isAllowedIonicModeValue(elmMode)) {
           return elmMode;
-        } else if (isIonicElement(elm)) {
+        }if (isIonicElement(elm)) {
           printIonWarning('Invalid ionic mode: "' + elmMode + '", expected: "ios" or "md"');
         }
       }

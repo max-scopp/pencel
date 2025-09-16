@@ -1,11 +1,11 @@
 import { createAnimation } from '@utils/animation/animation';
 import { getElementRoot } from '@utils/helpers';
 
-import type { Animation } from '../../../interface';
-import { SwipeToCloseDefaults } from '../gestures/swipe-to-close';
-import type { ModalAnimationOptions } from '../modal-interface';
+import type { Animation } from "../../../interface.ts";
+import { SwipeToCloseDefaults } from "../gestures/swipe-to-close.ts";
+import type { ModalAnimationOptions } from "../modal-interface.ts";
 
-import { createSheetLeaveAnimation } from './sheet';
+import { createSheetLeaveAnimation } from "./sheet.ts";
 
 const createLeaveAnimation = () => {
   const backdropAnimation = createAnimation().fromTo('opacity', 'var(--backdrop-opacity)', 0);
@@ -62,7 +62,7 @@ export const iosLeaveAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
     const bodyEl = document.body;
 
     if (isPortrait) {
-      const transformOffset = !CSS.supports('width', 'max(0px, 1px)') ? '30px' : 'max(30px, var(--ion-safe-area-top))';
+      const transformOffset = CSS.supports('width', 'max(0px, 1px)') ? 'max(30px, var(--ion-safe-area-top))' : '30px';
       const modalTransform = hasCardModal ? '-10px' : transformOffset;
       const toPresentingScale = SwipeToCloseDefaults.MIN_PRESENTING_SCALE;
       const finalTransform = `translateY(${modalTransform}) scale(${toPresentingScale})`;
@@ -76,9 +76,7 @@ export const iosLeaveAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
     } else {
       baseAnimation.addAnimation(backdropAnimation);
 
-      if (!hasCardModal) {
-        wrapperAnimation.fromTo('opacity', '1', '0');
-      } else {
+      if (hasCardModal) {
         const toPresentingScale = hasCardModal ? SwipeToCloseDefaults.MIN_PRESENTING_SCALE : 1;
         const finalTransform = `translateY(-10px) scale(${toPresentingScale})`;
 
@@ -103,6 +101,8 @@ export const iosLeaveAnimation = (baseEl: HTMLElement, opts: ModalAnimationOptio
           ]);
 
         baseAnimation.addAnimation([presentingAnimation, shadowAnimation]);
+      } else {
+        wrapperAnimation.fromTo('opacity', '1', '0');
       }
     }
   } else {

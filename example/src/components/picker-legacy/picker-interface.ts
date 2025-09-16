@@ -1,4 +1,4 @@
-import type { AnimationBuilder, Mode } from '../../interface';
+import type { AnimationBuilder, Mode } from "../../interface.ts";
 
 export interface PickerOptions {
   columns: PickerColumn[];

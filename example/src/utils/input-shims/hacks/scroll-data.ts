@@ -1,4 +1,4 @@
-import { SCROLL_AMOUNT_PADDING } from './common';
+import { SCROLL_AMOUNT_PADDING } from "./common.ts";
 
 const SCROLL_ASSIST_SPEED = 0.3;
 

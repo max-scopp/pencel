@@ -1,5 +1,5 @@
-import { render } from "../../src";
-import { h } from "../../src/index";
+import { render } from "../../src/index.ts";
+import { h } from "../../src/index.ts";
 
 // Basic example using standard HTML elements
 const app1 = (

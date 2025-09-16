@@ -1,4 +1,4 @@
-import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate, Mode } from '../../interface';
+import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate, Mode } from "../../interface.ts";
 
 export interface ModalOptions<T extends ComponentRef = ComponentRef> {
   component: T;

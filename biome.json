@@ -6,7 +6,8 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": true
+    "ignoreUnknown": true,
+    "includes": ["**", "!example/src/**/*", "!packages/runtime/examples/**/*"]
   },
   "formatter": {
     "enabled": true,
@@ -15,9 +16,107 @@
     "formatWithErrors": true
   },
   "linter": {
-    "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "correctness": {
+        "noConstAssign": "error",
+        "noConstantCondition": "error",
+        "noConstructorReturn": "error",
+        "noEmptyPattern": "error",
+        "noInnerDeclarations": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "noInvalidConstructorSuper": "error",
+        "noInvalidUseBeforeDeclaration": "error",
+        "noPrecisionLoss": "error",
+        "noSelfAssign": "error",
+        "noSetterReturn": "error",
+        "noStringCaseMismatch": "error",
+        "noSwitchDeclarations": "error",
+        "noUnreachable": "error",
+        "noUnreachableSuper": "error",
+        "noUnsafeFinally": "error",
+        "noUnsafeOptionalChaining": "error",
+        "noUnusedFunctionParameters": "warn",
+        "noUnusedImports": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
+        "noVoidElementsWithChildren": "error",
+        "noVoidTypeReturn": "error",
+        "useIsNan": "error",
+        "useValidForDirection": "error",
+        "useValidTypeof": "error",
+        "useYield": "error"
+      },
+      "security": {
+        "noBlankTarget": "error",
+        "noDangerouslySetInnerHtml": "error",
+        "noDangerouslySetInnerHtmlWithChildren": "error",
+        "noGlobalEval": "error"
+      },
+      "performance": {
+        "noAccumulatingSpread": "error",
+        "noDelete": "error",
+        "noDynamicNamespaceImportAccess": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "error",
+        "useConst": "error",
+        "useTemplate": "error",
+        "useExponentiationOperator": "error",
+        "useShorthandFunctionType": "error"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "error",
+        "noAssignInExpressions": "error",
+        "noAsyncPromiseExecutor": "error",
+        "noCatchAssign": "error",
+        "noClassAssign": "error",
+        "noCommentText": "error",
+        "noCompareNegZero": "error",
+        "noConfusingLabels": "error",
+        "noDebugger": "error",
+        "noDocumentCookie": "error",
+        "noDoubleEquals": "error",
+        "noDuplicateCase": "error",
+        "noDuplicateClassMembers": "error",
+        "noDuplicateElseIf": "error",
+        "noDuplicateJsxProps": "error",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error",
+        "noEmptyInterface": "error",
+        "noExplicitAny": "warn",
+        "noFallthroughSwitchClause": "error",
+        "noFunctionAssign": "error",
+        "noGlobalAssign": "error",
+        "noImplicitAnyLet": "error",
+        "noImportAssign": "error",
+        "noIrregularWhitespace": "error",
+        "noLabelVar": "error",
+        "noMisleadingInstantiator": "error",
+        "noMisrefactoredShorthandAssign": "error",
+        "noOctalEscape": "error",
+        "noPrototypeBuiltins": "error",
+        "noRedeclare": "error",
+        "noSelfCompare": "error",
+        "noShadowRestrictedNames": "error",
+        "noSparseArray": "error",
+        "noSuspiciousSemicolonInJsx": "error",
+        "noTemplateCurlyInString": "error",
+        "noThenProperty": "error",
+        "noUnsafeNegation": "error",
+        "noVar": "error",
+        "noWith": "error",
+        "useGetterReturn": "error",
+        "useIsArray": "error",
+        "useNamespaceKeyword": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "noImportCycles": "error",
+        "noShadow": "error",
+        "noUselessUndefined": "error"
+      }
     }
   },
   "javascript": {
@@ -28,9 +127,7 @@
   "assist": {
     "enabled": true,
     "actions": {
-      "source": {
-        "recommended": true
-      }
+      "recommended": true
     }
   }
 }

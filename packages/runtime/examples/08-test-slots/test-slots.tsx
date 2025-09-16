@@ -6,7 +6,7 @@ import {
   h,
   type JSXElement,
   render,
-} from "../../src";
+} from "../../src/index.ts";
 
 // Test component with shadow DOM (should work natively)
 @Component({
@@ -18,9 +18,9 @@ class ShadowSlotTest extends HTMLElement implements ComponentInterface {
     return (
       <Host>
         <div>Before slot content</div>
-        <slot></slot>
+        <slot />
         <div>After slot content</div>
-        <slot name="after"></slot>
+        <slot name="after" />
       </Host>
     );
   }
@@ -36,9 +36,9 @@ class NoShadowSlotTest extends HTMLElement implements ComponentInterface {
     return (
       <Host>
         <div>Before slot content</div>
-        <slot></slot>
+        <slot />
         <div>After slot content</div>
-        <slot name="after"></slot>
+        <slot name="after" />
       </Host>
     );
   }

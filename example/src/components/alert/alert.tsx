@@ -21,17 +21,17 @@ import {
 import { sanitizeDOMString } from '@utils/sanitization';
 import { getClassMap } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, CssClassMap, OverlayInterface, FrameworkDelegate } from '../../interface';
-import type { OverlayEventDetail } from '../../utils/overlays-interface';
-import type { IonicSafeString } from '../../utils/sanitization';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, CssClassMap, OverlayInterface, FrameworkDelegate } from "../../interface.ts";
+import type { OverlayEventDetail } from "../../utils/overlays-interface.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
 
-import type { AlertButton, AlertInput } from './alert-interface';
-import { iosEnterAnimation } from './animations/ios.enter';
-import { iosLeaveAnimation } from './animations/ios.leave';
-import { mdEnterAnimation } from './animations/md.enter';
-import { mdLeaveAnimation } from './animations/md.leave';
+import type { AlertButton, AlertInput } from "./alert-interface.ts";
+import { iosEnterAnimation } from "./animations/ios.enter.ts";
+import { iosLeaveAnimation } from "./animations/ios.leave.ts";
+import { mdEnterAnimation } from "./animations/md.enter.ts";
+import { mdLeaveAnimation } from "./animations/md.leave.ts";
 
 // TODO(FW-2832): types
 
@@ -241,14 +241,12 @@ export class Alert implements ComponentInterface, OverlayInterface {
     /**
      * Ensure when alert container is being focused, and the user presses the tab + shift keys, the focus will be set to the last alert button.
      */
-    if (ev.target.classList.contains('alert-wrapper')) {
-      if (ev.key === 'Tab' && ev.shiftKey) {
+    if (ev.target.classList.contains('alert-wrapper') && ev.key === 'Tab' && ev.shiftKey) {
         ev.preventDefault();
         const lastChildBtn = this.wrapperEl?.querySelector('.alert-button:last-child') as HTMLButtonElement;
         lastChildBtn.focus();
         return;
       }
-    }
 
     // The only inputs we want to navigate between using arrow keys are the radios
     // ignore the keydown event if it is not on a radio button
@@ -521,7 +519,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
   private getValues(): any {
     if (this.processedInputs.length === 0) {
       // this is an alert without any options/inputs at all
-      return undefined;
+      return ;
     }
 
     if (this.inputType === 'radio') {
@@ -582,16 +580,16 @@ export class Alert implements ComponentInterface, OverlayInterface {
               'alert-checkbox': true,
               'alert-checkbox-button': true,
               'ion-focusable': true,
-              'alert-checkbox-button-disabled': i.disabled || false,
+              'alert-checkbox-button-disabled': i.disabled,
             }}
           >
             <div class="alert-button-inner">
               <div class="alert-checkbox-icon">
-                <div class="alert-checkbox-inner"></div>
+                <div class="alert-checkbox-inner" />
               </div>
               <div class="alert-checkbox-label">{i.label}</div>
             </div>
-            {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+            {mode === 'md' && <ion-ripple-effect />}
           </button>
         ))}
       </div>
@@ -621,13 +619,13 @@ export class Alert implements ComponentInterface, OverlayInterface {
               'alert-tappable': true,
               'alert-radio': true,
               'ion-focusable': true,
-              'alert-radio-button-disabled': i.disabled || false,
+              'alert-radio-button-disabled': i.disabled,
             }}
             role="radio"
           >
             <div class="alert-button-inner">
               <div class="alert-radio-icon">
-                <div class="alert-radio-inner"></div>
+                <div class="alert-radio-inner" />
               </div>
               <div class="alert-radio-label">{i.label}</div>
             </div>
@@ -665,7 +663,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
                 />
               </div>
             );
-          } else {
+          }
             return (
               <div class="alert-input-wrapper">
                 <input
@@ -688,7 +686,6 @@ export class Alert implements ComponentInterface, OverlayInterface {
                 />
               </div>
             );
-          }
         })}
       </div>
     );
@@ -725,7 +722,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
             onClick={() => this.buttonClick(button)}
           >
             <span class="alert-button-inner">{button.text}</span>
-            {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+            {mode === 'md' && <ion-ripple-effect />}
           </button>
         ))}
       </div>
@@ -735,7 +732,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
   private renderAlertMessage(msgId: string) {
     const { customHTMLEnabled, message } = this;
     if (customHTMLEnabled) {
-      return <div id={msgId} class="alert-message" innerHTML={sanitizeDOMString(message)}></div>;
+      return <div id={msgId} class="alert-message" innerHTML={sanitizeDOMString(message)} />;
     }
 
     return (
@@ -778,7 +775,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
       >
         <ion-backdrop tappable={this.backdropDismiss} />
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
 
         <div
           class="alert-wrapper ion-overlay-wrapper"
@@ -816,7 +813,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
           {this.renderAlertButtons()}
         </div>
 
-        <div tabindex="0" aria-hidden="true"></div>
+        <div tabindex="0" aria-hidden="true" />
       </Host>
     );
   }
@@ -825,7 +822,7 @@ export class Alert implements ComponentInterface, OverlayInterface {
 const inputClass = (input: AlertInput): CssClassMap => {
   return {
     'alert-input': true,
-    'alert-input-disabled': (input.attributes?.disabled ?? input.disabled) || false,
+    'alert-input-disabled': (input.attributes?.disabled ?? input.disabled),
     ...getClassMap(input.cssClass),
     ...getClassMap(input.attributes ? input.attributes.class?.toString() : ''),
   };

@@ -1,4 +1,4 @@
-import type { IonicConfig } from '../interface';
+import type { IonicConfig } from "../interface.ts";
 
 // TODO(FW-2832): types
 
@@ -26,8 +26,8 @@ export class Config {
   }
 
   getNumber(key: keyof IonicConfig, fallback?: number): number {
-    const val = parseFloat(this.m.get(key));
-    return isNaN(val) ? (fallback !== undefined ? fallback : NaN) : val;
+    const val = Number.parseFloat(this.m.get(key));
+    return isNaN(val) ? (fallback !== undefined ? fallback : Number.NaN) : val;
   }
 
   set(key: keyof IonicConfig, value: any) {

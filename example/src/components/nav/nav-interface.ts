@@ -1,6 +1,6 @@
-import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate, Mode } from '../../interface';
+import type { AnimationBuilder, ComponentProps, ComponentRef, FrameworkDelegate, Mode } from "../../interface.ts";
 
-import type { ViewController } from './view-controller';
+import type { ViewController } from "./view-controller.ts";
 
 // TODO(FW-2832): types
 

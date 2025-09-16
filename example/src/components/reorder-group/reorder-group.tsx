@@ -4,15 +4,15 @@ import { findClosestIonContent, getScrollElement } from '@utils/content';
 import { raf } from '@utils/helpers';
 import { hapticSelectionChanged, hapticSelectionEnd, hapticSelectionStart } from '@utils/native/haptic';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Gesture, GestureDetail } from '../../interface';
-import type { HTMLStencilElement } from '../../utils/element-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Gesture, GestureDetail } from "../../interface.ts";
+import type { HTMLStencilElement } from "../../utils/element-interface.ts";
 
-import type { ItemReorderEventDetail, ReorderMoveEventDetail, ReorderEndEventDetail } from './reorder-group-interface';
+import type { ItemReorderEventDetail, ReorderMoveEventDetail, ReorderEndEventDetail } from "./reorder-group-interface.ts";
 
 // TODO(FW-2832): types
 
-const enum ReorderGroupState {
+enum ReorderGroupState {
   Idle = 0,
   Active = 1,
   Complete = 2,
@@ -87,7 +87,7 @@ export class ReorderGroup implements ComponentInterface {
     if (contentEl) {
       this.scrollEl = await getScrollElement(contentEl);
     }
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: this.el,
       gestureName: 'reorder',
       gesturePriority: 110,
@@ -348,7 +348,7 @@ export class ReorderGroup implements ComponentInterface {
           'reorder-enabled': !this.disabled,
           'reorder-list-active': this.state !== ReorderGroupState.Idle,
         }}
-      ></Host>
+      />
     );
   }
 }
@@ -366,7 +366,7 @@ const findReorderItem = (node: HTMLElement | null, container: HTMLElement): HTML
     }
     node = parent;
   }
-  return undefined;
+  return ;
 };
 
 const AUTO_SCROLL_MARGIN = 60;

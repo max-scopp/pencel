@@ -1,4 +1,4 @@
-import { getBackdropValueForSheet } from './utils';
+import { getBackdropValueForSheet } from "./utils.ts";
 
 describe('getBackdropValueForSheet()', () => {
   it('should return a valid integer when backdropBreakpoint is 1', () => {

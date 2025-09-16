@@ -1,10 +1,10 @@
+import type { PencilComponentContext } from "../controllers/component.ts";
+import type { PropOptions } from "../decorators/prop.ts";
+import type { JSXElement } from "./jsx.ts";
 import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
-  type PencilComponentContext,
-} from "src/controllers/component.ts";
-import type { PropOptions } from "src/decorators/prop.ts";
-import type { JSXElement } from "./jsx.ts";
+} from "./symbols.ts";
 
 /**
  * The Custom Elements API interface that all Pencil components implement.
@@ -46,6 +46,7 @@ export interface CustomElement extends HTMLElement {
  */
 export type ConstructablePencilComponent = ComponentProtoMeta &
   (new (
+    // biome-ignore lint/suspicious/noExplicitAny: must be any for super()
     ...args: any[]
   ) => ComponentInterfaceWithContext);
 
@@ -60,8 +61,6 @@ export const ATTR_MAP: unique symbol = Symbol("__$pencil_attr_map$");
  * This interface reflects the internal structure of the internal wrapped component.
  *
  * Child instances of `ComponentInterfaceWithContext` will NOT have these properties.
- *
- * @private
  */
 export interface ComponentInterfaceWithContext extends ComponentInterface {
   [PENCIL_COMPONENT_CONTEXT]?: PencilComponentContext;
@@ -72,8 +71,6 @@ export interface ComponentInterfaceWithContext extends ComponentInterface {
  * about the decorated properties, making them easier to access later.
  *
  * Currently, this is mainly required to cleanly initialize the props.
- *
- * @private
  */
 export interface ComponentProtoMeta {
   [PENCIL_OBSERVED_ATTRIBUTES]: string[];
@@ -145,7 +142,5 @@ export interface ComponentInterface extends CustomElement {
  *
  * A component can be alive without ever being rendered once if the scheduler
  * decides not to render it for some reason (e.g., it is not attached to the DOM).
- *
- * @private
  */
 export type PencilComponentPhase = "mounting" | "alive" | "disconnected";

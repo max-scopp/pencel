@@ -1,7 +1,7 @@
 import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Method, Prop, h } from '@stencil/core';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -57,7 +57,7 @@ export class List implements ComponentInterface {
           [`list-lines-${lines}`]: lines !== undefined,
           [`list-${mode}-lines-${lines}`]: lines !== undefined,
         }}
-      ></Host>
+      />
     );
   }
 }

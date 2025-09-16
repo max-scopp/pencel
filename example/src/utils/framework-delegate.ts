@@ -1,6 +1,6 @@
-import type { ComponentRef, FrameworkDelegate } from '../interface';
+import type { ComponentRef, FrameworkDelegate } from "../interface.ts";
 
-import { componentOnReady } from './helpers';
+import { componentOnReady } from "./helpers.ts";
 
 // TODO(FW-2832): types
 

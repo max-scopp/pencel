@@ -4,12 +4,12 @@ import { createGesture } from '@utils/gesture';
 import { clamp, getElementRoot } from '@utils/helpers';
 import { OVERLAY_GESTURE_PRIORITY } from '@utils/overlays';
 
-import type { Animation } from '../../../interface';
-import type { GestureDetail } from '../../../utils/gesture';
-import type { Style as StatusBarStyle } from '../../../utils/native/status-bar';
-import { setCardStatusBarDark, setCardStatusBarDefault } from '../utils';
+import type { Animation } from "../../../interface.ts";
+import type { GestureDetail } from "../../../utils/gesture/index.ts";
+import type { Style as StatusBarStyle } from "../../../utils/native/status-bar.ts";
+import { setCardStatusBarDark, setCardStatusBarDefault } from "../utils.ts";
 
-import { calculateSpringStep, handleCanDismiss } from './utils';
+import { calculateSpringStep, handleCanDismiss } from "./utils.ts";
 
 // Defaults for the card swipe animation
 export const SwipeToCloseDefaults = {
@@ -44,9 +44,8 @@ export const createSwipeToCloseGesture = (
        * used with virtual scrolling, so we assume
        * there is scrolling in this case.
        */
-    } else {
-      return true;
     }
+      return true;
   };
 
   const canStart = (detail: GestureDetail) => {
@@ -244,12 +243,12 @@ export const createSwipeToCloseGesture = (
     const shouldComplete = !isAttemptingDismissWithCanDismiss && threshold >= DISMISS_THRESHOLD;
     let newStepValue = shouldComplete ? -0.001 : 0.001;
 
-    if (!shouldComplete) {
-      animation.easing('cubic-bezier(1, 0, 0.68, 0.28)');
-      newStepValue += getTimeGivenProgression([0, 0], [1, 0], [0.68, 0.28], [1, 1], clampedStep)[0];
-    } else {
+    if (shouldComplete) {
       animation.easing('cubic-bezier(0.32, 0.72, 0, 1)');
       newStepValue += getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], clampedStep)[0];
+    } else {
+      animation.easing('cubic-bezier(1, 0, 0.68, 0.28)');
+      newStepValue += getTimeGivenProgression([0, 0], [1, 0], [0.68, 0.28], [1, 1], clampedStep)[0];
     }
 
     const duration = shouldComplete

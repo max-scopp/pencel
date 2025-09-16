@@ -5,11 +5,11 @@ import { raf } from '@utils/helpers';
 import { isRTL } from '@utils/rtl';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, StyleEventDetail } from '../../interface';
-import type { SegmentViewScrollEvent } from '../segment-view/segment-view-interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, StyleEventDetail } from "../../interface.ts";
+import type { SegmentViewScrollEvent } from "../segment-view/segment-view-interface.ts";
 
-import type { SegmentChangeEventDetail, SegmentValue } from './segment-interface';
+import type { SegmentChangeEventDetail, SegmentValue } from "./segment-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -157,19 +157,19 @@ export class Segment implements ComponentInterface {
   disabledChanged() {
     this.gestureChanged();
 
-    if (!this.segmentViewEl) {
+    if (this.segmentViewEl) {
+      this.segmentViewEl.disabled = this.disabled;
+    } else {
       const buttons = this.getButtons();
       for (const button of buttons) {
         button.disabled = this.disabled;
       }
-    } else {
-      this.segmentViewEl.disabled = this.disabled;
     }
   }
 
   private gestureChanged() {
     if (this.gesture) {
-      this.gesture.enable(!this.scrollable && !this.disabled && this.swipeGesture);
+      this.gesture.enable(!(this.scrollable || this.disabled ) && this.swipeGesture);
     }
   }
 
@@ -206,7 +206,7 @@ export class Segment implements ComponentInterface {
       this.scrollActiveButtonIntoView(false);
     });
 
-    this.gesture = (await import('../../utils/gesture')).createGesture({
+    this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
       el: this.el,
       gestureName: 'segment',
       gesturePriority: 100,
@@ -244,12 +244,10 @@ export class Segment implements ComponentInterface {
     detail.event.stopImmediatePropagation();
 
     const value = this.value;
-    if (value !== undefined) {
-      if (this.valueBeforeGesture !== value) {
+    if (value !== undefined && this.valueBeforeGesture !== value) {
         this.emitValueChange();
         this.updateSegmentView();
       }
-    }
     this.valueBeforeGesture = undefined;
   }
 
@@ -551,15 +549,13 @@ export class Segment implements ComponentInterface {
           nextIndex = newIndex;
         }
         // Increase index, moves right in LTR & left in RTL
-      } else if (increaseIndex) {
-        if (activated && !isEnd) {
+      } else if (increaseIndex && activated && !isEnd) {
           const newIndex = index + 1;
 
           if (newIndex < buttons.length) {
             nextIndex = newIndex;
           }
         }
-      }
 
       if (nextIndex !== undefined && !buttons[nextIndex].disabled) {
         current = buttons[nextIndex];
@@ -716,7 +712,7 @@ export class Segment implements ComponentInterface {
           'segment-scrollable': this.scrollable,
         })}
       >
-        <slot onSlotchange={this.onSlottedItemsChange}></slot>
+        <slot onSlotchange={this.onSlottedItemsChange} />
       </Host>
     );
   }

@@ -4,12 +4,12 @@ import { ENABLE_HTML_CONTENT_DEFAULT } from '@utils/config';
 import { sanitizeDOMString } from '@utils/sanitization';
 import { arrowDown, caretBackSharp } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { IonicSafeString } from '../../utils/sanitization';
-import { supportsRubberBandScrolling } from '../refresher/refresher.utils';
-import type { SpinnerTypes } from '../spinner/spinner-configs';
-import { SPINNERS } from '../spinner/spinner-configs';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
+import { supportsRubberBandScrolling } from "../refresher/refresher.utils.ts";
+import type { SpinnerTypes } from "../spinner/spinner-configs.ts";
+import { SPINNERS } from "../spinner/spinner-configs.ts";
 
 @Component({
   tag: 'ion-refresher-content',
@@ -88,7 +88,7 @@ export class RefresherContent implements ComponentInterface {
   private renderPullingText() {
     const { customHTMLEnabled, pullingText } = this;
     if (customHTMLEnabled) {
-      return <div class="refresher-pulling-text" innerHTML={sanitizeDOMString(pullingText)}></div>;
+      return <div class="refresher-pulling-text" innerHTML={sanitizeDOMString(pullingText)} />;
     }
 
     return <div class="refresher-pulling-text">{pullingText}</div>;
@@ -97,7 +97,7 @@ export class RefresherContent implements ComponentInterface {
   private renderRefreshingText() {
     const { customHTMLEnabled, refreshingText } = this;
     if (customHTMLEnabled) {
-      return <div class="refresher-refreshing-text" innerHTML={sanitizeDOMString(refreshingText)}></div>;
+      return <div class="refresher-refreshing-text" innerHTML={sanitizeDOMString(refreshingText)} />;
     }
 
     return <div class="refresher-refreshing-text">{refreshingText}</div>;
@@ -114,10 +114,10 @@ export class RefresherContent implements ComponentInterface {
           {this.pullingIcon && hasSpinner && (
             <div class="refresher-pulling-icon">
               <div class="spinner-arrow-container">
-                <ion-spinner name={this.pullingIcon as SpinnerTypes} paused></ion-spinner>
+                <ion-spinner name={this.pullingIcon as SpinnerTypes} paused={true} />
                 {mode === 'md' && this.pullingIcon === 'circular' && (
                   <div class="arrow-container">
-                    <ion-icon icon={caretBackSharp} aria-hidden="true"></ion-icon>
+                    <ion-icon icon={caretBackSharp} aria-hidden="true" />
                   </div>
                 )}
               </div>
@@ -125,7 +125,7 @@ export class RefresherContent implements ComponentInterface {
           )}
           {this.pullingIcon && !hasSpinner && (
             <div class="refresher-pulling-icon">
-              <ion-icon icon={this.pullingIcon} lazy={false} aria-hidden="true"></ion-icon>
+              <ion-icon icon={this.pullingIcon} lazy={false} aria-hidden="true" />
             </div>
           )}
           {this.pullingText !== undefined && this.renderPullingText()}
@@ -133,7 +133,7 @@ export class RefresherContent implements ComponentInterface {
         <div class="refresher-refreshing">
           {this.refreshingSpinner && (
             <div class="refresher-refreshing-icon">
-              <ion-spinner name={this.refreshingSpinner}></ion-spinner>
+              <ion-spinner name={this.refreshingSpinner} />
             </div>
           )}
           {this.refreshingText !== undefined && this.renderRefreshingText()}

@@ -5,8 +5,8 @@ import { shouldUseCloseWatcher } from '@utils/hardware-back-button';
 import { printIonWarning } from '@utils/logging';
 import { isPlatform } from '@utils/platform';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-app',
@@ -22,10 +22,10 @@ export class App implements ComponentInterface {
       rIC(async () => {
         const isHybrid = isPlatform(window, 'hybrid');
         if (!config.getBoolean('_testing')) {
-          import('../../utils/tap-click').then((module) => module.startTapClick(config));
+          import("../../utils/tap-click/index.ts").then((module) => module.startTapClick(config));
         }
         if (config.getBoolean('statusTap', isHybrid)) {
-          import('../../utils/status-tap').then((module) => module.startStatusTap());
+          import("../../utils/status-tap.ts").then((module) => module.startStatusTap());
         }
         if (config.getBoolean('inputShims', needInputShims())) {
           /**
@@ -33,9 +33,9 @@ export class App implements ComponentInterface {
            * platforms proceed into this block.
            */
           const platform = isPlatform(window, 'ios') ? 'ios' : 'android';
-          import('../../utils/input-shims/input-shims').then((module) => module.startInputShims(config, platform));
+          import("../../utils/input-shims/input-shims.ts").then((module) => module.startInputShims(config, platform));
         }
-        const hardwareBackButtonModule = await import('../../utils/hardware-back-button');
+        const hardwareBackButtonModule = await import("../../utils/hardware-back-button.ts");
         const supportsHardwareBackButtonEvents = isHybrid || shouldUseCloseWatcher();
         if (config.getBoolean('hardwareBackButton', supportsHardwareBackButtonEvents)) {
           hardwareBackButtonModule.startHardwareBackButton();
@@ -53,9 +53,9 @@ export class App implements ComponentInterface {
           hardwareBackButtonModule.blockHardwareBackButton();
         }
         if (typeof (window as any) !== 'undefined') {
-          import('../../utils/keyboard/keyboard').then((module) => module.startKeyboardAssist(window));
+          import("../../utils/keyboard/keyboard.ts").then((module) => module.startKeyboardAssist(window));
         }
-        import('../../utils/focus-visible').then((module) => (this.focusVisible = module.startFocusVisible()));
+        import("../../utils/focus-visible.ts").then((module) => (this.focusVisible = module.startFocusVisible()));
       });
     }
   }
@@ -87,7 +87,7 @@ export class App implements ComponentInterface {
           'ion-page': true,
           'force-statusbar-padding': config.getBoolean('_forceStatusbarPadding'),
         }}
-      ></Host>
+      />
     );
   }
 }

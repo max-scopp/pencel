@@ -1,5 +1,5 @@
-import { throwConsumerError } from "@pencel/utils";
-import type { CustomElement } from "src/core/types.ts";
+import { ConsumerError } from "@pencel/utils";
+import type { CustomElement } from "../core/types.ts";
 
 /**
  * Options for the Listen decorator
@@ -39,7 +39,7 @@ export function Listen(userOptions: string | ListenOptions): MethodDecorator {
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod !== "function") {
-      throwConsumerError(
+      throw new ConsumerError(
         `@Listen can only be applied to methods, but ${String(propertyKey)} is not a function`,
       );
     }

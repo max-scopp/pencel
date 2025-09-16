@@ -1,7 +1,7 @@
-import type { DatetimeParts, DatetimeHourCycle } from '../datetime-interface';
+import type { DatetimeParts, DatetimeHourCycle } from "../datetime-interface.ts";
 
-import { is24Hour } from './helpers';
-import { convertDataToISO } from './manipulation';
+import { is24Hour } from "./helpers.ts";
+import { convertDataToISO } from "./manipulation.ts";
 
 const getFormattedDayPeriod = (dayPeriod?: string) => {
   if (dayPeriod === undefined) {
@@ -269,9 +269,8 @@ export const getTodayLabel = (locale: string) => {
   if ('RelativeTimeFormat' in Intl) {
     const label = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(0, 'day');
     return label.charAt(0).toUpperCase() + label.slice(1);
-  } else {
-    return 'Today';
   }
+    return 'Today';
 };
 
 /**

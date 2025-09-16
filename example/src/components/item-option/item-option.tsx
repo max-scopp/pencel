@@ -3,8 +3,8 @@ import { Component, Element, Host, Prop, h } from '@stencil/core';
 import type { AnchorInterface, ButtonInterface } from '@utils/element-interface';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -110,16 +110,16 @@ export class ItemOption implements ComponentInterface, AnchorInterface, ButtonIn
       >
         <TagType {...attrs} class="button-native" part="native" disabled={disabled}>
           <span class="button-inner">
-            <slot name="top"></slot>
+            <slot name="top" />
             <div class="horizontal-wrapper">
-              <slot name="start"></slot>
-              <slot name="icon-only"></slot>
-              <slot></slot>
-              <slot name="end"></slot>
+              <slot name="start" />
+              <slot name="icon-only" />
+              <slot />
+              <slot name="end" />
             </div>
-            <slot name="bottom"></slot>
+            <slot name="bottom" />
           </span>
-          {mode === 'md' && <ion-ripple-effect></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect />}
         </TagType>
       </Host>
     );

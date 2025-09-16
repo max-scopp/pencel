@@ -1,4 +1,4 @@
-import { addEventListener, removeEventListener } from '../../helpers';
+import { addEventListener, removeEventListener } from "../../helpers.ts";
 
 const SKIP_SELECTOR = 'input, textarea, [no-blur], [contenteditable]';
 

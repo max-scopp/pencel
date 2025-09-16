@@ -12,7 +12,7 @@ import { createColorClasses, hostContext } from '@utils/theme';
 import { watchForOptions } from '@utils/watch-options';
 import { caretDownSharp, chevronExpand } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 import type {
   ActionSheetOptions,
   AlertOptions,
@@ -21,12 +21,12 @@ import type {
   PopoverOptions,
   StyleEventDetail,
   ModalOptions,
-} from '../../interface';
-import type { ActionSheetButton } from '../action-sheet/action-sheet-interface';
-import type { AlertInput } from '../alert/alert-interface';
-import type { SelectPopoverOption } from '../select-popover/select-popover-interface';
+} from "../../interface.ts";
+import type { ActionSheetButton } from "../action-sheet/action-sheet-interface.ts";
+import type { AlertInput } from "../alert/alert-interface.ts";
+import type { SelectPopoverOption } from "../select-popover/select-popover-interface.ts";
 
-import type { SelectChangeEventDetail, SelectInterface, SelectCompareFn } from './select-interface';
+import type { SelectChangeEventDetail, SelectInterface, SelectCompareFn } from "./select-interface.ts";
 
 // TODO(FW-2832): types
 
@@ -339,7 +339,7 @@ export class Select implements ComponentInterface {
   @Method()
   async open(event?: UIEvent): Promise<any> {
     if (this.disabled || this.isExpanded) {
-      return undefined;
+      return ;
     }
     this.isExpanded = true;
     const overlay = (this.overlay = await this.createOverlay(event));
@@ -473,22 +473,25 @@ export class Select implements ComponentInterface {
       case 'action-sheet':
         overlay.buttons = this.createActionSheetButtons(childOpts, value);
         break;
-      case 'popover':
+      case 'popover': {
         const popover = overlay.querySelector('ion-select-popover');
         if (popover) {
           popover.options = this.createOverlaySelectOptions(childOpts, value);
         }
         break;
-      case 'modal':
+      }
+      case 'modal': {
         const modal = overlay.querySelector('ion-select-modal');
         if (modal) {
           modal.options = this.createOverlaySelectOptions(childOpts, value);
         }
         break;
-      case 'alert':
+      }
+      case 'alert': {
         const inputType = this.multiple ? 'checkbox' : 'radio';
         overlay.inputs = this.createAlertInputs(childOpts, inputType, value);
         break;
+      }
     }
   }
 
@@ -641,7 +644,7 @@ export class Select implements ComponentInterface {
     // eslint-disable-next-line
     if (false) {
       // eslint-disable-next-line
-      // @ts-ignore
+      // @ts-expect-error
       document.createElement('ion-select-popover');
       document.createElement('ion-popover');
     }
@@ -668,7 +671,7 @@ export class Select implements ComponentInterface {
     // eslint-disable-next-line
     if (false) {
       // eslint-disable-next-line
-      // @ts-ignore
+      // @ts-expect-error
       document.createElement('ion-action-sheet');
     }
 
@@ -716,7 +719,7 @@ export class Select implements ComponentInterface {
     // eslint-disable-next-line
     if (false) {
       // eslint-disable-next-line
-      // @ts-ignore
+      // @ts-expect-error
       document.createElement('ion-alert');
     }
 
@@ -749,7 +752,7 @@ export class Select implements ComponentInterface {
     // eslint-disable-next-line
     if (false) {
       // eslint-disable-next-line
-      // @ts-ignore
+      // @ts-expect-error
       document.createElement('ion-select-modal');
       document.createElement('ion-modal');
     }
@@ -884,7 +887,7 @@ export class Select implements ComponentInterface {
         }}
         part="label"
       >
-        {label === undefined ? <slot name="label"></slot> : <div class="label-text">{label}</div>}
+        {label === undefined ? <slot name="label" /> : <div class="label-text">{label}</div>}
       </div>
     );
   }
@@ -941,7 +944,7 @@ export class Select implements ComponentInterface {
        */
       return [
         <div class="select-outline-container">
-          <div class="select-outline-start"></div>
+          <div class="select-outline-start" />
           <div
             class={{
               'select-outline-notch': true,
@@ -952,7 +955,7 @@ export class Select implements ComponentInterface {
               {this.label}
             </div>
           </div>
-          <div class="select-outline-end"></div>
+          <div class="select-outline-end" />
         </div>,
         this.renderLabel(),
       ];
@@ -1012,7 +1015,7 @@ export class Select implements ComponentInterface {
       icon = toggleIcon ?? defaultIcon;
     }
 
-    return <ion-icon class="select-icon" part="icon" aria-hidden="true" icon={icon}></ion-icon>;
+    return <ion-icon class="select-icon" part="icon" aria-hidden="true" icon={icon} />;
   }
 
   private get ariaLabel() {
@@ -1062,7 +1065,7 @@ export class Select implements ComponentInterface {
         onFocus={this.onFocus}
         onBlur={this.onBlur}
         ref={(focusEl) => (this.focusEl = focusEl)}
-      ></button>
+      />
     );
   }
 
@@ -1077,7 +1080,7 @@ export class Select implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   /**
@@ -1188,12 +1191,12 @@ export class Select implements ComponentInterface {
         <label class="select-wrapper" id="select-label" onClick={this.onLabelClick}>
           {this.renderLabelContainer()}
           <div class="select-wrapper-inner">
-            <slot name="start"></slot>
+            <slot name="start" />
             <div class="native-wrapper" ref={(el) => (this.nativeWrapperEl = el)} part="container">
               {this.renderSelectText()}
               {this.renderListbox()}
             </div>
-            <slot name="end"></slot>
+            <slot name="end" />
             {!hasFloatingOrStackedLabel && this.renderSelectIcon()}
           </div>
           {/**
@@ -1206,7 +1209,7 @@ export class Select implements ComponentInterface {
            * those components.
            */}
           {hasFloatingOrStackedLabel && this.renderSelectIcon()}
-          {shouldRenderHighlight && <div class="select-highlight"></div>}
+          {shouldRenderHighlight && <div class="select-highlight" />}
         </label>
         {this.renderBottomContent()}
       </Host>
@@ -1221,7 +1224,7 @@ const getOptionValue = (el: HTMLIonSelectOptionElement) => {
 
 const parseValue = (value: any) => {
   if (value == null) {
-    return undefined;
+    return ;
   }
   if (Array.isArray(value)) {
     return value.join(',');
@@ -1242,9 +1245,8 @@ const generateText = (
       .map((v) => textForValue(opts, v, compareWith))
       .filter((opt) => opt !== null)
       .join(', ');
-  } else {
-    return textForValue(opts, value, compareWith) || '';
   }
+    return textForValue(opts, value, compareWith) || '';
 };
 
 const textForValue = (

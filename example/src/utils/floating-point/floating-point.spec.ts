@@ -1,4 +1,4 @@
-import { getDecimalPlaces, roundToMaxDecimalPlaces } from './index';
+import { getDecimalPlaces, roundToMaxDecimalPlaces } from "./index.ts";
 
 describe('floating point utils', () => {
   describe('getDecimalPlaces', () => {
@@ -15,7 +15,7 @@ describe('floating point utils', () => {
     it('should handle nullish values', () => {
       expect(getDecimalPlaces(undefined as any)).toBe(0);
       expect(getDecimalPlaces(null as any)).toBe(0);
-      expect(getDecimalPlaces(NaN as any)).toBe(0);
+      expect(getDecimalPlaces(Number.NaN as any)).toBe(0);
     });
   });
 
@@ -28,7 +28,7 @@ describe('floating point utils', () => {
     it('should handle nullish values', () => {
       expect(roundToMaxDecimalPlaces(undefined as any)).toBe(0);
       expect(roundToMaxDecimalPlaces(null as any)).toBe(0);
-      expect(roundToMaxDecimalPlaces(NaN as any)).toBe(0);
+      expect(roundToMaxDecimalPlaces(Number.NaN as any)).toBe(0);
     });
   });
 });

@@ -110,10 +110,9 @@ function logPerformanceTree(
     if (us < 1000) {
       // For sub-millisecond times, show microseconds
       return `${us.toFixed(0)}μs`;
-    } else {
+    }
       // For millisecond and above, show milliseconds
       return `${(us / 1000).toFixed(3)}ms`;
-    }
   }
 
   function getStyle(us: number, parentTime: number): string {
@@ -157,8 +156,8 @@ function logPerformanceTree(
     node: TreeNode,
     depth: number,
     parentTime: number,
-    isLast: boolean = false,
-    prefix: string = "",
+    isLast = false,
+    prefix = "",
   ): void {
     // Calculate total time including all nested children
     const nodeTotal = calculateTotalTime(node);
@@ -172,7 +171,7 @@ function logPerformanceTree(
     ).toFixed(2);
 
     // Format percentage with ANSI colors for CLI use
-    const percentageNum = parseFloat(percentage);
+    const percentageNum = Number.parseFloat(percentage);
     const percentageColor = getPercentageColor(percentageNum);
     const ansiColor = getAnsiFromStyle(percentageColor);
     const coloredPercentage =

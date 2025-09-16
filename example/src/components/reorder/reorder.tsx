@@ -2,7 +2,7 @@ import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Listen, h } from '@stencil/core';
 import { reorderThreeOutline, reorderTwoSharp } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 /**
  * @part icon - The icon of the reorder handle (uses ion-icon).
@@ -26,7 +26,7 @@ export class Reorder implements ComponentInterface {
 
     // Only stop event propagation if the reorder is inside of an enabled
     // reorder group. This allows interaction with clickable children components.
-    if (!reorderGroup || !reorderGroup.disabled) {
+    if (!(reorderGroup && reorderGroup.disabled)) {
       ev.stopImmediatePropagation();
     }
   }

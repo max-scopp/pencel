@@ -1,7 +1,7 @@
 import { doc } from '@utils/browser';
 
-import type { Config } from '../../interface';
-import { pointerCoord } from '../helpers';
+import type { Config } from "../../interface.ts";
+import { pointerCoord } from "../helpers.ts";
 
 export const startTapClick = (config: Config) => {
   if (doc === undefined) {

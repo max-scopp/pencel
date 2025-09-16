@@ -2,8 +2,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { print } from "ts-flattered";
 import type ts from "typescript";
-import { compilerTree } from "../core/compiler.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
+import { compilerTree } from "../utils/compilerTree.ts";
 import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
 
 export async function writeAllFiles(

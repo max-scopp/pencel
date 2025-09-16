@@ -10,7 +10,7 @@ import {
   Prop,
   render,
   State,
-} from "../../src";
+} from "../../src/index.ts";
 
 @Component({
   tag: "fancy-button",
@@ -81,7 +81,7 @@ class SimpleElement extends HTMLElement implements ComponentInterface {
   render(): JSXElement {
     return (
       <Host class="simple-element">
-        <slot></slot>
+        <slot />
         it works! {this.name}
       </Host>
     );

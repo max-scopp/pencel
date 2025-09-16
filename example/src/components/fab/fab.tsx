@@ -1,7 +1,7 @@
 import type { ComponentInterface } from '@stencil/core';
 import { Component, Element, Host, Method, Prop, Watch, h } from '@stencil/core';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-fab',
@@ -86,7 +86,7 @@ export class Fab implements ComponentInterface {
           'fab-edge': edge,
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

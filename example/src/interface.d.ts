@@ -1,43 +1,43 @@
 // Components interfaces
 import type { Components as IoniconsComponents, JSX as IoniconsJSX } from 'ionicons';
 
-export * from './components';
-export * from './index';
-export { AccordionGroupCustomEvent } from './components/accordion-group/accordion-group-interface';
-export { AlertOptions } from './components/alert/alert-interface';
-export { ActionSheetOptions } from './components/action-sheet/action-sheet-interface';
-export { BreadcrumbCustomEvent } from './components/breadcrumb/breadcrumb-interface';
-export { ScrollBaseCustomEvent, ScrollCallback, ScrollCustomEvent } from './components/content/content-interface';
-export { CheckboxCustomEvent } from './components/checkbox/checkbox-interface';
-export { DatetimeCustomEvent, DatetimeHighlightStyle } from './components/datetime/datetime-interface';
-export { InfiniteScrollCustomEvent } from './components/infinite-scroll/infinite-scroll-interface';
-export { InputCustomEvent } from './components/input/input-interface';
-export { InputOtpCustomEvent } from './components/input-otp/input-otp-interface';
-export { CounterFormatter } from './components/item/item-interface';
-export { ItemSlidingCustomEvent } from './components/item-sliding/item-sliding-interface';
-export { LoadingOptions } from './components/loading/loading-interface';
-export { MenuCustomEvent, MenuI, MenuControllerI } from './components/menu/menu-interface';
-export { ModalOptions, ModalCustomEvent } from './components/modal/modal-interface';
-export { NavDirection, NavCustomEvent } from './components/nav/nav-interface';
-export { PickerOptions, PickerColumnOption } from './components/picker-legacy/picker-interface';
-export { PopoverOptions } from './components/popover/popover-interface';
-export { RadioGroupCustomEvent } from './components/radio-group/radio-group-interface';
-export { RangeCustomEvent, PinFormatter } from './components/range/range-interface';
-export { RouterCustomEvent } from './components/router/utils/interface';
-export { RefresherCustomEvent } from './components/refresher/refresher-interface';
+export * from "./components.ts";
+export * from "./index.ts";
+export { AccordionGroupCustomEvent } from "./components/accordion-group/accordion-group-interface.ts";
+export { AlertOptions } from "./components/alert/alert-interface.ts";
+export { ActionSheetOptions } from "./components/action-sheet/action-sheet-interface.ts";
+export { BreadcrumbCustomEvent } from "./components/breadcrumb/breadcrumb-interface.ts";
+export { ScrollBaseCustomEvent, ScrollCallback, ScrollCustomEvent } from "./components/content/content-interface.ts";
+export { CheckboxCustomEvent } from "./components/checkbox/checkbox-interface.ts";
+export { DatetimeCustomEvent, DatetimeHighlightStyle } from "./components/datetime/datetime-interface.ts";
+export { InfiniteScrollCustomEvent } from "./components/infinite-scroll/infinite-scroll-interface.ts";
+export { InputCustomEvent } from "./components/input/input-interface.ts";
+export { InputOtpCustomEvent } from "./components/input-otp/input-otp-interface.ts";
+export { CounterFormatter } from "./components/item/item-interface.ts";
+export { ItemSlidingCustomEvent } from "./components/item-sliding/item-sliding-interface.ts";
+export { LoadingOptions } from "./components/loading/loading-interface.ts";
+export { MenuCustomEvent, MenuI, MenuControllerI } from "./components/menu/menu-interface.ts";
+export { ModalOptions, ModalCustomEvent } from "./components/modal/modal-interface.ts";
+export { NavDirection, NavCustomEvent } from "./components/nav/nav-interface.ts";
+export { PickerOptions, PickerColumnOption } from "./components/picker-legacy/picker-interface.ts";
+export { PopoverOptions } from "./components/popover/popover-interface.ts";
+export { RadioGroupCustomEvent } from "./components/radio-group/radio-group-interface.ts";
+export { RangeCustomEvent, PinFormatter } from "./components/range/range-interface.ts";
+export { RouterCustomEvent } from "./components/router/utils/interface.ts";
+export { RefresherCustomEvent } from "./components/refresher/refresher-interface.ts";
 export {
   ItemReorderCustomEvent,
   ReorderEndCustomEvent,
   ReorderMoveCustomEvent,
-} from './components/reorder-group/reorder-group-interface';
-export { SearchbarCustomEvent } from './components/searchbar/searchbar-interface';
-export { SegmentCustomEvent } from './components/segment/segment-interface';
-export { SelectCustomEvent, SelectCompareFn } from './components/select/select-interface';
-export { TabsCustomEvent } from './components/tabs/tabs-interface';
-export { TextareaCustomEvent } from './components/textarea/textarea-interface';
-export { ToastOptions } from './components/toast/toast-interface';
-export { ToggleCustomEvent } from './components/toggle/toggle-interface';
-export { BackButtonEvent, BackButtonEventDetail } from './utils/hardware-back-button';
+} from "./components/reorder-group/reorder-group-interface.ts";
+export { SearchbarCustomEvent } from "./components/searchbar/searchbar-interface.ts";
+export { SegmentCustomEvent } from "./components/segment/segment-interface.ts";
+export { SelectCustomEvent, SelectCompareFn } from "./components/select/select-interface.ts";
+export { TabsCustomEvent } from "./components/tabs/tabs-interface.ts";
+export { TextareaCustomEvent } from "./components/textarea/textarea-interface.ts";
+export { ToastOptions } from "./components/toast/toast-interface.ts";
+export { ToggleCustomEvent } from "./components/toggle/toggle-interface.ts";
+export { BackButtonEvent, BackButtonEventDetail } from "./utils/hardware-back-button.ts";
 
 // Types from utils
 export {
@@ -48,12 +48,12 @@ export {
   AnimationFill,
   AnimationKeyFrames,
   AnimationLifecycle,
-} from './utils/animation/animation-interface';
-export { HTMLStencilElement } from './utils/element-interface';
-export { TransitionOptions } from './utils/transition';
-export { HTMLIonOverlayElement, OverlayController, OverlayInterface } from './utils/overlays-interface';
-export { Config, config } from './global/config';
-export { Gesture, GestureConfig, GestureDetail } from './utils/gesture';
+} from "./utils/animation/animation-interface.ts";
+export { HTMLStencilElement } from "./utils/element-interface.ts";
+export { TransitionOptions } from "./utils/transition/index.ts";
+export { HTMLIonOverlayElement, OverlayController, OverlayInterface } from "./utils/overlays-interface.ts";
+export { Config, config } from "./global/config.ts";
+export { Gesture, GestureConfig, GestureDetail } from "./utils/gesture/index.ts";
 
 // From: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete
 export type AutocompleteTypes =
@@ -161,15 +161,15 @@ export interface StyleEventDetail {
   [styleName: string]: boolean;
 }
 
-export { NavComponentWithProps } from './components/nav/nav-interface';
+export { NavComponentWithProps } from "./components/nav/nav-interface.ts";
 
-declare module './components' {
+declare module "./components.ts" {
   export namespace Components {
     export type IonIcon = IoniconsComponents.IonIcon;
   }
 }
 
-declare module './components' {
+declare module "./components.ts" {
   export namespace JSX {
     export type IonIcon = IoniconsJSX.IonIcon;
   }

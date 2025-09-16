@@ -8,11 +8,11 @@ import { isRTL } from '@utils/rtl';
 import { createColorClasses, hostContext } from '@utils/theme';
 import { checkmarkOutline, removeOutline, ellipseOutline } from 'ionicons/icons';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, Gesture, GestureDetail, Mode } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, Gesture, GestureDetail, Mode } from "../../interface.ts";
 
-import type { ToggleChangeEventDetail } from './toggle-interface';
+import type { ToggleChangeEventDetail } from "./toggle-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -190,7 +190,7 @@ export class Toggle implements ComponentInterface {
     const { toggleTrack } = this;
 
     if (toggleTrack) {
-      this.gesture = (await import('../../utils/gesture')).createGesture({
+      this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
         el: toggleTrack,
         gestureName: 'toggle',
         gesturePriority: 100,
@@ -311,7 +311,7 @@ export class Toggle implements ComponentInterface {
         }}
         icon={icon}
         aria-hidden="true"
-      ></ion-icon>
+      />
     );
   }
 
@@ -350,7 +350,7 @@ export class Toggle implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   /**
@@ -429,7 +429,7 @@ export class Toggle implements ComponentInterface {
           [`toggle-${rtl}`]: true,
         })}
       >
-        <label class="toggle-wrapper" htmlFor={inputId}>
+        <label class="toggle-wrapper" for={inputId}>
           {/*
             The native control must be rendered
             before the visible label text due to https://bugs.webkit.org/show_bug.cgi?id=251951
@@ -456,7 +456,7 @@ export class Toggle implements ComponentInterface {
             id={inputLabelId}
             onClick={this.onDivLabelClick}
           >
-            <slot></slot>
+            <slot />
             {this.renderHintText()}
           </div>
           <div class="native-wrapper">{this.renderToggleControl()}</div>
@@ -469,9 +469,8 @@ export class Toggle implements ComponentInterface {
 const shouldToggle = (rtl: boolean, checked: boolean, deltaX: number, margin: number): boolean => {
   if (checked) {
     return (!rtl && margin > deltaX) || (rtl && -margin < deltaX);
-  } else {
-    return (!rtl && -margin < deltaX) || (rtl && margin > deltaX);
   }
+    return (!rtl && -margin < deltaX) || (rtl && margin > deltaX);
 };
 
 let toggleIds = 0;

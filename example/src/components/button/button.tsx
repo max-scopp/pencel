@@ -6,9 +6,9 @@ import { inheritAriaAttributes, hasShadowDom } from '@utils/helpers';
 import { printIonWarning } from '@utils/logging';
 import { createColorClasses, hostContext, openURL } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color } from '../../interface';
-import type { RouterDirection } from '../router/utils/interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color } from "../../interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -41,7 +41,7 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
   /**
    * If `true`, the button only has an icon.
    */
-  @State() isCircle: boolean = false;
+  @State() isCircle = false;
 
   /**
    * The color to use from your application's color palette.
@@ -249,7 +249,7 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
       if (el) {
         if (el instanceof HTMLFormElement) {
           return el;
-        } else {
+        }
           /**
            * The developer specified a string for the form attribute, but the
            * element with that id is not a form element.
@@ -259,8 +259,7 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
             this.el
           );
           return null;
-        }
-      } else {
+      }
         /**
          * The developer specified a string for the form attribute, but the
          * element with that id could not be found in the DOM.
@@ -270,7 +269,6 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
           this.el
         );
         return null;
-      }
     }
     if (form !== undefined) {
       /**
@@ -368,17 +366,7 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
     if (fill == null) {
       fill = this.inToolbar || this.inListHeader ? 'clear' : 'solid';
     }
-
-    /**
-     * We call renderHiddenButton in the render function to account
-     * for any properties being set async. For example, changing the
-     * "type" prop from "button" to "submit" after the component has
-     * loaded would warrant the hidden button being added to the
-     * associated form.
-     */
-    {
       type !== 'button' && this.renderHiddenButton();
-    }
 
     return (
       <Host
@@ -411,12 +399,12 @@ export class Button implements ComponentInterface, AnchorInterface, ButtonInterf
           {...inheritedAttributes}
         >
           <span class="button-inner">
-            <slot name="icon-only" onSlotchange={this.slotChanged}></slot>
-            <slot name="start"></slot>
-            <slot></slot>
-            <slot name="end"></slot>
+            <slot name="icon-only" onSlotchange={this.slotChanged} />
+            <slot name="start" />
+            <slot />
+            <slot name="end" />
           </span>
-          {mode === 'md' && <ion-ripple-effect type={this.rippleType}></ion-ripple-effect>}
+          {mode === 'md' && <ion-ripple-effect type={this.rippleType} />}
         </TagType>
       </Host>
     );

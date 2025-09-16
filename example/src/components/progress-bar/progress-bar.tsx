@@ -3,9 +3,9 @@ import { Component, Host, Prop, h } from '@stencil/core';
 import { clamp } from '@utils/helpers';
 import { createColorClasses } from '@utils/theme';
 
-import { config } from '../../global/config';
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { config } from "../../global/config.ts";
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -85,10 +85,10 @@ const renderIndeterminate = () => {
   return (
     <div part="track" class="progress-buffer-bar">
       <div class="indeterminate-bar-primary">
-        <span part="progress" class="progress-indeterminate"></span>
+        <span part="progress" class="progress-indeterminate" />
       </div>
       <div class="indeterminate-bar-secondary">
-        <span part="progress" class="progress-indeterminate"></span>
+        <span part="progress" class="progress-indeterminate" />
       </div>
     </div>
   );
@@ -99,7 +99,7 @@ const renderProgress = (value: number, buffer: number) => {
   const finalBuffer = clamp(0, buffer, 1);
 
   return [
-    <div part="progress" class="progress" style={{ transform: `scaleX(${finalValue})` }}></div>,
+    <div part="progress" class="progress" style={{ transform: `scaleX(${finalValue})` }} />,
     /**
      * Buffer circles with two container to move
      * the circles behind the buffer progress
@@ -113,9 +113,9 @@ const renderProgress = (value: number, buffer: number) => {
       style={{ transform: `translateX(${finalBuffer * 100}%)` }}
     >
       <div class="buffer-circles-container" style={{ transform: `translateX(-${finalBuffer * 100}%)` }}>
-        <div part="stream" class="buffer-circles"></div>
+        <div part="stream" class="buffer-circles" />
       </div>
     </div>,
-    <div part="track" class="progress-buffer-bar" style={{ transform: `scaleX(${finalBuffer})` }}></div>,
+    <div part="track" class="progress-buffer-bar" style={{ transform: `scaleX(${finalBuffer})` }} />,
   ];
 };

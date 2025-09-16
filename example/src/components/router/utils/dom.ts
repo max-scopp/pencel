@@ -1,10 +1,10 @@
 import { componentOnReady } from '@utils/helpers';
 import { printIonError } from '@utils/logging';
 
-import type { AnimationBuilder } from '../../../interface';
+import type { AnimationBuilder } from "../../../interface.ts";
 
-import { ROUTER_INTENT_NONE } from './constants';
-import type { NavOutletElement, RouteChain, RouteID, RouterDirection } from './interface';
+import { ROUTER_INTENT_NONE } from "./constants.ts";
+import type { NavOutletElement, RouteChain, RouteID, RouterDirection } from "./interface.ts";
 
 /**
  * Activates the passed route chain.
@@ -95,7 +95,7 @@ const OUTLET_SELECTOR = ':not([no-router]) ion-nav, :not([no-router]) ion-tabs, 
 
 const searchNavNode = (root: HTMLElement | undefined): NavOutletElement | undefined => {
   if (!root) {
-    return undefined;
+    return ;
   }
   if (root.matches(OUTLET_SELECTOR)) {
     return root as NavOutletElement;

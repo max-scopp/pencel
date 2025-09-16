@@ -1,5 +1,5 @@
-import type { RouteChain, RouteRedirect } from './interface';
-import { generatePath } from './path';
+import type { RouteChain, RouteRedirect } from "./interface.ts";
+import { generatePath } from "./path.ts";
 
 export const printRoutes = (routes: RouteChain[]) => {
   console.group(`[ion-core] ROUTES[${routes.length}]`);

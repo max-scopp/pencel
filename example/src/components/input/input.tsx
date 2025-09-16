@@ -22,11 +22,11 @@ import type { SlotMutationController } from '@utils/slot-mutation-controller';
 import { createColorClasses, hostContext } from '@utils/theme';
 import { closeCircle, closeSharp } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AutocompleteTypes, Color, TextFieldTypes } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AutocompleteTypes, Color, TextFieldTypes } from "../../interface.ts";
 
-import type { InputChangeEventDetail, InputInputEventDetail } from './input-interface';
-import { getCounterText } from './input.utils';
+import type { InputChangeEventDetail, InputInputEventDetail } from "./input-interface.ts";
+import { getCounterText } from "./input.utils.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -673,7 +673,7 @@ export class Input implements ComponentInterface {
 
     return [
       <div id={helperTextId} class="helper-text" aria-live="polite">
-        {!isInvalid ? helperText : null}
+        {isInvalid ? null : helperText}
       </div>,
       <div id={errorTextId} class="error-text" role="alert">
         {isInvalid ? errorText : null}
@@ -692,7 +692,7 @@ export class Input implements ComponentInterface {
       return helperTextId;
     }
 
-    return undefined;
+    return ;
   }
 
   private renderCounter() {
@@ -718,7 +718,7 @@ export class Input implements ComponentInterface {
      */
     const hasHintText = !!helperText || !!errorText;
     const hasCounter = counter === true && maxlength !== undefined;
-    if (!hasHintText && !hasCounter) {
+    if (!(hasHintText || hasCounter)) {
       return;
     }
 
@@ -740,7 +740,7 @@ export class Input implements ComponentInterface {
           'label-text-wrapper-hidden': !this.hasLabel,
         }}
       >
-        {label === undefined ? <slot name="label"></slot> : <div class="label-text">{label}</div>}
+        {label === undefined ? <slot name="label" /> : <div class="label-text">{label}</div>}
       </div>
     );
   }
@@ -793,7 +793,7 @@ export class Input implements ComponentInterface {
        */
       return [
         <div class="input-outline-container">
-          <div class="input-outline-start"></div>
+          <div class="input-outline-start" />
           <div
             class={{
               'input-outline-notch': true,
@@ -804,7 +804,7 @@ export class Input implements ComponentInterface {
               {this.label}
             </div>
           </div>
-          <div class="input-outline-end"></div>
+          <div class="input-outline-end" />
         </div>,
         this.renderLabel(),
       ];
@@ -870,10 +870,10 @@ export class Input implements ComponentInterface {
          * interactable, clicking the label would focus that instead
          * since it comes before the input in the DOM.
          */}
-        <label class="input-wrapper" htmlFor={inputId} onClick={this.onLabelClick}>
+        <label class="input-wrapper" for={inputId} onClick={this.onLabelClick}>
           {this.renderLabelContainer()}
           <div class="native-wrapper" onClick={this.onLabelClick}>
-            <slot name="start"></slot>
+            <slot name="start" />
             <input
               class="native-input"
               ref={(input) => (this.nativeInput = input)}
@@ -925,12 +925,12 @@ export class Input implements ComponentInterface {
                 }}
                 onClick={this.clearTextInput}
               >
-                <ion-icon aria-hidden="true" icon={clearIconData}></ion-icon>
+                <ion-icon aria-hidden="true" icon={clearIconData} />
               </button>
             )}
-            <slot name="end"></slot>
+            <slot name="end" />
           </div>
-          {shouldRenderHighlight && <div class="input-highlight"></div>}
+          {shouldRenderHighlight && <div class="input-highlight" />}
         </label>
         {this.renderBottomContent()}
       </Host>

@@ -32,12 +32,15 @@
     "typescript": "*"
   },
   "dependencies": {
+    "@pencel/runtime": "workspace:*",
+    "@pencel/utils": "workspace:*",
     "csso": "^5.0.5",
     "fast-glob": "^3.3.3",
     "sass": "^1.92.1",
     "ts-flattered": "link:ts-flattered"
   },
   "devDependencies": {
+    "tsdown": "^0.15.2",
     "@types/csso": "~5.0.4"
   }
 }

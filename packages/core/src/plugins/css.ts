@@ -1,7 +1,7 @@
 import { createLog } from "@pencel/utils";
 import * as csso from "csso";
-import { registerPlugin } from "src/compiler/core/plugin.ts";
-import { PLUGIN_SKIP } from "src/compiler/types/plugins.ts";
+import { registerPlugin } from "../compiler/core/plugin.ts";
+import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
 
@@ -22,24 +22,24 @@ registerPlugin(
       comments: false,
     },
   },
-  async (options) => {
+  (options) => {
     if (!options.enabled) {
-      return null;
+      return Promise.resolve(null);
     }
 
     log("Using CSS plugin");
 
-    return {
-      transform: async (handle) => {
+    return Promise.resolve({
+      transform: (handle) => {
         if (handle.aspect === "css:postprocess") {
           log(`Handle ${handle.path}`);
           const result = csso.minify(handle.input, options.cssoOptions);
 
-          return result.css;
+          return Promise.resolve(result.css);
         }
 
-        return PLUGIN_SKIP;
+        return Promise.resolve(PLUGIN_SKIP);
       },
-    };
+    });
   },
 );

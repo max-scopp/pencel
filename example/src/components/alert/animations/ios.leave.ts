@@ -1,6 +1,6 @@
 import { createAnimation } from '@utils/animation/animation';
 
-import type { Animation } from '../../../interface';
+import type { Animation } from "../../../interface.ts";
 
 /**
  * iOS Alert Leave Animation

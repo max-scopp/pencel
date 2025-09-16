@@ -1,6 +1,6 @@
 import type { StatusBarPlugin, Style as StatusBarStyle } from '@capacitor/status-bar';
 
-import { getCapacitor } from './capacitor';
+import { getCapacitor } from "./capacitor.ts";
 
 interface StyleOptions {
   style: StatusBarStyle;
@@ -19,7 +19,7 @@ export const StatusBar = {
     if (capacitor?.isPluginAvailable('StatusBar')) {
       return capacitor.Plugins.StatusBar as StatusBarPlugin;
     }
-    return undefined;
+    return ;
   },
   setStyle(options: StyleOptions) {
     const engine = this.getEngine();

@@ -1,9 +1,8 @@
-import type { PluginOptions } from "dist/index.js";
 import type ts from "typescript";
 import type { PencelConfig } from "./config-types.js";
 
 export interface PluginRegistry {
-  _: PluginOptions;
+  _: object;
 }
 
 export type PluginNames = keyof Omit<PluginRegistry, "_">;

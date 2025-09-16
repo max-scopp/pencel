@@ -5,11 +5,11 @@ import { inheritAriaAttributes } from '@utils/helpers';
 import { createColorClasses, hostContext, openURL } from '@utils/theme';
 import { chevronForwardOutline, ellipsisHorizontal } from 'ionicons/icons';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { AnimationBuilder, Color } from '../../interface';
-import type { RouterDirection } from '../router/utils/interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { AnimationBuilder, Color } from "../../interface.ts";
+import type { RouterDirection } from "../router/utils/interface.ts";
 
-import type { BreadcrumbCollapsedClickEventDetail } from './breadcrumb-interface';
+import type { BreadcrumbCollapsedClickEventDetail } from "./breadcrumb-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -208,9 +208,9 @@ export class Breadcrumb implements ComponentInterface {
           onBlur={this.onBlur}
           {...inheritedAttributes}
         >
-          <slot name="start"></slot>
-          <slot></slot>
-          <slot name="end"></slot>
+          <slot name="start" />
+          <slot />
+          <slot name="end" />
         </TagType>
         {showCollapsedIndicator && (
           <button
@@ -222,7 +222,7 @@ export class Breadcrumb implements ComponentInterface {
               'breadcrumbs-collapsed-indicator': true,
             }}
           >
-            <ion-icon aria-hidden="true" icon={ellipsisHorizontal} lazy={false}></ion-icon>
+            <ion-icon aria-hidden="true" icon={ellipsisHorizontal} lazy={false} />
           </button>
         )}
         {showSeparator && (
@@ -234,7 +234,7 @@ export class Breadcrumb implements ComponentInterface {
           <span class="breadcrumb-separator" part="separator" aria-hidden="true">
             <slot name="separator">
               {mode === 'ios' ? (
-                <ion-icon icon={chevronForwardOutline} lazy={false} flip-rtl></ion-icon>
+                <ion-icon icon={chevronForwardOutline} lazy={false} flip-rtl={true} />
               ) : (
                 <span>/</span>
               )}

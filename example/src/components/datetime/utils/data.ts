@@ -1,7 +1,7 @@
-import type { Mode } from '../../../interface';
-import type { DatetimeParts, DatetimeHourCycle } from '../datetime-interface';
+import type { Mode } from "../../../interface.ts";
+import type { DatetimeParts, DatetimeHourCycle } from "../datetime-interface.ts";
 
-import { isAfter, isBefore, isSameDay } from './comparison';
+import { isAfter, isBefore, isSameDay } from "./comparison.ts";
 import {
   getLocalizedDayPeriod,
   removeDateTzOffset,
@@ -9,9 +9,9 @@ import {
   addTimePadding,
   getTodayLabel,
   getYear,
-} from './format';
-import { getNumDaysInMonth, is24Hour, getHourCycle } from './helpers';
-import { getNextMonth, getPreviousMonth, getInternalHourValue } from './manipulation';
+} from "./format.ts";
+import { getNumDaysInMonth, is24Hour, getHourCycle } from "./helpers.ts";
+import { getNextMonth, getPreviousMonth, getInternalHourValue } from "./manipulation.ts";
 
 export interface WheelColumnOption {
   text: string;
@@ -251,11 +251,9 @@ export const generateTime = (
          * should be able to select 10:00-10:29 and beyond.
          */
         let isPastMinHour = false;
-        if (minParts.hour !== undefined && refParts.hour !== undefined) {
-          if (refParts.hour > minParts.hour) {
+        if (minParts.hour !== undefined && refParts.hour !== undefined && refParts.hour > minParts.hour) {
             isPastMinHour = true;
           }
-        }
 
         processedMinutes = processedMinutes.filter((minute) => {
           if (isPastMinHour) {

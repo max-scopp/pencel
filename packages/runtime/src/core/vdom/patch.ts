@@ -1,6 +1,6 @@
-import { type createPerformanceTree, throwConsumerError } from "@pencel/utils";
-import { getVNodeElement } from "src/utils/getVNodeElement.ts";
-import { isVNode } from "src/utils/isVNode.ts";
+import { ConsumerError, type createPerformanceTree } from "@pencel/utils";
+import { getVNodeElement } from "../../utils/getVNodeElement.ts";
+import { isVNode } from "../../utils/isVNode.ts";
 import { setAttributes } from "../attributes.ts";
 import { createDOM } from "./create-dom.ts";
 import {
@@ -58,7 +58,7 @@ function reconcileChildrenByKey(
   let lastPlacedNode: Node | null = null;
 
   flatNewChildren.forEach((newChild) => {
-    if (!newChild || !isVNode(newChild)) return;
+    if (!(newChild && isVNode(newChild))) return;
 
     const key = newChild.$key$;
     const oldChild = key != null ? oldKeyMap.get(key) : null;
@@ -184,7 +184,7 @@ export function patch(
   // Special handling for Host element - it should update the parent container directly
   if (newVNode.$type$ === NODE_TYPE_HOST) {
     if (!parentElm) {
-      throwConsumerError(
+      throw new ConsumerError(
         "Host element must be used within a component render context",
       );
     }

@@ -1,5 +1,5 @@
-import type { AnimationBuilder, LiteralUnion, Mode, TextFieldTypes } from '../../interface';
-import type { IonicSafeString } from '../../utils/sanitization';
+import type { AnimationBuilder, LiteralUnion, Mode, TextFieldTypes } from "../../interface.ts";
+import type { IonicSafeString } from "../../utils/sanitization/index.ts";
 
 export interface AlertOptions {
   header?: string;

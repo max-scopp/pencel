@@ -1,8 +1,8 @@
 import type { CapacitorException } from '@capacitor/core';
 import type { KeyboardPlugin, KeyboardResizeOptions } from '@capacitor/keyboard';
 
-import { getCapacitor } from './capacitor';
-import { ExceptionCode } from './native-interface';
+import { getCapacitor } from "./capacitor.ts";
+import { ExceptionCode } from "./native-interface.ts";
 
 export enum KeyboardResize {
   /**
@@ -41,7 +41,7 @@ export const Keyboard = {
     if (capacitor?.isPluginAvailable('Keyboard')) {
       return capacitor.Plugins.Keyboard as KeyboardPlugin;
     }
-    return undefined;
+    return ;
   },
   getResizeMode(): Promise<KeyboardResizeOptions | undefined> {
     const engine = this.getEngine();
@@ -52,7 +52,7 @@ export const Keyboard = {
       if (e.code === ExceptionCode.Unimplemented) {
         // If the native implementation is not available
         // we treat it the same as if the plugin is not available.
-        return undefined;
+        return ;
       }
       throw e;
     });

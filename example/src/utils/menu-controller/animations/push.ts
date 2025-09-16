@@ -1,9 +1,9 @@
-import type { MenuI } from '../../../components/menu/menu-interface';
-import { getIonMode } from '../../../global/ionic-global';
-import { createAnimation } from '../../animation/animation';
-import type { Animation } from '../../animation/animation-interface';
+import type { MenuI } from "../../../components/menu/menu-interface.ts";
+import { getIonMode } from "../../../global/ionic-global.ts";
+import { createAnimation } from "../../animation/animation.ts";
+import type { Animation } from "../../animation/animation-interface.ts";
 
-import { baseAnimation } from './base';
+import { baseAnimation } from "./base.ts";
 
 /**
  * Menu Push Type

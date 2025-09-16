@@ -5,7 +5,7 @@ import {
   findClosestIonContent,
   findIonContent,
   getScrollElement,
-} from './index';
+} from "./index.ts";
 
 describe('Content Utils', () => {
   describe('getScrollElement', () => {

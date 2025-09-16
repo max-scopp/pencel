@@ -144,8 +144,6 @@ export function toVNode(jsx: JSXElement): VNode {
     key?: string | number;
   };
 
-  let type: string;
-
   if (typeof jsxElement.type === "function") {
     // For component functions, we need to execute them to get the actual JSX
 
@@ -203,9 +201,9 @@ export function toVNode(jsx: JSXElement): VNode {
     // Recursively convert the component's result (for regular components)
     const result = toVNode(componentResult as JSXElement);
     return result;
-  } else {
-    type = jsxElement.type as string;
   }
+
+  const type = jsxElement.type as string;
 
   const result: VNode = {
     $type$: type,

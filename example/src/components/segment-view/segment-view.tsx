@@ -2,7 +2,7 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Method, Prop, State, h } from '@stencil/core';
 import { isRTL } from '@utils/rtl';
 
-import type { SegmentViewScrollEvent } from './segment-view-interface';
+import type { SegmentViewScrollEvent } from "./segment-view-interface.ts";
 
 @Component({
   tag: 'ion-segment-view',
@@ -150,7 +150,7 @@ export class SegmentView implements ComponentInterface {
           'segment-view-scroll-disabled': isManualScroll === false,
         }}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

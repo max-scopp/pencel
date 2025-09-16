@@ -1,15 +1,15 @@
 import { printIonWarning } from '@utils/logging';
 
-import type { DatetimeParts } from '../datetime-interface';
+import type { DatetimeParts } from "../datetime-interface.ts";
 
-import { isAfter, isBefore } from './comparison';
-import { getNumDaysInMonth } from './helpers';
+import { isAfter, isBefore } from "./comparison.ts";
+import { getNumDaysInMonth } from "./helpers.ts";
 
 const ISO_8601_REGEXP =
   // eslint-disable-next-line no-useless-escape
-  /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/;
+  /^(\d{4}|[+-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+-])(\d{2})(?::(\d{2}))?)?)?$/;
 // eslint-disable-next-line no-useless-escape
-const TIME_REGEXP = /^((\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/;
+const TIME_REGEXP = /^((\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+-])(\d{2})(?::(\d{2}))?)?)?$/;
 
 /**
  * Use to convert a string of comma separated numbers or
@@ -31,7 +31,7 @@ export const convertToArrayOfNumbers = (input?: number[] | number | string): num
   let values: number[];
   if (Array.isArray(processedInput)) {
     // ensure each value is an actual number in the returned array
-    values = processedInput.map((num: any) => parseInt(num, 10)).filter(isFinite);
+    values = processedInput.map((num: any) => Number.parseInt(num, 10)).filter(isFinite);
   } else {
     values = [processedInput as number];
   }
@@ -46,10 +46,10 @@ export const convertToArrayOfNumbers = (input?: number[] | number | string): num
  */
 export const getPartsFromCalendarDay = (el: HTMLElement): DatetimeParts => {
   return {
-    month: parseInt(el.getAttribute('data-month')!, 10),
-    day: parseInt(el.getAttribute('data-day')!, 10),
-    year: parseInt(el.getAttribute('data-year')!, 10),
-    dayOfWeek: parseInt(el.getAttribute('data-day-of-week')!, 10),
+    month: Number.parseInt(el.getAttribute('data-month')!, 10),
+    day: Number.parseInt(el.getAttribute('data-day')!, 10),
+    year: Number.parseInt(el.getAttribute('data-year')!, 10),
+    dayOfWeek: Number.parseInt(el.getAttribute('data-day-of-week')!, 10),
   };
 };
 
@@ -77,7 +77,7 @@ export function parseDate(val: string | string[] | undefined | null): DatetimePa
        * harder for TS to perform type narrowing on.
        */
       if (!parsedVal) {
-        return undefined;
+        return ;
       }
 
       parsedArray.push(parsedVal);
@@ -108,12 +108,12 @@ export function parseDate(val: string | string[] | undefined | null): DatetimePa
     printIonWarning(
       `[ion-datetime] - Unable to parse date string: ${val}. Please provide a valid ISO 8601 datetime string.`
     );
-    return undefined;
+    return ;
   }
 
   // ensure all the parse values exist with at least 0
   for (let i = 1; i < 8; i++) {
-    parse[i] = parse[i] !== undefined ? parseInt(parse[i], 10) : undefined;
+    parse[i] = parse[i] !== undefined ? Number.parseInt(parse[i], 10) : undefined;
   }
 
   // can also get second and millisecond from parse[6] and parse[7] if needed
@@ -134,7 +134,7 @@ export const clampDate = (
 ): DatetimeParts => {
   if (minParts && isBefore(dateParts, minParts)) {
     return minParts;
-  } else if (maxParts && isAfter(dateParts, maxParts)) {
+  }if (maxParts && isAfter(dateParts, maxParts)) {
     return maxParts;
   }
   return dateParts;

@@ -4,10 +4,10 @@ import type { KeyboardController } from '@utils/keyboard/keyboard-controller';
 import { createKeyboardController } from '@utils/keyboard/keyboard-controller';
 import { createColorClasses } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
-import type { TabBarChangedEventDetail } from './tab-bar-interface';
+import type { TabBarChangedEventDetail } from "./tab-bar-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -109,7 +109,7 @@ export class TabBar implements ComponentInterface {
           'tab-bar-hidden': shouldHide,
         })}
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

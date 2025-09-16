@@ -2,9 +2,9 @@ import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Method, Prop, Watch, h } from '@stencil/core';
 import { printIonWarning } from '@utils/logging';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
-import type { AccordionGroupChangeEventDetail } from './accordion-group-interface';
+import type { AccordionGroupChangeEventDetail } from "./accordion-group-interface.ts";
 
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -290,7 +290,7 @@ export class AccordionGroup implements ComponentInterface {
         }}
         role="presentation"
       >
-        <slot></slot>
+        <slot />
       </Host>
     );
   }

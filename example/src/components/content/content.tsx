@@ -6,10 +6,10 @@ import { isPlatform } from '@utils/platform';
 import { isRTL } from '@utils/rtl';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color } from '../../interface';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color } from "../../interface.ts";
 
-import type { ScrollBaseDetail, ScrollDetail } from './content-interface';
+import type { ScrollBaseDetail, ScrollDetail } from "./content-interface.ts";
 
 /**
  * @slot - Content is placed in the scrollable area if provided without a slot.
@@ -384,7 +384,7 @@ export class Content implements ComponentInterface {
     // scroll loop
     const step = (timeStamp: number) => {
       const linearTime = Math.min(1, (timeStamp - startTime) / duration) - 1;
-      const easedT = Math.pow(linearTime, 3) + 1;
+      const easedT = linearTime ** 3 + 1;
 
       if (deltaY !== 0) {
         el.scrollTop = Math.floor(easedT * deltaY + fromY);
@@ -461,9 +461,9 @@ export class Content implements ComponentInterface {
         }}
         {...inheritedAttributes}
       >
-        <div ref={(el) => (this.backgroundContentEl = el)} id="background-content" part="background"></div>
+        <div ref={(el) => (this.backgroundContentEl = el)} id="background-content" part="background" />
 
-        {fixedSlotPlacement === 'before' ? <slot name="fixed"></slot> : null}
+        {fixedSlotPlacement === 'before' ? <slot name="fixed" /> : null}
 
         <div
           class={{
@@ -476,17 +476,17 @@ export class Content implements ComponentInterface {
           onScroll={this.scrollEvents ? (ev: UIEvent) => this.onScroll(ev) : undefined}
           part="scroll"
         >
-          <slot></slot>
+          <slot />
         </div>
 
         {transitionShadow ? (
           <div class="transition-effect">
-            <div class="transition-cover"></div>
-            <div class="transition-shadow"></div>
+            <div class="transition-cover" />
+            <div class="transition-shadow" />
           </div>
         ) : null}
 
-        {fixedSlotPlacement === 'after' ? <slot name="fixed"></slot> : null}
+        {fixedSlotPlacement === 'after' ? <slot name="fixed" /> : null}
       </Host>
     );
   }

@@ -7,9 +7,9 @@ import { printIonWarning } from '@utils/logging';
 import { isRTL } from '@utils/rtl';
 import { createColorClasses, hostContext } from '@utils/theme';
 
-import { getIonMode } from '../../global/ionic-global';
-import type { Color, Gesture, GestureDetail } from '../../interface';
-import { roundToMaxDecimalPlaces } from '../../utils/floating-point';
+import { getIonMode } from "../../global/ionic-global.ts";
+import type { Color, Gesture, GestureDetail } from "../../interface.ts";
+import { roundToMaxDecimalPlaces } from "../../utils/floating-point/index.ts";
 
 import type {
   KnobName,
@@ -18,7 +18,7 @@ import type {
   RangeKnobMoveStartEventDetail,
   RangeValue,
   PinFormatter,
-} from './range-interface';
+} from "./range-interface.ts";
 
 // TODO(FW-2832): types
 
@@ -249,9 +249,8 @@ export class Range implements ComponentInterface {
         lower: this.clampBounds(value.lower),
         upper: this.clampBounds(value.upper),
       };
-    } else {
-      return this.clampBounds(value);
     }
+      return this.clampBounds(value);
   };
 
   /**
@@ -305,7 +304,7 @@ export class Range implements ComponentInterface {
   private setupGesture = async () => {
     const rangeSlider = this.rangeSlider;
     if (rangeSlider) {
-      this.gesture = (await import('../../utils/gesture')).createGesture({
+      this.gesture = (await import("../../utils/gesture/index.ts")).createGesture({
         el: rangeSlider,
         gestureName: 'range',
         gesturePriority: 100,
@@ -405,12 +404,11 @@ export class Range implements ComponentInterface {
         lower: 0,
         upper: value,
       };
-    } else {
+    }
       if (typeof value === 'object') {
         return value.upper;
       }
       return value;
-    }
   }
 
   /**
@@ -604,12 +602,11 @@ export class Range implements ComponentInterface {
     this.noUpdate = true;
 
     const { valA, valB } = this;
-    this.value = !this.dualKnobs
-      ? valA
-      : {
+    this.value = this.dualKnobs
+      ? {
           lower: Math.min(valA, valB),
           upper: Math.max(valA, valB),
-        };
+        } : valA;
 
     this.noUpdate = false;
   }
@@ -932,12 +929,12 @@ export class Range implements ComponentInterface {
             }}
             part="label"
           >
-            {label !== undefined ? <div class="label-text">{label}</div> : <slot name="label"></slot>}
+            {label !== undefined ? <div class="label-text">{label}</div> : <slot name="label" />}
           </div>
           <div class="native-wrapper">
-            <slot name="start"></slot>
+            <slot name="start" />
             {this.renderRangeSlider()}
-            <slot name="end"></slot>
+            <slot name="end" />
           </div>
         </label>
       </Host>

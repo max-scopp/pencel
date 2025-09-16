@@ -1,7 +1,7 @@
 import type { ComponentInterface, EventEmitter } from '@stencil/core';
 import { Component, Event, Host, Listen, Prop, h } from '@stencil/core';
 
-import { getIonMode } from '../../global/ionic-global';
+import { getIonMode } from "../../global/ionic-global.ts";
 
 @Component({
   tag: 'ion-backdrop',
@@ -57,7 +57,7 @@ export class Backdrop implements ComponentInterface {
           'backdrop-hide': !this.visible,
           'backdrop-no-tappable': !this.tappable,
         }}
-      ></Host>
+      />
     );
   }
 }
