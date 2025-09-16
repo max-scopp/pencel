@@ -27,6 +27,14 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+
+    "baseUrl": "./src",
+
+    "paths": {
+      "@utils/*": ["src/utils/*"],
+      "@utils/test": ["src/utils/test/utils"],
+      "@global/*": ["src/global/*"]
+    }
   }
 }
