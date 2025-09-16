@@ -1,7 +1,7 @@
 import { type PencilConfig, transform } from "@pencel/core";
 import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
-import { defaultConfig } from "src/index.ts";
+import { defaultConfig } from "../index.ts";
 
 export class TransformCommand extends Command {
   static override paths: string[][] = [Command.Default, ["transform"]];

@@ -5,8 +5,11 @@
     "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "lib": ["es2022", "dom"]
+    "baseUrl": "../..",
+    "lib": ["es2022", "dom"],
+    "paths": {
+      "@pencel/*": ["./packages/*/src/index.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
