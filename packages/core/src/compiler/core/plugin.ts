@@ -1,4 +1,4 @@
-import type { PluginFunction } from "../types/plugins.js";
+import type { PluginFunction, PluginName } from "../types/plugins.js";
 
 /**
  * Registry to store all registered plugins
@@ -13,13 +13,14 @@ const pluginRegistry = new Map<
 
 /**
  * Register a plugin function with the given name and options
+ * The name should match a plugin defined in the PluginOptions interface
  *
- * @param name - The unique name of the plugin
+ * @param name - The unique name of the plugin (should be type-safe via module augmentation)
  * @param options - The options to pass to the plugin function
  * @param pluginFn - The plugin function to execute
  */
 export function registerPlugin<T = unknown>(
-  name: string,
+  name: Extract<PluginName, string>,
   options: T,
   pluginFn: PluginFunction<T>,
 ): void {
@@ -62,4 +63,21 @@ export function hasPlugin(name: string): boolean {
  */
 export function getRegisteredPluginNames(): string[] {
   return Array.from(pluginRegistry.keys());
+}
+
+/**
+ * Validate that all provided plugin names are actually registered
+ * This provides runtime validation for plugin configurations
+ *
+ * @param names - Array of plugin names to validate
+ * @returns Object with valid and invalid plugin names
+ */
+export function validatePluginNames(names: string[]): {
+  valid: string[];
+  invalid: string[];
+} {
+  const registeredNames = getRegisteredPluginNames();
+  const valid = names.filter((name) => registeredNames.includes(name));
+  const invalid = names.filter((name) => !registeredNames.includes(name));
+  return { valid, invalid };
 }

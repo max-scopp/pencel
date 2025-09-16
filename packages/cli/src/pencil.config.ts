@@ -20,7 +20,11 @@ export const defaultConfig: Required<PencilConfig> = {
     mode: "aside",
     replace: [/(.+)(\.[^.]+)$/, "$1.gen$2"],
   },
-  // plugins: [],
+  plugins: [
+    {
+      name: "",
+    },
+  ],
   runtime: {
     tagNamespace: "pencel",
   },
