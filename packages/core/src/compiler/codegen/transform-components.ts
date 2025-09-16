@@ -1,5 +1,4 @@
-import { throwError } from "@pencel/utils";
-import { basename } from "path";
+import { percentage, throwError } from "@pencel/utils";
 import type { ProgramBuilder } from "ts-flattered";
 import type ts from "typescript";
 import type { PencelContext } from "../types/compiler-types.ts";
@@ -15,10 +14,11 @@ export async function transformComponents(
     .getRootFileNames()
     .filter(omitPreviousArtifacts(program, ctx));
 
+  let completed = 0;
+  const total = rootFileNames.length;
+
   await Promise.all(
     rootFileNames.map(async (filePath) => {
-      const fileNameBased = basename(filePath);
-
       const newComponentFile = await transformComponentFile(
         program,
         program.getSourceFile(filePath) ??
@@ -26,11 +26,21 @@ export async function transformComponents(
         ctx,
       );
 
+      completed++;
+      percentage(completed / total, {
+        prefix: "Transforming",
+      });
+
       if (newComponentFile) {
         newComponentsMap.set(filePath, newComponentFile);
       }
     }),
   );
+
+  // Ensure we show 100% and clear the progress bar
+  percentage(1, {
+    prefix: "Transforming",
+  });
 
   return newComponentsMap;
 }

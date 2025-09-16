@@ -70,8 +70,6 @@ export async function handlePluginTransformation<
 >(handle: THandle): Promise<THandle["input"]> {
   let intermediate = handle.input;
 
-  compilerTree.start("handle-plugins");
-
   for (const plugin of plugins.values()) {
     if (plugin) {
       const r = await plugin.transform(handle);
@@ -84,6 +82,5 @@ export async function handlePluginTransformation<
     }
   }
 
-  compilerTree.end("handle-plugins");
   return intermediate;
 }

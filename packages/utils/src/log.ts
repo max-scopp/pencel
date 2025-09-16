@@ -9,13 +9,15 @@ import {
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
-const PENCIL_DO_LOGGING = (): boolean => true;
-// Boolean(
-//     globalThis.PENCIL_DEBUG ||
-//       (isBrowser
-//         ? new URLSearchParams(window.location.search).get("pencilDebug")
-//         : null),
-//   ) ?? true;
+const PENCIL_DO_LOGGING = (): boolean => {
+  return Boolean(
+    globalThis.PENCIL_DEBUG ||
+      process.env.PENCIL_DEBUG ||
+      (isBrowser
+        ? new URLSearchParams(window.location.search).get("pencilDebug")
+        : null),
+  );
+};
 
 export function log(
   message: string,
@@ -58,6 +60,29 @@ export function createLog(
   namespace: string,
 ): (message: string, style?: string, ...other: unknown[]) => void {
   return (message: string, style?: string, ...other: unknown[]) => {
+    const prefixedMessage = `[${namespace}] ${message}`;
+    log(prefixedMessage, style, ...other);
+  };
+}
+
+export function debug(
+  message: string,
+  style?: string,
+  ...other: unknown[]
+): void {
+  if (!PENCIL_DO_LOGGING()) {
+    return;
+  }
+  log(message, style, ...other);
+}
+
+export function createDebugLog(
+  namespace: string,
+): (message: string, style?: string, ...other: unknown[]) => void {
+  return (message: string, style?: string, ...other: unknown[]) => {
+    if (!PENCIL_DO_LOGGING()) {
+      return;
+    }
     const prefixedMessage = `[${namespace}] ${message}`;
     log(prefixedMessage, style, ...other);
   };

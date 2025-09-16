@@ -3,6 +3,7 @@ export * from "./dashCase.ts";
 export * from "./getExtendsByInheritance.ts";
 export * from "./isBrowser.ts";
 export * from "./log.ts";
+export * from "./percentage.ts";
 export * from "./throwConsumerError.ts";
 export * from "./throwError.ts";
 export * from "./throwWithCodeFrame.ts";

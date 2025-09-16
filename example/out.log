@@ -1,0 +1,6 @@
+[0m[1m1 |[0m ([0m[35mfunction[0m (entry, fetcher)
+              [31m[1m^[0m
+[0m[31mSyntaxError[0m[2m:[0m [1mExport named 'createDebugLog' not found in module '/home/mscopp/pencil/packages/utils/dist/index.js'.[0m
+[0m      [2mat [0m[0m[1m[3mloadAndEvaluateModule[0m[2m ([0m[0m[36m[0m[33m1[0m[2m:[33m11[0m[2m)[0m
+[0m
+[2mBun v1.2.19 (Linux x64)[0m

@@ -1,15 +1,19 @@
-import { createLog } from "@pencel/utils";
-import * as csso from "csso";
+import { createDebugLog, createLog } from "@pencel/utils";
+import * as lightningcss from "lightningcss";
 import { registerPlugin } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
+const debugLog = createDebugLog("CSS");
 
 declare module "@pencel/core" {
   interface PluginRegistry {
     css: {
       enabled?: boolean;
-      cssoOptions?: csso.MinifyOptions & csso.CompressOptions;
+      lightningCssOptions?: Omit<
+        lightningcss.TransformOptions<any>,
+        "code" | "filename"
+      >;
     };
   }
 }
@@ -18,9 +22,7 @@ registerPlugin(
   "css",
   {
     enabled: true,
-    cssoOptions: {
-      comments: false,
-    },
+    lightningCssOptions: {},
   },
   (options) => {
     if (!options.enabled) {
@@ -32,10 +34,14 @@ registerPlugin(
     return Promise.resolve({
       transform: (handle) => {
         if (handle.aspect === "css:postprocess") {
-          log(`Handle ${handle.path}`);
-          const result = csso.minify(handle.input, options.cssoOptions);
+          debugLog(`Handle ${handle.path}`);
+          const result = lightningcss.transform({
+            ...options.lightningCssOptions,
+            code: Buffer.from(handle.input),
+            filename: handle.path,
+          });
 
-          return Promise.resolve(result.css);
+          return Promise.resolve(result.code.toString());
         }
 
         return Promise.resolve(PLUGIN_SKIP);

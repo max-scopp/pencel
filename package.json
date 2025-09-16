@@ -10,6 +10,7 @@
   ],
   "dependencies": {
     "c12": "^3.2.0",
+    "sass-embedded": "^1.92.1",
     "ts-flattered": "link:ts-flattered",
     "vite": "npm:rolldown-vite@latest"
   },

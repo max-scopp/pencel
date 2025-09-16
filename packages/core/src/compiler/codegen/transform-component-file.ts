@@ -1,4 +1,3 @@
-import { basename } from "node:path";
 import type { ComponentOptions, PropOptions } from "@pencel/runtime";
 import { ConsumerError, dashCase } from "@pencel/utils";
 import {
@@ -12,7 +11,6 @@ import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
 import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
-import { compilerTree } from "../utils/compilerTree.ts";
 import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
 
 export const PENCEL_RUNTIME_MODULE_NAME = "@pencel/runtime" as const;

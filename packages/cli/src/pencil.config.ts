@@ -13,6 +13,7 @@ export function defineConfig(config: PencilConfig): PencilConfig {
  * Default Pencil configuration
  */
 export const defaultConfig: Required<PencilConfig> = {
+  // input: "src/components/**/*.tsx",
   input: {
     tsconfig: "tsconfig.json",
   },
