@@ -1,4 +1,5 @@
 import { type PencilConfig, transform } from "@pencel/core";
+import { error } from "@pencel/utils";
 import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
 import { defaultConfig } from "../index.ts";
@@ -26,10 +27,8 @@ export class TransformCommand extends Command {
       });
 
       return 0;
-    } catch (error) {
-      console.error(
-        `Error: ${error instanceof Error ? error.message : String(error)}`,
-      );
+    } catch (e) {
+      error(e);
       return 1;
     }
   }

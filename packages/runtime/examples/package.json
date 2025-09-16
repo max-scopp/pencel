@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "nx serve",
-    "build": "nx build"
-  },
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@pencel/runtime": "^0.0.1",

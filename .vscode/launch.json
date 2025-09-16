@@ -2,22 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "bun",
       "request": "launch",
-      "name": "Debug @pencil/cli with Nx",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "@pencil/cli"],
-      "env": {
-        "NODE_OPTIONS": "--inspect=9229"
-      },
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
-      "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/cli/dist/**/*.(m|c|)js",
-        "!**/node_modules/**"
-      ]
+      "cwd": "${workspaceFolder}/example",
+      "name": "Debug @pencil/cli",
+      "program": "../packages/cli/src/main.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

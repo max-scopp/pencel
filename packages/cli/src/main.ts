@@ -10,7 +10,7 @@ const [node, app, ...args] = process.argv;
  * Main CLI function that runs commands or defaults to transform if config exists
  */
 async function runCli() {
-  log("✏️  Pencel Compiler CLI");
+  log("Pencel Compiler CLI");
 
   const cli = new Cli({
     binaryName: `${node} ${app}`,
