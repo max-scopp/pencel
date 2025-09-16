@@ -10,7 +10,7 @@
     "generate": "bun ../packages/cli/src/main.ts"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "*"
   },
   "nx": {
     "sourceRoot": "example",

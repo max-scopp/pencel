@@ -9,7 +9,7 @@
     "@pencel/utils": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.2.2",
+    "typescript": "*",
     "vite": "npm:rolldown-vite@latest"
   },
   "nx": {

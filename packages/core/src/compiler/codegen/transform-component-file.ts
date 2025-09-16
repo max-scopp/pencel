@@ -9,6 +9,7 @@ import {
   type SourceFile,
 } from "ts-flattered";
 import type ts from "typescript";
+import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
 import { compilerTree } from "../core/compiler.ts";
 import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";

@@ -16,7 +16,7 @@
     "@pencel/utils": "^0.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "typescript": "*"
   },
   "nx": {
     "sourceRoot": "packages/runtime",
