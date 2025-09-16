@@ -1,4 +1,4 @@
-import { basename, dirname, resolve } from "path";
+import { basename, dirname, resolve } from "node:path";
 import type ts from "typescript";
 import type { PencelContext } from "../types/compiler-types.ts";
 

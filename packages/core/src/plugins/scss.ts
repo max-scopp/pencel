@@ -1,39 +1,37 @@
 import { createLog } from "@pencel/utils";
-import * as csso from "csso";
+import sass from "sass";
 import { registerPlugin } from "src/compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "src/compiler/types/plugins.ts";
 
-const log = createLog("CSS");
+const log = createLog("SCSS");
 
 declare module "@pencel/core" {
   interface PluginRegistry {
-    css: {
+    scss: {
       enabled?: boolean;
-      cssoOptions?: csso.MinifyOptions & csso.CompressOptions;
+      scssOptions?: sass.StringOptions<"async">;
     };
   }
 }
 
 registerPlugin(
-  "css",
+  "scss",
   {
     enabled: true,
-    cssoOptions: {
-      comments: false,
-    },
+    scssOptions: {},
   },
   async (options) => {
     if (!options.enabled) {
       return null;
     }
 
-    log("Using CSS plugin");
+    log("Using SCSS plugin");
 
     return {
       transform: async (handle) => {
-        if (handle.aspect === "css:postprocess") {
+        if (handle.aspect === "css:preprocess") {
           log(`Handle ${handle.path}`);
-          const result = csso.minify(handle.input, options.cssoOptions);
+          const result = await sass.compileStringAsync(handle.input);
 
           return result.css;
         }

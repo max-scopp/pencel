@@ -8,12 +8,14 @@ import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import type { PencelConfig, TransformResults } from "../types/config-types.ts";
+import { initializePlugins } from "./plugin.ts";
 
 const log = createLog("Transform");
 
 export const compilerTree: PerformanceTreeController =
   createPerformanceTree("Compiler");
 
+// TODO: Refactor to compiler context
 export const transform = async (
   config: Required<PencelConfig>,
   cwd?: string,
@@ -24,6 +26,8 @@ export const transform = async (
     cwd: cwd ?? process.cwd(),
     config,
   };
+
+  await initializePlugins(config, ctx);
 
   try {
     log(`Processing dir: ${cwd}`);

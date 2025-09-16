@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { log } from "@pencel/utils";
 import { Cli } from "clipanion";
-import pkg from "../package.json";
+import pkg from "../package.json" with { type: "json" };
 import { TransformCommand } from "./commands/transform.ts";
 
 const [node, app, ...args] = process.argv;

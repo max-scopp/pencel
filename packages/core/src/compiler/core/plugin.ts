@@ -1,83 +1,86 @@
-import type { PluginFunction, PluginName } from "../types/plugins.js";
+import { throwError } from "@pencel/utils";
+import type { PencelContext } from "../types/compiler-types.ts";
+import type { PencelConfig } from "../types/config-types.ts";
+import {
+  PLUGIN_SKIP,
+  type PluginFunction,
+  type PluginHandler,
+  type PluginNames,
+  type PluginRegistry,
+  type TransformHandler,
+} from "../types/plugins.ts";
+import { compilerTree } from "./compiler.ts";
 
-/**
- * Registry to store all registered plugins
- */
-const pluginRegistry = new Map<
+export const pluginsToInitialize: Map<
   string,
-  {
-    options: unknown;
-    pluginFn: PluginFunction<unknown>;
-  }
->();
+  { pluginFn: PluginFunction<any>; defaults: any }
+> = new Map();
 
-/**
- * Register a plugin function with the given name and options
- * The name should match a plugin defined in the PluginOptions interface
- *
- * @param name - The unique name of the plugin (should be type-safe via module augmentation)
- * @param options - The options to pass to the plugin function
- * @param pluginFn - The plugin function to execute
- */
-export function registerPlugin<T = unknown>(
-  name: Extract<PluginName, string>,
-  options: T,
-  pluginFn: PluginFunction<T>,
+const plugins = new Map<string, PluginHandler>();
+
+export function registerPlugin<TPlugin extends PluginNames>(
+  name: TPlugin,
+  defaults: PluginRegistry[TPlugin],
+  pluginFn: PluginFunction<TPlugin>,
 ): void {
-  if (pluginRegistry.has(name)) {
-    throw new Error(`Plugin '${name}' is already registered`);
+  if (pluginsToInitialize.has(name)) {
+    throwError(`Plugin '${name}' is already registered`);
   }
 
-  pluginRegistry.set(name, {
-    options,
-    pluginFn: pluginFn as PluginFunction<unknown>,
+  pluginsToInitialize.set(name, { pluginFn: pluginFn, defaults });
+}
+
+export async function initializePlugins(
+  config: PencelConfig,
+  context: PencelContext,
+): Promise<void> {
+  compilerTree.start("initialize-plugins");
+
+  pluginsToInitialize.forEach(async ({ pluginFn, defaults }, name) => {
+    const userEntry = config.plugins?.find((p) => {
+      return typeof p === "string" ? p === name : p.name === name;
+    });
+
+    const userOptions =
+      typeof userEntry === "string" ? {} : (userEntry?.options ?? {});
+
+    if (userOptions) {
+      const plugin = await pluginFn(
+        {
+          ...defaults,
+          ...userOptions,
+        },
+        context,
+      );
+
+      if (plugin) {
+        plugins.set(name, plugin);
+      }
+    }
   });
+
+  compilerTree.end("initialize-plugins");
 }
 
-/**
- * Get a registered plugin by name
- *
- * @param name - The name of the plugin to retrieve
- * @returns The plugin entry or undefined if not found
- */
-export function getPlugin(
-  name: string,
-): { options: unknown; pluginFn: PluginFunction<unknown> } | undefined {
-  return pluginRegistry.get(name);
-}
+export async function handleTransform<THandle extends TransformHandler>(
+  handle: THandle,
+): Promise<THandle["input"]> {
+  let intermediate = handle.input;
 
-/**
- * Check if a plugin is registered
- *
- * @param name - The name of the plugin to check
- * @returns True if the plugin is registered, false otherwise
- */
-export function hasPlugin(name: string): boolean {
-  return pluginRegistry.has(name);
-}
+  compilerTree.start("handle-plugins");
 
-/**
- * Get all registered plugin names
- *
- * @returns Array of all registered plugin names
- */
-export function getRegisteredPluginNames(): string[] {
-  return Array.from(pluginRegistry.keys());
-}
+  for (const plugin of plugins.values()) {
+    if (plugin) {
+      const r = await plugin.transform(handle);
 
-/**
- * Validate that all provided plugin names are actually registered
- * This provides runtime validation for plugin configurations
- *
- * @param names - Array of plugin names to validate
- * @returns Object with valid and invalid plugin names
- */
-export function validatePluginNames(names: string[]): {
-  valid: string[];
-  invalid: string[];
-} {
-  const registeredNames = getRegisteredPluginNames();
-  const valid = names.filter((name) => registeredNames.includes(name));
-  const invalid = names.filter((name) => !registeredNames.includes(name));
-  return { valid, invalid };
+      if (r === PLUGIN_SKIP) {
+        continue;
+      }
+
+      intermediate = r;
+    }
+  }
+
+  compilerTree.end("handle-plugins");
+  return intermediate;
 }

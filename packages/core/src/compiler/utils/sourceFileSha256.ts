@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import type ts from "typescript";
 
 export function sourceFileSha256(sourceFile: ts.SourceFile): string {

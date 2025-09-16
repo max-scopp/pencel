@@ -5,12 +5,27 @@
     "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": "../..",
-    "lib": ["es2022", "dom"],
-    "paths": {
-      "@pencel/*": ["./packages/*/src/index.ts"]
-    }
+    "lib": [
+      "es2022",
+      "dom"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "references": [
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../runtime"
+    },
+    {
+      "path": "../core"
+    }
+  ]
 }

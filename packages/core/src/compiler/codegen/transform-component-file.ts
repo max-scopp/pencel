@@ -1,8 +1,8 @@
 import { basename } from "node:path";
-import type { ComponentOptions } from "@pencel/runtime";
+import type { ComponentOptions, PropOptions } from "@pencel/runtime";
 import { dashCase, throwConsumerError } from "@pencel/utils";
-import { throwTooManyComponentDecoratorsOnClass } from "src/panics/throwTooManyComponentDecoratorsOnClass.ts";
 import {
+  computeConstructorType,
   fileFromString,
   findClasses,
   findDecorators,
@@ -10,12 +10,20 @@ import {
 } from "ts-flattered";
 import type ts from "typescript";
 import { compilerTree } from "../core/compiler.ts";
-import { processStyles } from "../transforms/transform-css.ts";
+import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
 
 export const PENCEL_RUNTIME_MODULE_NAME = "@pencel/runtime" as const;
-export const PENCEL_COMPONENT_DECORATOR_NAME = "Component" as const;
+export const PENCEL_DECORATORS = {
+  Component: "Component" as const,
+  Prop: "Prop" as const,
+  State: "State" as const,
+  Event: "Event" as const,
+  Listen: "Listen" as const,
+  Store: "Store" as const,
+  Connected: "Connected" as const,
+};
 
 /**
  * Converts a source pencil component to a transformed pencil component.
@@ -59,7 +67,7 @@ export function transformComponentDecorators(
         sourceFile: newSourceFile,
         // TODO: Enable module checking again
         // module: PENCEL_RUNTIME_MODULE_NAME,
-        name: PENCEL_COMPONENT_DECORATOR_NAME,
+        name: PENCEL_DECORATORS.Component,
       },
       (decorator) => {
         decorator.updateArgumentObject(0, (obj) => {
@@ -97,36 +105,28 @@ export function transformComponentPropsDecorators(
   ctx: PencelContext,
 ): void {
   newSourceFile.updateClasses((cls) => {
-    cls.updateDecoratorByFilter(
-      {
-        sourceFile: newSourceFile,
-        // TODO: Enable module checking again
-        // module: PENCEL_RUNTIME_MODULE_NAME,
-        name: PENCEL_COMPONENT_DECORATOR_NAME,
-      },
-      (decorator) => {
-        decorator.updateArgumentObject(0, (obj) => {
-          const componentOptions = obj.toRecord() as ComponentOptions;
-          const { styles, styleUrls } = processStyles(
-            newSourceFile,
-            componentOptions,
-          );
+    cls.updatePropertiesByFilter(
+      (prop) =>
+        findDecorators(prop, {
+          sourceFile: newSourceFile,
+          // TODO: Enable module checking again
+          // module: PENCEL_RUNTIME_MODULE_NAME,
+          name: PENCEL_DECORATORS.Prop,
+        }).length > 0,
+      (prop) => {
+        prop.updateDecoratorByName(PENCEL_DECORATORS.Prop, (decorator) => {
+          decorator.updateArgumentObject(0, (obj) => {
+            obj.setMany({
+              type: computeConstructorType(program.getTypeChecker(), prop.type),
+            } satisfies { [key in keyof PropOptions]: unknown });
 
-          obj.setMany({
-            tag: dashCase(
-              cls.name?.text ??
-                throwConsumerError("Anonymous classes must have a tag."),
-            ),
-            styles,
-            styleUrls,
-          } satisfies ComponentOptions);
+            return obj;
+          });
 
-          obj.remove("styleUrl" as keyof ComponentOptions);
-
-          return obj;
+          return decorator;
         });
 
-        return decorator;
+        return prop;
       },
     );
 
@@ -148,7 +148,7 @@ export function fileShouldBeProcessed(
       sourceFile,
       // TODO: Enable module checking again
       // module: PENCEL_RUNTIME_MODULE_NAME,
-      name: PENCEL_COMPONENT_DECORATOR_NAME,
+      name: PENCEL_DECORATORS.Component,
     });
 
     if (componentDecoratorsOnClass.length > 1) {

@@ -32,7 +32,12 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "csso": "^5.0.5",
     "fast-glob": "^3.3.3",
+    "sass": "^1.92.1",
     "ts-flattered": "link:ts-flattered"
+  },
+  "devDependencies": {
+    "@types/csso": "~5.0.4"
   }
 }

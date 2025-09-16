@@ -11,10 +11,7 @@ export type {
   TransformResults,
 } from "../types/config-types.ts";
 export type {
-  PluginConfig,
   PluginContext,
   PluginFunction,
-  PluginName,
-  PluginOptions,
-  PluginsList,
+  Plugins,
 } from "../types/plugins.ts";

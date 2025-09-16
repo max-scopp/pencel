@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from "fs/promises";
-import { basename, dirname } from "path";
+import { mkdir, writeFile } from "node:fs/promises";
+import { basename, dirname } from "node:path";
 import { print } from "ts-flattered";
 import type ts from "typescript";
 import { compilerTree } from "../core/compiler.ts";

@@ -1,5 +1,5 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
-import { PluginsList } from "./plugins.ts";
+import type { Plugins } from "./plugins.ts";
 
 interface PencilOutputToFolder {
   mode: "folder";
@@ -30,7 +30,7 @@ export interface PencelConfig {
         tsconfig: string;
       };
 
-  plugins?: PluginsList;
+  plugins?: Plugins;
 
   output?: PencilOutputToFolder | PencilOutputAside;
   runtime?: PencilRuntimeConfig;

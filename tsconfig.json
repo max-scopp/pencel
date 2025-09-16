@@ -4,6 +4,15 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/runtime"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
       "path": "./packages/cli"
     }
   ]

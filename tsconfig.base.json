@@ -4,12 +4,15 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
+    "resolveJsonModule": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "isolatedDeclarations": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["es2022"],
+    "lib": [
+      "es2022"
+    ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
@@ -21,9 +24,13 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@pencel/source"],
+    "customConditions": [
+      "@pencel/source"
+    ],
     "paths": {
-      "@pencel/*": ["./packages/*/src/index.ts"]
+      "@pencel/*": [
+        "./packages/*/src/index.ts"
+      ]
     }
   }
 }
