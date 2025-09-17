@@ -27,7 +27,7 @@ export class TransformCommand extends Command {
         depth: null,
       });
 
-      log(`Finished in ${((performance.now() - now) / 1000).toFixed(2)}s`);
+      log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
 
       return 0;
     } catch (e) {
