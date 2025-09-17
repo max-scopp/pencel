@@ -114,7 +114,10 @@ export async function transformComponentPropsDecorators(
         prop.updateDecoratorByName(PENCEL_DECORATORS.Prop, (decorator) => {
           decorator.updateArgumentObject(0, (obj) => {
             obj.setMany({
-              type: computeConstructorType(program.getTypeChecker(), prop.type),
+              type: computeConstructorType(
+                program.getTypeChecker(),
+                prop.type ?? prop.initializer,
+              ),
             } satisfies { [key in keyof PropOptions]: unknown });
 
             return obj;

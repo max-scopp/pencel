@@ -1,5 +1,5 @@
-import { basename, dirname, resolve } from "node:path";
 import { ConsumerError } from "@pencel/utils";
+import { basename, dirname, resolve } from "node:path";
 import type ts from "typescript";
 import type { PencelContext } from "../types/compiler-types.ts";
 
@@ -17,7 +17,7 @@ export function getOutputPathForSource(
     }
 
     case "folder": {
-      const absDir = dirname(resolve(ctx.cwd, ctx.config.output.path));
+      const absDir = resolve(ctx.cwd, ctx.config.output.path);
       return resolve(absDir, sf.fileName);
     }
 

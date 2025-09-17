@@ -2,5 +2,9 @@ import { defineConfig } from "../packages/cli/src/index.ts";
 
 export default defineConfig({
   // input: "src/**/*.ts",
-  plugins: ["css"],
+  output: {
+    mode: "folder",
+    path: "src/out/",
+  },
+  // plugins: [],
 });
