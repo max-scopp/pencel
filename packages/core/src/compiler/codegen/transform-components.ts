@@ -37,10 +37,5 @@ export async function transformComponents(
     }),
   );
 
-  // Ensure we show 100% and clear the progress bar
-  percentage(1, {
-    prefix: "Transforming",
-  });
-
   return newComponentsMap;
 }

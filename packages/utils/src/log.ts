@@ -10,13 +10,13 @@ import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
 const PENCIL_DO_LOGGING = (): boolean => {
-  return Boolean(
-    globalThis.PENCIL_DEBUG ||
-      process.env.PENCIL_DEBUG ||
-      (isBrowser
-        ? new URLSearchParams(window.location.search).get("pencilDebug")
-        : null),
-  );
+  return true;
+  // return Boolean(
+  //   globalThis.PENCIL_DEBUG ||
+  //     process.env.DEBUG ||
+  //     (isBrowser
+  //       ? new URLSearchParams(window.location.search).get("pencilDebug")
+  //       : null),
 };
 
 export function log(

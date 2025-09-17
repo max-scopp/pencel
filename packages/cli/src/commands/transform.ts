@@ -1,8 +1,7 @@
 import { type PencilConfig, transform } from "@pencel/core";
-import { error } from "@pencel/utils";
+import { error, log } from "@pencel/utils";
 import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
-import { log } from "console";
 import { defaultConfig } from "../index.ts";
 
 export class TransformCommand extends Command {
@@ -28,12 +27,7 @@ export class TransformCommand extends Command {
         depth: null,
       });
 
-      console.log();
-      console.log();
-      console.log();
-      console.log();
-      console.log();
-      log(`Transform completed in ${(performance.now() - now).toFixed(2)}ms`);
+      log(`Finished in ${((performance.now() - now) / 1000).toFixed(2)}s`);
 
       return 0;
     } catch (e) {
