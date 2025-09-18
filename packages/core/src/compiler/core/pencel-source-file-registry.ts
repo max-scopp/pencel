@@ -226,7 +226,7 @@ export class PencilSourceFileRegistry {
     const resolved = resolve(containingDir, moduleSpecifier);
 
     // Try common TypeScript extensions
-    const extensions = [".ts", ".tsx", ".js", ".jsx"];
+    const extensions = [".ts", ".tsx", ".ts", ".jsx"];
     for (const ext of extensions) {
       const withExt = `${resolved}${ext}`;
       if (this.program.getSourceFile(withExt)) {
@@ -333,7 +333,7 @@ export class PencilSourceFileRegistry {
 
   private fileExists(filePath: string): boolean {
     // Try common TypeScript extensions
-    const extensions = ["", ".ts", ".tsx", ".js", ".jsx"];
+    const extensions = ["", ".ts", ".tsx", ".ts", ".jsx"];
 
     for (const ext of extensions) {
       const testPath = `${filePath}${ext}`;
@@ -343,7 +343,7 @@ export class PencilSourceFileRegistry {
     }
 
     // Try as directory with index file
-    for (const ext of [".ts", ".tsx", ".js", ".jsx"]) {
+    for (const ext of [".ts", ".tsx", ".ts", ".jsx"]) {
       const indexPath = resolve(filePath, `index${ext}`);
       if (this.program.getSourceFile(indexPath)) {
         return true;

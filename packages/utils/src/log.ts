@@ -6,6 +6,7 @@ import {
   getAnsiFromStyle,
   PENCIL_ERROR,
 } from "./ansi.ts";
+import { coordLog } from "./coordinated-logging.ts";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
@@ -49,10 +50,14 @@ export function log(
     );
   } else {
     const ansiCode = style ? getAnsiFromStyle(style) : "";
-    console.log(
-      `${ansiLog()} ${ansiTimestamp(timestamp)} ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
-      ...other,
-    );
+    const logMessage = `${ansiLog()} ${ansiTimestamp(timestamp)} ${ansiCode}${message}${getAnsiFromStyle("reset")}`;
+
+    // Use coordinated logging to avoid interfering with progress bars
+    if (other.length > 0) {
+      coordLog(`${logMessage} ${other.join(" ")}`);
+    } else {
+      coordLog(logMessage);
+    }
   }
 }
 

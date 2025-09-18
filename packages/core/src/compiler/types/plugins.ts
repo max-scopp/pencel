@@ -1,5 +1,5 @@
 import type ts from "typescript";
-import type { PencelConfig } from "./config-types.js";
+import type { PencelConfig } from "./config-types.ts";
 
 export interface PluginRegistry {
   _: object;
