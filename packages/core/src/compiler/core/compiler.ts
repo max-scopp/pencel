@@ -1,4 +1,5 @@
 import { createLog } from "@pencel/utils";
+import { SourceFileRegistry } from "ts-flattered";
 import { transformComponents } from "../codegen/transform-components.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
@@ -30,15 +31,18 @@ export const transform = async (
     log(`Processing dir: ${cwd}`);
 
     compilerTree.start("load-program");
-    const inProg = await createPencilInputProgram(config, cwd ?? process.cwd());
+    const inProgram = await createPencilInputProgram(
+      config,
+      cwd ?? process.cwd(),
+    );
     compilerTree.end("load-program");
 
     compilerTree.start("transform");
-    const newSourceFiles = await transformComponents(inProg, ctx);
+    const newSourceFiles = await transformComponents(inProgram, ctx);
     compilerTree.end("transform");
 
     compilerTree.start("write");
-    await writeAllFiles(newSourceFiles, ctx);
+    await writeAllFiles(inProgram, newSourceFiles, ctx);
     compilerTree.end("write");
 
     // newSourceFiles.forEach(async (sf) => {

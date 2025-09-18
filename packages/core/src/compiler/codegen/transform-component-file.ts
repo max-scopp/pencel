@@ -9,6 +9,7 @@ import {
 } from "ts-flattered";
 import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
+import { programRegistry } from "../core/program-registry.ts";
 import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
@@ -40,6 +41,7 @@ export async function transformComponentFile(
     sourceFile.fileName,
     sourceFile.getFullText(),
     sourceFile.languageVersion,
+    programRegistry,
   );
 
   newSourceFile.prependBanner(createPencelMarker(sourceFile), "line");

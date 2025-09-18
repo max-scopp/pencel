@@ -1,5 +1,6 @@
 import { dirname } from "node:path";
 import { createDebugLog, createLog } from "@pencel/utils";
+import { Logger } from "sass";
 import * as sass from "sass-embedded";
 import { registerPlugin } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
@@ -20,7 +21,9 @@ registerPlugin(
   "scss",
   {
     enabled: true,
-    scssOptions: {},
+    scssOptions: {
+      logger: Logger.silent,
+    },
   },
   (options) => {
     if (!options.enabled) {
