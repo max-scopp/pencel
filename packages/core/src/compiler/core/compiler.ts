@@ -1,4 +1,5 @@
 import { createLog } from "@pencel/utils";
+import chokidar from "chokidar";
 import { ComponentsTransformer } from "../codegen/transform-components.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
@@ -72,15 +73,75 @@ export class Compiler {
       compilerTree.log();
     }
   }
-}
 
-/**
- * @deprecated Use Compiler class instead
- */
-export const transform = async (
-  config: Required<PencelConfig>,
-  cwd?: string,
-): Promise<TransformResults> => {
-  const compiler: Compiler = inject(Compiler);
-  return compiler.transform(config, cwd);
-};
+  async watch(
+    config: Required<PencelConfig>,
+    cwd?: string,
+  ): Promise<() => void> {
+    const workingDirectory = cwd ?? process.cwd();
+    
+    log(`Starting watch mode in: ${workingDirectory}`);
+    
+    // Perform initial transform
+    await this.transform(config, workingDirectory);
+    
+    // Set up file watcher with chokidar
+    const watcher = chokidar.watch([
+      `${workingDirectory}/**/*.ts`,
+      `${workingDirectory}/**/*.tsx`,
+      `${workingDirectory}/**/*.js`,
+      `${workingDirectory}/**/*.jsx`,
+      `${workingDirectory}/**/pencel.config.*`,
+      `${workingDirectory}/**/pencil.config.*`
+    ], {
+      ignored: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/.git/**'
+      ],
+      persistent: true,
+      ignoreInitial: true
+    });
+
+    watcher.on('change', async (path) => {
+      log(`File changed: ${path}, rebuilding...`);
+      try {
+        await this.transform(config, workingDirectory);
+        log(`Rebuild complete`);
+      } catch (error) {
+        console.error("Rebuild failed:", error);
+      }
+    });
+
+    watcher.on('add', async (path) => {
+      log(`File added: ${path}, rebuilding...`);
+      try {
+        await this.transform(config, workingDirectory);
+        log(`Rebuild complete`);
+      } catch (error) {
+        console.error("Rebuild failed:", error);
+      }
+    });
+
+    watcher.on('unlink', async (path) => {
+      log(`File removed: ${path}, rebuilding...`);
+      try {
+        await this.transform(config, workingDirectory);
+        log(`Rebuild complete`);
+      } catch (error) {
+        console.error("Rebuild failed:", error);
+      }
+    });
+
+    watcher.on('error', (error) => {
+      console.error("Watcher error:", error);
+    });
+
+    // Return unsubscribe function
+    return () => {
+      watcher.close();
+      log("Watch mode stopped");
+    };
+  }
+}

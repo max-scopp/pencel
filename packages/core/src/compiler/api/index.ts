@@ -1,4 +1,4 @@
-export { transform } from "../core/compiler.ts";
+export * from "../core/compiler.ts";
 export { registerPlugin } from "../core/plugin.ts";
 export type {
   PencilComponentMetadata,
