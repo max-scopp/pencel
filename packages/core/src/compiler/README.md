@@ -1,66 +1,83 @@
-## 🗂️ Suggested Folder Structure
+## 🗂️ Folder Structure
 
 ```
 compiler/
 │
-├── api/                      # Public-facing API for the compiler
-│   └── index.ts
+├── core/                     # Core services and DI container
+│   ├── container.ts          # Lightweight DI with inject() pattern
+│   ├── compiler.ts           # Main compiler orchestrator
+│   ├── program-registry.ts   # TypeScript program management
+│   └── source-file-registry.ts
 │
-├── core/                     # Core orchestrators (entry points, pipelines)
-│   ├── compiler.ts
-│   └── build.ts
+├── transformers/             # Component file transformers
+│   ├── component-file-transformer.ts      # Main orchestrator
+│   ├── component-decorator-transformer.ts
+│   ├── props-decorator-transformer.ts
+│   └── constants.ts          # Decorator names and constants
 │
-├── config/                   # Compiler config parsing and normalization
-│   └── config-loader.ts
+├── processors/               # File validation and utilities
+│   ├── file-processor.ts     # Validation and filtering
+│   └── decorator-processor.ts
 │
-├── transforms/              # AST transforms (TypeScript AST + internal)
-│   ├── component-transform.ts
-│   ├── module-transform.ts
-│   └── style-transform.ts
+├── factories/                # Object creation utilities
+│   └── source-file-factory.ts
 │
-├── analysis/                # Static analysis & metadata extraction
-│   ├── component-analyzer.ts
-│   ├── dependency-graph.ts
-│   └── type-checker.ts
+├── ir/                       # Intermediate representation
+│   ├── component-ir.ts       # Component metadata and .d.ts generation
+│   └── component-ir-builder.ts
 │
-├── resolution/              # Module & file resolution logic
-│   ├── module-resolver.ts
-│   ├── path-alias.ts
-│   └── virtual-modules.ts
+├── analysis/                 # Static analysis
+│   └── type-analyzer.ts
 │
-├── codegen/                 # Code generation (JS, CSS, hydrated builds)
-│   ├── component-codegen.ts
-│   ├── style-emitter.ts
-│   └── manifest-writer.ts
+├── resolution/               # Module resolution
+│   └── module-resolver.ts
 │
-├── ir/                      # Intermediate representation (optional)
-│   ├── ir-builder.ts
-│   └── ir-types.ts
+├── transforms/               # Style and asset processing
+│   └── process-styles.ts
 │
-├── output/                  # Emission of files/artifacts
-│   ├── file-writer.ts
-│   ├── output-targets.ts
-│   └── diagnostics-emitter.ts
+├── output/                   # File emission
+│   └── write-all-files.ts
 │
-├── utils/                   # Shared internal utilities
-│   ├── fs-utils.ts
-│   ├── ast-utils.ts
-│   └── log.ts
+├── utils/                    # Shared utilities
+│   ├── marker.ts
+│   ├── sourceFileSha256.ts
+│   └── getOutputPathForSource.ts
 │
-└── types/                   # Internal types and interfaces
+└── types/                    # Type definitions
     ├── compiler-types.ts
-    └── config-types.ts
+    ├── config-types.ts
+    └── plugins.ts
 ```
 
 ---
 
-## 🔍 Key Terminology Mapping
+## 🏗️ Core Design Principles
 
-| Compiler Term     | Purpose in Stencil's Context                                  |
-| ----------------- | ------------------------------------------------------------- |
-| **Transform**     | AST or metadata-level changes before generation               |
-| **Analysis**      | Static analysis (e.g., decorators, props, methods, lifecycle) |
-| **Resolution**    | Module, file, path, and import resolution                     |
-| **CodeGen**       | Emits final JS/CSS/hydration modules                          |
-| **IR (optional)** | Acts as an intermediate format between analysis and codegen   |
-| **Output**        | Writes files, handles output targets, diagnostics             |
+- **Class-based architecture** with lightweight DI container
+- **No decorators** - use simple `inject()` pattern for dependencies
+- **Specific naming** - avoid generic terms like "Base" or "Manager"
+- **Pragmatic over pure** - break clean patterns for velocity when reasonable
+- **Single-pass IR building** - construct intermediate representation during transformation
+- **Focused transformers** - each transformer handles one decorator type
+
+---
+
+## 🔍 Key Components
+
+| Component                 | Purpose                                                   |
+| ------------------------- | --------------------------------------------------------- |
+| **Core Services**         | Singleton services for compiler state (DI managed)       |
+| **Transformers**          | Convert decorated TypeScript to runtime components       |
+| **Component IR**          | Metadata extraction for .d.ts generation and validation  |
+| **File Processor**        | Validation and filtering of source files                 |
+| **inject() Pattern**     | Dependency injection without decorators or ceremony      |
+
+---
+
+## 🔄 Transform Pipeline
+
+1. **File Validation** - Check if file should be processed
+2. **Source File Creation** - Generate transformed TypeScript AST
+3. **IR Building** - Extract component metadata during transformation
+4. **Decorator Processing** - Transform @Component, @Prop, etc.
+5. **Registration** - Register transformed files and IR for output
