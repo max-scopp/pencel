@@ -1,5 +1,4 @@
 import { createLog } from "@pencel/utils";
-import { SourceFileRegistry } from "ts-flattered";
 import { transformComponents } from "../codegen/transform-components.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
@@ -9,7 +8,9 @@ import type {
 } from "../types/compiler-types.ts";
 import type { PencelConfig } from "../types/config-types.ts";
 import { compilerTree } from "../utils/compilerTree.ts";
+import { PencilSourceFileRegistry } from "./pencel-source-file-registry.ts";
 import { initializePlugins } from "./plugin.ts";
+import { setPencilRegistry } from "./program-registry.ts";
 
 const log = createLog("Transform");
 
@@ -37,12 +38,16 @@ export const transform = async (
     );
     compilerTree.end("load-program");
 
+    // Initialize Pencel registry with the program and context
+    const pencilRegistry = new PencilSourceFileRegistry(inProgram, ctx);
+    setPencilRegistry(pencilRegistry);
+
     compilerTree.start("transform");
-    const newSourceFiles = await transformComponents(inProgram, ctx);
+    await transformComponents(inProgram, ctx);
     compilerTree.end("transform");
 
     compilerTree.start("write");
-    await writeAllFiles(inProgram, newSourceFiles, ctx);
+    await writeAllFiles(ctx);
     compilerTree.end("write");
 
     // newSourceFiles.forEach(async (sf) => {
@@ -55,7 +60,7 @@ export const transform = async (
     //   );
     // });
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: temporary placeholder for transform results
     return {} as any;
   } finally {
     compilerTree.end("transform");

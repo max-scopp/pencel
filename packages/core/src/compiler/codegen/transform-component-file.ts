@@ -9,7 +9,7 @@ import {
 } from "ts-flattered";
 import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
-import { programRegistry } from "../core/program-registry.ts";
+import { getPencilRegistry } from "../core/program-registry.ts";
 import { processStyles } from "../transforms/process-styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { createPencelMarker, isPencelGeneratedFile } from "../utils/marker.ts";
@@ -41,13 +41,18 @@ export async function transformComponentFile(
     sourceFile.fileName,
     sourceFile.getFullText(),
     sourceFile.languageVersion,
-    programRegistry,
+    getPencilRegistry().getBaseRegistry(),
+    false, // Don't auto-register, we'll register it manually
   );
 
   newSourceFile.prependBanner(createPencelMarker(sourceFile), "line");
 
   await transformComponentDecorators(newSourceFile, program, ctx);
   await transformComponentPropsDecorators(newSourceFile, program, ctx);
+
+  // Register the transformed file with our Pencel registry
+  const pencilRegistry = getPencilRegistry();
+  pencilRegistry.registerTransformedFile(newSourceFile, sourceFile.fileName);
 
   return newSourceFile;
 }
