@@ -2,7 +2,7 @@ import { dirname } from "node:path";
 import { createDebugLog, createLog } from "@pencel/utils";
 import { Logger } from "sass";
 import * as sass from "sass-embedded";
-import { registerPlugin } from "../compiler/core/plugin.ts";
+import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("SCSS");
@@ -17,7 +17,7 @@ declare module "@pencel/core" {
   }
 }
 
-registerPlugin(
+Plugins.register(
   "scss",
   {
     enabled: true,

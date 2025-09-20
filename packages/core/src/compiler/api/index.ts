@@ -1,5 +1,5 @@
 export * from "../core/compiler.ts";
-export { registerPlugin } from "../core/plugin.ts";
+export * from "../core/plugin.ts";
 export type {
   PencilComponentMetadata,
   PencilComponentPropMetadata,

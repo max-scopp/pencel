@@ -1,6 +1,6 @@
 import { createLog } from "@pencel/utils";
 import type { TransformOptions } from "lightningcss";
-import { registerPlugin } from "../compiler/core/plugin.ts";
+import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
@@ -14,7 +14,7 @@ declare module "@pencel/core" {
   }
 }
 
-registerPlugin(
+Plugins.register(
   "css",
   {
     enabled: true,

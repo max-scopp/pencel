@@ -1,6 +1,3 @@
-import { throwError } from "@pencel/utils";
-import type { PencelContext } from "../types/compiler-types.ts";
-import type { PencelConfig } from "../types/config-types.ts";
 import {
   PLUGIN_SKIP,
   type PluginFunction,
@@ -8,76 +5,83 @@ import {
   type PluginNames,
   type PluginRegistry,
   type TransformHandler,
-} from "../types/plugins.ts";
+} from "@pencel/core";
+import { throwError } from "@pencel/utils";
+import type { PencelContext } from "../types/compiler-types.ts";
 import { perf } from "../utils/perf.ts";
 
-export const pluginsToInitialize: Map<
-  string,
-  { pluginFn: PluginFunction<PluginNames>; defaults: object }
-> = new Map();
+export class Plugins {
+  static pluginsToInitialize: Map<
+    string,
+    { pluginFn: PluginFunction<PluginNames>; defaults: object }
+  > = new Map();
 
-const plugins = new Map<string, PluginHandler>();
+  plugins: Map<string, PluginHandler> = new Map<string, PluginHandler>();
 
-export function registerPlugin<TPlugin extends PluginNames>(
-  name: TPlugin,
-  defaults: PluginRegistry[TPlugin],
-  pluginFn: PluginFunction<TPlugin>,
-): void {
-  if (pluginsToInitialize.has(name)) {
-    throwError(`Plugin '${name}' is already registered`);
-  }
+  static register<TPlugin extends PluginNames>(
+    name: TPlugin,
+    defaults: PluginRegistry[TPlugin],
+    pluginFn: PluginFunction<TPlugin>,
+  ): void {
+    if (Plugins.pluginsToInitialize.has(name)) {
+      throwError(`Plugin '${name}' is already registered`);
+    }
 
-  pluginsToInitialize.set(name, {
-    pluginFn: pluginFn as PluginFunction<PluginNames>,
-    defaults,
-  });
-}
-
-export async function initializePlugins(context: PencelContext): Promise<void> {
-  perf.start("initialize-plugins");
-
-  for (const [name, { pluginFn, defaults }] of pluginsToInitialize.entries()) {
-    const userEntry = context.config.plugins?.find((p) => {
-      return typeof p === "string" ? p === name : p.name === name;
+    Plugins.pluginsToInitialize.set(name, {
+      pluginFn: pluginFn as PluginFunction<PluginNames>,
+      defaults,
     });
+  }
 
-    const userOptions =
-      typeof userEntry === "string" ? {} : (userEntry?.options ?? {});
+  async initialize(context: PencelContext): Promise<void> {
+    perf.start("initialize-plugins");
 
-    if (userOptions) {
-      const plugin = await pluginFn(
-        {
-          ...defaults,
-          ...userOptions,
-        },
-        context,
-      );
+    for (const [
+      name,
+      { pluginFn, defaults },
+    ] of Plugins.pluginsToInitialize.entries()) {
+      const userEntry = context.config.plugins?.find((p) => {
+        return typeof p === "string" ? p === name : p.name === name;
+      });
 
+      const userOptions =
+        typeof userEntry === "string" ? {} : (userEntry?.options ?? {});
+
+      if (userOptions) {
+        const plugin = await pluginFn(
+          {
+            ...defaults,
+            ...userOptions,
+          },
+          context,
+        );
+
+        if (plugin) {
+          this.plugins.set(name, plugin);
+        }
+      }
+    }
+
+    perf.end("initialize-plugins");
+  }
+
+  async handlePlugins<THandle extends TransformHandler>(
+    handle: THandle,
+  ): Promise<THandle["input"]> {
+    let intermediate = handle.input;
+
+    for (const plugin of this.plugins.values()) {
       if (plugin) {
-        plugins.set(name, plugin);
+        const r = await plugin.transform(handle);
+
+        if (r === PLUGIN_SKIP) {
+          continue;
+        }
+
+        intermediate = r;
       }
     }
+
+    return intermediate;
   }
-
-  perf.end("initialize-plugins");
-}
-
-export async function handlePluginTransformation<
-  THandle extends TransformHandler,
->(handle: THandle): Promise<THandle["input"]> {
-  let intermediate = handle.input;
-
-  for (const plugin of plugins.values()) {
-    if (plugin) {
-      const r = await plugin.transform(handle);
-
-      if (r === PLUGIN_SKIP) {
-        continue;
-      }
-
-      intermediate = r;
-    }
-  }
-
-  return intermediate;
 }
