@@ -7,6 +7,10 @@ import type { PencelContext } from "../types/compiler-types.ts";
 import { omitPreviousArtifacts } from "../utils/omitPreviousArtifacts.ts";
 
 export class ComponentsTransformer {
+  componentsFileTransformer: ComponentFileTransformer = inject(
+    ComponentFileTransformer,
+  );
+
   async transform(
     program: ts.Program & ProgramBuilder,
     ctx: PencelContext,
@@ -19,14 +23,9 @@ export class ComponentsTransformer {
     let completed = 0;
     const total = rootFileNames.length;
 
-    // Get transformer instance from DI
-    const transformer: ComponentFileTransformer = inject(
-      ComponentFileTransformer,
-    );
-
     await Promise.all(
       rootFileNames.map(async (filePath) => {
-        const newComponentFile = await transformer.transform(
+        const newComponentFile = await this.componentsFileTransformer.transform(
           program.getSourceFile(filePath) ??
             throwError("Cannot find source file"),
           program,
@@ -46,15 +45,4 @@ export class ComponentsTransformer {
 
     return newComponentsMap;
   }
-}
-
-/**
- * @deprecated Use ComponentsTransformer class instead
- */
-export async function transformComponents(
-  program: ts.Program & ProgramBuilder,
-  ctx: PencelContext,
-): Promise<Map<string, ts.SourceFile>> {
-  const transformer: ComponentsTransformer = inject(ComponentsTransformer);
-  return transformer.transform(program, ctx);
 }

@@ -1,12 +1,10 @@
 import { createLog } from "@pencel/utils";
-import chokidar from "chokidar";
 import type { ProgramBuilder } from "ts-flattered";
 import type ts from "typescript";
 import { ComponentsTransformer } from "../codegen/transform-components.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
 import { createPencilInputProgram } from "../resolution/module-resolver.ts";
-import { ComponentFileTransformer } from "../transformers/component-file-transformer.ts";
 import type {
   PencelContext,
   TransformResults,
@@ -18,6 +16,7 @@ import { inject } from "./container.ts";
 import { PencilSourceFileRegistry } from "./pencel-source-file-registry.ts";
 import { initializePlugins } from "./plugin.ts";
 import { setPencilRegistry } from "./program-registry.ts";
+import { Watcher } from "./watcher.ts";
 
 const log = createLog("Transform");
 
@@ -29,6 +28,10 @@ export class Compiler {
   private program?: ts.Program & ProgramBuilder;
   private context?: PencelContext;
   private pencilRegistry?: PencilSourceFileRegistry;
+
+  get currentProgram(): ts.Program | undefined {
+    return this.program;
+  }
 
   async setup(config: Required<PencelConfig>, cwd?: string): Promise<void> {
     const ctx: PencelContext = {
@@ -72,14 +75,12 @@ export class Compiler {
 
     log(`Transforming single file: ${filePath}`);
 
-    const transformer: ComponentFileTransformer = inject(
-      ComponentFileTransformer,
-    );
-    const newComponentFile = await transformer.transform(
-      sourceFile,
-      this.program,
-      this.context,
-    );
+    const newComponentFile =
+      await this.componentsTransformer.componentsFileTransformer.transform(
+        sourceFile,
+        this.program,
+        this.context,
+      );
 
     if (newComponentFile) {
       // Create and register the transformed file
@@ -142,96 +143,8 @@ export class Compiler {
     // Perform initial setup and transform
     await this.transform(config, workingDirectory);
 
-    // Set up file watcher with chokidar
-    const watcher = chokidar.watch(
-      [
-        `${workingDirectory}/**/*.ts`,
-        `${workingDirectory}/**/*.tsx`,
-        `${workingDirectory}/**/*.js`,
-        `${workingDirectory}/**/*.jsx`,
-        `${workingDirectory}/**/pencel.config.*`,
-        `${workingDirectory}/**/pencil.config.*`,
-      ],
-      {
-        ignored: ["**/node_modules/**", "**/.git/**"],
-        persistent: true,
-        ignoreInitial: true,
-      },
-    );
-
-    // Debounce to avoid multiple rebuilds for rapid file changes
-    let rebuildTimeout: NodeJS.Timeout | null = null;
-    const pendingFiles = new Set<string>();
-
-    const processChanges = async () => {
-      if (pendingFiles.size === 0) return;
-
-      const filesToProcess = Array.from(pendingFiles);
-      pendingFiles.clear();
-
-      log(`Processing ${filesToProcess.length} changed files...`);
-
-      try {
-        // Process each changed file individually
-        for (const filePath of filesToProcess) {
-          await this.transformFile(filePath);
-        }
-
-        // Flush all changes to disk
-        await this.flush();
-
-        log(`Incremental rebuild complete for ${filesToProcess.length} files`);
-      } catch (error) {
-        console.error("Incremental rebuild failed:", error);
-      }
-    };
-
-    const scheduleRebuild = (path: string) => {
-      // Check if this is one of our generated files using the proper marker utility
-      try {
-        if (!this.program) {
-          log("Program not initialized, skipping file check");
-          return;
-        }
-
-        // Get source file from the program to check if it's generated
-        const sourceFile = this.program.getSourceFile(path);
-        if (sourceFile && isPencelGeneratedFile(sourceFile)) {
-          log(`Skipping change event for generated file: ${path}`);
-          return;
-        }
-      } catch {
-        log(
-          `Warning: Could not check if file is generated: ${path}, proceeding with rebuild`,
-        );
-        // Continue with rebuild if we can't determine the file status
-      }
-
-      pendingFiles.add(path);
-
-      if (rebuildTimeout) {
-        clearTimeout(rebuildTimeout);
-      }
-
-      // Debounce for 100ms to handle rapid file changes
-      rebuildTimeout = setTimeout(processChanges, 100);
-    };
-
-    watcher.on("change", scheduleRebuild);
-    watcher.on("add", scheduleRebuild);
-    watcher.on("unlink", scheduleRebuild);
-
-    watcher.on("error", (error) => {
-      console.error("Watcher error:", error);
-    });
-
-    // Return unsubscribe function
-    return () => {
-      if (rebuildTimeout) {
-        clearTimeout(rebuildTimeout);
-      }
-      watcher.close();
-      log("Watch mode stopped");
-    };
+    // Create and start the watcher
+    const watcher = new Watcher(this, workingDirectory);
+    return await watcher.start();
   }
 }
