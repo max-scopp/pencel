@@ -3,5 +3,5 @@ import {
   type PerformanceTreeController,
 } from "@pencel/utils";
 
-export const compilerTree: PerformanceTreeController =
+export const perf: PerformanceTreeController =
   createPerformanceTree("Compiler");

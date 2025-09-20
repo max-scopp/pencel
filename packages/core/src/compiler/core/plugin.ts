@@ -9,7 +9,7 @@ import {
   type PluginRegistry,
   type TransformHandler,
 } from "../types/plugins.ts";
-import { compilerTree } from "../utils/compilerTree.ts";
+import { perf } from "../utils/perf.ts";
 
 export const pluginsToInitialize: Map<
   string,
@@ -33,14 +33,11 @@ export function registerPlugin<TPlugin extends PluginNames>(
   });
 }
 
-export async function initializePlugins(
-  config: PencelConfig,
-  context: PencelContext,
-): Promise<void> {
-  compilerTree.start("initialize-plugins");
+export async function initializePlugins(context: PencelContext): Promise<void> {
+  perf.start("initialize-plugins");
 
   for (const [name, { pluginFn, defaults }] of pluginsToInitialize.entries()) {
-    const userEntry = config.plugins?.find((p) => {
+    const userEntry = context.config.plugins?.find((p) => {
       return typeof p === "string" ? p === name : p.name === name;
     });
 
@@ -62,7 +59,7 @@ export async function initializePlugins(
     }
   }
 
-  compilerTree.end("initialize-plugins");
+  perf.end("initialize-plugins");
 }
 
 export async function handlePluginTransformation<

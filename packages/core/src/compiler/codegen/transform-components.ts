@@ -1,5 +1,4 @@
 import { percentage, throwError } from "@pencel/utils";
-import type { ProgramBuilder } from "ts-flattered";
 import type ts from "typescript";
 import { inject } from "../core/container.ts";
 import { ComponentFileTransformer } from "../transformers/component-file-transformer.ts";
@@ -12,7 +11,7 @@ export class ComponentsTransformer {
   );
 
   async transform(
-    program: ts.Program & ProgramBuilder,
+    program: ts.Program,
     ctx: PencelContext,
   ): Promise<Map<string, ts.SourceFile>> {
     const newComponentsMap = new Map<string, ts.SourceFile>();
@@ -28,8 +27,6 @@ export class ComponentsTransformer {
         const newComponentFile = await this.componentsFileTransformer.transform(
           program.getSourceFile(filePath) ??
             throwError("Cannot find source file"),
-          program,
-          ctx,
         );
 
         completed++;

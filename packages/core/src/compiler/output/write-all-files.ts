@@ -1,13 +1,14 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { percentage } from "@pencel/utils";
-import { getPencilRegistry } from "../core/program-registry.ts";
+import { inject } from "../core/container.ts";
+import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 
 export async function writeAllFiles(ctx: PencelContext): Promise<void> {
   let progress = 1;
 
-  const pencilRegistry = getPencilRegistry();
+  const pencilRegistry = inject(SourceFileFactory);
 
   // Use Pencel registry for import rewriting which handles transformed components properly
   pencilRegistry.rewriteTransformedFileImports();

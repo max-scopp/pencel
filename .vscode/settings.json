@@ -23,9 +23,14 @@
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "editor.rulers": [79, 80, 120],
+  "editor.rulers": [
+    79,
+    80,
+    120
+  ],
   "nxConsole.generateAiAgentRules": true,
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
-  }
+  },
+  "typescript.experimental.useTsgo": false
 }

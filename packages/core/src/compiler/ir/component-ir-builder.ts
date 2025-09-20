@@ -1,8 +1,12 @@
 import type { SourceFile } from "ts-flattered";
+import { inject } from "../core/container.ts";
+import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import { ComponentIR } from "./component-ir.ts";
 
 export class ComponentIRBuilder {
   private components: ComponentIR[] = [];
+
+  readonly sourceFileFactory: SourceFileFactory = inject(SourceFileFactory);
 
   createFromSourceFile(sourceFile: SourceFile): ComponentIR {
     return new ComponentIR(sourceFile);
@@ -47,4 +51,6 @@ export class ComponentIRBuilder {
   getComponentCount(): number {
     return this.components.length;
   }
+
+  finalize(): void {}
 }

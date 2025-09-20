@@ -1,12 +1,13 @@
-import { Compiler, type PencilConfig } from "@pencel/core";
+import { Compiler, Config, Watcher } from "@pencel/core";
 import { log } from "@pencel/utils";
-import { loadConfig } from "c12";
 import { Command, Option } from "clipanion";
 import { inject } from "../../../core/src/compiler/core/container.ts";
-import { defaultConfig } from "../index.ts";
 
 export class TransformCommand extends Command {
   static override paths: string[][] = [Command.Default, ["transform"]];
+  readonly #watcher: Watcher = inject(Watcher);
+  readonly #config: Config = inject(Config);
+  readonly #compiler: Compiler = inject(Compiler);
 
   config: string =
     Option.String("--config,-C", {
@@ -19,34 +20,17 @@ export class TransformCommand extends Command {
     }) ?? false;
 
   async execute(): Promise<0 | 1> {
-    const { config, cwd } = await loadConfig<Required<PencilConfig>>({
-      name: "pencel",
-      configFile: this.config,
-      defaults: defaultConfig,
-    });
-
     const now = performance.now();
 
-    const compiler: Compiler = inject(Compiler);
+    await this.#config.load(this.config);
+
+    const result = await this.#compiler.transform();
 
     if (this.watch) {
-      log("Starting in watch mode...");
-      const unsubscribe = await compiler.watch(config, cwd);
+      this.#watcher.start();
 
-      // Handle graceful shutdown
-      const handleExit = () => {
-        unsubscribe();
-        process.exit(0);
-      };
-
-      process.on("SIGINT", handleExit);
-      process.on("SIGTERM", handleExit);
-
-      // Keep the process running
-      return new Promise(() => {});
+      return 0;
     } else {
-      const result = await compiler.transform(config, cwd);
-
       console.dir(result, {
         depth: null,
       });

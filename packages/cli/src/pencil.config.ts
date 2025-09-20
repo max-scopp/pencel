@@ -8,21 +8,3 @@ import type { PencilConfig } from "@pencel/core";
 export function defineConfig(config: PencilConfig): PencilConfig {
   return config;
 }
-
-/**
- * Default Pencil configuration
- */
-export const defaultConfig: Required<PencilConfig> = {
-  // input: "src/components/**/*.tsx",
-  input: {
-    tsconfig: "tsconfig.json",
-  },
-  output: {
-    mode: "aside",
-    replace: [/(.+)(\.[^.]+)$/, "$1.gen$2"],
-  },
-  plugins: [],
-  runtime: {
-    tagNamespace: "pencel",
-  },
-};
