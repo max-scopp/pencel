@@ -1,8 +1,8 @@
-import type { PencilConfig } from "../api/index.ts";
+import type { PencelConfig } from "./config-types.ts";
 
 export interface PencelContext {
   cwd: string;
-  config: Required<PencilConfig>;
+  config: Required<PencelConfig>;
 }
 
 /**

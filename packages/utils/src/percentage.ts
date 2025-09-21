@@ -34,7 +34,7 @@ export function percentage(
   const bar = "█".repeat(filled) + " ".repeat(empty);
 
   // Build output string
-  const output = `${ansiLog()} ${prefix} ${percentageValue}% [${bar}]`;
+  const output = `${ansiLog()} ${prefix} ${String(percentageValue).padStart(3)}% [${bar}]`;
 
   // Use carriage return to overwrite the current line
   process.stdout.write(`\r${output}`);

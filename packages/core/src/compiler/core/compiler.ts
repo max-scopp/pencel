@@ -1,10 +1,13 @@
-import { Config, type TransformResults } from "@pencel/core";
 import { createLog } from "@pencel/utils";
 import { FileTransformer } from "../codegen/file-transformer.ts";
+import { Config } from "../config/config.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import { IR } from "../ir/ir.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
-import type { PencelContext } from "../types/compiler-types.ts";
+import type {
+  PencelContext,
+  TransformResults,
+} from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";

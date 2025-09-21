@@ -52,7 +52,7 @@ export class PropsDecoratorTransformer {
                   defaultValue: prop.initializer?.getText?.() || undefined,
                 };
 
-                this.componentIR.addProperty(componentProperty);
+                this.componentIR.properties.push(componentProperty);
               }
 
               return obj;

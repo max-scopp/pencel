@@ -1,6 +1,6 @@
-import { Config } from "@pencel/core";
 import { createLog } from "@pencel/utils";
 import chokidar from "chokidar";
+import { Config } from "../config/config.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { Compiler } from "./compiler.ts";
 import { inject } from "./container.ts";
@@ -25,25 +25,25 @@ export class Watcher {
   private watcher?: chokidar.FSWatcher;
   private rebuildTimeout: NodeJS.Timeout | null = null;
   private pendingFiles = new Set<string>();
-  private options: Required<WatcherOptions> = {
-    debounceMs: 100,
-    patterns: [
-      `${this.#config.cwd}/**/*.ts`,
-      `${this.#config.cwd}/**/*.tsx`,
-      `${this.#config.cwd}/**/*.js`,
-      `${this.#config.cwd}/**/*.jsx`,
-      `${this.#config.cwd}/**/pencel.config.*`,
-      `${this.#config.cwd}/**/pencil.config.*`,
-    ],
-    ignored: ["**/node_modules/**", "**/.git/**"],
-  };
 
   start(): void {
     log(`Starting file watcher in: ${this.#config}`);
 
+    const options = {
+      patterns: [
+        `${this.#config.cwd}/**/*.ts`,
+        `${this.#config.cwd}/**/*.tsx`,
+        `${this.#config.cwd}/**/*.js`,
+        `${this.#config.cwd}/**/*.jsx`,
+        `${this.#config.cwd}/**/pencel.config.*`,
+        `${this.#config.cwd}/**/pencil.config.*`,
+      ],
+      ignored: ["**/node_modules/**", "**/.git/**"],
+    };
+
     // Set up file watcher with chokidar
-    this.watcher = chokidar.watch(this.options.patterns, {
-      ignored: this.options.ignored,
+    this.watcher = chokidar.watch(options.patterns, {
+      ignored: options.ignored,
       persistent: true,
       ignoreInitial: true,
     });
@@ -97,10 +97,7 @@ export class Watcher {
     }
 
     // Debounce to handle rapid file changes
-    this.rebuildTimeout = setTimeout(
-      this.processChanges,
-      this.options.debounceMs,
-    );
+    this.rebuildTimeout = setTimeout(this.processChanges, 100);
   };
 
   private isGeneratedFile(path: string): boolean {

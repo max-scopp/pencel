@@ -46,7 +46,8 @@ export class ComponentDecoratorTransformer {
             obj.remove("styleUrl" as keyof ComponentOptions);
 
             // Build IR during transformation
-            this.componentIR.setComponentInfo(tag, className);
+            this.componentIR.tag = tag;
+            this.componentIR.className = className;
 
             // Convert to string arrays for IR
             const stylesArray = Array.isArray(styles)
@@ -60,7 +61,8 @@ export class ComponentDecoratorTransformer {
                 ? [styleUrls]
                 : [];
 
-            this.componentIR.setStyles(stylesArray, styleUrlsArray);
+            this.componentIR.styles = stylesArray;
+            this.componentIR.styleUrls = styleUrlsArray;
 
             return obj;
           });

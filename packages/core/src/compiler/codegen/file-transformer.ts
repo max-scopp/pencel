@@ -1,8 +1,11 @@
-import { CompilerContext, Program } from "@pencel/core";
 import { percentage, throwError } from "@pencel/utils";
 import type ts from "typescript";
+import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
+import { Program } from "../core/program.ts";
+import { ComponentDeclarations } from "../factories/component-declarations.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
+import { ComponentIR } from "../ir/component-ir.ts";
 import { IR } from "../ir/ir.ts";
 import { FileProcessor } from "../processors/file-processor.ts";
 import { ComponentDecoratorTransformer } from "../transformers/component-decorator-transformer.ts";
@@ -15,7 +18,10 @@ export class FileTransformer {
   readonly context: CompilerContext = inject(CompilerContext);
   readonly fileProcessor: FileProcessor = inject(FileProcessor);
   readonly sourceFileFactory: SourceFileFactory = inject(SourceFileFactory);
-  readonly componentIRBuilder: IR = inject(IR);
+  readonly componentDeclarations: ComponentDeclarations = inject(
+    ComponentDeclarations,
+  );
+  readonly ir: IR = inject(IR);
 
   async transform(
     program: ts.Program,
@@ -60,8 +66,7 @@ export class FileTransformer {
     const transformedFile =
       this.sourceFileFactory.createTransformedFile(sourceFile);
 
-    const componentIR =
-      this.componentIRBuilder.createFromSourceFile(transformedFile);
+    const componentIR = new ComponentIR(transformedFile);
 
     const componentTransformer = new ComponentDecoratorTransformer(componentIR);
     const propsTransformer = new PropsDecoratorTransformer(
@@ -72,7 +77,7 @@ export class FileTransformer {
     await componentTransformer.transform(transformedFile, this.context);
     await propsTransformer.transform(transformedFile, this.context);
 
-    this.componentIRBuilder.registerComponent(componentIR);
+    this.ir.components.push(componentIR);
 
     this.sourceFileFactory.registerTransformedFile(
       transformedFile,

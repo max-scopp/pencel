@@ -1,7 +1,7 @@
 import { dirname, relative, resolve } from "node:path";
-import { Compiler } from "@pencel/core";
 import { fileFromString, type SourceFile } from "ts-flattered";
 import ts from "typescript";
+import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
 import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
@@ -9,7 +9,7 @@ import { createPencelMarker } from "../utils/marker.ts";
 
 export class SourceFileFactory {
   readonly program: Program = inject(Program);
-  readonly compiler: Compiler = inject(Compiler);
+  readonly context: CompilerContext = inject(CompilerContext);
 
   private files = new Map<string, SourceFile>();
   private transformedFiles = new Set<string>();
@@ -37,7 +37,7 @@ export class SourceFileFactory {
   ): void {
     const outputPath = getOutputPathForSource(
       sourceFile as ts.SourceFile,
-      this.compiler.context,
+      this.context,
     );
 
     this.transformedFiles.add(outputPath);
@@ -274,7 +274,7 @@ export class SourceFileFactory {
       return null;
     }
 
-    const baseUrl = compilerOptions.baseUrl || this.compiler.context.cwd;
+    const baseUrl = compilerOptions.baseUrl || this.context.cwd;
 
     for (const [pattern, substitutions] of Object.entries(
       compilerOptions.paths,
@@ -306,7 +306,7 @@ export class SourceFileFactory {
       return null;
     }
 
-    const baseUrl = resolve(this.compiler.context.cwd, compilerOptions.baseUrl);
+    const baseUrl = resolve(this.context.cwd, compilerOptions.baseUrl);
     const resolved = resolve(baseUrl, moduleSpecifier);
 
     if (this.fileExists(resolved)) {

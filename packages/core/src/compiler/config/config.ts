@@ -1,5 +1,8 @@
-import type { PencelConfig } from "@pencel/core";
+import { createLog } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
+import type { PencelConfig } from "../types/config-types.ts";
+
+const log = createLog("Config");
 
 /**
  * Default Pencil configuration
@@ -22,7 +25,9 @@ export const defaultConfig: Required<PencelConfig> = {
 export class Config {
   result?: ResolvedConfig<Required<PencelConfig>>;
 
-  async load(configFile: string): Promise<void> {
+  async load(configFile: string = "pencel.config"): Promise<void> {
+    log(`Using config ${configFile}`);
+
     const result = await loadConfig<Required<PencelConfig>>({
       name: "pencel",
       configFile,
