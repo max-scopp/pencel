@@ -1,24 +1,17 @@
 import { createLog } from "@pencel/utils";
-import type { TransformOptions } from "lightningcss";
+// import { transform } from "lightningcss";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
 
-declare module "@pencel/core" {
-  interface PluginRegistry {
-    css: {
-      enabled?: boolean;
-      lightningCssOptions?: Omit<TransformOptions<any>, "code" | "filename">;
-    };
-  }
-}
-
 Plugins.register(
   "css",
   {
-    enabled: true,
-    lightningCssOptions: {},
+    enabled: false,
+    lightningCssOptions: {
+      minify: true,
+    },
   },
   (options) => {
     if (!options.enabled) {
@@ -30,15 +23,15 @@ Plugins.register(
     return Promise.resolve({
       transform: (handle) => {
         // if (handle.aspect === "css:postprocess") {
+        //   log(`Handle ${handle.path}`);
 
-        // debugLog(`Handle ${handle.path}`);
-        // const result = cssTransform({
-        //   ...options.lightningCssOptions,
-        //   code: Buffer.from(handle.input),
-        //   filename: handle.path,
-        // });
+        //   const result = transform({
+        //     ...options.lightningCssOptions,
+        //     code: Buffer.from(handle.input),
+        //     filename: handle.path,
+        //   });
 
-        // return Promise.resolve(result.code.toString());
+        //   return Promise.resolve(result.code.toString());
         // }
 
         return Promise.resolve(PLUGIN_SKIP);

@@ -1,4 +1,4 @@
-export type { PencilRuntimeConfig } from "./config.ts";
+export type { PencelRuntimeConfig as PencilRuntimeConfig } from "./config.ts";
 export { pencilInit } from "./config.ts";
 export { h } from "./core/jsx.ts";
 export { Fragment, Host } from "./core/jsx-dx.ts";

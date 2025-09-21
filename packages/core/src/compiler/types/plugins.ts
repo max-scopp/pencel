@@ -1,8 +1,21 @@
+import type { CustomAtRules, TransformOptions } from "lightningcss";
+import type * as sass from "sass-embedded";
 import type ts from "typescript";
 import type { PencelConfig } from "./config-types.ts";
 
 export interface PluginRegistry {
   _: object;
+  css: {
+    enabled?: boolean;
+    lightningCssOptions?: Omit<
+      TransformOptions<CustomAtRules>,
+      "code" | "filename"
+    >;
+  };
+  scss: {
+    enabled?: boolean;
+    scssOptions?: sass.StringOptions<"async">;
+  };
 }
 
 export type PluginNames = keyof Omit<PluginRegistry, "_">;

@@ -7,4 +7,5 @@ export default defineConfig({
   target: false,
   sourcemap: true,
   platform: "neutral",
+  external: ["lightningcss"],
 });

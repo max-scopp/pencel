@@ -3,7 +3,7 @@ import {
   createLog,
   getExtendsByInheritance,
 } from "@pencel/utils";
-import { pencilConfig } from "src/config.ts";
+import { pencelConfig } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
 import { wrapComponentForRegistration } from "src/pencilCustomElementWrap.ts";
 
@@ -130,7 +130,7 @@ function defineCustomElement(
  * Generates a tag name for the component
  */
 function generateTagName(options: ComponentOptions): string {
-  return [pencilConfig.tagNamespace, options.tag].filter(Boolean).join("-");
+  return [pencelConfig.tagNamespace, options.tag].filter(Boolean).join("-");
 }
 
 /**

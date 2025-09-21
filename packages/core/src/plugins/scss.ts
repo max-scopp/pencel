@@ -1,28 +1,19 @@
 import { dirname } from "node:path";
-import { createDebugLog, createLog } from "@pencel/utils";
+import { createLog } from "@pencel/utils";
 import { Logger } from "sass";
 import * as sass from "sass-embedded";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("SCSS");
-const debugLog = createDebugLog("SCSS");
-
-declare module "@pencel/core" {
-  interface PluginRegistry {
-    scss: {
-      enabled?: boolean;
-      scssOptions?: sass.StringOptions<"async">;
-    };
-  }
-}
 
 Plugins.register(
   "scss",
   {
-    enabled: true,
+    enabled: false,
     scssOptions: {
       logger: Logger.silent,
+      style: "compressed",
     },
   },
   (options) => {
@@ -35,8 +26,6 @@ Plugins.register(
     return Promise.resolve({
       transform: async (handle) => {
         if (handle.aspect === "css:preprocess") {
-          debugLog(`Handle ${handle.path}`);
-
           // Get the directory of the current SCSS file to resolve relative imports
           const fileDir = dirname(handle.path);
 

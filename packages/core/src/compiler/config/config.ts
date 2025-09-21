@@ -12,6 +12,7 @@ export const defaultConfig: Required<PencelConfig> = {
   input: {
     tsconfig: "tsconfig.json",
   },
+  srcBase: "src",
   output: {
     mode: "aside",
     replace: [/(.+)(\.[^.]+)$/, "$1.gen$2"],

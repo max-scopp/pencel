@@ -22,5 +22,8 @@
   "peacock.remoteColor": "#E8B647",
   "editor.rulers": [79, 80, 120],
   "nxConsole.generateAiAgentRules": true,
-  "typescript.experimental.useTsgo": false
+  "typescript.experimental.useTsgo": false,
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  }
 }

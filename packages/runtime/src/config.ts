@@ -1,14 +1,14 @@
-export interface PencilRuntimeConfig {
+export interface PencelRuntimeConfig {
   tagNamespace?: string | null;
   debug?: boolean;
 }
 
-export const pencilConfig: PencilRuntimeConfig = {
+export const pencelConfig: PencelRuntimeConfig = {
   tagNamespace: "pen",
 };
 
-export const pencilInit = (userConfig: PencilRuntimeConfig): void => {
-  Object.assign(pencilConfig, userConfig);
+export const pencilInit = (userConfig: PencelRuntimeConfig): void => {
+  Object.assign(pencelConfig, userConfig);
   console.log("Pencil initialized");
 
   if (userConfig.debug) {

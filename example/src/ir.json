@@ -1,0 +1,5381 @@
+[
+  {
+    "tag": "accordion",
+    "className": "Accordion",
+    "fileName": "src/components/accordion/accordion.tsx",
+    "properties": [
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "`ion-accordion-${accordionIds++}`"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "toggleIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "chevronDown"
+      },
+      {
+        "name": "toggleIconSlot",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'end'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "accordion-group",
+    "className": "AccordionGroup",
+    "fileName": "src/components/accordion-group/accordion-group.tsx",
+    "properties": [
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "expand",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'compact'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "action-sheet",
+    "className": "ActionSheet",
+    "fileName": "src/components/action-sheet/action-sheet.tsx",
+    "properties": [
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "buttons",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "header",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "subHeader",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "alert",
+    "className": "Alert",
+    "fileName": "src/components/alert/alert.tsx",
+    "properties": [
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "header",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "subHeader",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "message",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "buttons",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "inputs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "app",
+    "className": "App",
+    "fileName": "src/components/app/app.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      "html.plt-mobile ion-app{user-select:none}html.plt-mobile ion-app [contenteditable]{user-select:text}ion-app.force-statusbar-padding{--ion-safe-area-top: 20px}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "avatar",
+    "className": "Avatar",
+    "fileName": "src/components/avatar/avatar.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "back-button",
+    "className": "BackButton",
+    "fileName": "src/components/back-button/back-button.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "defaultHref",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "icon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "text",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "backdrop",
+    "className": "Backdrop",
+    "fileName": "src/components/backdrop/backdrop.tsx",
+    "properties": [
+      {
+        "name": "visible",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "tappable",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "stopPropagation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "badge",
+    "className": "Badge",
+    "fileName": "src/components/badge/badge.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "breadcrumb",
+    "className": "Breadcrumb",
+    "fileName": "src/components/breadcrumb/breadcrumb.tsx",
+    "properties": [
+      {
+        "name": "collapsed",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "last",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showCollapsedIndicator",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "active",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "separator",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "breadcrumbs",
+    "className": "Breadcrumbs",
+    "fileName": "src/components/breadcrumbs/breadcrumbs.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "maxItems",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "itemsBeforeCollapse",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "1"
+      },
+      {
+        "name": "itemsAfterCollapse",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "1"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "button",
+    "className": "Button",
+    "fileName": "src/components/button/button.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "buttonType",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "expand",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "fill",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "shape",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "strong",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "form",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "buttons",
+    "className": "Buttons",
+    "fileName": "src/components/buttons/buttons.tsx",
+    "properties": [
+      {
+        "name": "collapse",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "card",
+    "className": "Card",
+    "fileName": "src/components/card/card.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "button",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "card-content",
+    "className": "CardContent",
+    "fileName": "src/components/card-content/card-content.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "card-header",
+    "className": "CardHeader",
+    "fileName": "src/components/card-header/card-header.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "card-subtitle",
+    "className": "CardSubtitle",
+    "fileName": "src/components/card-subtitle/card-subtitle.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "card-title",
+    "className": "CardTitle",
+    "fileName": "src/components/card-title/card-title.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "checkbox",
+    "className": "Checkbox",
+    "fileName": "src/components/checkbox/checkbox.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "checked",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "indeterminate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'on'"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "justify",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "alignment",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "required",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "chip",
+    "className": "Chip",
+    "fileName": "src/components/chip/chip.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "outline",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "col",
+    "className": "Col",
+    "fileName": "src/components/col/col.tsx",
+    "properties": [
+      {
+        "name": "offset",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "offsetXs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "offsetSm",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "offsetMd",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "offsetLg",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "offsetXl",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pull",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullXs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullSm",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullMd",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullLg",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullXl",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "push",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pushXs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pushSm",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pushMd",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pushLg",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pushXl",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sizeXs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sizeSm",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sizeMd",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sizeLg",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sizeXl",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{-webkit-padding-start:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px));padding-inline-start:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px));-webkit-padding-end:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px));padding-inline-end:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px));padding-top:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px));padding-bottom:var(--ion-grid-column-padding-xs, var(--ion-grid-column-padding, 5px))}@media(min-width: 576px){:host{-webkit-padding-start:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px));padding-inline-start:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px));-webkit-padding-end:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px));padding-inline-end:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px));padding-top:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px));padding-bottom:var(--ion-grid-column-padding-sm, var(--ion-grid-column-padding, 5px))}}@media(min-width: 768px){:host{-webkit-padding-start:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px));padding-inline-start:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px));-webkit-padding-end:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px));padding-inline-end:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px));padding-top:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px));padding-bottom:var(--ion-grid-column-padding-md, var(--ion-grid-column-padding, 5px))}}@media(min-width: 992px){:host{-webkit-padding-start:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px));padding-inline-start:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px));-webkit-padding-end:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px));padding-inline-end:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px));padding-top:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px));padding-bottom:var(--ion-grid-column-padding-lg, var(--ion-grid-column-padding, 5px))}}@media(min-width: 1200px){:host{-webkit-padding-start:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px));padding-inline-start:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px));-webkit-padding-end:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px));padding-inline-end:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px));padding-top:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px));padding-bottom:var(--ion-grid-column-padding-xl, var(--ion-grid-column-padding, 5px))}}:host{margin-left:0;margin-right:0;margin-top:0;margin-bottom:0;box-sizing:border-box;position:relative;flex-basis:0;flex-grow:1;width:100%;max-width:100%;min-height:1px}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "content",
+    "className": "Content",
+    "fileName": "src/components/content/content.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "fullscreen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "fixedSlotPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'after'"
+      },
+      {
+        "name": "forceOverscroll",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "scrollX",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "scrollY",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "scrollEvents",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{--background: var(--ion-background-color, #fff);--color: var(--ion-text-color, #000);--padding-top: 0px;--padding-bottom: 0px;--padding-start: 0px;--padding-end: 0px;--keyboard-offset: 0px;--offset-top: 0px;--offset-bottom: 0px;--overflow: auto;display:block;position:relative;flex:1;width:100%;height:100%;margin:0 !important;padding:0 !important;font-family:var(--ion-font-family, inherit);contain:size style}:host(.ion-color) .inner-scroll{background:var(--ion-color-base);color:var(--ion-color-contrast)}#background-content{left:0px;right:0px;top:calc(var(--offset-top)*-1);bottom:calc(var(--offset-bottom)*-1);position:absolute;background:var(--background)}.inner-scroll{left:0px;right:0px;top:calc(var(--offset-top)*-1);bottom:calc(var(--offset-bottom)*-1);-webkit-padding-start:var(--padding-start);padding-inline-start:var(--padding-start);-webkit-padding-end:var(--padding-end);padding-inline-end:var(--padding-end);padding-top:calc(var(--padding-top) + var(--offset-top));padding-bottom:calc(var(--padding-bottom) + var(--keyboard-offset) + var(--offset-bottom));position:absolute;color:var(--color);box-sizing:border-box;overflow:hidden;touch-action:pan-x pan-y pinch-zoom}.scroll-y,.scroll-x{-webkit-overflow-scrolling:touch;z-index:0;will-change:scroll-position}.scroll-y{overflow-y:var(--overflow);overscroll-behavior-y:contain}.scroll-x{overflow-x:var(--overflow);overscroll-behavior-x:contain}.overscroll::before,.overscroll::after{position:absolute;width:1px;height:1px;content:\"\"}.overscroll::before{bottom:-1px}.overscroll::after{top:-1px}:host(.content-sizing){display:flex;flex-direction:column;min-height:0;contain:none}:host(.content-sizing) .inner-scroll{position:relative;top:0;bottom:0;margin-top:calc(var(--offset-top)*-1);margin-bottom:calc(var(--offset-bottom)*-1)}.transition-effect{display:none;position:absolute;width:100%;height:100vh;opacity:0;pointer-events:none}:host(.content-ltr) .transition-effect{left:-100%}:host(.content-rtl) .transition-effect{right:-100%}.transition-cover{position:absolute;right:0;width:100%;height:100%;background:#000;opacity:.1}.transition-shadow{display:block;position:absolute;width:100%;height:100%;box-shadow:inset -9px 0 9px 0 rgba(0,0,100,.03)}:host(.content-ltr) .transition-shadow{right:0}:host(.content-rtl) .transition-shadow{left:0;transform:scaleX(-1)}::slotted([slot=fixed]){position:absolute;transform:translateZ(0)}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "datetime",
+    "className": "Datetime",
+    "fileName": "src/components/datetime/datetime.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'primary'"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "formatOptions",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "isDateEnabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showAdjacentDays",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "min",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "max",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "presentation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'date-time'"
+      },
+      {
+        "name": "cancelText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Cancel'"
+      },
+      {
+        "name": "doneText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Done'"
+      },
+      {
+        "name": "clearText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Clear'"
+      },
+      {
+        "name": "yearValues",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "monthValues",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "dayValues",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hourValues",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "minuteValues",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "locale",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'default'"
+      },
+      {
+        "name": "firstDayOfWeek",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "titleSelectedDatesFormatter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "highlightedDates",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showDefaultTitle",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showDefaultButtons",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showClearButton",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showDefaultTimeLabel",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "hourCycle",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'fixed'"
+      },
+      {
+        "name": "preferWheel",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "datetime-button",
+    "className": "DatetimeButton",
+    "fileName": "src/components/datetime-button/datetime-button.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'primary'"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "datetime",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "fab",
+    "className": "Fab",
+    "fileName": "src/components/fab/fab.tsx",
+    "properties": [
+      {
+        "name": "horizontal",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "vertical",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "edge",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "activated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{position:absolute;width:fit-content;height:fit-content;z-index:999}:host(.fab-horizontal-center){left:0px;right:0px;-webkit-margin-start:auto;margin-inline-start:auto;-webkit-margin-end:auto;margin-inline-end:auto}:host(.fab-horizontal-start){left:calc(10px + var(--ion-safe-area-left, 0px))}:host-context([dir=rtl]):host(.fab-horizontal-start),:host-context([dir=rtl]).fab-horizontal-start{right:calc(10px + var(--ion-safe-area-right, 0px));left:unset}@supports selector(:dir(rtl)){:host(.fab-horizontal-start:dir(rtl)){right:calc(10px + var(--ion-safe-area-right, 0px));left:unset}}:host(.fab-horizontal-end){right:calc(10px + var(--ion-safe-area-right, 0px))}:host-context([dir=rtl]):host(.fab-horizontal-end),:host-context([dir=rtl]).fab-horizontal-end{left:calc(10px + var(--ion-safe-area-left, 0px));right:unset}@supports selector(:dir(rtl)){:host(.fab-horizontal-end:dir(rtl)){left:calc(10px + var(--ion-safe-area-left, 0px));right:unset}}:host(.fab-vertical-top){top:10px}:host(.fab-vertical-top.fab-edge){top:0}:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-button){margin-top:-50%}:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-button.fab-button-small){margin-top:calc((-100% + 16px)/2)}:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-list.fab-list-side-start),:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-list.fab-list-side-end){margin-top:-50%}:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-list.fab-list-side-top),:host(.fab-vertical-top.fab-edge) ::slotted(ion-fab-list.fab-list-side-bottom){margin-top:calc(50% + 10px)}:host(.fab-vertical-bottom){bottom:10px}:host(.fab-vertical-bottom.fab-edge){bottom:0}:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-button){margin-bottom:-50%}:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-button.fab-button-small){margin-bottom:calc((-100% + 16px)/2)}:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-list.fab-list-side-start),:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-list.fab-list-side-end){margin-bottom:-50%}:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-list.fab-list-side-top),:host(.fab-vertical-bottom.fab-edge) ::slotted(ion-fab-list.fab-list-side-bottom){margin-bottom:calc(50% + 10px)}:host(.fab-vertical-center){top:0px;bottom:0px;margin-top:auto;margin-bottom:auto}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "fab-button",
+    "className": "FabButton",
+    "fileName": "src/components/fab-button/fab-button.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "activated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "show",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "closeIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "close"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "fab-list",
+    "className": "FabList",
+    "fileName": "src/components/fab-list/fab-list.tsx",
+    "properties": [
+      {
+        "name": "activated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "side",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'bottom'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{margin-left:0;margin-right:0;margin-top:calc(100% + 10px);margin-bottom:calc(100% + 10px);display:none;position:absolute;top:0;flex-direction:column;align-items:center;min-width:56px;min-height:56px}:host(.fab-list-active){display:flex}::slotted(.fab-button-in-list){margin-left:0;margin-right:0;margin-top:8px;margin-bottom:8px;width:40px;height:40px;transform:scale(0);opacity:0;visibility:hidden}:host(.fab-list-side-top) ::slotted(.fab-button-in-list),:host(.fab-list-side-bottom) ::slotted(.fab-button-in-list){margin-left:0;margin-right:0;margin-top:5px;margin-bottom:5px}:host(.fab-list-side-start) ::slotted(.fab-button-in-list),:host(.fab-list-side-end) ::slotted(.fab-button-in-list){-webkit-margin-start:5px;margin-inline-start:5px;-webkit-margin-end:5px;margin-inline-end:5px;margin-top:0;margin-bottom:0}::slotted(.fab-button-in-list.fab-button-show){transform:scale(1);opacity:1;visibility:visible}:host(.fab-list-side-top){top:auto;bottom:0;flex-direction:column-reverse}:host(.fab-list-side-start){-webkit-margin-start:calc(100% + 10px);margin-inline-start:calc(100% + 10px);-webkit-margin-end:calc(100% + 10px);margin-inline-end:calc(100% + 10px);margin-top:0;margin-bottom:0}:host(.fab-list-side-start){inset-inline-end:0}:host(.fab-list-side-start){flex-direction:row-reverse}:host(.fab-list-side-end){-webkit-margin-start:calc(100% + 10px);margin-inline-start:calc(100% + 10px);-webkit-margin-end:calc(100% + 10px);margin-inline-end:calc(100% + 10px);margin-top:0;margin-bottom:0}:host(.fab-list-side-end){inset-inline-start:0}:host(.fab-list-side-end){flex-direction:row}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "footer",
+    "className": "Footer",
+    "fileName": "src/components/footer/footer.tsx",
+    "properties": [
+      {
+        "name": "collapse",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "grid",
+    "className": "Grid",
+    "fileName": "src/components/grid/grid.tsx",
+    "properties": [
+      {
+        "name": "fixed",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{-webkit-padding-start:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px));padding-inline-start:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px));-webkit-padding-end:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px));padding-inline-end:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px));padding-top:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px));padding-bottom:var(--ion-grid-padding-xs, var(--ion-grid-padding, 5px))}@media(min-width: 576px){:host{-webkit-padding-start:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px));padding-inline-start:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px));-webkit-padding-end:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px));padding-inline-end:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px));padding-top:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px));padding-bottom:var(--ion-grid-padding-sm, var(--ion-grid-padding, 5px))}}@media(min-width: 768px){:host{-webkit-padding-start:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px));padding-inline-start:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px));-webkit-padding-end:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px));padding-inline-end:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px));padding-top:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px));padding-bottom:var(--ion-grid-padding-md, var(--ion-grid-padding, 5px))}}@media(min-width: 992px){:host{-webkit-padding-start:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px));padding-inline-start:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px));-webkit-padding-end:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px));padding-inline-end:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px));padding-top:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px));padding-bottom:var(--ion-grid-padding-lg, var(--ion-grid-padding, 5px))}}@media(min-width: 1200px){:host{-webkit-padding-start:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px));padding-inline-start:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px));-webkit-padding-end:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px));padding-inline-end:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px));padding-top:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px));padding-bottom:var(--ion-grid-padding-xl, var(--ion-grid-padding, 5px))}}:host{-webkit-margin-start:auto;margin-inline-start:auto;-webkit-margin-end:auto;margin-inline-end:auto;display:block;flex:1}:host(.grid-fixed){width:var(--ion-grid-width-xs, var(--ion-grid-width, 100%))}@media(min-width: 576px){:host(.grid-fixed){width:var(--ion-grid-width-sm, var(--ion-grid-width, 540px))}}@media(min-width: 768px){:host(.grid-fixed){width:var(--ion-grid-width-md, var(--ion-grid-width, 720px))}}@media(min-width: 992px){:host(.grid-fixed){width:var(--ion-grid-width-lg, var(--ion-grid-width, 960px))}}@media(min-width: 1200px){:host(.grid-fixed){width:var(--ion-grid-width-xl, var(--ion-grid-width, 1140px))}}:host(.grid-fixed){max-width:100%}:host(.ion-no-padding){--ion-grid-column-padding: 0;--ion-grid-column-padding-xs: 0;--ion-grid-column-padding-sm: 0;--ion-grid-column-padding-md: 0;--ion-grid-column-padding-lg: 0;--ion-grid-column-padding-xl: 0}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "header",
+    "className": "Header",
+    "fileName": "src/components/header/header.tsx",
+    "properties": [
+      {
+        "name": "collapse",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "img",
+    "className": "Img",
+    "fileName": "src/components/img/img.tsx",
+    "properties": [
+      {
+        "name": "alt",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "src",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{display:block;object-fit:contain}img{display:block;width:100%;height:100%;object-fit:inherit;object-position:inherit}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "infinite-scroll",
+    "className": "InfiniteScroll",
+    "fileName": "src/components/infinite-scroll/infinite-scroll.tsx",
+    "properties": [
+      {
+        "name": "threshold",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'15%'"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "position",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'bottom'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      "ion-infinite-scroll{display:none;width:100%}.infinite-scroll-enabled{display:block}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "infinite-scroll-content",
+    "className": "InfiniteScrollContent",
+    "fileName": "src/components/infinite-scroll-content/infinite-scroll-content.tsx",
+    "properties": [
+      {
+        "name": "loadingSpinner",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "loadingText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "input",
+    "className": "Input",
+    "fileName": "src/components/input/input.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "autocapitalize",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "autocomplete",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "autocorrect",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "autofocus",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "clearInput",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "clearInputIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "clearOnEdit",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "counter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "counterFormatter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "debounce",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "enterkeyhint",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "fill",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "inputmode",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "label",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "max",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "maxlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "min",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "minlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "pattern",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "placeholder",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "required",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "shape",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "spellcheck",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "step",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'text'"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "''"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "input-otp",
+    "className": "InputOTP",
+    "fileName": "src/components/input-otp/input-otp.tsx",
+    "properties": [
+      {
+        "name": "autocapitalize",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "fill",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'outline'"
+      },
+      {
+        "name": "inputmode",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "length",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "4"
+      },
+      {
+        "name": "pattern",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "separators",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "shape",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'round'"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'medium'"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'number'"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "''"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "input-password-toggle",
+    "className": "InputPasswordToggle",
+    "fileName": "src/components/input-password-toggle/input-password-toggle.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hideIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'password'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item",
+    "className": "Item",
+    "fileName": "src/components/item/item.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "button",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "detail",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "detailIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "chevronForward"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "lines",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item-divider",
+    "className": "ItemDivider",
+    "fileName": "src/components/item-divider/item-divider.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "sticky",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item-group",
+    "className": "ItemGroup",
+    "fileName": "src/components/item-group/item-group.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item-option",
+    "className": "ItemOption",
+    "fileName": "src/components/item-option/item-option.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "expandable",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item-options",
+    "className": "ItemOptions",
+    "fileName": "src/components/item-options/item-options.tsx",
+    "properties": [
+      {
+        "name": "side",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'end'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "item-sliding",
+    "className": "ItemSliding",
+    "fileName": "src/components/item-sliding/item-sliding.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      "ion-item-sliding{display:block;position:relative;width:100%;overflow:hidden;user-select:none}ion-item-sliding .item{user-select:none}.item-sliding-active-slide .item{position:relative;transition:transform 500ms cubic-bezier(0.36, 0.66, 0.04, 1);opacity:1;z-index:2;pointer-events:none;will-change:transform}.item-sliding-closing ion-item-options{pointer-events:none}.item-sliding-active-swipe-end .item-options-end .item-option-expandable{padding-left:100%;order:1}:host-context([dir=rtl]) .item-sliding-active-swipe-end .item-options-end .item-option-expandable{order:-1}[dir=rtl] .item-sliding-active-swipe-end .item-options-end .item-option-expandable{order:-1}@supports selector(:dir(rtl)){.item-sliding-active-swipe-end .item-options-end .item-option-expandable:dir(rtl){order:-1}}.item-sliding-active-swipe-end .item-options-end .item-option-expandable{transition-duration:.6s;transition-property:padding-left}.item-sliding-active-swipe-start .item-options-start .item-option-expandable{padding-right:100%;order:-1}:host-context([dir=rtl]) .item-sliding-active-swipe-start .item-options-start .item-option-expandable{order:1}[dir=rtl] .item-sliding-active-swipe-start .item-options-start .item-option-expandable{order:1}@supports selector(:dir(rtl)){.item-sliding-active-swipe-start .item-options-start .item-option-expandable:dir(rtl){order:1}}.item-sliding-active-swipe-start .item-options-start .item-option-expandable{transition-duration:.6s;transition-property:padding-right}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "label",
+    "className": "Label",
+    "fileName": "src/components/label/label.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "position",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "list",
+    "className": "List",
+    "fileName": "src/components/list/list.tsx",
+    "properties": [
+      {
+        "name": "lines",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "inset",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "list-header",
+    "className": "ListHeader",
+    "fileName": "src/components/list-header/list-header.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "lines",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "loading",
+    "className": "Loading",
+    "fileName": "src/components/loading/loading.tsx",
+    "properties": [
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "message",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "duration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showBackdrop",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "spinner",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "menu",
+    "className": "Menu",
+    "fileName": "src/components/menu/menu.tsx",
+    "properties": [
+      {
+        "name": "contentId",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "menuId",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "side",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "swipeGesture",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "maxEdgeStart",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "50"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "menu-button",
+    "className": "MenuButton",
+    "fileName": "src/components/menu-button/menu-button.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "menu",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "autoHide",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "menu-toggle",
+    "className": "MenuToggle",
+    "fileName": "src/components/menu-toggle/menu-toggle.tsx",
+    "properties": [
+      {
+        "name": "menu",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "autoHide",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host(.menu-toggle-hidden){display:none}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "modal",
+    "className": "Modal",
+    "fileName": "src/components/modal/modal.tsx",
+    "properties": [
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "breakpoints",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "expandToScroll",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "initialBreakpoint",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "backdropBreakpoint",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "handle",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "handleBehavior",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'none'"
+      },
+      {
+        "name": "component",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "componentProps",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showBackdrop",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "presentingElement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "keepContentsMounted",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "focusTrap",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "canDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "nav",
+    "className": "Nav",
+    "fileName": "src/components/nav/nav.tsx",
+    "properties": [
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "swipeGesture",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "animation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rootParams",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "root",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{left:0;right:0;top:0;bottom:0;position:absolute;contain:layout size style;z-index:0}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "nav-link",
+    "className": "NavLink",
+    "fileName": "src/components/nav-link/nav-link.tsx",
+    "properties": [
+      {
+        "name": "component",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "componentProps",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "note",
+    "className": "Note",
+    "fileName": "src/components/note/note.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "picker",
+    "className": "Picker",
+    "fileName": "src/components/picker/picker.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "picker-column",
+    "className": "PickerColumn",
+    "fileName": "src/components/picker-column/picker-column.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'primary'"
+      },
+      {
+        "name": "numericInput",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{display:flex;position:relative;align-items:center;justify-content:center;max-width:100%;height:200px;font-size:22px;text-align:center}.assistive-focusable{left:0;right:0;top:0;bottom:0;position:absolute;z-index:1;pointer-events:none}.assistive-focusable:focus{outline:none}.picker-opts{-webkit-padding-start:16px;padding-inline-start:16px;-webkit-padding-end:16px;padding-inline-end:16px;padding-top:0px;padding-bottom:0px;min-width:26px;max-height:200px;outline:none;text-align:inherit;scroll-snap-type:y mandatory;overflow-x:hidden;overflow-y:scroll;scrollbar-width:none}.picker-item-empty{padding-left:0;padding-right:0;padding-top:0;padding-bottom:0;margin-left:0;margin-right:0;margin-top:0;margin-bottom:0;display:block;width:100%;height:34px;border:0px;outline:none;background:rgba(0,0,0,0);color:inherit;font-family:var(--ion-font-family, inherit);font-size:inherit;line-height:34px;text-align:inherit;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.picker-opts::-webkit-scrollbar{display:none}::slotted(ion-picker-column-option){display:block;scroll-snap-align:center}.picker-item-empty,:host(:not([disabled])) ::slotted(ion-picker-column-option.option-disabled){scroll-snap-align:none}::slotted([slot=prefix]),::slotted([slot=suffix]){max-width:200px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}::slotted([slot=prefix]){-webkit-padding-start:16px;padding-inline-start:16px;-webkit-padding-end:16px;padding-inline-end:16px;padding-top:0;padding-bottom:0;justify-content:end}::slotted([slot=suffix]){-webkit-padding-start:16px;padding-inline-start:16px;-webkit-padding-end:16px;padding-inline-end:16px;padding-top:0;padding-bottom:0;justify-content:start}:host(.picker-column-disabled) .picker-opts{overflow-y:hidden}:host(.picker-column-disabled) ::slotted(ion-picker-column-option){cursor:default;opacity:.4;pointer-events:none}@media(any-hover: hover){:host(:focus) .picker-opts{outline:none;background:rgba(var(--ion-color-base-rgb), 0.2)}}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "picker-column-option",
+    "className": "PickerColumnOption",
+    "fileName": "src/components/picker-column-option/picker-column-option.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'primary'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "picker",
+    "className": "Picker",
+    "fileName": "src/components/picker-legacy/picker.tsx",
+    "properties": [
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "buttons",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "columns",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "duration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "showBackdrop",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "picker-column-cmp",
+    "className": "PickerColumnCmp",
+    "fileName": "src/components/picker-legacy-column/picker-column.tsx",
+    "properties": [
+      {
+        "name": "col",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "popover",
+    "className": "Popover",
+    "fileName": "src/components/popover/popover.tsx",
+    "properties": [
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "component",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "componentProps",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "backdropDismiss",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "event",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showBackdrop",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "triggerAction",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'click'"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'auto'"
+      },
+      {
+        "name": "dismissOnSelect",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "reference",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'trigger'"
+      },
+      {
+        "name": "side",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'bottom'"
+      },
+      {
+        "name": "alignment",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "arrow",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keyboardEvents",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "focusTrap",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "keepContentsMounted",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "progress-bar",
+    "className": "ProgressBar",
+    "fileName": "src/components/progress-bar/progress-bar.tsx",
+    "properties": [
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'determinate'"
+      },
+      {
+        "name": "reversed",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "buffer",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "1"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "radio",
+    "className": "Radio",
+    "fileName": "src/components/radio/radio.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "justify",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "alignment",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "radio-group",
+    "className": "RadioGroup",
+    "fileName": "src/components/radio-group/radio-group.tsx",
+    "properties": [
+      {
+        "name": "allowEmptySelection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "compareWith",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "range",
+    "className": "Range",
+    "fileName": "src/components/range/range.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "debounce",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.rangeId"
+      },
+      {
+        "name": "label",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "dualKnobs",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "min",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "max",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "100"
+      },
+      {
+        "name": "pin",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "pinFormatter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "(value: number): number => Math.round(value)"
+      },
+      {
+        "name": "snaps",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "step",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "1"
+      },
+      {
+        "name": "ticks",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "activeBarStart",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "0"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "refresher",
+    "className": "Refresher",
+    "fileName": "src/components/refresher/refresher.tsx",
+    "properties": [
+      {
+        "name": "pullMin",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "60"
+      },
+      {
+        "name": "pullMax",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.pullMin + 60"
+      },
+      {
+        "name": "closeDuration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'280ms'"
+      },
+      {
+        "name": "snapbackDuration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'280ms'"
+      },
+      {
+        "name": "pullFactor",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "1"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "refresher-content",
+    "className": "RefresherContent",
+    "fileName": "src/components/refresher-content/refresher-content.tsx",
+    "properties": [
+      {
+        "name": "pullingIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "pullingText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "refreshingSpinner",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "refreshingText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "reorder",
+    "className": "Reorder",
+    "fileName": "src/components/reorder/reorder.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "reorder-group",
+    "className": "ReorderGroup",
+    "fileName": "src/components/reorder-group/reorder-group.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ".reorder-list-active>*{display:block;transition:transform 300ms;will-change:transform}.reorder-enabled{user-select:none}.reorder-enabled ion-reorder{display:block;cursor:grab;pointer-events:all;touch-action:none}.reorder-selected,.reorder-selected ion-reorder{cursor:grabbing}.reorder-selected{position:relative;transition:none !important;box-shadow:0 0 10px rgba(0,0,0,.4);opacity:.8;z-index:100}.reorder-visible ion-reorder .reorder-icon{transform:translate3d(0,  0,  0)}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "ripple-effect",
+    "className": "RippleEffect",
+    "fileName": "src/components/ripple-effect/ripple-effect.tsx",
+    "properties": [
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'bounded'"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{left:0;right:0;top:0;bottom:0;position:absolute;contain:strict;pointer-events:none}:host(.unbounded){contain:layout size style}.ripple-effect{border-radius:50%;position:absolute;background-color:currentColor;color:inherit;contain:strict;opacity:0;animation:225ms rippleAnimation forwards,75ms fadeInAnimation forwards;will-change:transform,opacity;pointer-events:none}.fade-out{transform:translate(var(--translate-end)) scale(var(--final-scale, 1));animation:150ms fadeOutAnimation forwards}@keyframes rippleAnimation{from{animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transform:scale(1)}to{transform:translate(var(--translate-end)) scale(var(--final-scale, 1))}}@keyframes fadeInAnimation{from{animation-timing-function:linear;opacity:0}to{opacity:.16}}@keyframes fadeOutAnimation{from{animation-timing-function:linear;opacity:.16}to{opacity:0}}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "route",
+    "className": "Route",
+    "fileName": "src/components/route/route.tsx",
+    "properties": [
+      {
+        "name": "url",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "''"
+      },
+      {
+        "name": "component",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "componentProps",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "beforeLeave",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "beforeEnter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "route-redirect",
+    "className": "RouteRedirect",
+    "fileName": "src/components/route-redirect/route-redirect.tsx",
+    "properties": [
+      {
+        "name": "from",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "to",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "router",
+    "className": "Router",
+    "fileName": "src/components/router/router.tsx",
+    "properties": [
+      {
+        "name": "root",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'/'"
+      },
+      {
+        "name": "useHash",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "router-link",
+    "className": "RouterLink",
+    "fileName": "src/components/router-link/router-link.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "routerDirection",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'forward'"
+      },
+      {
+        "name": "routerAnimation",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{--background: transparent;--color: var(--ion-color-primary, #0054e9);background:var(--background);color:var(--color)}:host(.ion-color){color:var(--ion-color-base)}a{font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;text-decoration:inherit;text-indent:inherit;text-overflow:inherit;text-transform:inherit;text-align:inherit;white-space:inherit;color:inherit}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "router-outlet",
+    "className": "RouterOutlet",
+    "fileName": "src/components/router-outlet/router-outlet.tsx",
+    "properties": [
+      {
+        "name": "mode",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "getIonMode(this)"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "animation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "swipeHandler",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{left:0;right:0;top:0;bottom:0;position:absolute;contain:layout size style;z-index:0}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "row",
+    "className": "Row",
+    "fileName": "src/components/row/row.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{display:flex;flex-wrap:wrap}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "searchbar",
+    "className": "Searchbar",
+    "fileName": "src/components/searchbar/searchbar.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "autocapitalize",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "autocomplete",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "autocorrect",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'off'"
+      },
+      {
+        "name": "cancelButtonIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "config.get('backButtonIcon', arrowBackSharp) as string"
+      },
+      {
+        "name": "cancelButtonText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Cancel'"
+      },
+      {
+        "name": "clearIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "debounce",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "inputmode",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "enterkeyhint",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "maxlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "minlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "placeholder",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Search'"
+      },
+      {
+        "name": "searchIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "showCancelButton",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'never'"
+      },
+      {
+        "name": "showClearButton",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'always'"
+      },
+      {
+        "name": "spellcheck",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'search'"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "''"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "segment",
+    "className": "Segment",
+    "fileName": "src/components/segment/segment.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "scrollable",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "swipeGesture",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "selectOnFocus",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "segment-button",
+    "className": "SegmentButton",
+    "fileName": "src/components/segment-button/segment-button.tsx",
+    "properties": [
+      {
+        "name": "contentId",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "layout",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'icon-top'"
+      },
+      {
+        "name": "type",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'button'"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'ion-sb-' + ids++"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "segment-content",
+    "className": "SegmentContent",
+    "fileName": "src/components/segment-content/segment-content.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{scroll-snap-align:center;scroll-snap-stop:always;flex-shrink:0;width:100%;min-height:1px;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none}:host::-webkit-scrollbar{display:none}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "segment-view",
+    "className": "SegmentView",
+    "fileName": "src/components/segment-view/segment-view.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "select",
+    "className": "Select",
+    "fileName": "src/components/select/select.tsx",
+    "properties": [
+      {
+        "name": "cancelText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'Cancel'"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "compareWith",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "fill",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "interface",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'alert'"
+      },
+      {
+        "name": "interfaceOptions",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "justify",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "label",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "okText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'OK'"
+      },
+      {
+        "name": "placeholder",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "selectedText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "toggleIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "expandedIcon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "shape",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "required",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "select-modal",
+    "className": "SelectModal",
+    "fileName": "src/components/select-modal/select-modal.tsx",
+    "properties": [
+      {
+        "name": "header",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "options",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "select-option",
+    "className": "SelectOption",
+    "fileName": "src/components/select-option/select-option.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{display:none}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "select-popover",
+    "className": "SelectPopover",
+    "fileName": "src/components/select-popover/select-popover.tsx",
+    "properties": [
+      {
+        "name": "header",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "subHeader",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "message",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "multiple",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "options",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "[]"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "skeleton-text",
+    "className": "SkeletonText",
+    "fileName": "src/components/skeleton-text/skeleton-text.tsx",
+    "properties": [
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{--background: rgba(var(--background-rgb, var(--ion-text-color-rgb, 0, 0, 0)), 0.065);border-radius:var(--border-radius, inherit);display:block;width:100%;height:inherit;margin-top:4px;margin-bottom:4px;background:var(--background);line-height:10px;user-select:none;pointer-events:none}span{display:inline-block}:host(.in-media){margin-left:0;margin-right:0;margin-top:0;margin-bottom:0;height:100%}:host(.skeleton-text-animated){position:relative;background:linear-gradient(to right, rgba(var(--background-rgb, var(--ion-text-color-rgb, 0, 0, 0)), 0.065) 8%, rgba(var(--background-rgb, var(--ion-text-color-rgb, 0, 0, 0)), 0.135) 18%, rgba(var(--background-rgb, var(--ion-text-color-rgb, 0, 0, 0)), 0.065) 33%);background-size:800px 104px;animation-duration:1s;animation-fill-mode:forwards;animation-iteration-count:infinite;animation-name:shimmer;animation-timing-function:linear}@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "spinner",
+    "className": "Spinner",
+    "fileName": "src/components/spinner/spinner.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "duration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "paused",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{display:inline-block;position:relative;width:28px;height:28px;color:var(--color);user-select:none}:host(.ion-color){color:var(--ion-color-base)}svg{transform-origin:center}:host-context([dir=rtl]) svg{transform-origin:calc(100% - center)}[dir=rtl] svg{transform-origin:calc(100% - center)}@supports selector(:dir(rtl)){svg:dir(rtl){transform-origin:calc(100% - center)}}svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:translateZ(0)}:host(.spinner-lines) line,:host(.spinner-lines-small) line{stroke-width:7px}:host(.spinner-lines-sharp) line,:host(.spinner-lines-sharp-small) line{stroke-width:4px}:host(.spinner-lines) line,:host(.spinner-lines-small) line,:host(.spinner-lines-sharp) line,:host(.spinner-lines-sharp-small) line{stroke-linecap:round;stroke:currentColor}:host(.spinner-lines) svg,:host(.spinner-lines-small) svg,:host(.spinner-lines-sharp) svg,:host(.spinner-lines-sharp-small) svg{animation:spinner-fade-out 1s linear infinite}:host(.spinner-bubbles) svg{animation:spinner-scale-out 1s linear infinite;fill:currentColor}:host(.spinner-circles) svg{animation:spinner-fade-out 1s linear infinite;fill:currentColor}:host(.spinner-crescent) circle{fill:rgba(0,0,0,0);stroke-width:4px;stroke-dasharray:128px;stroke-dashoffset:82px;stroke:currentColor}:host(.spinner-crescent) svg{animation:spinner-rotate 1s linear infinite}:host(.spinner-dots) circle{stroke-width:0;fill:currentColor}:host(.spinner-dots) svg{animation:spinner-dots 1s linear infinite}:host(.spinner-circular) svg{animation:spinner-circular linear infinite}:host(.spinner-circular) circle{animation:spinner-circular-inner ease-in-out infinite;stroke:currentColor;stroke-dasharray:80px,200px;stroke-dashoffset:0px;stroke-width:5.6;fill:none}:host(.spinner-paused),:host(.spinner-paused) svg,:host(.spinner-paused) circle{animation-play-state:paused}@keyframes spinner-fade-out{0%{opacity:1}100%{opacity:0}}@keyframes spinner-scale-out{0%{transform:scale(1, 1)}100%{transform:scale(0, 0)}}@keyframes spinner-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes spinner-dots{0%{transform:scale(1, 1);opacity:.9}50%{transform:scale(0.4, 0.4);opacity:.3}100%{transform:scale(1, 1);opacity:.9}}@keyframes spinner-circular{100%{transform:rotate(360deg)}}@keyframes spinner-circular-inner{0%{stroke-dasharray:1px,200px;stroke-dashoffset:0px}50%{stroke-dasharray:100px,200px;stroke-dashoffset:-15px}100%{stroke-dasharray:100px,200px;stroke-dashoffset:-125px}}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "split-pane",
+    "className": "SplitPane",
+    "fileName": "src/components/split-pane/split-pane.tsx",
+    "properties": [
+      {
+        "name": "contentId",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "when",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "QUERY['lg']"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "tab",
+    "className": "Tab",
+    "fileName": "src/components/tab/tab.tsx",
+    "properties": [
+      {
+        "name": "active",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "tab",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "component",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host(.tab-hidden){display:none !important}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "tab-bar",
+    "className": "TabBar",
+    "fileName": "src/components/tab-bar/tab-bar.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "selectedTab",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "tab-button",
+    "className": "TabButton",
+    "fileName": "src/components/tab-button/tab-button.tsx",
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "download",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "href",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rel",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "layout",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "selected",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "tab",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "target",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "tabs",
+    "className": "Tabs",
+    "fileName": "src/components/tabs/tabs.tsx",
+    "properties": [
+      {
+        "name": "useRouter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{left:0;right:0;top:0;bottom:0;display:flex;position:absolute;flex-direction:column;width:100%;height:100%;contain:layout size style;z-index:0}.tabs-inner{position:relative;flex:1;contain:layout size style}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "text",
+    "className": "Text",
+    "fileName": "src/components/text/text.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host(.ion-color){color:var(--ion-color-base)}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "textarea",
+    "className": "Textarea",
+    "fileName": "src/components/textarea/textarea.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "autocapitalize",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'none'"
+      },
+      {
+        "name": "autofocus",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "clearOnEdit",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "debounce",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "fill",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "inputmode",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "enterkeyhint",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "maxlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "minlength",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "placeholder",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "readonly",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "required",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "spellcheck",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "cols",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "rows",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "wrap",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "autoGrow",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "''"
+      },
+      {
+        "name": "counter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "counterFormatter",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "label",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "shape",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "thumbnail",
+    "className": "Thumbnail",
+    "fileName": "src/components/thumbnail/thumbnail.tsx",
+    "properties": [],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ":host{--size: 48px;--border-radius: 0;border-radius:var(--border-radius);display:block;width:var(--size);height:var(--size)}::slotted(ion-img),::slotted(img){border-radius:var(--border-radius);width:100%;height:100%;object-fit:cover;overflow:hidden}"
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "toolbar-title",
+    "className": "ToolbarTitle",
+    "fileName": "src/components/title/title.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "size",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "toast",
+    "className": "Toast",
+    "fileName": "src/components/toast/toast.tsx",
+    "properties": [
+      {
+        "name": "overlayIndex",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "delegate",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "hasController",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "enterAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "leaveAnimation",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "cssClass",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "duration",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "config.getNumber('toastDuration', 0)"
+      },
+      {
+        "name": "header",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "layout",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'baseline'"
+      },
+      {
+        "name": "message",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "keyboardClose",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "position",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'bottom'"
+      },
+      {
+        "name": "positionAnchor",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "buttons",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "translucent",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "animated",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "true"
+      },
+      {
+        "name": "icon",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "htmlAttributes",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "swipeGesture",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "isOpen",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "trigger",
+        "type": "unknown",
+        "isRequired": true,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "toggle",
+    "className": "Toggle",
+    "fileName": "src/components/toggle/toggle.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "name",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "this.inputId"
+      },
+      {
+        "name": "checked",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "helperText",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "value",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'on'"
+      },
+      {
+        "name": "enableOnOffLabels",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "config.get('toggleOnOffLabels')"
+      },
+      {
+        "name": "labelPlacement",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "'start'"
+      },
+      {
+        "name": "justify",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "alignment",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      },
+      {
+        "name": "required",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop",
+        "defaultValue": "false"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  },
+  {
+    "tag": "toolbar",
+    "className": "Toolbar",
+    "fileName": "src/components/toolbar/toolbar.tsx",
+    "properties": [
+      {
+        "name": "color",
+        "type": "unknown",
+        "isRequired": false,
+        "decoratorType": "Prop"
+      }
+    ],
+    "events": [],
+    "methods": [],
+    "styles": [
+      ""
+    ],
+    "styleUrls": []
+  }
+]

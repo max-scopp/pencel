@@ -5,6 +5,7 @@
       "name": "@pencel/source",
       "dependencies": {
         "c12": "^3.2.0",
+        "lightningcss": "^1.30.1",
         "sass-embedded": "^1.92.1",
         "ts-flattered": "link:ts-flattered",
         "vite": "npm:rolldown-vite@latest",
@@ -30,7 +31,6 @@
     "example": {
       "name": "example",
       "dependencies": {
-        "lightningcss": "^1.30.1",
         "vite": "^7.1.2",
       },
       "devDependencies": {

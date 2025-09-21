@@ -1,14 +1,15 @@
 import { basename, dirname, relative, resolve } from "node:path";
+import { ConsumerError } from "@pencel/utils";
 import { fileFromString, type SourceFile } from "ts-flattered";
 import ts from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
-import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
 import { createPencelMarker } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 
-export class SourceFileFactory {
+export class SourceFiles {
+  readonly #context = inject(CompilerContext);
   readonly program: Program = inject(Program);
   readonly context: CompilerContext = inject(CompilerContext);
 
@@ -29,6 +30,25 @@ export class SourceFileFactory {
     return newSourceFile;
   }
 
+  computeTransformedOutputPath(filePath: string): string {
+    if (this.#context.config.output.mode === "aside") {
+      const dir = dirname(filePath);
+      const newBasename = basename(filePath).replace(
+        ...this.#context.config.output.replace,
+      );
+      return resolve(this.#context.cwd, dir, newBasename);
+    } else if (this.#context.config.output.mode === "folder") {
+      const relativeFromSrc = relative(this.#context.config.srcBase, filePath);
+      return resolve(this.#context.outBase, relativeFromSrc);
+    }
+
+    throw new ConsumerError("Invalid output mode");
+  }
+
+  computeSrcPath(filePath: string): string {
+    return resolve(this.#context.cwd, this.#context.config.srcBase, filePath);
+  }
+
   /**
    * Register a transformed component file
    */
@@ -36,10 +56,7 @@ export class SourceFileFactory {
     sourceFile: SourceFile,
     originalSourcePath: string,
   ): void {
-    const outputPath = getOutputPathForSource(
-      sourceFile as ts.SourceFile,
-      this.context,
-    );
+    const outputPath = this.computeTransformedOutputPath(sourceFile.fileName);
 
     this.transformedFiles.add(outputPath);
     this.sourceFileMap.set(outputPath, originalSourcePath);

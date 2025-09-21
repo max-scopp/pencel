@@ -30,7 +30,7 @@ export class ComponentIR {
   public styles: string[] = [];
   public styleUrls: string[] = [];
 
-  constructor(public sourceFile: SourceFile) {
+  constructor(sourceFile: SourceFile) {
     this.fileName = sourceFile.fileName;
   }
 }

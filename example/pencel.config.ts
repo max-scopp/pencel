@@ -1,10 +1,19 @@
-import { defineConfig } from "../packages/cli/src/index.ts";
+import { defineConfig, type PencelConfig } from "@pencel/cli";
 
-export default defineConfig({
+const config: PencelConfig = defineConfig({
   // input: "src/**/*.ts",
   output: {
     mode: "folder",
     path: "src/out/",
   },
-  // plugins: [],
+  plugins: [
+    {
+      name: "scss",
+      options: {
+        enabled: true,
+      },
+    },
+  ],
 });
+
+export default config;

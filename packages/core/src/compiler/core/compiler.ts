@@ -1,16 +1,13 @@
 import { createLog } from "@pencel/utils";
 import type { SourceFile } from "typescript";
-import { FileTransformer } from "../codegen/file-transformer.ts";
+import { ProjectProcessor } from "../codegen/file-transformer.ts";
 import { Config } from "../config/config.ts";
-import { SourceFileFactory } from "../factories/source-file-factory.ts";
+import { SourceFiles } from "../factories/source-files.ts";
 import { IR } from "../ir/ir.ts";
 import { FileWriter } from "../output/file-writer.ts";
-import type {
-  PencelContext,
-  TransformResults,
-} from "../types/compiler-types.ts";
+import { FileProcessor } from "../processors/file-processor.ts";
+import type { PencelContext } from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
-import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
 
@@ -19,12 +16,12 @@ const log = createLog("Transform");
 export class Compiler {
   readonly #config = inject(Config);
   readonly #fileWriter = inject(FileWriter);
-  readonly #fileTransformer: FileTransformer = inject(FileTransformer);
-  readonly #sourceFileRegistry = inject(SourceFileFactory);
+  readonly #fileProcessor: FileProcessor = inject(FileProcessor);
+  readonly #projectProcessor: ProjectProcessor = inject(ProjectProcessor);
+  readonly #sourceFileRegistry = inject(SourceFiles);
 
   readonly #program: Program = inject(Program);
 
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: <explanation>
   readonly #ir: IR = inject(IR);
 
   get context(): PencelContext {
@@ -53,12 +50,11 @@ export class Compiler {
 
     log(`Transforming single file: ${filePath}`);
 
-    const newComponentFile =
-      await this.#fileTransformer.transformFile(sourceFile);
+    const newComponentFile = await this.#fileProcessor.process(sourceFile);
 
     if (newComponentFile) {
       // Create and register the transformed file
-      const sourceFileFactory = new SourceFileFactory();
+      const sourceFileFactory = new SourceFiles();
       const transformedFile =
         sourceFileFactory.createTransformedFile(sourceFile);
       this.#sourceFileRegistry.registerTransformedFile(
@@ -69,8 +65,9 @@ export class Compiler {
   }
 
   async transform(): Promise<Map<string, SourceFile>> {
-    const result = await this.#fileTransformer.transform(this.#program.ts);
-    await this.#fileWriter.writeAllFiles();
+    const result = await this.#projectProcessor.processFilesInProject();
+
+    await this.#fileWriter.writeEverything();
 
     return result;
   }

@@ -18,6 +18,12 @@ interface PencilOutputAside {
 
 export interface PencelConfig {
   /**
+   * The base directory for source files.
+   * @default "src"
+   */
+  srcBase?: string;
+
+  /**
    * The input folder or glob pattern to process.
    * Defaults to the tsconfig next to the config file.
    */
