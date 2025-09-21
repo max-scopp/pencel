@@ -1,9 +1,10 @@
 import { createLog } from "@pencel/utils";
+import type { SourceFile } from "typescript";
 import { FileTransformer } from "../codegen/file-transformer.ts";
 import { Config } from "../config/config.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import { IR } from "../ir/ir.ts";
-import { writeAllFiles } from "../output/write-all-files.ts";
+import { FileWriter } from "../output/file-writer.ts";
 import type {
   PencelContext,
   TransformResults,
@@ -17,6 +18,7 @@ const log = createLog("Transform");
 
 export class Compiler {
   readonly #config = inject(Config);
+  readonly #fileWriter = inject(FileWriter);
   readonly #fileTransformer: FileTransformer = inject(FileTransformer);
   readonly #sourceFileRegistry = inject(SourceFileFactory);
 
@@ -66,39 +68,10 @@ export class Compiler {
     }
   }
 
-  async flush(): Promise<void> {
-    if (!this.context) {
-      throw new Error("Compiler not set up. Call setup() first.");
-    }
+  async transform(): Promise<Map<string, SourceFile>> {
+    const result = await this.#fileTransformer.transform(this.#program.ts);
+    await this.#fileWriter.writeAllFiles();
 
-    log(`Flushing changes to disk...`);
-
-    perf.start("write");
-    await writeAllFiles(this.context);
-    perf.end("write");
-
-    log(`Flush complete`);
-  }
-
-  async transform(): Promise<TransformResults> {
-    perf.start("transform");
-
-    try {
-      if (!this.#program || !this.context) {
-        throw new Error("Failed to setup compiler");
-      }
-
-      perf.start("transform");
-      await this.#fileTransformer.transform(this.#program.ts, this.context);
-      perf.end("transform");
-
-      await this.flush();
-
-      // biome-ignore lint/suspicious/noExplicitAny: temporary placeholder for transform results
-      return {} as any;
-    } finally {
-      perf.end("transform");
-      perf.log();
-    }
+    return result;
   }
 }

@@ -1,4 +1,5 @@
 import { percentage, throwError } from "@pencel/utils";
+import { basename } from "path";
 import type ts from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
@@ -10,8 +11,8 @@ import { IR } from "../ir/ir.ts";
 import { FileProcessor } from "../processors/file-processor.ts";
 import { ComponentDecoratorTransformer } from "../transformers/component-decorator-transformer.ts";
 import { PropsDecoratorTransformer } from "../transformers/props-decorator-transformer.ts";
-import type { PencelContext } from "../types/compiler-types.ts";
 import { omitPreviousArtifacts } from "../utils/omitPreviousArtifacts.ts";
+import { perf } from "../utils/perf.ts";
 
 export class FileTransformer {
   readonly program: Program = inject(Program);
@@ -23,45 +24,47 @@ export class FileTransformer {
   );
   readonly ir: IR = inject(IR);
 
-  async transform(
-    program: ts.Program,
-    ctx: PencelContext,
-  ): Promise<Map<string, ts.SourceFile>> {
+  async transform(program: ts.Program): Promise<Map<string, ts.SourceFile>> {
+    perf.start("transform");
+
     const newComponentsMap = new Map<string, ts.SourceFile>();
     const rootFileNames = program
       .getRootFileNames()
-      .filter(omitPreviousArtifacts(program, ctx));
+      .filter(omitPreviousArtifacts(program));
 
     let completed = 0;
     const total = rootFileNames.length;
 
-    await Promise.all(
-      rootFileNames.map(async (filePath) => {
-        const newComponentFile = await this.transformFile(
-          program.getSourceFile(filePath) ??
-            throwError("Cannot find source file"),
-        );
+    for (const filePath of rootFileNames) {
+      const newComponentFile = await this.transformFile(
+        program.getSourceFile(filePath) ??
+          throwError("Cannot find source file"),
+      );
 
-        completed++;
-        percentage(completed / total, {
-          prefix: "Transforming",
-        });
+      completed++;
+      percentage(completed / total, {
+        prefix: "Transforming",
+      });
 
-        if (newComponentFile) {
-          newComponentsMap.set(filePath, newComponentFile);
-        }
-      }),
-    );
+      if (newComponentFile) {
+        newComponentsMap.set(filePath, newComponentFile);
+      }
+    }
 
+    perf.end("transform");
     return newComponentsMap;
   }
 
   async transformFile(
     sourceFile: ts.SourceFile,
   ): Promise<ts.SourceFile | null> {
+    const fname = basename(sourceFile.fileName);
+
     if (!this.fileProcessor.shouldProcess(sourceFile, this.context)) {
       return null;
     }
+
+    perf.start(`transform:${fname}`);
 
     const transformedFile =
       this.sourceFileFactory.createTransformedFile(sourceFile);
@@ -83,6 +86,8 @@ export class FileTransformer {
       transformedFile,
       sourceFile.fileName,
     );
+
+    perf.end(`transform:${fname}`);
 
     return transformedFile;
   }

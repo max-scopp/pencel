@@ -8,8 +8,8 @@ import {
 } from "@pencel/core";
 import { log } from "@pencel/utils";
 import { Command, Option } from "clipanion";
-import { resolve } from "path";
 import { inject } from "../../../core/src/compiler/core/container.ts";
+import { perf } from "../../../core/src/compiler/utils/perf.ts";
 
 export class TransformCommand extends Command {
   static override paths: string[][] = [Command.Default, ["transform"]];
@@ -41,18 +41,18 @@ export class TransformCommand extends Command {
 
     const result = await this.#compiler.transform();
 
+    log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
+
+    console.dir(result, {
+      depth: null,
+    });
+
+    perf.log();
+
     if (this.watch) {
       this.#watcher.start();
-
-      return 0;
-    } else {
-      console.dir(result, {
-        depth: null,
-      });
-
-      log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
-
-      return 0;
     }
+
+    return 0;
   }
 }

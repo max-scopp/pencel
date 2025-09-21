@@ -1,7 +1,9 @@
 import { createLog } from "@pencel/utils";
 import chokidar from "chokidar";
 import { Config } from "../config/config.ts";
+import { FileWriter } from "../output/file-writer.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
+import { perf } from "../utils/perf.ts";
 import { Compiler } from "./compiler.ts";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
@@ -19,6 +21,8 @@ export interface WatcherOptions {
 
 export class Watcher {
   #compiler: Compiler = inject(Compiler);
+  #fileWriter: FileWriter = inject(FileWriter);
+
   #config = inject(Config);
   #program = inject(Program);
 
@@ -115,6 +119,8 @@ export class Watcher {
   }
 
   private processChanges = async (): Promise<void> => {
+    const now = performance.now();
+
     if (this.pendingFiles.size === 0) return;
 
     const filesToProcess = Array.from(this.pendingFiles);
@@ -123,15 +129,16 @@ export class Watcher {
     log(`Processing ${filesToProcess.length} changed files...`);
 
     try {
-      // Process each changed file individually
       for (const filePath of filesToProcess) {
         await this.#compiler.transformFile(filePath);
+        await this.#fileWriter.writeFile(filePath);
       }
 
-      // Flush all changes to disk
-      await this.#compiler.flush();
-
       log(`Incremental rebuild complete for ${filesToProcess.length} files`);
+
+      perf.log();
+
+      log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
     } catch (error) {
       console.error("Incremental rebuild failed:", error);
     }

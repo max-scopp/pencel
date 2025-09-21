@@ -1,4 +1,4 @@
-import { dirname, relative, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import { fileFromString, type SourceFile } from "ts-flattered";
 import ts from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
@@ -6,6 +6,7 @@ import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
 import { getOutputPathForSource } from "../utils/getOutputPathForSource.ts";
 import { createPencelMarker } from "../utils/marker.ts";
+import { perf } from "../utils/perf.ts";
 
 export class SourceFileFactory {
   readonly program: Program = inject(Program);
@@ -65,32 +66,41 @@ export class SourceFileFactory {
   /**
    * Write only transformed files (not source files)
    */
-  writeAllFiles(): Map<string, string> {
+  printAllFiles(): Map<string, string> {
+    perf.start("print-all");
     const transformedOnly = new Map<string, string>();
 
-    // Only include files that are in our transformed files set
-    for (const [filePath, sourceFile] of this.files) {
-      if (this.isTransformedFile(filePath)) {
-        try {
-          let content: string;
-
-          // Try different methods to extract content from SourceFile
-          if (typeof sourceFile.getFullText === "function") {
-            content = sourceFile.getFullText();
-          } else {
-            const printer = ts.createPrinter({ removeComments: false });
-            content = printer.printFile(sourceFile as ts.SourceFile);
-          }
-
-          transformedOnly.set(filePath, content);
-        } catch (error) {
-          console.error(`Failed to generate content for ${filePath}:`, error);
-          transformedOnly.set(filePath, `// Error generating content`);
-        }
-      }
+    for (const filePath of this.transformedFiles) {
+      transformedOnly.set(filePath, this.printFile(filePath));
     }
 
+    perf.end("print-all");
     return transformedOnly;
+  }
+
+  printFile(filePath: string): string {
+    const fname = basename(filePath);
+    perf.start(`print:${fname}`);
+
+    const sourceFile = this.files.get(filePath);
+
+    if (!sourceFile) {
+      throw new Error(`File not found in registry: ${filePath}`);
+    }
+
+    if (!this.isTransformedFile(filePath)) {
+      throw new Error(`File has not been transformed: ${filePath}`);
+    }
+
+    const printed = sourceFile.getFullText();
+
+    perf.end(`print:${fname}`);
+    return printed;
+    // if (typeof sourceFile.getFullText === "function") {
+    // } else {
+    //   const printer = ts.createPrinter({ removeComments: false });
+    //   return printer.printFile(sourceFile as ts.SourceFile);
+    // }
   }
 
   /**
