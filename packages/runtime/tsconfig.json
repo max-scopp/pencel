@@ -6,18 +6,10 @@
     "declaration": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "lib": [
-      "es2022",
-      "dom"
-    ]
+    "lib": ["es2022", "dom"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
   "references": [
     {
       "path": "../utils"

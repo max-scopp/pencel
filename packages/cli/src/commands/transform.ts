@@ -1,4 +1,11 @@
-import { Compiler, Config, Watcher } from "@pencel/core";
+import {
+  Compiler,
+  CompilerContext,
+  Config,
+  Plugins,
+  Program,
+  Watcher,
+} from "@pencel/core";
 import { log } from "@pencel/utils";
 import { Command, Option } from "clipanion";
 import { inject } from "../../../core/src/compiler/core/container.ts";
@@ -8,6 +15,9 @@ export class TransformCommand extends Command {
   readonly #watcher: Watcher = inject(Watcher);
   readonly #config: Config = inject(Config);
   readonly #compiler: Compiler = inject(Compiler);
+  readonly #program: Program = inject(Program);
+  readonly #plugins: Plugins = inject(Plugins);
+  readonly #compilerContext: CompilerContext = inject(CompilerContext);
 
   config: string =
     Option.String("--config,-C", {
@@ -23,6 +33,9 @@ export class TransformCommand extends Command {
     const now = performance.now();
 
     await this.#config.load(this.config);
+    await this.#program.load();
+    await this.#plugins.initialize();
+    await this.#compilerContext.adopt(this.#config.cwd, this.#config.config);
 
     const result = await this.#compiler.transform();
 

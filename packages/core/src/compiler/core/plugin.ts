@@ -1,3 +1,5 @@
+import { throwError } from "@pencel/utils";
+import { Compiler } from "sass";
 import {
   PLUGIN_SKIP,
   type PluginFunction,
@@ -5,12 +7,13 @@ import {
   type PluginNames,
   type PluginRegistry,
   type TransformHandler,
-} from "@pencel/core";
-import { throwError } from "@pencel/utils";
-import type { PencelContext } from "../types/compiler-types.ts";
+} from "../types/plugins.ts";
 import { perf } from "../utils/perf.ts";
+import { inject } from "./container.ts";
 
 export class Plugins {
+  readonly #compiler = inject(Compiler);
+
   static pluginsToInitialize: Map<
     string,
     { pluginFn: PluginFunction<PluginNames>; defaults: object }
@@ -33,14 +36,14 @@ export class Plugins {
     });
   }
 
-  async initialize(context: PencelContext): Promise<void> {
+  async initialize(): Promise<void> {
     perf.start("initialize-plugins");
 
     for (const [
       name,
       { pluginFn, defaults },
     ] of Plugins.pluginsToInitialize.entries()) {
-      const userEntry = context.config.plugins?.find((p) => {
+      const userEntry = this.#compiler.context.config.plugins?.find((p) => {
         return typeof p === "string" ? p === name : p.name === name;
       });
 
@@ -53,7 +56,7 @@ export class Plugins {
             ...defaults,
             ...userOptions,
           },
-          context,
+          this.#compiler.context,
         );
 
         if (plugin) {

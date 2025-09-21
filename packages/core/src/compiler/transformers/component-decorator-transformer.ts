@@ -1,12 +1,15 @@
 import type { ComponentOptions } from "@pencel/runtime";
 import { ConsumerError, dashCase } from "@pencel/utils";
 import type { SourceFile } from "ts-flattered";
+import { inject } from "../core/container.ts";
 import type { ComponentIR } from "../ir/component-ir.ts";
-import { processStyles } from "../transforms/process-styles.ts";
+import { Styles } from "../transforms/styles.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { PENCEL_DECORATORS } from "./constants.ts";
 
 export class ComponentDecoratorTransformer {
+  #styles = inject(Styles);
+
   constructor(private componentIR: ComponentIR) {}
 
   async transform(sourceFile: SourceFile, _ctx: PencelContext): Promise<void> {
@@ -27,7 +30,7 @@ export class ComponentDecoratorTransformer {
           await decorator.updateArgumentObjectAsync(0, async (obj) => {
             const componentOptions = obj.toRecord() as ComponentOptions;
 
-            const { styles, styleUrls } = await processStyles(
+            const { styles, styleUrls } = await this.#styles.process(
               sourceFile,
               componentOptions,
             );

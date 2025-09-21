@@ -1,6 +1,6 @@
 import { inject } from "../core/container.ts";
-import { ComponentIRBuilder } from "../ir/component-ir-builder.ts";
+import { IR } from "../ir/ir.ts";
 
 export class ComponentDeclarationsFactory {
-  readonly ir: ComponentIRBuilder = inject(ComponentIRBuilder);
+  readonly ir: IR = inject(IR);
 }

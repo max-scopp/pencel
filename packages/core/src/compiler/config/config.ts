@@ -1,10 +1,10 @@
+import type { PencelConfig } from "@pencel/core";
 import { loadConfig, type ResolvedConfig } from "c12";
-import type { PencilConfig } from "../api/index.ts";
 
 /**
  * Default Pencil configuration
  */
-export const defaultConfig: Required<PencilConfig> = {
+export const defaultConfig: Required<PencelConfig> = {
   // input: "src/components/**/*.tsx",
   input: {
     tsconfig: "tsconfig.json",
@@ -20,10 +20,10 @@ export const defaultConfig: Required<PencilConfig> = {
 };
 
 export class Config {
-  result?: ResolvedConfig<Required<PencilConfig>>;
+  result?: ResolvedConfig<Required<PencelConfig>>;
 
   async load(configFile: string): Promise<void> {
-    const result = await loadConfig<Required<PencilConfig>>({
+    const result = await loadConfig<Required<PencelConfig>>({
       name: "pencel",
       configFile,
       defaults: defaultConfig,
@@ -32,7 +32,7 @@ export class Config {
     this.result = result;
   }
 
-  get config(): Required<PencilConfig> {
+  get config(): Required<PencelConfig> {
     if (!this.result) {
       throw new Error("Config not loaded yet. Call load() first.");
     }

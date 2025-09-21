@@ -1,31 +1,26 @@
-import { Config } from "@pencel/core";
+import { Config, type TransformResults } from "@pencel/core";
 import { createLog } from "@pencel/utils";
-import { ComponentsTransformer } from "../codegen/transform-components.ts";
+import { FileTransformer } from "../codegen/file-transformer.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
-import { ComponentIRBuilder } from "../ir/component-ir-builder.ts";
+import { IR } from "../ir/ir.ts";
 import { writeAllFiles } from "../output/write-all-files.ts";
-import type {
-  PencelContext,
-  TransformResults,
-} from "../types/compiler-types.ts";
+import type { PencelContext } from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
-import { initializePlugins } from "./plugin.ts";
 import { Program } from "./program.ts";
 
 const log = createLog("Transform");
 
 export class Compiler {
-  readonly componentsTransformer: ComponentsTransformer = inject(
-    ComponentsTransformer,
-  );
   readonly #config = inject(Config);
+  readonly #fileTransformer: FileTransformer = inject(FileTransformer);
+  readonly #sourceFileRegistry = inject(SourceFileFactory);
 
-  readonly ir: ComponentIRBuilder = inject(ComponentIRBuilder);
-  readonly program: Program = inject(Program);
+  readonly #program: Program = inject(Program);
 
-  private sourceFileRegistry = inject(SourceFileFactory);
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: <explanation>
+  readonly #ir: IR = inject(IR);
 
   get context(): PencelContext {
     return {
@@ -34,20 +29,12 @@ export class Compiler {
     };
   }
 
-  async setup(): Promise<void> {
-    await initializePlugins(this.context);
-
-    log(`Setting up compiler for: ${this.context.cwd}`);
-
-    await this.program.load();
-  }
-
   async transformFile(filePath: string): Promise<void> {
-    if (!this.program || !this.context || !this.sourceFileRegistry) {
+    if (!this.#program || !this.context || !this.#sourceFileRegistry) {
       throw new Error("Compiler not set up. Call setup() first.");
     }
 
-    const sourceFile = this.program.ts.getSourceFile(filePath);
+    const sourceFile = this.#program.ts.getSourceFile(filePath);
     if (!sourceFile) {
       log(`File not found in program: ${filePath}`);
       return;
@@ -62,16 +49,14 @@ export class Compiler {
     log(`Transforming single file: ${filePath}`);
 
     const newComponentFile =
-      await this.componentsTransformer.componentsFileTransformer.transform(
-        sourceFile,
-      );
+      await this.#fileTransformer.transformFile(sourceFile);
 
     if (newComponentFile) {
       // Create and register the transformed file
       const sourceFileFactory = new SourceFileFactory();
       const transformedFile =
         sourceFileFactory.createTransformedFile(sourceFile);
-      this.sourceFileRegistry.registerTransformedFile(
+      this.#sourceFileRegistry.registerTransformedFile(
         transformedFile,
         filePath,
       );
@@ -96,14 +81,12 @@ export class Compiler {
     perf.start("transform");
 
     try {
-      await this.setup();
-
-      if (!this.program || !this.context) {
+      if (!this.#program || !this.context) {
         throw new Error("Failed to setup compiler");
       }
 
       perf.start("transform");
-      await this.componentsTransformer.transform(this.program.ts, this.context);
+      await this.#fileTransformer.transform(this.#program.ts, this.context);
       perf.end("transform");
 
       await this.flush();

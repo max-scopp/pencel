@@ -51,18 +51,19 @@ function projectSlots(vnode: VNode, slotContent: VNode[]): VNode {
         $elm$: null,
         $text$: "",
       };
-    }if (slotContent.length === 1) {
+    }
+    if (slotContent.length === 1) {
       // Single item - return it directly
       return { ...slotContent[0], $key$: vnode.$key$ };
     }
-      // Multiple items - wrap in fragment
-      return {
-        $type$: NODE_TYPE_FRAGMENT,
-        $props$: {},
-        $children$: slotContent,
-        $key$: vnode.$key$,
-        $elm$: null,
-      };
+    // Multiple items - wrap in fragment
+    return {
+      $type$: NODE_TYPE_FRAGMENT,
+      $props$: {},
+      $children$: slotContent,
+      $key$: vnode.$key$,
+      $elm$: null,
+    };
   }
 
   // Recursively process children

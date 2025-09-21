@@ -3,7 +3,7 @@ import { inject } from "../core/container.ts";
 import { SourceFileFactory } from "../factories/source-file-factory.ts";
 import { ComponentIR } from "./component-ir.ts";
 
-export class ComponentIRBuilder {
+export class IR {
   private components: ComponentIR[] = [];
 
   readonly sourceFileFactory: SourceFileFactory = inject(SourceFileFactory);

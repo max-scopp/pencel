@@ -111,8 +111,8 @@ function logPerformanceTree(
       // For sub-millisecond times, show microseconds
       return `${us.toFixed(0)}μs`;
     }
-      // For millisecond and above, show milliseconds
-      return `${(us / 1000).toFixed(3)}ms`;
+    // For millisecond and above, show milliseconds
+    return `${(us / 1000).toFixed(3)}ms`;
   }
 
   function getStyle(us: number, parentTime: number): string {
