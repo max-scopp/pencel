@@ -20,7 +20,7 @@ export interface PluginRegistry {
 
 export type PluginNames = keyof Omit<PluginRegistry, "_">;
 
-export type Plugins<TPlugin extends PluginNames = PluginNames> = Array<
+export type PluginDefs<TPlugin extends PluginNames = PluginNames> = Array<
   | TPlugin
   | {
       name: TPlugin;
