@@ -1,11 +1,11 @@
 import { createLog } from "@pencel/utils";
 import type { SourceFile } from "typescript";
-import { ProjectProcessor } from "../codegen/file-transformer.ts";
 import { Config } from "../config/config.ts";
 import { SourceFiles } from "../factories/source-files.ts";
 import { IR } from "../ir/ir.ts";
 import { FileWriter } from "../output/file-writer.ts";
 import { FileProcessor } from "../processors/file-processor.ts";
+import { ProjectProcessor } from "../processors/project-processor.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { inject } from "./container.ts";

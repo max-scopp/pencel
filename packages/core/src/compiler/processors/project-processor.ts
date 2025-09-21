@@ -5,9 +5,9 @@ import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
 import { ComponentDeclarations } from "../factories/component-declarations.ts";
 import { IR } from "../ir/ir.ts";
-import { FileProcessor } from "../processors/file-processor.ts";
 import { omitPreviousArtifacts } from "../utils/omitPreviousArtifacts.ts";
 import { perf } from "../utils/perf.ts";
+import { FileProcessor } from "./file-processor.ts";
 
 export class ProjectProcessor {
   readonly program: Program = inject(Program);
@@ -28,7 +28,7 @@ export class ProjectProcessor {
 
     let completed = 0;
 
-    for (const filePath of rootFileNames) {
+    const promises = rootFileNames.map(async (filePath) => {
       const newComponentFile = await this.fileProcessor.process(
         this.program.ts.getSourceFile(filePath) ??
           throwError("Cannot find source file"),
@@ -42,7 +42,9 @@ export class ProjectProcessor {
       if (newComponentFile) {
         newComponentsMap.set(filePath, newComponentFile);
       }
-    }
+    });
+
+    await Promise.all(promises);
 
     perf.end("transform");
     return newComponentsMap;

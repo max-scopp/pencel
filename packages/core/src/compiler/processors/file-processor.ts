@@ -1,4 +1,3 @@
-import { createLog } from "@pencel/utils";
 import { basename } from "path";
 import { findClasses, findDecorators } from "ts-flattered";
 import type ts from "typescript";
@@ -22,14 +21,10 @@ export class FileProcessor {
   readonly sourceFileFactory: SourceFiles = inject(SourceFiles);
 
   async process(sourceFile: ts.SourceFile): Promise<ts.SourceFile | null> {
-    const fname = basename(sourceFile.fileName);
-
     if (!this.shouldProcess(sourceFile)) {
       // log(`Skipping ${fname}`);
       return null;
     }
-
-    perf.start(`transform:${fname}`);
 
     const transformedSourceFile =
       this.sourceFileFactory.createTransformedFile(sourceFile);
@@ -52,7 +47,6 @@ export class FileProcessor {
       sourceFile.fileName,
     );
 
-    perf.end(`transform:${fname}`);
     return transformedSourceFile;
   }
 
