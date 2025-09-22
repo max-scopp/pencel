@@ -1,7 +1,7 @@
+import { warn } from "node:console";
 import { codeFrameColumns } from "@babel/code-frame";
 import { createLog } from "@pencel/utils";
 import { type ErrorLocation, transform } from "lightningcss";
-import { warn } from "node:console";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
@@ -48,12 +48,7 @@ Plugins.register(
           } catch (err) {
             if (isErrorLocation(err)) {
               warn(
-                `CSS Syntax Error in ${handle.path} at ${err.line}:${err.column}\n\t${err.message}\n\n${codeFrameColumns(
-                  handle.input,
-                  { start: { line: err.line, column: err.column } },
-                  { highlightCode: true },
-                )}`,
-                
+                `CSS Syntax Error in ${handle.path}:${err.line}:${err.column}\n\t${err.message}`,
               );
               return Promise.resolve(handle.input);
             }
