@@ -198,3 +198,53 @@ export function createError(
 
   return combined;
 }
+
+
+export function createWarn(
+  namespace: string,
+): (message: string, style?: string, ...other: unknown[]) => void {
+  return (message: string, style?: string, ...other: unknown[]) => {
+    const prefixedMessage = `[${namespace}] ${message}`;
+    warn(prefixedMessage, style, ...other);
+  };
+}
+
+export function warn(
+  message: string,
+  style?: string,
+  ...other: unknown[]
+): void {
+  if (!PENCIL_DO_LOGGING()) {
+    return;
+  }
+
+  const now = new Date();
+  const timestamp =
+    now.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }) +
+    "." +
+    now.getMilliseconds().toString().padStart(3, "0");
+
+  if (isBrowser) {
+    console.group(
+      `%c⚠️ pencil%c ${timestamp} %cWARNING: ${message}`,
+      "background: #fbc02d; color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
+      "color: grey; font-weight: normal;",
+      "color: #fbc02d; font-weight: bold;",
+    );
+    if (style || other.length > 0) {
+      console.warn(message, style || "", ...other);
+    }
+    console.groupEnd();
+  } else {
+    const ansiCode = style ? getAnsiFromStyle(style) : "\x1b[33m";
+    console.warn(
+      `${ansiLog()} ${ansiTimestamp(timestamp)} \x1b[33m[WARN]\x1b[0m ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
+      ...other,
+    );
+  }
+}
