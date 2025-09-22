@@ -1,6 +1,5 @@
+import { createLog, debug } from "@pencel/utils";
 import { dirname } from "node:path";
-import { createLog } from "@pencel/utils";
-import { Logger } from "sass";
 import * as sass from "sass-embedded";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
@@ -12,8 +11,14 @@ Plugins.register(
   {
     enabled: false,
     scssOptions: {
-      logger: Logger.silent,
-      style: "compressed",
+      logger: {
+        warn(message, options) {
+          // warn(`${message} \n${options.span?.context}`);
+        },
+        debug(message, options) {
+          debug(`${message} \n${options.span?.context}`);
+        },
+      },
     },
   },
   (options) => {

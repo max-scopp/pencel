@@ -1,14 +1,22 @@
+import { codeFrameColumns } from "@babel/code-frame";
 import { createLog } from "@pencel/utils";
-// import { transform } from "lightningcss";
+import { type ErrorLocation, transform } from "lightningcss";
+import { warn } from "node:console";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
 
+function isErrorLocation(err: unknown): err is SyntaxError & ErrorLocation {
+  return (
+    typeof err === "object" && err !== null && "line" in err && "column" in err
+  );
+}
+
 Plugins.register(
   "css",
   {
-    enabled: false,
+    enabled: true,
     lightningCssOptions: {
       minify: true,
     },
@@ -22,17 +30,37 @@ Plugins.register(
 
     return Promise.resolve({
       transform: (handle) => {
-        // if (handle.aspect === "css:postprocess") {
-        //   log(`Handle ${handle.path}`);
+        if (handle.aspect === "css:postprocess") {
+          log(`Handle ${handle.path}`);
 
-        //   const result = transform({
-        //     ...options.lightningCssOptions,
-        //     code: Buffer.from(handle.input),
-        //     filename: handle.path,
-        //   });
+          try {
+            const result = transform({
+              ...options.lightningCssOptions,
+              code: Buffer.from(handle.input),
+              filename: handle.path,
+            });
 
-        //   return Promise.resolve(result.code.toString());
-        // }
+            result.warnings.forEach((warning) => {
+              warn(`${warning.message}`);
+            });
+
+            return Promise.resolve(result.code.toString());
+          } catch (err) {
+            if (isErrorLocation(err)) {
+              warn(
+                `CSS Syntax Error in ${handle.path} at ${err.line}:${err.column}\n\t${err.message}\n\n${codeFrameColumns(
+                  handle.input,
+                  { start: { line: err.line, column: err.column } },
+                  { highlightCode: true },
+                )}`,
+                
+              );
+              return Promise.resolve(handle.input);
+            }
+
+            throw err;
+          }
+        }
 
         return Promise.resolve(PLUGIN_SKIP);
       },

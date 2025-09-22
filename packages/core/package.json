@@ -32,16 +32,18 @@
     "typescript": "*"
   },
   "dependencies": {
-    "chokidar": "^3.6.0",
+    "@babel/code-frame": "^7.27.1",
     "@pencel/runtime": "workspace:*",
     "@pencel/utils": "workspace:*",
+    "chokidar": "^3.6.0",
     "csso": "^5.0.5",
     "fast-glob": "^3.3.3",
     "sass": "^1.92.1",
     "ts-flattered": "link:ts-flattered"
   },
   "devDependencies": {
-    "tsdown": "^0.15.2",
-    "@types/csso": "~5.0.4"
+    "@types/babel__code-frame": "~7.0.6",
+    "@types/csso": "~5.0.4",
+    "tsdown": "^0.15.2"
   }
 }
