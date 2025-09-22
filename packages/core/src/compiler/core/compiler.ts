@@ -2,7 +2,6 @@ import { createLog } from "@pencel/utils";
 import type { SourceFile } from "typescript";
 import { Config } from "../config/config.ts";
 import { SourceFiles } from "../factories/source-files.ts";
-import { IR } from "../ir/ir.ts";
 import { FileWriter } from "../output/file-writer.ts";
 import { FileProcessor } from "../processors/file-processor.ts";
 import { ProjectProcessor } from "../processors/project-processor.ts";
@@ -21,8 +20,6 @@ export class Compiler {
   readonly #sourceFileRegistry = inject(SourceFiles);
 
   readonly #program: Program = inject(Program);
-
-  readonly #ir: IR = inject(IR);
 
   get context(): PencelContext {
     return {

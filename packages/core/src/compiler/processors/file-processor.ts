@@ -1,7 +1,7 @@
-import { basename } from "path";
 import { findClasses, findDecorators } from "ts-flattered";
 import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
+import { ComponentTypings } from "../codegen/component-typings.ts";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
@@ -12,13 +12,13 @@ import { ComponentDecoratorTransformer } from "../transformers/component-decorat
 import { PENCEL_DECORATORS } from "../transformers/constants.ts";
 import { PropsDecoratorTransformer } from "../transformers/props-decorator-transformer.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
-import { perf } from "../utils/perf.ts";
 
 export class FileProcessor {
   readonly program: Program = inject(Program);
   readonly context: CompilerContext = inject(CompilerContext);
   readonly ir: IR = inject(IR);
   readonly sourceFileFactory: SourceFiles = inject(SourceFiles);
+  readonly componentTypings: ComponentTypings = inject(ComponentTypings);
 
   async process(sourceFile: ts.SourceFile): Promise<ts.SourceFile | null> {
     if (!this.shouldProcess(sourceFile)) {
@@ -39,6 +39,8 @@ export class FileProcessor {
 
     await componentTransformer.transform(transformedSourceFile, this.context);
     await propsTransformer.transform(transformedSourceFile, this.context);
+
+    await this.componentTypings.createTypings(transformedSourceFile);
 
     this.ir.components.push(componentIR);
 
