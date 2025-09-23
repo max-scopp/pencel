@@ -6,7 +6,6 @@ import {
   type SourceFile,
 } from "ts-flattered";
 import type ts from "typescript";
-import { ModuleResolutionKind } from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";

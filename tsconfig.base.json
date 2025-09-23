@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "jsxImportSource": "@pencel/runtime",
     "resolveJsonModule": true,
     "declarationMap": true,

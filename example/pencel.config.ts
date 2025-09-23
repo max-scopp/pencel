@@ -6,6 +6,9 @@ const config: PencelConfig = defineConfig({
     mode: "folder",
     path: "src/out/",
   },
+  runtime: {
+    tagNamespace: "ion",
+  },
   plugins: [
     {
       name: "scss",

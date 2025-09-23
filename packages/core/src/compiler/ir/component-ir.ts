@@ -30,6 +30,14 @@ export class ComponentIR {
   #sourceTag: string = "";
 
   get tag(): string {
+    const alreadyIncludesNamespace = this.#sourceTag.startsWith(
+      `${this.#config.config.runtime.tagNamespace}-`,
+    );
+
+    if (alreadyIncludesNamespace) {
+      return this.#sourceTag;
+    }
+
     return [this.#config.config.runtime.tagNamespace, this.#sourceTag].join(
       "-",
     );

@@ -7,6 +7,9 @@ declare global {
   namespace JSX {
     interface IntrinsicElements extends JSXBase.IntrinsicElements {}
   }
+
+  // TODO: Better types needed
+  type JSXElementAttributes<T> = Partial<T>;
 }
 
 export declare namespace JSXBase {

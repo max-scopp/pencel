@@ -1,6 +1,14 @@
 import { pascalCase } from "ng-openapi";
 import type { FileBuilder } from "ts-flattered";
-import { $, $ref, global, interface_, objLiteral, param } from "ts-flattered";
+import {
+  $,
+  $ref,
+  global,
+  interface_,
+  namespace,
+  objLiteral,
+  param,
+} from "ts-flattered";
 import ts from "typescript";
 import { inject } from "../core/container.ts";
 import { IR } from "../ir/ir.ts";
@@ -39,7 +47,7 @@ export class ComponentTypings {
   }*/
 
     // Create interface declarations for components
-    const interfaceDeclarations: ts.InterfaceDeclaration[] = [];
+    const globalDeclarations: ts.Statement[] = [];
 
     cirs.forEach((cir) => {
       if (cir.forIs) {
@@ -137,21 +145,24 @@ export class ComponentTypings {
           ],
         ).get();
 
-        interfaceDeclarations.push(
-          createElementInterface,
-          setAttributeInterface,
-        );
+        globalDeclarations.push(createElementInterface, setAttributeInterface);
       } else {
-        // For regular custom elements, add to HTMLElementTagNameMap
-        const htmlElementTagNameMap = interface_(
-          "HTMLElementTagNameMap",
-        ).addProperty($(cir.tag), $ref(cir.className));
-
-        interfaceDeclarations.push(htmlElementTagNameMap);
+        globalDeclarations.push(
+          interface_("HTMLElementTagNameMap").addProperty(
+            $(cir.tag),
+            $ref(cir.className),
+          ),
+          namespace("JSX", [
+            interface_("IntrinsicElements").addProperty(
+              $(cir.tag),
+              $ref(`JSXElementAttributes<${cir.className}>`),
+            ),
+          ]),
+        );
       }
     });
 
-    const globalDecl = global(interfaceDeclarations);
+    const globalDecl = global(globalDeclarations);
     sf.addStatement(globalDecl);
   }
 }

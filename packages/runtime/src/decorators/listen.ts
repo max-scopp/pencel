@@ -1,6 +1,8 @@
 import { ConsumerError } from "@pencel/utils";
 import type { CustomElement } from "../core/types.ts";
 
+export type ListenTargetOptions = "body" | "document" | "window";
+
 /**
  * Options for the Listen decorator
  */
@@ -9,6 +11,12 @@ export interface ListenOptions extends AddEventListenerOptions {
    * Name of the event to listen for
    */
   eventName: string;
+
+  /**
+   * Target for event listener attachment. Defaults to host element.
+   * Use this to listen for application-wide events.
+   */
+  target?: ListenTargetOptions;
 }
 
 /**
@@ -25,12 +33,15 @@ export interface ListenOptions extends AddEventListenerOptions {
  * }
  * ```
  */
-export function Listen(userOptions: string | ListenOptions): MethodDecorator {
+export function Listen(
+  userOptions: string | ListenOptions,
+  backwardsOptionsArg?: Omit<ListenOptions, "eventName">,
+): MethodDecorator {
   return (target, propertyKey, descriptor) => {
     const { eventName, ...options } =
       typeof userOptions === "string"
-        ? { eventName: userOptions }
-        : userOptions;
+        ? { eventName: userOptions, ...backwardsOptionsArg }
+        : { ...userOptions, ...backwardsOptionsArg };
 
     const originalMethod = descriptor.value;
 
@@ -40,6 +51,19 @@ export function Listen(userOptions: string | ListenOptions): MethodDecorator {
       );
     }
 
+    const getTargetElm = () => {
+      switch (options.target) {
+        case "body":
+          return document.body;
+        case "document":
+          return document;
+        case "window":
+          return window;
+        default:
+          return null;
+      }
+    };
+
     // TODO: Implement disconnect logic to remove event listener
 
     const ctor = target.constructor as { new (): CustomElement };
@@ -48,7 +72,8 @@ export function Listen(userOptions: string | ListenOptions): MethodDecorator {
       .connectedCallback as CustomElement["connectedCallback"];
 
     ctor.prototype.connectedCallback = function () {
-      this.addEventListener(eventName, this[propertyKey], options);
+      const targetElm = getTargetElm() ?? this;
+      targetElm.addEventListener(eventName, this[propertyKey], options);
 
       originalConnectedCallback?.call(this);
     };

@@ -1,7 +1,7 @@
 import { createLog } from "@pencel/utils";
 import { glob } from "fast-glob";
 import { program, programFromTsConfig } from "ts-flattered";
-import type ts from "typescript";
+import ts from "typescript";
 import { perf } from "../utils/perf.ts";
 import { CompilerContext } from "./compiler-context.ts";
 import { inject } from "./container.ts";
@@ -29,8 +29,31 @@ export class Program {
 
       perf.end("glob-resolution");
 
+      // Use tsconfig from the context directory
+      const tsconfigPath = ts.findConfigFile(
+        this.context.cwd,
+        ts.sys.fileExists,
+        "tsconfig.json",
+      );
+
+      if (!tsconfigPath) {
+        throw new Error(`Could not find tsconfig.json in ${this.context.cwd}`);
+      }
+
+      const { config: parsedTsConfig } = ts.readConfigFile(
+        tsconfigPath,
+        ts.sys.readFile,
+      );
+
+      const { options: baseCompilerOptions } = ts.parseJsonConfigFileContent(
+        parsedTsConfig,
+        ts.sys,
+        this.context.cwd,
+      );
+
       this.ts = program({
         rootNames: files,
+        compilerOptions: baseCompilerOptions,
       });
     } else if (config.input.tsconfig) {
       this.ts = programFromTsConfig(config.input.tsconfig);
