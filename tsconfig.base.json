@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "composite": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@pencel/runtime",
     "resolveJsonModule": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,

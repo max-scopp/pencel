@@ -1,6 +1,6 @@
 import { createPerformanceTree } from "@pencel/utils";
 import { setAttributes } from "../attributes.ts";
-import { type JSXElement, toVNode } from "../jsx.ts";
+import { type JSXElement, toVNode } from "../jsx/jsx.ts";
 import { createDOM } from "./create-dom.ts";
 import { patch } from "./patch.ts";
 import {

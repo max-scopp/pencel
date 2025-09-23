@@ -10,6 +10,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "map": "./dist/index.js.map"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js",
+      "map": "./dist/jsx-runtime.js.map"
     }
   },
   "dependencies": {

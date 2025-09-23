@@ -122,9 +122,8 @@ interface LifecycleHooks {
 ```typescript
 {
   "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "jsx": "preserve",
+    "jsxImportSource": "@pencel/runtime"
   }
 }
 ```

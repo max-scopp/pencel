@@ -1,4 +1,4 @@
-import type { FunctionalComponent, Props } from "../jsx.ts";
+import type { FunctionalComponent, Props } from "../jsx/jsx.ts";
 
 export const NODE_TYPE_TEXT = "TEXT";
 export const NODE_TYPE_COMMENT = "COMMENT";

@@ -31,7 +31,7 @@ export interface ConnectOptions extends StoreOptions {
  * @returns A property decorator that manages the store's value and triggers re-renders on change.
  */
 export function Store(options?: StoreOptions): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol) => {
+  return (target, propertyKey) => {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {

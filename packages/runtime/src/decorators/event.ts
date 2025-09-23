@@ -60,7 +60,7 @@ export interface EventOptions {
  * ```
  */
 export function Event(userOptions?: string | EventOptions): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol) => {
+  return (target, propertyKey) => {
     let instance: ComponentInterface;
 
     const { eventName, ...options } =

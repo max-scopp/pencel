@@ -26,7 +26,7 @@ export interface StateOptions {
  * ```
  */
 export function State(options?: StateOptions): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol) => {
+  return (target, propertyKey) => {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {

@@ -19,7 +19,7 @@ import { ConsumerError } from "@pencel/utils";
  * ```
  */
 export function Element(): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol) => {
+  return (target, propertyKey) => {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {

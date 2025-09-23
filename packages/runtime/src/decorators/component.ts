@@ -77,10 +77,12 @@ function interopOptionsByUsage(
       ? ({ scoped: true, shadow: false } as const)
       : ({ scoped: false, shadow: true } as const);
 
-  const styleUrls = [...(options.styleUrls || [])];
+  const styleUrls: Record<string, string> = {
+    ...options.styleUrls,
+  };
 
   if (options.styleUrl) {
-    styleUrls.push(options.styleUrl);
+    styleUrls["__default"] = options.styleUrl;
   }
 
   return {
@@ -92,7 +94,7 @@ function interopOptionsByUsage(
         throw new ConsumerError("Tag is required");
       })(),
     assetsDirs: options.assetsDirs || [],
-    formAssociated: options.formAssociated,
+    formAssociated: options.formAssociated ?? false,
     styleUrls,
     styles:
       typeof options.styles === "string"
@@ -153,10 +155,10 @@ function generateTagName(options: ComponentOptions): string {
  * ```
  */
 export const Component = (userOptions?: ComponentOptions): ClassDecorator => {
-  return (klass: object) => {
+  return <TFunction extends object>(klass: TFunction) => {
     if (typeof customElements === "undefined") {
       log("skip define - no registry");
-      return klass as any;
+      return klass;
     }
 
     const customElementExtends = userOptions?.extends
@@ -178,6 +180,6 @@ export const Component = (userOptions?: ComponentOptions): ClassDecorator => {
 
     defineCustomElement(wrappedKlass, tagName, customElementExtends);
 
-    return wrappedKlass as any;
+    return wrappedKlass as unknown as TFunction;
   };
 };

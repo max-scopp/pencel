@@ -1,6 +1,6 @@
 import type { PencilComponentContext } from "../controllers/component.ts";
 import type { PropOptions } from "../decorators/prop.ts";
-import type { JSXElement } from "./jsx.ts";
+import type { JSXElement } from "./jsx/jsx.ts";
 import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,

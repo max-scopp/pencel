@@ -6,10 +6,8 @@
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
-    "allowJs": true,
+    "jsx": "preserve",
+    "jsxImportSource": "@pencel/runtime",
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -24,6 +22,8 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
 
+    "isolatedDeclarations": false,
+
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -33,9 +33,9 @@
     "baseUrl": "./src",
 
     "paths": {
-      "@utils/*": ["src/utils/*"],
-      "@utils/test": ["src/utils/test/utils"],
-      "@global/*": ["src/global/*"]
+      "@utils/*": ["utils/*"],
+      "@utils/test": ["utils/test/utils"],
+      "@global/*": ["global/*"]
     }
   }
 }

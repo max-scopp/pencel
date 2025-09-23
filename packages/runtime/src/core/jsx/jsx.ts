@@ -3,7 +3,7 @@ import {
   NODE_TYPE_FRAGMENT,
   NODE_TYPE_TEXT,
   type VNode,
-} from "./vdom/types.ts";
+} from "../vdom/types.ts";
 
 export type Props = Record<string, unknown>;
 

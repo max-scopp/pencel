@@ -1,3 +1,4 @@
+import { ConsumerError } from "@pencel/utils";
 import { componentCtrl } from "../controllers/component.ts";
 import {
   ATTR_MAP,
@@ -51,14 +52,23 @@ export interface PropOptions {
   reflect?: boolean;
 
   /**
+   * By default, properties are immutable after initialization, meaning that
+   * setting them after the component is first rendered will throw an error.
+   *
+   * Set this to `true` to allow changing the property value.
+   */
+  mutable?: boolean;
+
+  /**
    * Value used when the property isn't initially set, or was unset by removing the attribute.
    */
   fallbackValue?: unknown;
 
   /**
    * Explicit type conversion function for attribute values.
+   * `null` means no conversion (default).
    */
-  type?: TypeCoercionFn<unknown>;
+  type?: null | TypeCoercionFn<unknown>;
 }
 
 /**
@@ -66,7 +76,7 @@ export interface PropOptions {
  * Changes to these properties will automatically trigger re-renders.
  */
 export function Prop(options?: PropOptions): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol) => {
+  return (target, propertyKey) => {
     const component = target as ComponentProtoMeta;
     const propertyName = propertyKey as string;
     const ctrl = componentCtrl();
@@ -83,7 +93,13 @@ export function Prop(options?: PropOptions): PropertyDecorator {
       },
 
       set(value: unknown) {
-        ctrl.setProp(this, propertyName, value);
+        if (options?.mutable) {
+          ctrl.setProp(this, propertyName, value);
+        }
+
+        throw new ConsumerError(
+          `Property "${propertyName}" is immutable. To make it mutable, set the "mutable" option to true in the @Prop() decorator.`,
+        );
       },
 
       enumerable: true,

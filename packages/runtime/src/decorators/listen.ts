@@ -26,11 +26,7 @@ export interface ListenOptions extends AddEventListenerOptions {
  * ```
  */
 export function Listen(userOptions: string | ListenOptions): MethodDecorator {
-  return (
-    target: object,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ) => {
+  return (target, propertyKey, descriptor) => {
     const { eventName, ...options } =
       typeof userOptions === "string"
         ? { eventName: userOptions }

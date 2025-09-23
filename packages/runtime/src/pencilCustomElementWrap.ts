@@ -9,7 +9,7 @@ import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
 } from "./controllers/component.ts";
-import type { JSXElement } from "./core/jsx.ts";
+import type { JSXElement } from "./core/jsx/jsx.ts";
 import {
   ATTR_MAP,
   type ComponentInterfaceWithContext,
