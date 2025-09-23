@@ -127,4 +127,6 @@ export function getTagByExtendsString(
     default:
       break;
   }
+
+  return;
 }

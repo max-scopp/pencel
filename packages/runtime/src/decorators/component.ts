@@ -2,8 +2,9 @@ import {
   ConsumerError,
   createLog,
   getExtendsByInheritance,
+  getTrueTag,
 } from "@pencel/utils";
-import { pencelConfig } from "src/config.ts";
+import { pencelConfig, ready$ } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
 import { wrapComponentForRegistration } from "src/pencilCustomElementWrap.ts";
 
@@ -106,25 +107,29 @@ function interopOptionsByUsage(
 /**
  * Registers the component with the custom elements registry
  */
-function defineCustomElement(
+async function defineCustomElement(
   klass: CustomElementConstructor,
   tagName: string,
   extendsByInheritance?: string,
 ) {
+  await ready$;
+
+  const trueTag = getTrueTag(tagName, pencelConfig.tagNamespace);
+
   log(
     "define",
     undefined,
-    tagName + (extendsByInheritance ? ` extends ${extendsByInheritance}` : ""),
+    trueTag + (extendsByInheritance ? ` extends ${extendsByInheritance}` : ""),
   );
 
   if (extendsByInheritance) {
     // Customized built-in element
-    customElements.define(tagName, klass, {
+    customElements.define(trueTag, klass, {
       extends: extendsByInheritance,
     });
   } else {
     // Autonomous custom element
-    customElements.define(tagName, klass);
+    customElements.define(trueTag, klass);
   }
 }
 
@@ -178,7 +183,7 @@ export const Component = (userOptions?: ComponentOptions): ClassDecorator => {
       customElementExtends,
     );
 
-    defineCustomElement(wrappedKlass, tagName, customElementExtends);
+    void defineCustomElement(wrappedKlass, tagName, customElementExtends);
 
     return wrappedKlass as unknown as TFunction;
   };

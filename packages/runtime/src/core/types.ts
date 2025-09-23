@@ -64,6 +64,9 @@ export const ATTR_MAP: unique symbol = Symbol("__$pencil_attr_map$");
  */
 export interface ComponentInterfaceWithContext extends ComponentInterface {
   [PENCIL_COMPONENT_CONTEXT]?: PencilComponentContext;
+
+  [PROP_NAMES]?: Map<string, PropOptions | undefined>;
+  [ATTR_MAP]?: Map<string, string>;
 }
 
 /**
@@ -74,9 +77,6 @@ export interface ComponentInterfaceWithContext extends ComponentInterface {
  */
 export interface ComponentProtoMeta {
   [PENCIL_OBSERVED_ATTRIBUTES]: string[];
-
-  [PROP_NAMES]?: Map<string, PropOptions | undefined>;
-  [ATTR_MAP]?: Map<string, string>;
 }
 
 /**

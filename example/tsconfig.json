@@ -6,7 +6,8 @@
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "jsxFactory": "h",
     "jsxImportSource": "@pencel/runtime",
 
     // Bundler mode

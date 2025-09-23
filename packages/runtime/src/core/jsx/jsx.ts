@@ -7,6 +7,21 @@ import {
 
 export type Props = Record<string, unknown>;
 
+export type JSXDevElement = JSXElementDef & {
+  columnNumber?: number;
+  fileName?: string;
+  lineNumber?: number;
+};
+
+type JSXElementDef = {
+  type: string | ComponentFunction;
+  props: Record<string, unknown>;
+  children?: Array<
+    JSXElement | string | number | boolean | null | VNode | VNode[]
+  >;
+  key?: string | number;
+};
+
 /**
  * A JSX element can be:
  * - A standard HTML element (e.g. 'div', 'span')
@@ -16,14 +31,7 @@ export type Props = Record<string, unknown>;
  * - A VNode (for direct VNode usage)
  */
 export type JSXElement =
-  | {
-      type: string | ComponentFunction;
-      props: Record<string, unknown>;
-      children?: Array<
-        JSXElement | string | number | boolean | null | VNode | VNode[]
-      >;
-      key?: string | number;
-    }
+  | JSXElementDef
   | JSXElement[]
   | null
   | string

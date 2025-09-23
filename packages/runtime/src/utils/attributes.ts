@@ -80,7 +80,7 @@ export function reflectAttributeValue(
 }
 
 export function resolveAttributeName(
-  propName: string | symbol,
+  propName: string | number | symbol,
   propOptions?: PropOptions,
 ): string {
   return typeof propOptions?.attr === "function"

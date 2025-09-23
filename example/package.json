@@ -3,9 +3,10 @@
   "module": "src/index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest",
     "@pencel/cli": "workspace:*",
-    "ts-flattered": "link:ts-flattered"
+    "@types/bun": "latest",
+    "ts-flattered": "link:ts-flattered",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "scripts": {
     "generate": "bun ../packages/cli/src/main.ts",

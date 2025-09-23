@@ -54,13 +54,13 @@ export class FileWriter {
 
     // Use Pencel registry for import rewriting which handles transformed components properly
     this.#sourcefiles.rewriteTransformedFileImports();
-    const rendered = this.#sourcefiles.printFile(filePath);
+    const rendered = await this.#sourcefiles.printFile(filePath);
 
     if (rendered) {
       const [outputFilePath, contents] = rendered;
       const goalPath = resolve(this.#context.cwd, outputFilePath);
       await mkdir(dirname(goalPath), { recursive: true });
-      await writeFile(goalPath, await contents);
+      await writeFile(goalPath, contents);
     }
 
     perf.end("file-write");

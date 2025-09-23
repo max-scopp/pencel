@@ -25,7 +25,10 @@
         ],
         "executor": "nx:run-commands",
         "options": {
-          "command": "tsdown",
+          "commands": [
+            "tsdown",
+            "tsc --noEmit"
+          ],
           "cwd": "packages/utils"
         }
       }

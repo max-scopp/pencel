@@ -1,4 +1,4 @@
-import { isNumberObject } from "node:util/types";
+import { getTrueTag } from "@pencel/utils";
 import type { SourceFile } from "ts-flattered";
 import { Config } from "../config/config.ts";
 import { inject } from "../core/container.ts";
@@ -30,16 +30,9 @@ export class ComponentIR {
   #sourceTag: string = "";
 
   get tag(): string {
-    const alreadyIncludesNamespace = this.#sourceTag.startsWith(
-      `${this.#config.config.runtime.tagNamespace}-`,
-    );
-
-    if (alreadyIncludesNamespace) {
-      return this.#sourceTag;
-    }
-
-    return [this.#config.config.runtime.tagNamespace, this.#sourceTag].join(
-      "-",
+    return getTrueTag(
+      this.#sourceTag,
+      this.#config.config.runtime.tagNamespace,
     );
   }
 

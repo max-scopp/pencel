@@ -15,9 +15,9 @@ export interface PencilComponentContext {
   phase: PencilComponentPhase;
   wasRendered: boolean;
   extends?: string;
-  props: Map<string | symbol, unknown>;
-  popts: Map<string | symbol, PropOptions | undefined>;
-  state: Map<string | symbol, unknown>;
+  props: Map<string | number | symbol, unknown>;
+  popts: Map<string | number | symbol, PropOptions | undefined>;
+  state: Map<string | number | symbol, unknown>;
 }
 
 class ComponentsController {
@@ -41,12 +41,12 @@ class ComponentsController {
       state: new Map(),
     };
 
-    // TODO: Must be removed after debugging
-    if (component.constructor.name !== "PencilCustomElementWrap") {
-      throw new Error(
-        `Internal Error: component.constructor.name !== "PencilCustomElementWrap" --- got ${component.constructor.name} instead`,
-      );
-    }
+    // // TODO: Must be removed after debugging
+    // if (component.constructor.name !== "PencilCustomElementWrap") {
+    //   throw new Error(
+    //     `Internal Error: component.constructor.name !== "PencilCustomElementWrap" --- got ${component.constructor.name} instead`,
+    //   );
+    // }
 
     this.cmpts.add(component);
   }

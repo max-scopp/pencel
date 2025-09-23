@@ -15,6 +15,11 @@
       "types": "./dist/jsx-runtime.d.ts",
       "import": "./dist/jsx-runtime.js",
       "map": "./dist/jsx-runtime.js.map"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/jsx-dev-runtime.d.ts",
+      "import": "./dist/jsx-dev-runtime.js",
+      "map": "./dist/jsx-dev-runtime.js.map"
     }
   },
   "dependencies": {
@@ -33,7 +38,22 @@
         ],
         "executor": "nx:run-commands",
         "options": {
-          "command": "tsdown",
+          "commands": [
+            "tsdown",
+            "tsc --noEmit"
+          ],
+          "cwd": "packages/runtime"
+        }
+      },
+      "watch": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "tsdown --watch"
+          ],
           "cwd": "packages/runtime"
         }
       }

@@ -115,7 +115,7 @@ export class ComponentTypings {
         const setAttributeInterface = interface_(
           `HTML${pascalCase(cir.forIs)}Element`,
           [
-            ts.factory.createMethodSignature(
+            (ts.factory.createMethodSignature as any)(
               undefined,
               undefined,
               ts.factory.createIdentifier("setAttribute"),

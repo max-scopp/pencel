@@ -1,9 +1,10 @@
 import { pencilInit } from "@pencel/runtime"
-import "./out/src/components/button/button.tsx"
+import "./out/components/button/button.tsx"
 import './style.css'
 
 pencilInit({
-  
+    // TODO: Sync with pencel config
+  tagNamespace: "ion"
 })
 
 // document.querySelector<HTMLDivElement>('#app')!.innerHTML = `

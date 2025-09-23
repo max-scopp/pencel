@@ -1,15 +1,10 @@
+import { ConsumerError, createPerformanceTree, error } from "@pencel/utils";
+import { componentCtrl } from "./controllers/component.ts";
+import type { JSXElement } from "./core/jsx/jsx.ts";
 import {
-  ConsumerError,
-  createPerformanceTree,
-  error,
-  throwError,
-} from "@pencel/utils";
-import {
-  componentCtrl,
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
-} from "./controllers/component.ts";
-import type { JSXElement } from "./core/jsx/jsx.ts";
+} from "./core/symbols.ts";
 import {
   ATTR_MAP,
   type ComponentInterfaceWithContext,
@@ -297,7 +292,7 @@ export function updatePropsByAttribute(
   const propName = component[ATTR_MAP]?.get(attrName);
 
   if (!propName) {
-    throwError(
+    throw new ConsumerError(
       `Attribute "${attrName}" is not mapped to any property on ${simpleCustomElementDisplayText(component)}.`,
     );
   }

@@ -3,6 +3,7 @@ export * from "./createPerformanceTree.ts";
 export * from "./dashCase.ts";
 export * from "./getExtendsByInheritance.ts";
 export * from "./getTagByExtendsString.ts";
+export * from "./getTrueTag.ts";
 export * from "./isBrowser.ts";
 export * from "./log.ts";
 export * from "./throwConsumerError.ts";

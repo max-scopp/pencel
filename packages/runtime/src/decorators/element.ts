@@ -1,5 +1,7 @@
 import { ConsumerError } from "@pencel/utils";
 
+const GOT_WARNED = Symbol("warned-once");
+
 /**
  * This Decorator exists for backward compatibility.
  * In Pencel, `this` already refers to the element in the DOM.
@@ -23,9 +25,12 @@ export function Element(): PropertyDecorator {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {
-        console.warn(
-          "[Pencel] Accessing @Element property is no longer necessary. You can directly use 'this' to refer to the element in the DOM.",
-        );
+        if (!this[GOT_WARNED]) {
+          this[GOT_WARNED] = true;
+          console.warn(
+            "[Pencel] Accessing @Element property is no longer necessary. You can directly use 'this' to refer to the element in the DOM.",
+          );
+        }
         return this;
       },
 

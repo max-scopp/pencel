@@ -10,8 +10,6 @@ import {
   type VNode,
 } from "./types.ts";
 
-// Node types
-
 // Internal storage key
 const PENCIL_INTERNALS: unique symbol = Symbol("__$pencil_internals$");
 

@@ -12,6 +12,7 @@
 - [ ] Lightingcss proper CSS Codeframing - sourcemap support needed?#
 - [ ] Finish Props & State
 - [ ] Implement Event, Listen
+- [ ] Rewrite definite assignment assertion '!' to `declare` (especially for `@Element`)
 
 ### ⚠️ Critical Decorators & API (Missing from Runtime)
 

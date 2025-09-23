@@ -2,7 +2,7 @@ import { ConsumerError } from "@pencel/utils";
 import { componentCtrl } from "../controllers/component.ts";
 import {
   ATTR_MAP,
-  type ComponentProtoMeta,
+  type ComponentInterfaceWithContext,
   PROP_NAMES,
 } from "../core/types.ts";
 import { resolveAttributeName } from "../utils/attributes.ts";
@@ -37,7 +37,7 @@ export type TypeCoercionFn<T> = (value: unknown) => T;
  * Function that resolves attribute name from property name.
  * e.g. myPropName → my-prop-name
  */
-export type AttrResolver = (propName: string | symbol) => string;
+export type AttrResolver = (propName: string | number | symbol) => string;
 
 export interface PropOptions {
   /**
@@ -77,7 +77,7 @@ export interface PropOptions {
  */
 export function Prop(options?: PropOptions): PropertyDecorator {
   return (target, propertyKey) => {
-    const component = target as ComponentProtoMeta;
+    const component = target as ComponentInterfaceWithContext;
     const propertyName = propertyKey as string;
     const ctrl = componentCtrl();
 

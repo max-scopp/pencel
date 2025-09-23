@@ -1,5 +1,7 @@
-import { ConsumerError, dashCase } from "@pencel/utils";
+import { ConsumerError, createLog, dashCase } from "@pencel/utils";
 import type { ComponentInterface } from "../core/types.ts";
+
+const log = createLog("EventDecorator");
 
 export class EventEmitter<T = never> {
   constructor(
@@ -15,7 +17,13 @@ export class EventEmitter<T = never> {
       ...eventInit,
     });
 
-    return this.getElement().dispatchEvent(evt);
+    const result = this.getElement().dispatchEvent(evt);
+
+    log(
+      `Event "${eventName}" emitted with data: ${JSON.stringify(data, null, 4)}`,
+    );
+
+    return result;
   }
 }
 
