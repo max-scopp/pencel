@@ -73,8 +73,8 @@ import { Component, Prop, Event } from '@pencel/runtime';
 export class UIButton extends HTMLElement {
   @Prop() label: string = 'Click me';
 
-  // Events are currently being implemented
-  @Event() clicked!: CustomEvent<void>;
+  @Event()
+  declare clicked: CustomEvent<void>;
 
   connectedCallback() {
     console.log("We're connected!");
