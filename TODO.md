@@ -5,6 +5,14 @@
 
 ## 🔥 HIGH PRIORITY - Core Missing Features
 
+- [ ] Have the Component IR Support multiple components per file
+- [ ] If the component tag start with the tag namespace, allow it as-is
+- [ ] Implement runtime API parity `Watch` & `forceUpdate`
+  - VDom Diffing is probably fucked right now
+- [ ] Lightingcss proper CSS Codeframing - sourcemap support needed?#
+- [ ] Finish Props & State
+- [ ] Implement Event, Listen
+
 ### ⚠️ Critical Decorators & API (Missing from Runtime)
 
 - [ ] **@Watch() decorator** - Watch property/state changes (mentioned as missing in runtime/src/decorators/README.md)

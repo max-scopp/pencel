@@ -1,16 +1,23 @@
 import { basename, dirname, relative, resolve } from "node:path";
 import { ConsumerError } from "@pencel/utils";
-import { fileFromString, type SourceFile } from "ts-flattered";
-import ts from "typescript";
+import {
+  type FileBuilder,
+  fileFromString,
+  type SourceFile,
+} from "ts-flattered";
+import type ts from "typescript";
+import { ModuleResolutionKind } from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
+import { IR } from "../ir/ir.ts";
 import { createPencelMarker } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 
 export class SourceFiles {
   readonly #context = inject(CompilerContext);
   readonly program: Program = inject(Program);
+  readonly ir: IR = inject(IR);
   readonly context: CompilerContext = inject(CompilerContext);
 
   private files = new Map<string, SourceFile>();
@@ -26,6 +33,20 @@ export class SourceFiles {
     );
 
     newSourceFile.prependBanner(createPencelMarker(sourceFile), "line");
+
+    newSourceFile.updateImports((importDecl) => {
+      const moduleSpecifier =
+        newSourceFile.getImportModuleSpecifier(importDecl);
+      if (moduleSpecifier === "@stencil/core") {
+        return newSourceFile.updateImportModuleSpecifier(
+          importDecl,
+          "@pencel/runtime",
+        );
+      }
+      return importDecl;
+    });
+
+    this.registerTransformedFile(newSourceFile, sourceFile.fileName);
 
     return newSourceFile;
   }
@@ -83,19 +104,19 @@ export class SourceFiles {
   /**
    * Write only transformed files (not source files)
    */
-  printAllFiles(): Map<string, string> {
+  async printAllFiles(): Promise<Map<string, string>> {
     perf.start("print-all");
     const transformedOnly = new Map<string, string>();
 
     for (const filePath of this.transformedFiles) {
-      transformedOnly.set(filePath, this.printFile(filePath));
+      transformedOnly.set(filePath, await this.printFile(filePath));
     }
 
     perf.end("print-all");
     return transformedOnly;
   }
 
-  printFile(filePath: string): string {
+  async printFile(filePath: string): Promise<string> {
     const fname = basename(filePath);
     perf.start(`print:${fname}`);
 
@@ -109,7 +130,11 @@ export class SourceFiles {
       throw new Error(`File has not been transformed: ${filePath}`);
     }
 
-    const printed = sourceFile.getFullText();
+    const printed = await sourceFile.print({
+      biome: {
+        projectDir: this.context.cwd,
+      },
+    });
 
     perf.end(`print:${fname}`);
     return printed;
@@ -177,25 +202,14 @@ export class SourceFiles {
   }
 
   private updateFileImports(
-    sourceFile: SourceFile,
+    sourceFile: SourceFile & FileBuilder,
     originalSourcePath: string,
     outputPath: string,
     compilerOptions: ts.CompilerOptions,
   ): void {
-    if (!this.canUpdateImports(sourceFile)) {
-      return;
-    }
-
-    // Use proper typing for updateImports
-    const updateableSourceFile = sourceFile as SourceFile & {
-      updateImports: (
-        fn: (importDecl: ts.ImportDeclaration) => ts.ImportDeclaration,
-      ) => void;
-    };
-
-    updateableSourceFile.updateImports((importDecl: ts.ImportDeclaration) => {
+    sourceFile.updateImports((importDecl) => {
       try {
-        const moduleSpecifier = this.extractModuleSpecifier(importDecl);
+        const moduleSpecifier = sourceFile.getImportModuleSpecifier(importDecl);
         if (!moduleSpecifier) {
           return importDecl;
         }
@@ -222,7 +236,10 @@ export class SourceFiles {
         );
 
         if (newImportPath !== moduleSpecifier) {
-          return this.createUpdatedImportDeclaration(importDecl, newImportPath);
+          return sourceFile.updateImportModuleSpecifier(
+            importDecl,
+            newImportPath,
+          );
         }
 
         return importDecl;
@@ -419,51 +436,10 @@ export class SourceFiles {
     return relativePath;
   }
 
-  private canUpdateImports(sourceFile: SourceFile): boolean {
-    return (
-      typeof (sourceFile as SourceFile & { updateImports?: unknown })
-        .updateImports === "function"
-    );
-  }
-
   private isRelativeImportPath(importPath: string): boolean {
     if (!importPath || typeof importPath !== "string") {
       return false;
     }
     return importPath.startsWith("./") || importPath.startsWith("../");
-  }
-
-  private extractModuleSpecifier(
-    importDecl: ts.ImportDeclaration,
-  ): string | null {
-    try {
-      if (ts.isStringLiteral(importDecl.moduleSpecifier)) {
-        return importDecl.moduleSpecifier.text;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  }
-
-  private createUpdatedImportDeclaration(
-    originalDecl: ts.ImportDeclaration,
-    newModuleSpecifier: string,
-  ): ts.ImportDeclaration {
-    try {
-      const newModuleSpecifierNode =
-        ts.factory.createStringLiteral(newModuleSpecifier);
-
-      return ts.factory.updateImportDeclaration(
-        originalDecl,
-        originalDecl.modifiers,
-        originalDecl.importClause,
-        newModuleSpecifierNode,
-        originalDecl.attributes,
-      );
-    } catch (error) {
-      console.error("Error creating updated import declaration:", error);
-      return originalDecl;
-    }
   }
 }

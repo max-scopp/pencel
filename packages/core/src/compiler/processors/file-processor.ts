@@ -29,6 +29,8 @@ export class FileProcessor {
     const transformedSourceFile =
       this.sourceFileFactory.createTransformedFile(sourceFile);
 
+    // TODO: Right now, you MUST have a single component per file.
+    // In the future we can support multiple components per file.
     const componentIR = new ComponentIR(transformedSourceFile);
 
     const componentTransformer = new ComponentDecoratorTransformer(componentIR);
@@ -41,13 +43,6 @@ export class FileProcessor {
     await propsTransformer.transform(transformedSourceFile, this.context);
 
     await this.componentTypings.createTypings(transformedSourceFile);
-
-    this.ir.components.push(componentIR);
-
-    this.sourceFileFactory.registerTransformedFile(
-      transformedSourceFile,
-      sourceFile.fileName,
-    );
 
     return transformedSourceFile;
   }

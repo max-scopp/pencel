@@ -31,7 +31,7 @@ export class FileWriter {
     perf.end("import-rewrite");
 
     perf.start("file-write");
-    const rendered = this.#sourcefiles.printAllFiles();
+    const rendered = await this.#sourcefiles.printAllFiles();
 
     let progress = 1;
     for (const [outputFilePath, contents] of rendered) {

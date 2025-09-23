@@ -10,7 +10,13 @@ const config: PencelConfig = defineConfig({
     {
       name: "scss",
       options: {
-        enabled: true,
+        enabled: false,
+      },
+    },
+    {
+      name: "css",
+      options: {
+        enabled: false,
       },
     },
   ],

@@ -3,7 +3,6 @@ import type ts from "typescript";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Program } from "../core/program.ts";
-import { ComponentDeclarations } from "../factories/component-declarations.ts";
 import { IR } from "../ir/ir.ts";
 import { omitPreviousArtifacts } from "../utils/omitPreviousArtifacts.ts";
 import { perf } from "../utils/perf.ts";
@@ -13,9 +12,6 @@ export class ProjectProcessor {
   readonly program: Program = inject(Program);
   readonly context: CompilerContext = inject(CompilerContext);
   readonly fileProcessor: FileProcessor = inject(FileProcessor);
-  readonly componentDeclarations: ComponentDeclarations = inject(
-    ComponentDeclarations,
-  );
   readonly ir: IR = inject(IR);
 
   async processFilesInProject(): Promise<Map<string, ts.SourceFile>> {

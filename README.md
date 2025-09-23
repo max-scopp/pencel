@@ -4,6 +4,24 @@
 > Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.  
 > *Write once. Ship clean.*
 
+## ⚡ Current Status
+
+Pencel is under active development. Current feature status:
+
+✅ Core Features:
+* Component registration with `@Component`
+* Reactive properties with `@Prop`
+* Internal state management with `@State`
+* Basic lifecycle hooks
+* Shadow DOM and styling support
+
+🚧 In Progress:
+* Method decorators and exposure
+* Event system improvements
+* Watch decorator for property changes
+* Additional lifecycle hooks
+* Performance optimizationsan, shippable code.  
+
 ## Why Pencel?
 
 **Pencel** is a lightweight toolkit for authoring Web Components using familiar, decorator-based TypeScript syntax — very much inspired by the ergonomics of [Stencil](https://stenciljs.com).
@@ -36,7 +54,7 @@ While **Pencel shares a lot of syntax and structure with Stencil**, it follows a
 | Polyfills           | Included automatically                           | Not included; handled by your bundler         |
 | Framework bindings  | Auto-generated                                  | Source-level generation             |
 | Styling             | Scoped CSS, Shadow DOM                           | Same (configurable)                          |
-| Runtime             | Lightweight custom runtime (**up to ~4–7KB**, if all features are used) | None or minimal (~0–2KB)                     |
+| Runtime             | Lightweight custom runtime (**up to ~4–7KB**, if all features are used) | Minimal runtime (~2-3KB for core features)    |
 > **Note:** The reported runtime size (~4–7KB) is the maximum if all features are included. Most modern bundlers (Vite, Rollup, esbuild, etc.) will tree-shake unused features, so your actual shipped runtime will likely be smaller depending on what you use.
 
 > Pencel isn't meant to replace Stencil — it’s just a different spin.  
@@ -47,23 +65,30 @@ While **Pencel shares a lot of syntax and structure with Stencil**, it follows a
 ## ✍️ Example: Writing a Component in Pencel
 
 ```tsx
-import { component, prop, event, h } from '@pencel/core';
+import { Component, Prop, Event } from '@pencel/runtime';
 
-@Component('ui-button')
+@Component({
+  tag: 'ui-button'
+})
 export class UIButton extends HTMLElement {
   @Prop() label: string = 'Click me';
-  @Event() clicked: CustomEvent<void>;
+
+  // Events are currently being implemented
+  @Event() clicked!: CustomEvent<void>;
 
   connectedCallback() {
     console.log("We're connected!");
   }
 
   private onClick = () => {
-    this.clicked = new CustomEvent('clicked', { bubbles: true, composed: true });
-    this.dispatchEvent(this.clicked);
+    const event = new CustomEvent('clicked', { 
+      bubbles: true, 
+      composed: true 
+    });
+    this.dispatchEvent(event);
   };
 
-  private render() {
+  render() {
     return (
       <button part="button" onClick={this.onClick}>
         {this.label}

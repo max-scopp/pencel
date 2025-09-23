@@ -60,7 +60,7 @@
         "noDynamicNamespaceImportAccess": "error"
       },
       "style": {
-        "noNonNullAssertion": "error",
+        "noNonNullAssertion": "warn",
         "useConst": "error",
         "useTemplate": "error",
         "useExponentiationOperator": "error",

@@ -1,11 +1,8 @@
-import { inject } from "../core/container.ts";
-import { SourceFiles } from "../factories/source-files.ts";
+import type ts from "typescript";
 import type { ComponentIR } from "./component-ir.ts";
 
 export class IR {
   readonly components: ComponentIR[] = [];
-
-  readonly sourceFileFactory: SourceFiles = inject(SourceFiles);
 
   getComponentByTag(tag: string): ComponentIR | undefined {
     return this.components.find((component) => component.tag === tag);
@@ -14,6 +11,12 @@ export class IR {
   getComponentByClassName(className: string): ComponentIR | undefined {
     return this.components.find(
       (component) => component.className === className,
+    );
+  }
+
+  getIRsForSourceFile(sourceFile: ts.SourceFile): ComponentIR[] {
+    return this.components.filter(
+      (component) => component.sourceFile === sourceFile,
     );
   }
 }

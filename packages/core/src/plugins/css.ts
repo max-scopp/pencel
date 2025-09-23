@@ -1,5 +1,4 @@
 import { warn } from "node:console";
-import { codeFrameColumns } from "@babel/code-frame";
 import { createLog } from "@pencel/utils";
 import { type ErrorLocation, transform } from "lightningcss";
 import { Plugins } from "../compiler/core/plugin.ts";
