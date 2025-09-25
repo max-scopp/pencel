@@ -4,6 +4,7 @@ import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooMan
 import { ComponentTypings } from "../codegen/component-typings.ts";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
+import { Plugins } from "../core/plugin.ts";
 import { Program } from "../core/program.ts";
 import { SourceFiles } from "../factories/source-files.ts";
 import { ComponentIR } from "../ir/component-ir.ts";
@@ -15,6 +16,7 @@ import { isPencelGeneratedFile } from "../utils/marker.ts";
 
 export class FileProcessor {
   readonly program: Program = inject(Program);
+  readonly plugins: Plugins = inject(Plugins);
   readonly context: CompilerContext = inject(CompilerContext);
   readonly ir: IR = inject(IR);
   readonly sourceFileFactory: SourceFiles = inject(SourceFiles);
@@ -43,6 +45,11 @@ export class FileProcessor {
     await propsTransformer.transform(transformedSourceFile, this.context);
 
     await this.componentTypings.createTypings(transformedSourceFile);
+
+    await this.plugins.handle({
+      aspect: "codegen",
+      input: transformedSourceFile,
+    });
 
     return transformedSourceFile;
   }

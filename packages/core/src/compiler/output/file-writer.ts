@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import { dirname, relative, resolve } from "path";
 import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
+import { Plugins } from "../core/plugin.ts";
 import { SourceFiles } from "../factories/source-files.ts";
 import { IR } from "../ir/ir.ts";
 import { perf } from "../utils/perf.ts";
@@ -11,6 +12,7 @@ const log = createLog("FileWriter");
 
 export class FileWriter {
   readonly #context = inject(CompilerContext);
+  readonly #plugins = inject(Plugins);
   readonly #ir = inject(IR);
   readonly #sourcefiles = inject(SourceFiles);
 
@@ -23,6 +25,7 @@ export class FileWriter {
   async writeEverything(): Promise<void> {
     await this.writeIr();
     await this.writeAllFiles();
+    await this.#plugins.write();
   }
 
   async writeAllFiles(): Promise<void> {
@@ -36,14 +39,13 @@ export class FileWriter {
     let progress = 1;
     for (const [outputFilePath, contents] of rendered) {
       await mkdir(dirname(outputFilePath), { recursive: true });
+      await writeFile(outputFilePath, contents);
 
       progress++;
 
       percentage(progress / rendered.size, {
         prefix: "Writing",
       });
-
-      writeFile(outputFilePath, contents);
     }
 
     perf.end("file-write");

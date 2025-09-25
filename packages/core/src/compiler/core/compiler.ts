@@ -8,6 +8,7 @@ import { ProjectProcessor } from "../processors/project-processor.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { inject } from "./container.ts";
+import { Plugins } from "./plugin.ts";
 import { Program } from "./program.ts";
 
 const log = createLog("Transform");
@@ -67,5 +68,12 @@ export class Compiler {
     await this.#fileWriter.writeEverything();
 
     return result;
+  }
+
+  async cleanup(): Promise<void> {
+    const plugins = inject(Plugins);
+    if (plugins) {
+      await plugins.cleanup();
+    }
   }
 }

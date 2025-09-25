@@ -32,9 +32,9 @@ export class Styles {
       const path = getPath(componentOptions.styleUrl);
       const input = getContent(path);
 
-      alwaysStyles += await this.plugins.handlePlugins({
+      alwaysStyles += await this.plugins.handle({
         aspect: "css:postprocess",
-        input: await this.plugins.handlePlugins({
+        input: await this.plugins.handle({
           aspect: "css:preprocess",
           input,
           path,
@@ -52,9 +52,9 @@ export class Styles {
         const path = getPath(styleUrl);
         const input = getContent(path);
 
-        inlinedStyleUrls[media] = await this.plugins.handlePlugins({
+        inlinedStyleUrls[media] = await this.plugins.handle({
           aspect: "css:postprocess",
-          input: await this.plugins.handlePlugins({
+          input: await this.plugins.handle({
             aspect: "css:preprocess",
             input,
             path,

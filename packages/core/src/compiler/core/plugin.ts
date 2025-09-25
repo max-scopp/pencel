@@ -68,7 +68,24 @@ export class Plugins {
     perf.end("initialize-plugins");
   }
 
-  async handlePlugins<THandle extends TransformHandler>(
+  // TODO: Not implemented
+  async cleanup(): Promise<void> {
+    for (const plugin of this.plugins.values()) {
+      if (plugin?.cleanup) {
+        await plugin.cleanup();
+      }
+    }
+  }
+
+  async write(): Promise<void> {
+    for (const plugin of this.plugins.values()) {
+      if (plugin?.write) {
+        await plugin.write();
+      }
+    }
+  }
+
+  async handle<THandle extends TransformHandler>(
     handle: THandle,
   ): Promise<THandle["input"]> {
     let intermediate = handle.input;
