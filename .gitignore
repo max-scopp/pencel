@@ -38,3 +38,6 @@ Thumbs.db
 
 out
 *.tsbuildinfo
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+test-output

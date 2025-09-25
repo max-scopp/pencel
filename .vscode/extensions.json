@@ -1,3 +1,7 @@
 {
-  "recommendations": ["nrwl.angular-console", "oven.bun-vscode"]
+  "recommendations": [
+    "nrwl.angular-console",
+    "oven.bun-vscode",
+    "ms-playwright.playwright"
+  ]
 }

@@ -1,0 +1,21 @@
+{
+  "name": "@pencel/core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/core",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsdown",
+          "tsc --noEmit"
+        ],
+        "cwd": "packages/core"
+      }
+    }
+  }
+}

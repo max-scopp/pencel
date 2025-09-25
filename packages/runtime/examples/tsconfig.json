@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "jsx": "preserve",
-    "jsxImportSource": "@pencel/runtime",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "paths": {}
-  }
-}
