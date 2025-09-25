@@ -34,5 +34,10 @@
     "tslib": "^2.3.0",
     "typescript": "5.9.2",
     "vite-tsconfig-paths": "^5.1.4"
-  }
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@swc/core",
+    "unrs-resolver"
+  ]
 }
