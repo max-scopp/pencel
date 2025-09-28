@@ -1,15 +1,14 @@
+import type { VNode } from "../../../dist/types-CNCzzlSE.js";
+
 declare namespace LocalJSX {
-  type Element = {};
   type IntrinsicElements = {};
 }
 
 declare global {
   namespace JSX {
+    type Element = VNode;
     interface IntrinsicElements extends JSXBase.IntrinsicElements {}
   }
-
-  // TODO: Better types needed
-  type JSXElementAttributes<T> = Partial<T>;
 }
 
 export declare namespace JSXBase {

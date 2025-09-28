@@ -2,6 +2,7 @@
   "recommendations": [
     "nrwl.angular-console",
     "oven.bun-vscode",
-    "ms-playwright.playwright"
+    "ms-playwright.playwright",
+    "tamasfe.even-better-toml"
   ]
 }

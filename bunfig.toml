@@ -1,8 +1,2 @@
-# Bun configuration
-[install]
-production = false
-
-# Path mappings for development - tell Bun to resolve @pencel/* to source files
-[run]
-# Enable automatic TypeScript compilation and path resolution
-tsconfigOverride = "./tsconfig.json"
+[test]
+root = "./__tests__"

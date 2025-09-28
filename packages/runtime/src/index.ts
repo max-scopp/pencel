@@ -1,9 +1,7 @@
 export type { PencelRuntimeConfig as PencilRuntimeConfig } from "./config.ts";
-export { pencelInit as pencilInit } from "./config.ts";
-export type { h } from "./core/jsx/jsx.ts";
-export { Host } from "./core/jsx/jsx-dx.ts";
+export { pencelInit } from "./config.ts";
 export type * from "./core/types.ts";
-export { render } from "./core/vdom/render.ts";
+export { renderVNode } from "./core/vdom/renderVNode.ts";
 export * from "./decorators/component.ts";
 export * from "./decorators/element.ts";
 export * from "./decorators/event.ts";
@@ -15,10 +13,12 @@ export * from "./decorators/store.ts";
 export * from "./decorators/watch.ts";
 
 export function readTask<T>(cb: () => T): Promise<T> {
+  console.warn("readTask is not implemented yet");
   return Promise.resolve().then(cb);
 }
 
 export function writeTask<T>(cb: () => T): Promise<T> {
+  console.warn("writeTask is not implemented yet");
   return Promise.resolve().then(cb);
 }
 

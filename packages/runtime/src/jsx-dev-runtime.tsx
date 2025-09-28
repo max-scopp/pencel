@@ -1,26 +1,25 @@
-import {
-  type FunctionalComponent,
-  h,
-  type JSXElement,
-  type Props,
-} from "./core/jsx/jsx.ts";
+import type { ComponentFunction } from "./core/jsx/types.ts";
+import type { JSXChildren, VNode } from "./core/vdom/types.ts";
+import { jsx } from "./jsx-runtime.tsx";
 
-export type * from "./core/jsx/jsx-runtime.js";
-export * from "./jsx-runtime.tsx";
-
-export function jsxDEV(
-  type: any,
-  props: Props,
-  key?: any,
-  isStaticChildren?: boolean,
-  source?: any,
-  self?: any,
-): JSXElement {
-  return h(type, props, props?.children);
-}
+export * from "./core/jsx/jsx-helpers.ts";
 
 /**
- * A fragment component that simply returns its children.
- * Useful for grouping multiple elements without adding extra nodes to the DOM.
+ * jsxDEV for dev mode
  */
-export const Fragment: FunctionalComponent = (_, children) => children;
+export function jsxDEV(
+  type: string | ComponentFunction,
+  props: { children?: JSXChildren; key?: string | number } = {},
+  key?: string | number,
+  fileName?: string,
+  lineNumber?: number,
+  columnNumber?: number,
+): VNode {
+  const node = jsx(type, props, key);
+
+  node.fileName = fileName;
+  node.lineNumber = lineNumber;
+  node.columnNumber = columnNumber;
+
+  return node;
+}

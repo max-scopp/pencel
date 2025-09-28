@@ -90,6 +90,12 @@
         "style": "css",
         "linter": "none"
       }
+    },
+    "@nx/web:application": {
+      "style": "css",
+      "linter": "none",
+      "unitTestRunner": "none",
+      "e2eTestRunner": "none"
     }
   }
 }

@@ -19,10 +19,7 @@
       "path": "./examples/sample/react"
     },
     {
-      "path": "./examples/sample/angular/tsconfig.app.json"
-    },
-    {
-      "path": "./examples/sample/angular/tsconfig.spec.json"
+      "path": "./examples/sample/web"
     }
   ]
 }

@@ -6,7 +6,7 @@ import {
 } from "@pencel/utils";
 import { pencelConfig, ready$ } from "src/config.ts";
 import type { ConstructablePencilComponent } from "src/core/types.ts";
-import { wrapComponentForRegistration } from "src/pencilCustomElementWrap.ts";
+import { wrapComponentForRegistration } from "../core/pencilCustomElementWrap.tsx";
 
 const log = createLog("Component");
 

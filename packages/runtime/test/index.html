@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Tests</title>
+
+
+    <style>
+        #examples {
+            display: flex;
+            flex-direction: column;
+            flex-flow: column wrap;
+        }
+
+        #examples *:not(h2) {
+            display: inline-flex;
+            border: 1px solid rgba(255, 0, 0, 0.25);
+            min-width: 16px;
+            min-height: 16px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Examples</h1>
+
+    <div id="examples">
+            
+        <h2>simple-render</h2>
+        <div id="simple-render"></div>
+        <h2>consecutive-updates</h2>
+        <div id="consecutive-updates"></div>
+        <h2>custom-element-render</h2>
+        <div id="custom-element-render"></div>
+        <h2>slot-render</h2>
+        <div id="slot-render">
+            <header slot="header">Custom Header</header>
+            Default Content
+        </div>
+    </div>
+
+    <script type="module">
+        import { simpleRender } from './cases/simple-render.js';
+        import { consecutiveUpdates } from './cases/consecutive-updates.js';
+        import { customElementRender } from './cases/custom-element-render.js';
+        import { slotRender } from './cases/slot-render.js';
+
+        simpleRender(document.getElementById('simple-render'));
+        consecutiveUpdates(document.getElementById('consecutive-updates'));
+        customElementRender(document.getElementById('custom-element-render'));
+        slotRender(document.getElementById('slot-render'));
+    </script>
+</body>
+
+</html>

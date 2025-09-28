@@ -1,4 +1,4 @@
-import type { Props } from "./jsx/jsx.ts";
+import type { Props } from "./jsx/types.ts";
 import { PROP_NAMES } from "./types.ts";
 
 const eventPattern = /^on[A-Z]/;

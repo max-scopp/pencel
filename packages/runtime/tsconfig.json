@@ -5,10 +5,10 @@
     "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "lib": ["es2022", "dom"]
+    "allowImportingTsExtensions": true,
+    "baseUrl": "."
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {

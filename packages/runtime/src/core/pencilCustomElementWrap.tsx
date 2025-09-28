@@ -1,24 +1,24 @@
 import { ConsumerError, createPerformanceTree, error } from "@pencel/utils";
-import { componentCtrl } from "./controllers/component.ts";
-import type { JSXElement } from "./core/jsx/jsx.ts";
-import {
-  PENCIL_COMPONENT_CONTEXT,
-  PENCIL_OBSERVED_ATTRIBUTES,
-} from "./core/symbols.ts";
-import {
-  ATTR_MAP,
-  type ComponentInterfaceWithContext,
-  type ConstructablePencilComponent,
-  PROP_NAMES,
-} from "./core/types.ts";
-import type { ComponentOptions } from "./decorators/component.ts";
+import { componentCtrl } from "../controllers/component.ts";
+import type { ComponentOptions } from "../decorators/component.ts";
 import {
   coerceAttributeValue,
   reflectAttributeValue,
   resolveAttribute,
   resolveAttributeName,
-} from "./utils/attributes.ts";
-import { simpleCustomElementDisplayText } from "./utils/simpleCustomElementDisplayText.ts";
+} from "../utils/attributes.ts";
+import { simpleCustomElementDisplayText } from "../utils/simpleCustomElementDisplayText.ts";
+import {
+  PENCIL_COMPONENT_CONTEXT,
+  PENCIL_OBSERVED_ATTRIBUTES,
+} from "./symbols.ts";
+import {
+  ATTR_MAP,
+  type ComponentInterfaceWithContext,
+  type ConstructablePencilComponent,
+  PROP_NAMES,
+} from "./types.ts";
+import type { VNode } from "./vdom/types.ts";
 
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
@@ -230,9 +230,9 @@ export function wrapComponentForRegistration<
       return super.componentWillRender?.();
     }
 
-    override render(): JSXElement {
+    override render(): VNode {
       try {
-        return super.render?.() ?? null;
+        return super.render!();
       } catch (origin) {
         error(origin);
         throw new ConsumerError(

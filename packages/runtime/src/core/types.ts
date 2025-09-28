@@ -1,10 +1,10 @@
 import type { PencilComponentContext } from "../controllers/component.ts";
 import type { PropOptions } from "../decorators/prop.ts";
-import type { JSXElement } from "./jsx/jsx.ts";
 import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
 } from "./symbols.ts";
+import type { VNode } from "./vdom/types.ts";
 
 /**
  * The Custom Elements API interface that all Pencil components implement.
@@ -130,7 +130,7 @@ export interface ComponentInterface extends CustomElement {
   /**
    * The render method that returns the JSX to render.
    */
-  render?(): JSXElement;
+  render?(): VNode;
 }
 
 /**

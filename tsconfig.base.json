@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "jsxImportSource": "@pencel/runtime",
     "resolveJsonModule": true,
     "declarationMap": true,
@@ -9,9 +9,7 @@
     "isolatedDeclarations": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "es2022"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
@@ -22,14 +20,10 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2022",
-    "customConditions": [
-      "@pencel/source"
-    ],
+    "target": "esnext",
+    "customConditions": ["@pencel/source"],
     "paths": {
-      "@pencel/*": [
-        "./packages/*/src/index.ts"
-      ]
+      "@pencel/*": ["./packages/*/src/index.ts"]
     }
   }
 }

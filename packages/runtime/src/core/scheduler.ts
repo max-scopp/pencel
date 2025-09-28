@@ -5,7 +5,7 @@ import {
 } from "@pencel/utils";
 import { PENCIL_COMPONENT_CONTEXT } from "./symbols.ts";
 import type { ComponentInterfaceWithContext } from "./types.ts";
-import { render } from "./vdom/render.ts";
+import { renderVNode } from "./vdom/renderVNode.ts";
 
 export class ComponentUpdateScheduler {
   private pendingRenders = new Map<ComponentInterfaceWithContext, Error>();
@@ -51,10 +51,12 @@ export class ComponentUpdateScheduler {
 
           await component.componentWillRender?.();
 
-          const jsx = component.render?.();
+          const vnodes = component.render?.();
           const container = component.shadowRoot || component;
 
-          render(jsx ?? null, container);
+          if (vnodes) {
+            renderVNode(vnodes, container);
+          }
 
           if (!ctx.wasRendered) {
             component.componentDidLoad?.();
