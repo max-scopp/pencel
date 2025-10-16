@@ -1,9 +1,8 @@
 /** biome-ignore-all lint/a11y/useAriaPropsSupportedByRole: <explanation> */
 import { expect, test } from "bun:test";
-import type { VFragmentNode, VTagNode } from "../core/vdom/types.ts";
 
 test("creates a single div", () => {
-  const vnode: VTagNode = <div>Hello</div>;
+  const vnode = <div>Hello</div>;
   expect(vnode).toMatchObject({
     tag: "div",
     c: [
@@ -15,7 +14,7 @@ test("creates a single div", () => {
 });
 
 test("nested elements", () => {
-  const vnode: VTagNode = (
+  const vnode = (
     <div>
       <span>One</span>
       <span>Two</span>
@@ -31,7 +30,7 @@ test("nested elements", () => {
 });
 
 test("handles fragments", () => {
-  const vnode: VFragmentNode = (
+  const vnode = (
     <>
       <span>A</span>
       <span>B</span>
@@ -46,7 +45,7 @@ test("handles fragments", () => {
 });
 
 test("props: normal attributes", () => {
-  const vnode: VTagNode = <input type="text" value="foo" />;
+  const vnode = <input type="text" value="foo" />;
   expect(vnode).toMatchObject({
     tag: "input",
     p: { type: "text", value: "foo" },
@@ -55,7 +54,7 @@ test("props: normal attributes", () => {
 
 test("props: deprecated attributes", () => {
   // 'class' is deprecated in favor of 'className' in React, but should still work
-  const vnode: VTagNode = <div class="foo" />;
+  const vnode = <div class="foo" />;
   expect(vnode).toMatchObject({
     tag: "div",
     p: { class: "foo" },
@@ -63,7 +62,7 @@ test("props: deprecated attributes", () => {
 });
 
 test("props: aria attributes", () => {
-  const vnode: VTagNode = <div aria-label="close" aria-hidden="true" />;
+  const vnode = <div aria-label="close" aria-hidden="true" />;
   expect(vnode).toMatchObject({
     tag: "div",
     p: { "aria-label": "close", "aria-hidden": "true" },
@@ -71,7 +70,7 @@ test("props: aria attributes", () => {
 });
 
 test("props: className attribute", () => {
-  const vnode: VTagNode = <div class="foo bar" />;
+  const vnode = <div class="foo bar" />;
   expect(vnode).toMatchObject({
     tag: "div",
     p: { class: "foo bar" },
@@ -79,7 +78,7 @@ test("props: className attribute", () => {
 });
 
 test("props: dataset attributes", () => {
-  const vnode: VTagNode = <div data-id="123" data-user="max" />;
+  const vnode = <div data-id="123" data-user="max" />;
   expect(vnode).toMatchObject({
     tag: "div",
     p: { "data-id": "123", "data-user": "max" },

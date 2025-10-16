@@ -1,7 +1,11 @@
 export type { PencelRuntimeConfig as PencilRuntimeConfig } from "./config.ts";
 export { pencelInit } from "./config.ts";
+export type * from "./core/jsx/jsx-dom.ts";
+export * from "./core/jsx/jsx-helpers.ts";
+export type * from "./core/jsx/types.ts";
 export type * from "./core/types.ts";
 export { renderVNode } from "./core/vdom/renderVNode.ts";
+export type * from "./core/vdom/types.ts";
 export * from "./decorators/component.ts";
 export * from "./decorators/element.ts";
 export * from "./decorators/event.ts";

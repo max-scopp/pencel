@@ -2,21 +2,16 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "types": [
-      "node"
-    ],
-    "rootDir": "src",
+    "types": ["node"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
   },
-  "exclude": [
-    "out-tsc",
-    "dist",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ],
-  "include": [
-    "src/**/*.ts"
+  "exclude": ["out-tsc", "dist", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../../../packages/runtime"
+    }
   ]
 }

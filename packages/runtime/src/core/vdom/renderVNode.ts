@@ -1,6 +1,6 @@
 import { createPerformanceTree } from "@pencel/utils";
 import type { Props } from "../jsx/types.ts";
-import { type VNode, VNodeKind, type VTagNode } from "./types.ts";
+import { type VNode, VNodeKind } from "./types.ts";
 
 const vnodePerf = createPerformanceTree("Render");
 
@@ -114,7 +114,7 @@ export function _renderVNode(
 
       // Host children should be reconciled into the actual container (host),
       // not into vnode.el which may be undefined.
-      reconcileChildren(vnode.c ?? [], container as unknown as Node);
+      reconcileChildren(vnode.c ?? [], container);
       break;
     }
 

@@ -1,4 +1,4 @@
+import { pencelInit } from "@pencel/runtime";
 import "./components";
-import { pencilInit } from "@pencel/runtime";
 
-pencilInit({});
+pencelInit({});

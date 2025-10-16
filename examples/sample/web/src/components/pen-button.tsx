@@ -1,4 +1,4 @@
-import { Component, type ComponentInterface, Host } from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, type VNode } from "@pencel/runtime";
 
 @Component({
   tag: "button",
@@ -7,7 +7,7 @@ export class HTMLPenButtonElement
   extends HTMLButtonElement
   implements ComponentInterface
 {
-  render() {
+  render(): VNode {
     return (
       <Host>
         <slot />

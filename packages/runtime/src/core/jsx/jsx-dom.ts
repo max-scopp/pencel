@@ -1,4 +1,4 @@
-import type { VNode } from "../../../dist/types-CNCzzlSE.js";
+import type { VNode } from "../vdom/types.ts";
 
 declare namespace LocalJSX {
   type IntrinsicElements = {};

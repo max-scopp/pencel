@@ -39,6 +39,7 @@ export interface VTextNode extends DevInfo {
   text: string;
   el?: Text | null;
   i?: string | number | null;
+  c?: never;
 }
 
 export interface VCommentNode extends DevInfo {
@@ -46,12 +47,14 @@ export interface VCommentNode extends DevInfo {
   text: string;
   el?: Comment | null;
   i?: string | number | null;
+  c?: never;
 }
 
 export interface VFragmentNode extends DevInfo {
   k: VNodeKind.Fragment;
   c: Array<VNode | null>;
   i?: string | number | null;
+  el?: never;
 }
 
 export interface VHostNode extends DevInfo {
