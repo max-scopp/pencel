@@ -1,0 +1,21 @@
+{
+  "name": "@pencel/documentation",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
+  },
+  "nx": {
+    "name": "documentation"
+  },
+  "dependencies": {
+    "next": "~15.2.4",
+    "nextra": "^4.6.0",
+    "nextra-theme-docs": "^4.6.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "pagefind": "^1.4.0"
+  }
+}
