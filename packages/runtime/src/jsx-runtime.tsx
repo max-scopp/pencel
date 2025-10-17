@@ -3,6 +3,8 @@ import { getVNodeKind } from "./core/vdom/getVNodeKind.ts";
 import { normalizeChildren } from "./core/vdom/normalizeChildren.ts";
 import { type JSXChildren, type VNode, VNodeKind } from "./core/vdom/types.ts";
 
+export * from "./core/jsx/jsx.js";
+
 export * from "./core/jsx/jsx-helpers.ts";
 
 /**

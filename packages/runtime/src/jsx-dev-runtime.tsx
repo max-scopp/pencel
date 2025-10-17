@@ -2,6 +2,7 @@ import type { ComponentFunction } from "./core/jsx/types.ts";
 import type { JSXChildren, VNode } from "./core/vdom/types.ts";
 import { jsx } from "./jsx-runtime.tsx";
 
+export * from "./core/jsx/jsx.js";
 export * from "./core/jsx/jsx-helpers.ts";
 
 /**

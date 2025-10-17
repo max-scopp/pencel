@@ -17,7 +17,7 @@ export function Fragment(props: PropsWithChildren): VNode {
  * A meta-component that represents a registered custom element.
  * No tag type is needed — the element is already registered in the DOM.
  */
-export function Host(this: CustomElement, props: Props = {}): VNode {
+export function Host(this: CustomElement, props: Props = {}): JSX.Element {
   return {
     k: VNodeKind.Host,
     p: props,

@@ -6,10 +6,10 @@ import {
 } from "@pencel/runtime";
 
 @Component({
-  tag: "button",
+  tag: "details",
 })
-export class HTMLPenButtonElement
-  extends HTMLButtonElement
+export class HTMLPenDetailsElement
+  extends HTMLDetailsElement
   implements ComponentInterface
 {
   render(): VNode {
