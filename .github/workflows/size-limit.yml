@@ -17,8 +17,14 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
       - name: Build Runtime
         run: bun nx run @pencel/runtime:build
       - uses: andresz1/size-limit-action@v1
