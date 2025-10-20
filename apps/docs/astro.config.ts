@@ -4,7 +4,7 @@ import starlightThemeNext from "starlight-theme-next";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pages.github.com/max-scopp/pencel',
+  site: "https://maxscopp.de/pencel/",
   integrations: [
     starlight({
       title: "Pencel",
