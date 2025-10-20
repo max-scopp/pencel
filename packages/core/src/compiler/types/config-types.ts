@@ -16,6 +16,9 @@ interface PencilOutputAside {
   replace: [RegExp, string];
 }
 
+/**
+ * Pencel's Core configuration interface
+ */
 export interface PencelConfig {
   /**
    * The base directory for source files.

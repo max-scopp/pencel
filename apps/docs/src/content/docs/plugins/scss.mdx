@@ -1,0 +1,38 @@
+---
+title: SCSS
+sidebar:
+    order: 2
+---
+
+Enable support for [Sass](https://sass-lang.com/) to style your components using [`sass-embedded`](https://www.npmjs.com/package/sass-embedded).
+
+## Basic Usage
+
+```diff lang="ts"
+// pencel.config.ts
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+    plugins: [
++        "scss"
+    ]
+});
+```
+
+## Advanced Configuration
+
+```diff lang="ts"
+// pencel.config.ts
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+    plugins: [
++        {
++            name: "scss",
++            options: {
++                enabled: true
++            }
++        }
+    ]
+});
+```

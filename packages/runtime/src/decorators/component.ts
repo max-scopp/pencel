@@ -4,9 +4,9 @@ import {
   getExtendsByInheritance,
   getTrueTag,
 } from "@pencel/utils";
-import { pencelConfig, ready$ } from "src/config.ts";
-import type { ConstructablePencilComponent } from "src/core/types.ts";
+import { pencelConfig, ready$ } from "../config.ts";
 import { wrapComponentForRegistration } from "../core/pencilCustomElementWrap.tsx";
+import type { ConstructablePencilComponent } from "../core/types.ts";
 
 const log = createLog("Component");
 

@@ -1,6 +1,93 @@
 ---
 title: Getting Started
 description: Learn how to set up and start using Pencel in your project.
+sidebar:
+  order: 0
 ---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-Hello World
+Pencel is a build-agnostic, framework-friendly Web Component toolkit that takes a different approach from traditional compilers.  
+Unlike tools that provide their own compilation pipeline, Pencel outputs pure TypeScript source code that integrates with any build system.
+
+To get started, you'll need to install the core runtime first.
+
+<Tabs syncKey="pkg">
+<TabItem label="npm">
+
+```sh
+npm install @pencel/runtime
+````
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add @pencel/runtime
+```
+
+</TabItem>
+<TabItem label="yarn">
+
+```sh
+yarn add @pencel/runtime
+```
+
+</TabItem>
+<TabItem label="bun">
+
+```sh
+bun add @pencel/runtime
+```
+
+</TabItem>
+</Tabs>
+
+### Your First Component
+
+To write simple Web Components with Pencel, you do not need any additional plugins or configuration.
+
+```tsx
+import { Component, Prop } from '@pencel/runtime';
+
+@Component({
+  tag: 'hello'
+})
+export class Hello extends HTMLElement {
+  @Prop() name: string = 'World';
+
+  render() {
+    return <span>Hello {this.name}</span>;
+  }
+}
+```
+
+Using the `@Component` decorator, the class and provided tag are registered as a custom element using the default namespace `pen`.
+With this code, you can use the component in your HTML like this:
+
+```html
+<pen-hello name="Max"></pen-hello>
+```
+
+### Make it yours
+
+You can customize the namespace and other runtime-related settings using the `pencelInit()` function.
+Other defaults can also be provided by your [configuration file](./configuration).
+
+```ts
+import { pencelInit } from "@pencel/runtime";
+import "./components";
+
+await pencelInit({
+  namespace: "wb",
+});
+
+// Now you can use your components with the "wb" namespace
+// <wb-hello></wb-hello>
+```
+
+## Framework Outputs
+
+By default, Pencel ships **native Web Components only**.
+
+Bindings for other frameworks, such as React or Angular, require enabling [output plugins](../outputs) in your config.
+This will be further explained in the [Configuration](../configuration) section.

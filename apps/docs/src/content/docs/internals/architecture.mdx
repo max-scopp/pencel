@@ -1,0 +1,38 @@
+---
+title: Architecture
+sidebar:
+  order: 1
+---
+
+Pencel is designed to be build-agnostic and framework-friendly, taking a different approach from traditional Web Component compilers.
+
+## Build Process & Runtime
+
+```mermaid
+graph TB
+    subgraph "Build Time"
+        CLI[CLI Entry Point] --> Compiler[Compiler Core]
+        Compiler --> TSAnalysis[TypeScript Analysis]
+        Compiler --> MetaExtractor[Metadata Extraction]
+        Compiler --> CodeGen[Code Generation]
+        
+        UserBuild[User Build System] --> Runtime[Runtime Components]
+        UserBuild --> UserBundle[User Bundler]
+    end
+    
+    subgraph "Runtime"
+        ComponentRuntime[Component Runtime] --> VDOM[Virtual DOM]
+        ComponentRuntime --> LC[Lifecycle Manager]
+        ComponentRuntime --> PropSystem[Property System]
+        ComponentRuntime --> EventSystem[Event System]
+    end
+```
+
+## Key Differences from Other Tools
+
+Unlike traditional compilers that provide their own compilation pipeline, Pencel:
+
+- Works with any build system
+- Outputs pure TypeScript source code
+- No enforced bundler or dev server
+- No automatic polyfills

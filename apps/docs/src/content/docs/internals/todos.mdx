@@ -1,0 +1,63 @@
+---
+title: TODOs
+sidebar:
+  order: 1000
+---
+
+Personal list of tasks for feature parity with Stencil.
+
+## Core Features
+
+- [ ] Migrate VDOM to Snabbdom?
+- [ ] First Output Targets:
+    - [ ] React
+    - [ ] Angular
+- [ ] Component IR: multiple components per file
+- [ ] Namespace-aware component tags
+- [ ] Props & State
+- [ ] Event & Listen
+- [ ] Replace `!` with `declare` (esp. `@Element`)
+
+### Critical Decorators
+
+- [ ] `@Watch()` - property/state watching
+- [ ] `@Method()` - expose public methods (async)
+- [ ] `@Element()` - direct element reference
+
+### Lifecycle Methods
+
+- [ ] `componentWillUpdate()`
+- [ ] `componentDidUpdate()`
+- [ ] `componentDidRender()`
+- [ ] `componentOnReady()`
+
+### Component Features
+
+- [ ] Slots & content projection
+- [ ] CSS custom properties
+- [ ] Form association
+
+## Framework Integration
+
+- [ ] `@pencel/react` package + React-specific features
+- [ ] `@pencel/angular` package + Angular-specific features
+
+## Developer Experience
+
+- [ ] CLI: component & framework generators
+- [ ] Build & bundling improvements
+- [ ] Testing utilities
+- [ ] Storybook integration
+
+## (LOW PRIORITY) Advanced Features
+
+- [ ] Store integration
+- [ ] Lazy loading & rendering optimizations
+- [ ] Theme & animation systems
+- [ ] Runtime API parity: `Watch` & `forceUpdate`
+- [ ] Lightingcss: proper CSS code framing + sourcemaps
+
+## INFRASTRUCTURE
+
+- [-] Docs & examples
+- [ ] Release automation & NPM packages

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "../../packages/cli/src",
+    "../../packages/core/src",
+    "../../packages/runtime/src",
+    "../../packages/utils/src"
+  ],
+  "exclude": ["dist", "__tests__", "*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "@pencel/runtime",
+    "experimentalDecorators": true
+  }
+}

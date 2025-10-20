@@ -1,0 +1,64 @@
+---
+title: Core
+sidebar:
+    order: 3
+---
+
+This diagram shows the core architecture and main dependencies of the compiler system, including the IR layer, plugin system, and processing pipeline.
+
+```mermaid
+graph TD
+    %% Core Foundation
+    Context[CompilerContext]:::core
+    Container[DI Container]:::core
+    
+    %% Plugin System
+    PluginManager[PluginManager]:::plugin
+    
+    %% Core Services
+    Program[Program]:::service
+    FileSystem[FileSystem]:::service
+    Registry[SourceFileRegistry]:::service
+    
+    %% IR Layer
+    IRBuilder[IR Builder]:::ir
+    
+    %% Processing Pipeline
+    Transformer[FileTransformer]:::pipeline
+    
+    %% Top Level Orchestrator
+    Compiler[Compiler]:::orchestrator
+    
+    %% Dependencies
+    Container --> Context
+    PluginManager --> Context
+    
+    Program --> Context
+    FileSystem --> Context
+    Registry --> Container
+    
+    IRBuilder --> Context
+    IRBuilder --> Program
+    
+    Transformer --> Program
+    Transformer --> FileSystem
+    Transformer --> Registry
+    Transformer --> PluginManager
+    Transformer --> IRBuilder
+    
+    Compiler --> Context
+    Compiler --> PluginManager
+    Compiler --> Transformer
+    Compiler --> Registry
+    Compiler --> IRBuilder
+````
+
+### Notes
+
+* **CompilerContext**: central shared state across all components
+* **DI Container**: manages service instantiation and lifecycle of the compiler
+* **PluginManager**: manages loading and execution of plugins and it's hooks
+* **Program/FileSystem/Registry**: core services used throughout the pipeline
+* **IRBuilder**: builds intermediate representation for transformations
+* **FileTransformer**: applies transformations/plugins to IR or source files
+* **Compiler**: orchestrates all components, executes the full compilation process

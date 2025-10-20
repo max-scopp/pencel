@@ -4,7 +4,6 @@
     "lib": ["DOM", "ESNext"],
     "baseUrl": ".",
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "sourceMap": true
   },

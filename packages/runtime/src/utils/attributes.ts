@@ -1,5 +1,5 @@
 import { dashCase } from "@pencel/utils";
-import type { ComponentInterfaceWithContext } from "src/core/types.ts";
+import type { ComponentInterfaceWithContext } from "../core/types.ts";
 import type { PropOptions } from "../decorators/prop.ts";
 
 /**

@@ -5,7 +5,7 @@ import type ts from "typescript";
 export function throwTooManyComponentDecoratorsOnClass(
   sourceFile: ts.SourceFile,
   decorators: ts.Decorator[],
-): never {
+) {
   throwWithCodeFrame(
     [
       `Multiple @Component decorators found on class ${sourceFile.fileName}.`,

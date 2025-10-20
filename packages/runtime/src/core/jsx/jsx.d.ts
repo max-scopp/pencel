@@ -5,12 +5,14 @@ declare namespace CustomJSX {
   type IntrinsicElements = {};
 }
 
-declare namespace JSX {
-  type Element = VNode;
+declare global {
+  namespace JSX {
+    type Element = VNode;
 
-  interface IntrinsicElements
-    extends JSXBase.IntrinsicElements,
-      CustomJSX.IntrinsicElements {}
+    interface IntrinsicElements
+      extends JSXBase.IntrinsicElements,
+        CustomJSX.IntrinsicElements {}
+  }
 }
 
 export declare namespace JSXBase {

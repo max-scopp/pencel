@@ -1,6 +1,57 @@
 ---
 title: Configuration
-description: Learn how to set up and start using Pencel in your project.
+description: Learn how to configure Pencel for your project needs.
+sidebar:
+  order: 1
 ---
 
-Hello World
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+
+In order to use extended features like [Sass](plugins/scss) or modify default behaviors, you can use Pencel's CLI. This CLI will read a configuration file (`pencel.config.ts`) in the root of your project to determine which plugins and options to enable.
+
+To get started, you first need to install the Pencel CLI as a development dependency:
+
+<Tabs syncKey="pkg">
+<TabItem label="npm">
+
+```sh
+npm install -D @pencel/cli
+````
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add -D @pencel/cli
+```
+
+</TabItem>
+<TabItem label="yarn">
+
+```sh
+yarn add -D @pencel/cli
+```
+
+</TabItem>
+<TabItem label="bun">
+
+```sh
+bun add -D @pencel/cli
+```
+
+</TabItem>
+</Tabs>
+
+Then, create a `pencel.config.ts` file in the root of your project. The configuration below sets overrides the default tag namespace for your project:
+
+import pencelConfig from '../../../../../examples/sample/web/pencel.config.ts?raw';
+
+<Code code={pencelConfig} lang="json" title="pencel.config.ts" />
+
+The full configuration reference can be found in the [API documentation](/pencel/api/core/src/interfaces/pencelconfig/).
+
+### Supported Configuration formats
+
+Pencel is using [`c12`](https://github.com/unjs/c12) under the head and all configuration formats supported by `c12` are supported by Pencel as well.
+However, it is highly recommended to use `pencel.config.ts` with `defineConfig` to get the best DX and type safety.

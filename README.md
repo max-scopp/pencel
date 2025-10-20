@@ -4,35 +4,49 @@
 > Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.  
 > *Write once. Ship clean.*
 
-## ⚡ Current Status
+## ⚡ Quick Example
 
-Pencel is under active development. Current feature status:
+```tsx
+import { Component, Prop, Event } from '@pencel/runtime';
 
-✅ Core Features:
-* Component registration with `@Component`
-* Reactive properties with `@Prop`
-* Internal state management with `@State`
-* Basic lifecycle hooks
-* Shadow DOM and styling support
+@Component({
+  tag: 'ui-button'
+})
+export class UIButton extends HTMLElement {
+  @Prop() label: string = 'Click me';
 
-🚧 In Progress:
-* Method decorators and exposure
-* Event system improvements
-* Watch decorator for property changes
-* Additional lifecycle hooks
-* Performance optimizationsan, shippable code.  
+  @Event()
+  declare clicked: CustomEvent<void>;
 
-## Why Pencel?
+  render() {
+    return (
+      <button part="button" onClick={() => this.clicked.emit()}>
+        {this.label}
+      </button>
+    );
+  }
+}
+```
 
-**Pencel** is a lightweight toolkit for authoring Web Components using familiar, decorator-based TypeScript syntax — very much inspired by the ergonomics of [Stencil](https://stenciljs.com).
+## Key Features
 
-But unlike Stencil, Pencel takes a different approach under the hood:
+- 🛠 **No Compiler Lock-in**: Works with any build system
+- 🧩 **Framework Agnostic**: Use in React, Angular, Vue, or vanilla JS
+- 📦 **Tiny Runtime**: ~2-3KB that scales with your needs
+- 🎯 **Pure Output**: Standard TypeScript Web Components
+- � **Full Control**: Deep platform access and extensibility
 
-- 🛠 No compiler lock-in
-- 🧩 No enforced bundler or dev server
-- 🚫 No automatic polyfills (handled by your bundler if needed)
-- 🎯 Build-agnostic, framework-friendly
-- 📦 Output: just standard TypeScript Web Components — nothing hidden
+## Documentation
+
+Visit our [documentation site](https://maxscopp.de/pencel/) to learn more about:
+- Getting Started
+- Configuration
+- Component Lifecycle
+- Framework Integration
+
+## License
+
+MIT © Max Scopp
 
 It’s ideal for teams building **design systems** that need to be:
 

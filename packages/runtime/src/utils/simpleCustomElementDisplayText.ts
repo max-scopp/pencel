@@ -1,5 +1,5 @@
-import type { ComponentInterfaceWithContext } from "src/core/types.ts";
 import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
+import type { ComponentInterfaceWithContext } from "../core/types.ts";
 
 export function simpleCustomElementDisplayText(
   component: ComponentInterfaceWithContext,

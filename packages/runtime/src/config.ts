@@ -25,7 +25,7 @@ export const ready$: Promise<void> = new Promise<void>((resolve, reject) => {
   };
 });
 
-export const pencelInit = (userConfig: PencelRuntimeConfig): void => {
+export const pencelInit = (userConfig: PencelRuntimeConfig): Promise<void> => {
   try {
     Object.assign(pencelConfig, userConfig);
     console.log("Pencel initialized");
@@ -38,4 +38,6 @@ export const pencelInit = (userConfig: PencelRuntimeConfig): void => {
   } catch (e) {
     _reject(e);
   }
+
+  return ready$;
 };

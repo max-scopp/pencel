@@ -39,7 +39,7 @@ export class TransformCommand extends Command {
     await this.#plugins.initialize();
     await this.#program.load();
 
-    const _result = await this.#compiler.transform();
+    await this.#compiler.transform();
 
     log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
 

@@ -1,0 +1,51 @@
+---
+title: Styleguide
+---
+
+### Component Declaration
+
+* Use the `@Component` decorator for definition.
+* Use lowercase `tag`, matching HTML semantics.
+  * Do **NOT** prefix the namespace if it’s set in your config.
+
+```ts
+@Component({ tag: "button" })
+````
+
+### Class Naming
+
+* You **SHOULD** use the namespace defined in your `pencel.config` in your class name: `HTML<Namespace><Name>Element`.
+* You **SHOULD** implement `ComponentInterface` to enable IntelliSense for lifecycle hooks.
+* Extend the corresponding native HTML element (`HTMLButtonElement`, `HTMLDetailsElement`, etc.).
+
+```ts
+export class HTMLPenButtonElement
+  extends HTMLButtonElement
+  implements ComponentInterface
+```
+
+### Render Structure
+
+* `render()` **MUST** return a `VNode`.
+* You **SHOULD** return `<Host>` as the top-level JSX node.
+* Do **NOT** implement inline logic — keep this pure and minimal.
+* You **SHOULD** use [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring) for complex objects or arrays.
+
+```ts
+render(): VNode {
+  const { displayName } = this.user;
+
+  return (
+    <Host>
+      <h1>{displayName}</h1>
+      <slot />
+    </Host>
+  );
+}
+```
+
+### Minimalism
+
+* Do **NOT** use lifecycle methods unless necessary.
+* Do **NOT** add props/handlers unless the component adds real behavior.
+* One responsibility per component.

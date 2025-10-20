@@ -1,0 +1,38 @@
+---
+title: CSS
+sidebar: 
+    order: 1
+---
+
+Inlines, optimizes, and minifies your component's CSS using [`lightningcss`](https://lightningcss.dev/).
+
+## Basic Usage
+
+```diff lang="ts"
+// pencel.config.ts
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+    plugins: [
++        "css"
+    ]
+});
+```
+
+## Advanced Configuration
+
+```diff lang="ts"
+// pencel.config.ts
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+    plugins: [
++        {
++            name: "css",
++            options: {
++                enabled: true
++            }
++        }
+    ]
+});
+```

@@ -1,2 +1,2 @@
 export type { PencelConfig, PluginNames } from "@pencel/core";
-export { defineConfig } from "./pencil.config.ts";
+export { defineConfig } from "./pencel.config.ts";

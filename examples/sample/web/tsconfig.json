@@ -11,6 +11,9 @@
     },
     {
       "path": "../../../packages/runtime/tsconfig.json"
+    },
+    {
+      "path": "../../../packages/cli/tsconfig.json"
     }
   ]
 }
