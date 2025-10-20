@@ -8,9 +8,13 @@ export default defineConfig({
   base: "/pencel",
   integrations: [
     starlight({
-      title: "Pencel",
+      title: "✏️ Pencel",
       plugins: [starlightThemeNext()],
       credits: true,
+      customCss: [
+        // Relative path to your custom CSS file
+        "./src/styles/custom.css",
+      ],
       social: [
         {
           icon: "github",
@@ -18,6 +22,9 @@ export default defineConfig({
           href: "https://github.com/max-scopp/pencel",
         },
       ],
+      components: {
+        ThemeSelect: "./src/components/ThemeSelect.astro",
+      },
       sidebar: [
         {
           label: "Introduction",
