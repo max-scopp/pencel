@@ -47,6 +47,7 @@ bun add @pencel/runtime
 To write simple Web Components with Pencel, you do not need any additional plugins or configuration.
 
 ```tsx
+// components/Hello.tsx
 import { Component, Prop } from '@pencel/runtime';
 
 @Component({
@@ -65,15 +66,17 @@ Using the `@Component` decorator, the class and provided tag are registered as a
 With this code, you can use the component in your HTML like this:
 
 ```html
+// index.html
 <pen-hello name="Max"></pen-hello>
 ```
 
 ### Make it yours
 
 You can customize the namespace and other runtime-related settings using the `pencelInit()` function.
-Other defaults can also be provided by your [configuration file](./configuration).
+Other defaults and plugins can be provided by your [configuration file](./configuration).
 
 ```ts
+// main.ts
 import { pencelInit } from "@pencel/runtime";
 import "./components";
 
@@ -89,5 +92,5 @@ await pencelInit({
 
 By default, Pencel ships **native Web Components only**.
 
-Bindings for other frameworks, such as React or Angular, require enabling [output plugins](../outputs) in your config.
-This will be further explained in the [Configuration](../configuration) section.
+Bindings for other frameworks, such as React or Angular, require enabling [output plugins](outputs) in your config.
+This will be further explained in the [Configuration](configuration) section.

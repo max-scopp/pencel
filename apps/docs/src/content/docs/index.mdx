@@ -54,9 +54,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 import { Component, Prop, Event } from '@pencel/runtime';
 
 @Component({
-  tag: 'ui-button'
+  tag: 'button'
 })
-export class UIButton extends HTMLElement {
+export class Button extends HTMLElement {
   @Prop() label: string = 'Click me';
 
   @Event()

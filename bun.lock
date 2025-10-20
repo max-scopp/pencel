@@ -80,6 +80,9 @@
       "dependencies": {
         "@pencel/runtime": "workspace:*",
       },
+      "devDependencies": {
+        "@pencel/cli": "workspace:*",
+      },
     },
     "packages/cli": {
       "name": "@pencel/cli",

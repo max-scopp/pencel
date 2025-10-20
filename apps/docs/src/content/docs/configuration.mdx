@@ -8,7 +8,9 @@ sidebar:
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Code } from '@astrojs/starlight/components';
 
-In order to use extended features like [Sass](plugins/scss) or modify default behaviors, you can use Pencel's CLI. This CLI will read a configuration file (`pencel.config.ts`) in the root of your project to determine which plugins and options to enable.
+In order to use extended features like [Sass](plugins/scss) or modify default behaviors, you can use Pencel's CLI.
+
+The CLI provides simple access and configuration to Pencel's core build processor. The CLI will read a configuration file (`pencel.config.ts`) in the root of your project to determine which plugins and options to enable.
 
 To get started, you first need to install the Pencel CLI as a development dependency:
 
@@ -51,7 +53,41 @@ import pencelConfig from '../../../../../examples/sample/web/pencel.config.ts?ra
 
 The full configuration reference can be found in the [API documentation](/pencel/api/core/src/interfaces/pencelconfig/).
 
-### Supported Configuration formats
+#### Supported Configuration formats
 
 Pencel is using [`c12`](https://github.com/unjs/c12) under the head and all configuration formats supported by `c12` are supported by Pencel as well.
 However, it is highly recommended to use `pencel.config.ts` with `defineConfig` to get the best DX and type safety.
+
+## Adopting to your Build System
+
+Right now, you can only use Pencel's CLI to generate your components. 
+In the future, Pencel may provide plugins and integrations for popular build systems.
+
+The simplest way to integrate Pencel into your build process is to add a script in your `package.json` that runs the Pencel CLI before your build step.
+
+```diff lang="json"
+// package.json
+{
+  "scripts": {
++    "generate": "pencel",
++    "generate:watch": "pencel --watch"
+  },
+}
+```
+
+### Adoption in Nx
+
+If you're using [Nx](https://nx.dev/), you can use [Command Chaining](https://nx.dev/docs/reference/nx/executors#chaining-commands) in parallel.
+
+```json
+"serve": {
+    "executor": "nx:run-commands",
+    "options": {
+        "commands": [
+          "vite dev",
+          "pencel --watch",
+        ],
+        "parallel": true
+    }
+}
+```

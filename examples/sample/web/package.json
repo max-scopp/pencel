@@ -2,7 +2,14 @@
   "name": "@pencel/web",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "generate": "pencel",
+    "generate:watch": "pencel --watch"
+  },
   "dependencies": {
     "@pencel/runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "@pencel/cli": "workspace:*"
   }
 }

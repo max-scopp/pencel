@@ -1,0 +1,25 @@
+---
+title: Roadmap
+sidebar:
+  order: 0
+---
+
+2026 is mainly about making the core rock solid before touching any extras.
+First I need to settle the VDOM decision (stick with mine or switch to
+[Snabbdom](https://github.com/snabbdom/snabbdom)) and finish the IR so
+output targets feel natural to write.
+
+Once the foundation is stable, I’ll tighten up the component model: proper props,
+state, events, decorators, and lifecycle. After that comes slots and projection
+— the part that usually breaks weaker runtimes.
+
+Only then do React and Angular ship. DX polish comes afterward if needed.
+
+**Priority list:**
+
+- Finalize VDOM choice
+- Finish component IR
+- Props/State/Events + namespace-aware tags
+- `@Watch`, `@Method`, `@Element` + lifecycle hooks
+- Slots, CSS custom props, form association
+- Ship `@pencel/react` and `@pencel/angular`

@@ -76,6 +76,10 @@ export default defineConfig({
               label: "Outputs",
               slug: "outputs",
             },
+            {
+              label: "Roadmap",
+              slug: "roadmap",
+            },
           ],
         },
         {
