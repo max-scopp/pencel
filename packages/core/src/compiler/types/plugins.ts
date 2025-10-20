@@ -75,6 +75,7 @@ export type TransformHandler =
       input: ts.SourceFile;
     };
 
+// TODO: Rename to PluginHooks ?
 export type PluginHandler = {
   /**
    * Work done when all files have been processed and the compiler is about to quit.

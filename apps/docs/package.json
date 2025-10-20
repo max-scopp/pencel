@@ -1,21 +1,91 @@
 {
-  "name": "@pencel/documentation",
+  "name": "@pencel/docs",
+  "type": "module",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
-    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
-  },
-  "nx": {
-    "name": "documentation"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "serve-static": "astro preview",
+    "build-deps": "nx run-many --target=build --projects=^docs",
+    "watch-deps": "nx run-many --target=build --projects=^docs --watch"
   },
   "dependencies": {
-    "next": "~15.2.4",
-    "nextra": "^4.6.0",
-    "nextra-theme-docs": "^4.6.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "@astrojs/starlight": "^0.36.1",
+    "astro": "^5.6.1",
+    "sharp": "^0.34.2"
+  },
+  "nx": {
+    "name": "@pencel/docs",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/docs/src",
+    "projectType": "application",
+    "targets": {
+      "build": {
+        "executor": "nx:run-script",
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "script": "build"
+        },
+        "outputs": [
+          "{projectRoot}/dist"
+        ]
+      },
+      "dev": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "dev"
+        }
+      },
+      "start": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "start"
+        }
+      },
+      "serve-static": {
+        "executor": "nx:run-script",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "script": "serve-static"
+        }
+      },
+      "build-deps": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "build-deps"
+        }
+      },
+      "watch-deps": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "watch-deps"
+        }
+      },
+      "preview": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "preview"
+        }
+      },
+      "astro": {
+        "executor": "nx:run-script",
+        "options": {
+          "script": "astro"
+        }
+      }
+    },
+    "tags": [
+      "npm:public"
+    ]
   },
   "devDependencies": {
-    "pagefind": "^1.4.0"
+    "starlight-theme-next": "^0.3.2"
   }
 }

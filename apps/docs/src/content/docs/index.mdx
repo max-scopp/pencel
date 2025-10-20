@@ -1,0 +1,73 @@
+---
+title: Pencel
+description: Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.
+head:
+  - tag: title
+    content: Pencel - Write once. Ship clean.
+  - tag: style
+    content: |
+      .hero-html {
+        --size: 12rem;
+        font-size: var(--size);
+        justify-content: center;
+        line-height: var(--size);
+      }
+template: splash
+hero:
+  tagline: Write once. Ship clean.
+  image:
+    html: ✏️
+    # file: ../../assets/pencel.png
+  actions:
+    - text: Get Started
+      link: /getting-started
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/max-scopp/pencil
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Framework Agnostic" icon="puzzle">
+		Use your components in React, Angular, Vue. Perfect for universal design systems.
+	</Card>
+	<Card title="Build Your Way" icon="setting">
+		Pencel works smoothly with Vite, Rollup, esbuild, or any bundler you love. Your project, your rules.
+	</Card>
+	<Card title="Deep Platform Access" icon="document">
+		Full control over custom elements internals. Extend native buttons, inputs, or any HTML element while keeping all their built-in features.
+	</Card>
+	<Card title="Familiar Territory" icon="pen">
+		Jump right in with TypeScript decorators and JSX. Clean, predictable patterns that feel natural from day one.
+	</Card>
+	<Card title="Ship Light" icon="rocket">
+		Tiny ~2-3KB runtime that scales with your needs. No bloat, no surprises — just the features you actually use.
+	</Card>
+</CardGrid>
+
+## Quick Example
+
+```tsx
+import { Component, Prop, Event } from '@pencel/runtime';
+
+@Component({
+  tag: 'ui-button'
+})
+export class UIButton extends HTMLElement {
+  @Prop() label: string = 'Click me';
+
+  @Event()
+  declare clicked: CustomEvent<void>;
+
+  render() {
+    return (
+      <button part="button" onClick={() => this.clicked.emit()}>
+        {this.label}
+      </button>
+    );
+  }
+}
+```
