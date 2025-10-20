@@ -4,7 +4,6 @@
     "outDir": "./dist",
     "declaration": true,
     "sourceMap": true,
-    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "jsx": "preserve",
     "jsxImportSource": "@pencel/runtime",

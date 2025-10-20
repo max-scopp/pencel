@@ -6,12 +6,7 @@
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable",
-      "DOM.AsyncIterable"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
@@ -24,9 +19,7 @@
     "strict": true,
     "target": "esnext",
     "paths": {
-      "@pencel/*": [
-        "./packages/*/src/index.ts"
-      ]
+      "@pencel/*": ["./packages/*/src/index.ts"]
     }
   }
 }
