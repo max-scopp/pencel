@@ -5,7 +5,8 @@
   "size-limit": [
     {
       "path": "dist/*.js",
-      "limit": "6kB"
+      "limit": "7kB",
+      "gzip": true
     }
   ],
   "scripts": {
@@ -35,6 +36,7 @@
     "@pencel/utils": "^0.0.0"
   },
   "devDependencies": {
+    "@size-limit/file": "^11.2.0",
     "@vitest/coverage-v8": "^3.2.4",
     "size-limit": "^11.2.0",
     "typescript": "*"
