@@ -1,4 +1,4 @@
-name: "size"
+name: Size
 
 on:
   push:
@@ -7,18 +7,20 @@ on:
   pull_request:
     branches:
       - main
+
 permissions:
   pull-requests: write
+
 jobs:
   size:
     runs-on: ubuntu-latest
-    env:
-      CI_JOB_NUMBER: 1
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout your repository using git
+        uses: actions/checkout@v4
       - name: Install dependencies
-        run: npm ci
-        working-directory: packages/runtime
+        run: bun install --frozen-lockfile
+      - name: Build Runtime
+        run: bun nx run @pencel/runtime:build
       - uses: andresz1/size-limit-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -31,7 +31,7 @@ jobs:
       # - run: bunx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
       
-      - run: bun install --no-cache
+      - run: bun install --frozen-lockfile
 
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
