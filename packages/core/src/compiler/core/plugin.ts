@@ -1,10 +1,10 @@
-import type { PluginRegistry } from "@pencel/core";
 import { throwError } from "@pencel/utils";
 import {
   PLUGIN_SKIP,
   type PluginFunction,
   type PluginHandler,
   type PluginNames,
+  type PluginRegistry,
   type TransformHandler,
 } from "../types/plugins.ts";
 import { perf } from "../utils/perf.ts";

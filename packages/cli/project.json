@@ -5,23 +5,17 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "tsdown",
-          "tsc --noEmit"
-        ],
+        "commands": ["tsdown", "tsc --noEmit"],
         "cwd": "packages/cli"
       }
     },
     "run": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
       "options": {
         "command": "bun src/main.ts",
         "cwd": "packages/cli"

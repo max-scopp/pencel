@@ -1,7 +1,6 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import mermaid from "astro-mermaid";
-import starlightLinksValidator from "starlight-links-validator";
 import starlightThemeNext from "starlight-theme-next";
 import starlightTypeDoc, {
   type StarlightTypeDocOptions,
@@ -30,7 +29,6 @@ export default defineConfig({
       title: "✏️ Pencel",
       plugins: [
         starlightThemeNext(),
-        starlightLinksValidator(),
         starlightTypeDoc({
           entryPoints: [
             "../../packages/runtime/src/index.ts",

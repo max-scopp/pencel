@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "composite": true,
     "resolveJsonModule": true,
-    "declarationMap": true,
+    "declaration": true,
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
@@ -19,7 +18,7 @@
     "strict": true,
     "target": "esnext",
     "paths": {
-      "@pencel/*": ["./packages/*/src/index.ts"]
+      "@pencel/*": ["./packages/*/dist/src"]
     }
   }
 }

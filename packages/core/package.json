@@ -42,7 +42,7 @@
     "csso": "^5.0.5",
     "fast-glob": "^3.3.3",
     "sass": "^1.92.1",
-    "ts-flattered": "link:ts-flattered"
+    "ts-flattered": "*"
   },
   "devDependencies": {
     "@types/babel__code-frame": "~7.0.6",

@@ -4,6 +4,7 @@
     "oven.bun-vscode",
     "ms-playwright.playwright",
     "tamasfe.even-better-toml",
-    "unifiedjs.vscode-mdx"
+    "unifiedjs.vscode-mdx",
+    "redhat.vscode-yaml"
   ]
 }

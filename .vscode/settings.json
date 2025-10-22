@@ -26,5 +26,8 @@
   "[css]": {
     "editor.defaultFormatter": "vscode.css-language-features"
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[mdx]": {
+    "editor.defaultFormatter": "unifiedjs.vscode-mdx"
+  }
 }
