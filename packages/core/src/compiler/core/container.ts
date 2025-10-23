@@ -8,6 +8,9 @@ const instantiating = new Set<Constructor<any>>(); // Track currently instantiat
 // biome-ignore lint/suspicious/noExplicitAny: Promise can resolve to any type from constructor
 const pending = new Map<Constructor<any>, Promise<any>>(); // Track pending promises for lazy init
 
+/**
+ * @internal
+ */
 export function inject<T>(ctor: Constructor<T>): T {
   const existingInstance = instances.get(ctor);
   if (existingInstance) {

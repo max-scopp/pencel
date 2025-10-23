@@ -2,14 +2,13 @@ import {
   Compiler,
   CompilerContext,
   Config,
+  inject,
   Plugins,
   Program,
   Watcher,
 } from "@pencel/core";
 import { log } from "@pencel/utils";
 import { Command, Option } from "clipanion";
-import { inject } from "../../../core/src/compiler/core/container.ts";
-import { perf } from "../../../core/src/compiler/utils/perf.ts";
 
 export class TransformCommand extends Command {
   static override paths: string[][] = [Command.Default, ["transform"]];
@@ -42,8 +41,6 @@ export class TransformCommand extends Command {
     await this.#compiler.transform();
 
     log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
-
-    perf.log();
 
     if (this.watch) {
       this.#watcher.start();

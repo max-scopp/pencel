@@ -1,0 +1,70 @@
+.
+├── ARCHITECTURE.md
+├── LICENSE
+├── README.md
+├── apps
+│   └── docs
+│       ├── README.md
+│       ├── astro.config.ts
+│       ├── dist
+│       ├── node_modules
+│       ├── package.json
+│       ├── public
+│       ├── src
+│       ├── tsconfig.api.json
+│       └── tsconfig.json
+├── biome.json
+├── bun.lock
+├── bunfig.toml
+├── examples
+│   └── sample
+│       ├── react
+│       └── web
+├── nx.json
+├── out.log
+├── package.json
+├── packages
+│   ├── cli
+│   │   ├── dist
+│   │   ├── node_modules
+│   │   ├── out
+│   │   ├── package.json
+│   │   ├── project.json
+│   │   ├── src
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── tsdown.config.ts
+│   ├── core
+│   │   ├── dist
+│   │   ├── node_modules
+│   │   ├── package.json
+│   │   ├── project.json
+│   │   ├── src
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── tsdown.config.ts
+│   ├── runtime
+│   │   ├── SPEC.md
+│   │   ├── __tests__
+│   │   ├── bunfig.toml
+│   │   ├── dist
+│   │   ├── node_modules
+│   │   ├── package.json
+│   │   ├── project.json
+│   │   ├── src
+│   │   ├── test
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.spec.json
+│   │   └── tsdown.config.ts
+│   └── utils
+│       ├── dist
+│       ├── package.json
+│       ├── project.json
+│       ├── src
+│       ├── tsconfig.json
+│       └── tsdown.config.ts
+├── test-component.ts
+├── tsconfig.base.json
+└── tsconfig.json
+
+3571 directories, 7758 files

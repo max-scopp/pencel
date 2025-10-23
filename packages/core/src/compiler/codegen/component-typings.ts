@@ -1,4 +1,4 @@
-import { pascalCase } from "ng-openapi";
+import { pascalCase } from "@pencel/utils";
 import type { FileBuilder } from "ts-flattered";
 import {
   $,

@@ -6,6 +6,6 @@ export default defineConfig({
   format: ["esm"],
   target: false,
   sourcemap: true,
-  platform: "neutral",
+  platform: "node",
   external: ["lightningcss"],
 });

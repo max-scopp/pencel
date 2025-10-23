@@ -2,22 +2,6 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import mermaid from "astro-mermaid";
 import starlightThemeNext from "starlight-theme-next";
-import starlightTypeDoc, {
-  type StarlightTypeDocOptions,
-  typeDocSidebarGroup,
-} from "starlight-typedoc";
-
-const typeDoc: StarlightTypeDocOptions["typeDoc"] = {
-  excludeNotDocumented: true,
-  excludePrivateClassFields: true,
-  excludeReferences: true,
-  excludeTags: ["@internal"],
-  excludePrivate: true,
-  excludeProtected: true,
-  excludeInternal: true,
-  excludeExternals: true,
-  includeHierarchySummary: true,
-};
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,22 +11,7 @@ export default defineConfig({
     mermaid({}),
     starlight({
       title: "✏️ Pencel",
-      plugins: [
-        starlightThemeNext(),
-        starlightTypeDoc({
-          entryPoints: [
-            "../../packages/runtime/src/index.ts",
-            "../../packages/core/src/index.ts",
-            "../../packages/cli/src/index.ts",
-          ],
-          tsconfig: "./tsconfig.api.json",
-          sidebar: {
-            collapsed: true,
-            label: "API Reference",
-          },
-          typeDoc,
-        }),
-      ],
+      plugins: [starlightThemeNext()],
       credits: true,
       customCss: [
         // Relative path to your custom CSS file
@@ -115,7 +84,6 @@ export default defineConfig({
             directory: "internals",
           },
         },
-        typeDocSidebarGroup,
       ],
     }),
   ],

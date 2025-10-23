@@ -6,6 +6,7 @@ export * from "./getTagByExtendsString.ts";
 export * from "./getTrueTag.ts";
 export * from "./isBrowser.ts";
 export * from "./log.ts";
+export * from "./pascalCase.ts";
 export * from "./throwConsumerError.ts";
 export * from "./throwError.ts";
 export * from "./throwWithCodeFrame.ts";

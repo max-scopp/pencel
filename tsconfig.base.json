@@ -16,9 +16,6 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    "paths": {
-      "@pencel/*": ["./packages/*/dist/src"]
-    }
+    "target": "esnext"
   }
 }

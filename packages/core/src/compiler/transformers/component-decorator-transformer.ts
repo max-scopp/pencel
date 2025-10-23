@@ -1,6 +1,10 @@
 import type { ComponentOptions } from "@pencel/runtime";
-import { dashCase, getTagByExtendsString, throwError } from "@pencel/utils";
-import { pascalCase } from "ng-openapi";
+import {
+  dashCase,
+  getTagByExtendsString,
+  pascalCase,
+  throwError,
+} from "@pencel/utils";
 import type { SourceFile } from "ts-flattered";
 import ts from "typescript";
 import { Config } from "../config/config.ts";
