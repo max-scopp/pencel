@@ -16,7 +16,6 @@ declare module "../compiler/types/plugins.ts" {
 }
 
 interface ScssPluginOptions {
-  enabled: boolean;
   scssOptions?: {
     logger?: {
       warn?: (message: string, options: unknown) => void;
@@ -33,10 +32,8 @@ class ScssPlugin extends PencelPlugin {
     super();
     this.#options = options;
 
-    if (this.#options.enabled) {
-      log("Using SCSS plugin");
-      this.handle("css:preprocess", this.#handleCssPreprocess.bind(this));
-    }
+    log("Using SCSS plugin");
+    this.handle("css:preprocess", this.#handleCssPreprocess.bind(this));
   }
 
   #handleCssPreprocess(hook: CssPreprocessHook): void {
@@ -59,7 +56,6 @@ class ScssPlugin extends PencelPlugin {
 }
 
 Plugins.register("scss", ScssPlugin, {
-  enabled: false,
   scssOptions: {
     logger: {
       warn(_message, _options) {

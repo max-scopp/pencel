@@ -1,5 +1,9 @@
 import type ts from "typescript";
 
+export interface BasePluginOptions {
+  enabled?: boolean;
+}
+
 export interface PluginRegistry {
   _: object;
 }
@@ -7,7 +11,9 @@ export interface PluginRegistry {
 export type PluginNames = keyof Omit<PluginRegistry, "_">;
 
 export type PluginOptionsOf<TName extends PluginNames> =
-  PluginRegistry[TName] extends { options: infer TOptions } ? TOptions : never;
+  PluginRegistry[TName] extends { options: infer TOptions & BasePluginOptions }
+    ? TOptions
+    : never;
 
 export type PluginDefs<
   TPlugin extends PluginNames = PluginNames,

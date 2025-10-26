@@ -1,5 +1,7 @@
+import { log } from "node:console";
 import { Config } from "../config.ts";
 import type {
+  BasePluginOptions,
   HookHandler,
   HookKind,
   PluggableHooks,
@@ -51,12 +53,18 @@ export class Plugins {
 
     Plugins.registeredPlugins.forEach(async ([klass, defaultOptions], name) => {
       const userOptions = this.#config.getUserOptionsForPlugin(name);
-
-      const instance = new klass({
+      const mergedOptions = {
         ...defaultOptions,
         ...userOptions,
-      } as PluginOptionsOf<typeof name>);
+      } as BasePluginOptions;
 
+      // Skip if explicitly disabled or not in config and disabled by default
+      if (mergedOptions.enabled === false) {
+        return;
+      }
+
+      log(`Initializing plugin: ${name}`);
+      const instance = new klass(mergedOptions as PluginOptionsOf<typeof name>);
       this.#instances.set(name, instance);
     });
 

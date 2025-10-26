@@ -22,7 +22,6 @@ declare module "../compiler/types/plugins.ts" {
 }
 
 interface CssPluginOptions {
-  enabled: boolean;
   lightningCssOptions?: {
     minify?: boolean;
   };
@@ -35,10 +34,8 @@ class CssPlugin extends PencelPlugin {
     super();
     this.#options = options;
 
-    if (this.#options.enabled) {
-      log("Using CSS plugin");
-      this.handle("css:postprocess", this.#handleCssPostprocess.bind(this));
-    }
+    log("Using CSS plugin");
+    this.handle("css:postprocess", this.#handleCssPostprocess.bind(this));
   }
 
   #handleCssPostprocess(hook: CssPostprocessHook): void {
@@ -69,7 +66,6 @@ class CssPlugin extends PencelPlugin {
 }
 
 Plugins.register("css", CssPlugin, {
-  enabled: true,
   lightningCssOptions: {
     minify: true,
   },

@@ -1,5 +1,6 @@
 import { createLog } from "@pencel/utils";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
+import type { BasePluginOptions } from "../../compiler/types/plugins.ts";
 
 const log = createLog("AngularOutput");
 
@@ -12,9 +13,7 @@ declare module "../../compiler/types/plugins.ts" {
   }
 }
 
-interface AngularOutputOptions {
-  enabled: boolean;
-}
+type AngularOutputOptions = {};
 
 class AngularOutput extends PencelPlugin {
   constructor(userOptions: AngularOutputOptions) {
@@ -30,6 +29,4 @@ class AngularOutput extends PencelPlugin {
   }
 }
 
-Plugins.register("angular", AngularOutput, {
-  enabled: true,
-});
+Plugins.register("angular", AngularOutput, {});

@@ -2,7 +2,7 @@ import { relative } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
 import type { PencelConfig } from "./types/config-types.ts";
-import type { PluginNames } from "./types/plugins.ts";
+import type { BasePluginOptions, PluginNames } from "./types/plugins.ts";
 
 const log = createLog("Config");
 
@@ -55,19 +55,23 @@ export class Config {
     );
   }
 
-  getUserOptionsForPlugin<TPluginOptions extends object>(
+  getUserOptionsForPlugin<TPluginOptions extends BasePluginOptions>(
     pluginName: PluginNames,
-  ): TPluginOptions | null {
+  ): TPluginOptions {
     const plugins = this.user.plugins;
 
     for (const plugin of plugins) {
       if (typeof plugin === "string" && plugin === pluginName) {
-        return {} as TPluginOptions;
+        return {
+          enabled: false,
+        } as TPluginOptions;
       } else if (typeof plugin === "object" && plugin.name === pluginName) {
         return plugin.options ?? ({} as TPluginOptions);
       }
     }
 
-    return null;
+    return {
+      enabled: false,
+    } as TPluginOptions;
   }
 }
