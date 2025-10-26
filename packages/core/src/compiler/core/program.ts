@@ -1,4 +1,4 @@
-import { basename, resolve } from "node:path";
+import { resolve } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
 import { glob } from "glob";
 import ts from "typescript";
@@ -17,9 +17,10 @@ export class Program {
   tsconfig!: ts.ParsedCommandLine;
 
   /**
-   * Loads and validates tsconfig, then discovers input files using glob pattern
+   * Discovers input files by loading and validating tsconfig, then globbing for files
+   * Should be called once on startup and re-called on tsconfig changes
    */
-  async load(): Promise<string[]> {
+  async discover(): Promise<string[]> {
     const config = this.config;
 
     perf.start("verify-tsconfig");

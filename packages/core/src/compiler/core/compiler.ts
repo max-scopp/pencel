@@ -53,8 +53,10 @@ export class Compiler {
 
   async #buildGraph(): Promise<void> {
     perf.start("build-graph");
-    await this.#program.load();
-    await this.#sourceFiles.load();
+    await this.#program.discover();
+    await this.#sourceFiles.loadSource();
+    // Clear generated files from previous pass so plugins can repopulate
+    this.#sourceFiles.clearGenerated();
     perf.end("build-graph");
   }
 

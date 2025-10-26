@@ -12,9 +12,10 @@ export class SourceFiles {
   #sourceFiles = new Map<string, ts.SourceFile>();
 
   /**
-   * Creates SourceFiles from the file paths discovered by Program
+   * Loads source files from disk based on file paths discovered by Program
+   * Should be called after Program.discover() and re-called on file changes
    */
-  async load(): Promise<void> {
+  async loadSource(): Promise<void> {
     for (const filePath of this.program.filePaths) {
       const source = readFileSync(filePath, "utf-8");
       const sourceFile = ts.createSourceFile(
@@ -26,6 +27,14 @@ export class SourceFiles {
       );
       this.#sourceFiles.set(filePath, sourceFile);
     }
+  }
+
+  /**
+   * Clears all generated files and resets the generated files map
+   * Should be called at the start of each compilation pass
+   */
+  clearGenerated(): void {
+    this.#generatedFiles.clear();
   }
 
   getAll(): Map<string, ts.SourceFile> {
@@ -51,12 +60,15 @@ export class SourceFiles {
   }
 
   newFile(fileName: string): ts.SourceFile {
-    return ts.createSourceFile(
+    const sourceFile = ts.createSourceFile(
       fileName,
       "",
       ts.ScriptTarget.Latest,
       true,
       ts.ScriptKind.TS,
     );
+    // Automatically register generated files so they're tracked and cleaned up
+    this.#generatedFiles.set(fileName, sourceFile);
+    return sourceFile;
   }
 }
