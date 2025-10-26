@@ -17,7 +17,7 @@ export const defaultConfig: Required<PencelConfig> = {
     qualifier: "gen",
   },
   tsconfig: "tsconfig.json",
-  plugins: [],
+  plugins: ["css", "typings"],
   runtime: {
     tagNamespace: "pencel",
   },
@@ -63,10 +63,15 @@ export class Config {
     for (const plugin of plugins) {
       if (typeof plugin === "string" && plugin === pluginName) {
         return {
-          enabled: false,
+          enabled: true,
         } as TPluginOptions;
       } else if (typeof plugin === "object" && plugin.name === pluginName) {
-        return plugin.options ?? ({} as TPluginOptions);
+        return (
+          plugin.options ??
+          ({
+            enabled: true,
+          } as TPluginOptions)
+        );
       }
     }
 

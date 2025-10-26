@@ -37,7 +37,9 @@ export class Plugins {
     pluginClass: PluginConstructor<TName>,
     defaultOptions?: PluginOptionsOf<TName>,
   ): void {
+    perf.start(`register-plugin:${name}`);
     Plugins.registeredPlugins.set(name, [pluginClass, defaultOptions ?? {}]);
+    perf.end(`register-plugin:${name}`);
   }
 
   readonly #config = inject(Config);
@@ -63,9 +65,10 @@ export class Plugins {
         return;
       }
 
-      log(`Initializing plugin: ${name}`);
+      perf.start(`initialize-plugin:${name}`);
       const instance = new klass(mergedOptions as PluginOptionsOf<typeof name>);
       this.#instances.set(name, instance);
+      perf.end(`initialize-plugin:${name}`);
     });
 
     perf.end("initialize-plugins");
