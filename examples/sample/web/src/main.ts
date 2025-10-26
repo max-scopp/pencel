@@ -1,6 +1,6 @@
 import { pencelInit } from "@pencel/runtime";
 import "./components";
 
-pencelInit({
+await pencelInit({
   namespace: "wb",
 });

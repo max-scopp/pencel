@@ -11,10 +11,10 @@ import {
 } from "ts-flattered";
 import ts from "typescript";
 import { inject } from "../core/container.ts";
-import { IR } from "../ir/ir.ts";
+import { IRIndex } from "../ir/ref.ts";
 
 export class ComponentTypings {
-  readonly #ir = inject(IR);
+  readonly #ir = inject(IRIndex);
 
   /*
   Declares global or module-level TypeScript types for custom web components used in your project.
@@ -23,15 +23,17 @@ export class ComponentTypings {
   Ensures that when you use custom components in your code, you get proper IntelliSense and compile-time validation for their props and events.
   */
   async createTypings(sf: ts.SourceFile & FileBuilder): Promise<void> {
-    const cirs = this.#ir.getIRsForSourceFile(sf);
-
-    if (cirs.length === 0) {
-      return;
-    }
+    const cirs = this.#ir.firstIrr(
+      "File",
+      (irr) => irr.fileName === sf.fileName,
+    );
 
     console.log(
       "Creating typings for components:",
-      cirs.map((c) => ({ tag: c.tag, className: c.className })),
+      cirs.ir.components.map((c) => ({
+        tag: c.ir.tag,
+        className: c.ir.className,
+      })),
     );
 
     /*
@@ -49,15 +51,15 @@ export class ComponentTypings {
     // Create interface declarations for components
     const globalDeclarations: ts.Statement[] = [];
 
-    cirs.forEach((cir) => {
-      if (cir.forIs) {
+    cirs.ir.components.forEach((cir) => {
+      if (cir.ir.forIs) {
         // Create Document.createElement interface
         // [
         //   func("createElement", [
-        //     param("tagName").initializer($(cir.forIs)),
+        //     param("tagName").initializer($(cir.ir.forIs)),
         //     param("options").initializer(
         //       objLiteral({
-        //         is: cir.tag,
+        //         is: cir.ir.tag,
         //       }),
         //     ),
         //   ]
@@ -65,15 +67,15 @@ export class ComponentTypings {
           "createElement",
           [
             param("tagName", {
-              initializer: $(cir.forIs),
+              initializer: $(cir.ir.forIs),
             }),
             param("options", {
               initializer: objLiteral({
-                is: cir.tag,
+                is: cir.ir.tag,
               }),
             }),
           ],
-          $ref(cir.className),
+          $ref(cir.ir.className),
         );
 
         // ts.factory.createMethodSignature(
@@ -88,7 +90,7 @@ export class ComponentTypings {
         //       "tagName",
         //       undefined,
         //       ts.factory.createLiteralTypeNode(
-        //         ts.factory.createStringLiteral(cir.forIs),
+        //         ts.factory.createStringLiteral(cir.ir.forIs),
         //       ),
         //     ),
         //     ts.factory.createParameterDeclaration(
@@ -102,18 +104,18 @@ export class ComponentTypings {
         //           ts.factory.createIdentifier("is"),
         //           undefined,
         //           ts.factory.createLiteralTypeNode(
-        //             ts.factory.createStringLiteral(cir.tag),
+        //             ts.factory.createStringLiteral(cir.ir.tag),
         //           ),
         //         ),
         //       ]),
         //     ),
         //   ],
-        //   ts.factory.createTypeReferenceNode(cir.className, undefined),
+        //   ts.factory.createTypeReferenceNode(cir.ir.className, undefined),
         // ),
 
         // Create setAttribute interface for the extended element
         const setAttributeInterface = interface_(
-          `HTML${pascalCase(cir.forIs)}Element`,
+          `HTML${pascalCase(cir.ir.forIs)}Element`,
           [
             (ts.factory.createMethodSignature as any)(
               undefined,
@@ -136,7 +138,7 @@ export class ComponentTypings {
                   "value",
                   undefined,
                   ts.factory.createLiteralTypeNode(
-                    ts.factory.createStringLiteral(cir.tag),
+                    ts.factory.createStringLiteral(cir.ir.tag),
                   ),
                 ),
               ],
@@ -149,13 +151,13 @@ export class ComponentTypings {
       } else {
         globalDeclarations.push(
           interface_("HTMLElementTagNameMap").addProperty(
-            $(cir.tag),
-            $ref(cir.className),
+            $(cir.ir.tag),
+            $ref(cir.ir.className),
           ),
           namespace("JSX", [
             interface_("IntrinsicElements").addProperty(
-              $(cir.tag),
-              $ref(`JSXElementAttributes<${cir.className}>`),
+              $(cir.ir.tag),
+              $ref(`JSXElementAttributes<${cir.ir.className}>`),
             ),
           ]),
         );

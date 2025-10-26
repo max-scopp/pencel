@@ -1,4 +1,5 @@
 import { throwError } from "@pencel/utils";
+import { Config } from "../config.ts";
 import {
   PLUGIN_SKIP,
   type PluginFunction,
@@ -8,11 +9,10 @@ import {
   type TransformHandler,
 } from "../types/plugins.ts";
 import { perf } from "../utils/perf.ts";
-import { CompilerContext } from "./compiler-context.ts";
 import { inject } from "./container.ts";
 
 export class Plugins {
-  readonly #context = inject(CompilerContext);
+  readonly #config = inject(Config);
 
   static pluginsToInitialize: Map<
     string,
@@ -43,7 +43,7 @@ export class Plugins {
       name,
       { pluginFn, defaults },
     ] of Plugins.pluginsToInitialize.entries()) {
-      const userEntry = this.#context.config.plugins?.find((p) => {
+      const userEntry = this.#config.user.plugins?.find((p) => {
         return typeof p === "string" ? p === name : p.name === name;
       });
 
@@ -56,7 +56,10 @@ export class Plugins {
             ...defaults,
             ...userOptions,
           },
-          this.#context,
+          {
+            cwd: this.#config.cwd,
+            config: this.#config.user,
+          },
         );
 
         if (plugin) {

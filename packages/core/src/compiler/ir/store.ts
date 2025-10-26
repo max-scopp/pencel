@@ -1,7 +1,13 @@
 import type ts from "typescript";
-import type { ComponentIR } from "./component-ir.ts";
+import type { ComponentIR } from "./component.ts";
 
-export class IR {
+/**
+ * @deprecated use FileIR
+ */
+export class StoreIR {
+  /**
+   * @deprecated use FileIR
+   */
   readonly components: ComponentIR[] = [];
 
   getComponentByTag(tag: string): ComponentIR | undefined {
@@ -16,7 +22,7 @@ export class IR {
 
   getIRsForSourceFile(sourceFile: ts.SourceFile): ComponentIR[] {
     return this.components.filter(
-      (component) => component.sourceFile === sourceFile,
+      (component) => component.fileName === sourceFile.fileName,
     );
   }
 }

@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "@pencel/runtime",
+    "experimentalDecorators": true
+  },
+  "include": ["**/*.pen.tsx"],
+  "exclude": ["**/*.gen.*", "dist", "node_modules"]
+}

@@ -1,5 +1,4 @@
 import { throwError } from "@pencel/utils";
-import { resolve } from "path";
 import type { PencelConfig } from "../types/config-types.ts";
 
 export class CompilerContext {
@@ -18,11 +17,5 @@ export class CompilerContext {
 
   get config(): Required<PencelConfig> {
     return this.#config ?? throwError("Config not set. Call adopt() first.");
-  }
-
-  get outBase(): string {
-    return this.config.output.mode === "folder"
-      ? resolve(this.cwd, this.config.output.path)
-      : this.cwd;
   }
 }

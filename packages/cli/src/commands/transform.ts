@@ -1,6 +1,5 @@
 import {
   Compiler,
-  CompilerContext,
   Config,
   inject,
   Plugins,
@@ -17,7 +16,6 @@ export class TransformCommand extends Command {
   readonly #program: Program = inject(Program);
   readonly #plugins: Plugins = inject(Plugins);
   readonly #watcher: Watcher = inject(Watcher);
-  readonly #compilerContext: CompilerContext = inject(CompilerContext);
 
   config?: string = Option.String("--config,-C", {
     description: "Path to config file (defaults to pencil.config)",
@@ -32,8 +30,6 @@ export class TransformCommand extends Command {
     const now = performance.now();
 
     await this.#config.load(this.config);
-
-    await this.#compilerContext.adopt(this.#config.cwd, this.#config.config);
 
     await this.#plugins.initialize();
     await this.#program.load();

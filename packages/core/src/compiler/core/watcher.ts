@@ -1,6 +1,6 @@
 import { createLog } from "@pencel/utils";
 import chokidar from "chokidar";
-import { Config } from "../config/config.ts";
+import { Config } from "../config.ts";
 import { FileWriter } from "../output/file-writer.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
@@ -130,7 +130,14 @@ export class Watcher {
 
     try {
       for (const filePath of filesToProcess) {
-        await this.#compiler.transformFile(filePath);
+        const sf = this.#program.ts.getSourceFile(filePath);
+
+        if (!sf) {
+          log(`Skipping ${filePath}`);
+          continue;
+        }
+
+        await this.#compiler.transformFile(sf);
         await this.#fileWriter.writeFile(filePath);
       }
 

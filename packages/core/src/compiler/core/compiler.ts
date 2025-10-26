@@ -1,12 +1,12 @@
 import { createLog } from "@pencel/utils";
 import type { SourceFile } from "typescript";
-import { Config } from "../config/config.ts";
-import { SourceFiles } from "../factories/source-files.ts";
+import { Config } from "../config.ts";
+import type { FileIR } from "../ir/file.ts";
 import { FileWriter } from "../output/file-writer.ts";
 import { FileProcessor } from "../processors/file-processor.ts";
-import { ProjectProcessor } from "../processors/project-processor.ts";
 import type { PencelContext } from "../types/compiler-types.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
+import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
 import { Plugins } from "./plugin.ts";
 import { Program } from "./program.ts";
@@ -16,27 +16,27 @@ const log = createLog("Transform");
 export class Compiler {
   readonly #config = inject(Config);
   readonly #fileWriter = inject(FileWriter);
-  readonly #fileProcessor: FileProcessor = inject(FileProcessor);
-  readonly #projectProcessor: ProjectProcessor = inject(ProjectProcessor);
-  readonly #sourceFileRegistry = inject(SourceFiles);
-
-  readonly #program: Program = inject(Program);
+  readonly #program = inject(Program);
+  readonly #fileProcessor = inject(FileProcessor);
 
   get context(): PencelContext {
     return {
       cwd: this.#config.cwd,
-      config: this.#config.config,
+      config: this.#config.user,
     };
   }
 
-  async transformFile(filePath: string): Promise<void> {
-    if (!this.#program || !this.context || !this.#sourceFileRegistry) {
-      throw new Error("Compiler not set up. Call setup() first.");
-    }
+  async transformFile(
+    sourceFile: SourceFile,
+  ): Promise<FileIR | null | undefined> {
+    const filePath = sourceFile.fileName;
 
-    const sourceFile = this.#program.ts.getSourceFile(filePath);
-    if (!sourceFile) {
-      log(`File not found in program: ${filePath}`);
+    if (
+      sourceFile.fileName.startsWith("/") ||
+      sourceFile.fileName.startsWith("..") ||
+      sourceFile.fileName.includes("node_modules") ||
+      sourceFile.fileName.match(/\.d\..*$/)
+    ) {
       return;
     }
 
@@ -48,24 +48,29 @@ export class Compiler {
 
     log(`Transforming single file: ${filePath}`);
 
-    const newComponentFile = await this.#fileProcessor.process(sourceFile);
+    const fileIr = await this.#fileProcessor.process(sourceFile);
 
-    if (newComponentFile) {
-      // Create and register the transformed file
-      const sourceFileFactory = new SourceFiles();
-      const transformedFile =
-        sourceFileFactory.createTransformedFile(sourceFile);
-      this.#sourceFileRegistry.registerTransformedFile(
-        transformedFile,
-        filePath,
-      );
-    }
+    console.log(fileIr);
+    return fileIr;
   }
 
-  async transform(): Promise<Map<string, SourceFile>> {
-    const result = await this.#projectProcessor.processFilesInProject();
+  async transform(): Promise<Map<string, FileIR>> {
+    const sourceFiles = await this.#program.ts.getSourceFiles();
+    const result = new Map<string, FileIR>();
+
+    const promises = sourceFiles.map(async (sf) => {
+      const ir = await this.transformFile(sf);
+
+      if (ir) {
+        result.set(sf.fileName, ir);
+      }
+    });
+
+    await Promise.all(promises);
 
     await this.#fileWriter.writeEverything();
+
+    perf.log();
 
     return result;
   }

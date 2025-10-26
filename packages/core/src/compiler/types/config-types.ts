@@ -1,19 +1,27 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
 import type { PluginDefs } from "./plugins.ts";
 
-interface PencilOutputToFolder {
-  mode: "folder";
-  path: string;
-}
-
-interface PencilOutputAside {
-  mode: "aside";
+/**
+ * Pencel treats files using the pattern `<basename>.<qualifier>.<ext>`.
+ *
+ * It discovers components via `inputQualifier` and emits output files
+ * next to them using `outputQualifier`.
+ *
+ * Example:
+ *   component/my-component.pen.ts
+ * becomes:
+ *   component/my-component.gen.ts
+ */
+interface PencelOutputAside {
+  /**
+   * @default "pen"
+   */
+  inputQualifier: string;
 
   /**
-   * A regular expression that's using the basename of the file
-   * to determine the output file name.
+   * @default "gen"
    */
-  replace: [RegExp, string];
+  outputQualifier: string;
 }
 
 /**
@@ -21,39 +29,24 @@ interface PencilOutputAside {
  */
 export interface PencelConfig {
   /**
-   * The base directory for source files.
-   * @default "src"
+   * By default, it's using the `tsconfig.pencel.json` to resolve source components.
+   *
+   * @default tsconfig.pencel.json
    */
-  srcBase?: string;
+  input?: {
+    /**
+     * A tsconfig to use to discover components.
+     * @default tsconfig.pencel.json
+     */
+    tsconfig: string;
+  };
 
   /**
-   * The input folder or glob pattern to process.
-   * Defaults to the tsconfig next to the config file.
+   * Right now, you can only emit next to the source.
    */
-  input?:
-    | string
-    | {
-        /**
-         * Path to the tsconfig.json file to use, relative to this config file.
-         */
-        tsconfig: string;
-      };
+  output?: PencelOutputAside;
 
   plugins?: PluginDefs;
 
-  output?: PencilOutputToFolder | PencilOutputAside;
   runtime?: PencilRuntimeConfig;
 }
-
-export interface ComponentMetadata {
-  tagName?: string;
-  selector?: string;
-  extends?: string;
-  tagNamespace?: string;
-}
-
-export interface TransformResult {
-  meta: ComponentMetadata;
-}
-
-export type TransformResults = Map<string, TransformResult[]>;

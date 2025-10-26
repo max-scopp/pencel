@@ -2,56 +2,39 @@ import { findClasses, findDecorators } from "ts-flattered";
 import type ts from "typescript";
 import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooManyComponentDecoratorsOnClass.ts";
 import { ComponentTypings } from "../codegen/component-typings.ts";
-import { CompilerContext } from "../core/compiler-context.ts";
 import { inject } from "../core/container.ts";
 import { Plugins } from "../core/plugin.ts";
 import { Program } from "../core/program.ts";
-import { SourceFiles } from "../factories/source-files.ts";
-import { ComponentIR } from "../ir/component-ir.ts";
-import { IR } from "../ir/ir.ts";
-import { ComponentDecoratorTransformer } from "../transformers/component-decorator-transformer.ts";
+import { FileIR } from "../ir/file.ts";
+import { IRRef } from "../ir/ref.ts";
 import { PENCEL_DECORATORS } from "../transformers/constants.ts";
-import { PropsDecoratorTransformer } from "../transformers/props-decorator-transformer.ts";
+import { FileTransformer } from "../transformers/file.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 
 export class FileProcessor {
   readonly program: Program = inject(Program);
   readonly plugins: Plugins = inject(Plugins);
-  readonly context: CompilerContext = inject(CompilerContext);
-  readonly ir: IR = inject(IR);
-  readonly sourceFileFactory: SourceFiles = inject(SourceFiles);
+
   readonly componentTypings: ComponentTypings = inject(ComponentTypings);
 
-  async process(sourceFile: ts.SourceFile): Promise<ts.SourceFile | null> {
+  #fileTransformer = inject(FileTransformer);
+
+  async process(sourceFile: ts.SourceFile): Promise<FileIR | null> {
     if (!this.shouldProcess(sourceFile)) {
-      // log(`Skipping ${fname}`);
       return null;
     }
 
-    const transformedSourceFile =
-      this.sourceFileFactory.createTransformedFile(sourceFile);
+    const file = new FileIR(sourceFile);
+    this.#fileTransformer.transform(new IRRef(file, sourceFile));
 
-    // TODO: Right now, you MUST have a single component per file.
-    // In the future we can support multiple components per file.
-    const componentIR = new ComponentIR(transformedSourceFile);
-
-    const componentTransformer = new ComponentDecoratorTransformer(componentIR);
-    const propsTransformer = new PropsDecoratorTransformer(
-      this.program.ts,
-      componentIR,
-    );
-
-    await componentTransformer.transform(transformedSourceFile, this.context);
-    await propsTransformer.transform(transformedSourceFile, this.context);
-
-    await this.componentTypings.createTypings(transformedSourceFile);
+    await this.componentTypings.createTypings(sourceFile as any);
 
     await this.plugins.handle({
       aspect: "codegen",
-      input: transformedSourceFile,
+      input: sourceFile,
     });
 
-    return transformedSourceFile;
+    return file;
   }
 
   shouldProcess(sourceFile: ts.SourceFile): boolean {

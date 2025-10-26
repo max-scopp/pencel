@@ -80,6 +80,7 @@
       },
       "devDependencies": {
         "@pencel/cli": "workspace:*",
+        "@pencel/ts-plugin": "workspace:*",
       },
     },
     "packages/cli": {
@@ -138,6 +139,19 @@
         "@vitest/coverage-v8": "^3.2.4",
         "size-limit": "^11.2.0",
         "typescript": "*",
+      },
+    },
+    "packages/ts-plugin": {
+      "name": "@pencel/ts-plugin",
+      "version": "0.0.0",
+      "dependencies": {
+        "@pencel/core": "workspace:*",
+      },
+      "devDependencies": {
+        "tsdown": "^0.15.2",
+      },
+      "peerDependencies": {
+        "typescript": "^5.9.3",
       },
     },
     "packages/utils": {
@@ -952,6 +966,8 @@
     "@pencel/react": ["@pencel/react@workspace:examples/sample/react"],
 
     "@pencel/runtime": ["@pencel/runtime@workspace:packages/runtime"],
+
+    "@pencel/ts-plugin": ["@pencel/ts-plugin@workspace:packages/ts-plugin"],
 
     "@pencel/utils": ["@pencel/utils@workspace:packages/utils"],
 

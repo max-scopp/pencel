@@ -8,4 +8,5 @@ export default defineConfig({
   sourcemap: true,
   banner: "/* Pencel CLI v0.0.0 - License: MIT */",
   platform: "node",
+  external: ["lightningcss"],
 });

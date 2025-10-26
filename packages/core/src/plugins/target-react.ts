@@ -2,8 +2,6 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 import { createLog } from "@pencel/utils";
 import { file } from "ts-flattered";
-import { CompilerContext } from "../compiler/core/compiler-context.ts";
-import { inject } from "../compiler/core/container.ts";
 import { Plugins } from "../compiler/core/plugin.ts";
 import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
 import { perf } from "../compiler/utils/perf.ts";
@@ -16,14 +14,12 @@ Plugins.register(
     enabled: true,
     proxyFile: "out/angular/components.ts",
   },
-  (options) => {
+  (options, context) => {
     if (!options.enabled) {
       return Promise.resolve(null);
     }
 
     log("Using Angular target");
-
-    const context = inject(CompilerContext);
 
     const fullPath = resolve(context.cwd, options.proxyFile);
 

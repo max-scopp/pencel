@@ -1,4 +1,4 @@
-export function getTrueTag(tag: string, namespace: string = "pen"): string {
+export function normalizeTag(tag: string, namespace: string = "pen"): string {
   if (tag.startsWith(`${namespace}-`)) {
     return tag;
   }
