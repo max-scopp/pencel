@@ -1,10 +1,6 @@
 import { dirname } from "node:path";
-import { createLog } from "@pencel/utils";
 import * as sass from "sass-embedded";
 import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
-import type { CssPreprocessHook } from "../compiler/types/plugins.ts";
-
-const log = createLog("SCSS");
 
 declare module "../compiler/types/plugins.ts" {
   interface PluginRegistry {
@@ -32,26 +28,16 @@ class ScssPlugin extends PencelPlugin {
     super();
     this.#options = options;
 
-    log("Using SCSS plugin");
-    this.handle("css:preprocess", this.#handleCssPreprocess.bind(this));
-  }
+    this.handle("css:preprocess", async (hook) => {
+      const fileDir = dirname(hook.path);
 
-  #handleCssPreprocess(hook: CssPreprocessHook): void {
-    // Get the directory of the current SCSS file to resolve relative imports
-    const fileDir = dirname(hook.path);
-
-    sass
-      .compileStringAsync(hook.input, {
+      const result = await sass.compileStringAsync(hook.input, {
         ...this.#options.scssOptions,
         loadPaths: [fileDir, ...(this.#options.scssOptions?.loadPaths || [])],
-      })
-      .then((result) => {
-        hook.input = result.css;
-      })
-      .catch((err) => {
-        console.error(`SCSS compilation error in ${hook.path}:`, err);
-        throw err;
       });
+
+      hook.input = result.css;
+    });
   }
 }
 

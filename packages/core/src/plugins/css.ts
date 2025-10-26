@@ -2,7 +2,6 @@ import { warn } from "node:console";
 import { createLog } from "@pencel/utils";
 import { type ErrorLocation, transform } from "lightningcss";
 import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
-import type { CssPostprocessHook } from "../compiler/types/plugins.ts";
 
 const log = createLog("CSS");
 
@@ -34,34 +33,31 @@ class CssPlugin extends PencelPlugin {
     super();
     this.#options = options;
 
-    log("Using CSS plugin");
-    this.handle("css:postprocess", this.#handleCssPostprocess.bind(this));
-  }
+    this.handle("css:postprocess", (hook) => {
+      log(`Handle ${hook.path}`);
 
-  #handleCssPostprocess(hook: CssPostprocessHook): void {
-    log(`Handle ${hook.path}`);
+      try {
+        const result = transform({
+          ...this.#options.lightningCssOptions,
+          code: Buffer.from(hook.input),
+          filename: hook.path,
+        });
 
-    try {
-      const result = transform({
-        ...this.#options.lightningCssOptions,
-        code: Buffer.from(hook.input),
-        filename: hook.path,
-      });
+        result.warnings.forEach((warning) => {
+          warn(`${warning.message}`);
+        });
 
-      result.warnings.forEach((warning) => {
-        warn(`${warning.message}`);
-      });
-
-      hook.input = result.code.toString();
-    } catch (err) {
-      if (isErrorLocation(err)) {
-        warn(
-          `CSS Syntax Error in ${hook.path}:${err.line}:${err.column}\n\t${err.message}`,
-        );
-      } else {
-        throw err;
+        hook.input = result.code.toString();
+      } catch (err) {
+        if (isErrorLocation(err)) {
+          warn(
+            `CSS Syntax Error in ${hook.path}:${err.line}:${err.column}\n\t${err.message}`,
+          );
+        } else {
+          throw err;
+        }
       }
-    }
+    });
   }
 }
 

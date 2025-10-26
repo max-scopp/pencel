@@ -1,9 +1,7 @@
 import { basename } from "node:path";
-import { createLog } from "@pencel/utils";
 import type { SourceFile } from "typescript";
 import { Config } from "../config.ts";
 import type { FileIR } from "../ir/file.ts";
-import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
 import { FileProcessor } from "./file-processor.ts";
@@ -11,8 +9,6 @@ import { FileWriter } from "./file-writer.ts";
 import { Plugins } from "./plugin.ts";
 import { Program } from "./program.ts";
 import { SourceFiles } from "./source-files.ts";
-
-const log = createLog("Transform");
 
 export class Compiler {
   readonly #config = inject(Config);
@@ -35,7 +31,7 @@ export class Compiler {
     perf.start("compile");
 
     await this.#buildGraph();
-    const result = await this.transformAllFiles();
+    const result = await this.processAllFiles();
 
     perf.end("compile");
     return result;
@@ -43,12 +39,13 @@ export class Compiler {
 
   /**
    * Incremental compile: reloads graph, then transforms only specified files
+   * // TODO: writing files missing
    */
   async compileChangedFiles(
     changedFiles: string[],
   ): Promise<Map<string, FileIR>> {
     await this.#buildGraph();
-    return this.transformFiles(changedFiles);
+    return this.processFiles(changedFiles);
   }
 
   async #buildGraph(): Promise<void> {
@@ -60,32 +57,24 @@ export class Compiler {
     perf.end("build-graph");
   }
 
-  async transformFile(
+  async processFile(
     sourceFile: SourceFile,
   ): Promise<FileIR | null | undefined> {
-    perf.start(`transform-${basename(sourceFile.fileName)}`);
-    const filePath = sourceFile.fileName;
+    perf.start(`transform:${basename(sourceFile.fileName)}`);
 
-    if (isPencelGeneratedFile(sourceFile)) {
-      log(`Skipping generated file: ${filePath}`);
-      return;
-    }
+    const fileIrr = await this.#fileProcessor.process(sourceFile);
 
-    const fileIr = await this.#fileProcessor.process(sourceFile);
+    perf.end(`transform:${basename(sourceFile.fileName)}`);
 
-    perf.end(`transform-${basename(sourceFile.fileName)}`);
-
-    console.log(fileIr);
-
-    return fileIr;
+    return fileIrr?.ir;
   }
 
-  async transformAllFiles(): Promise<Map<string, FileIR>> {
+  async processAllFiles(): Promise<Map<string, FileIR>> {
     const sourceFiles = this.#sourceFiles.getAll();
     const result = new Map<string, FileIR>();
 
     for (const sf of sourceFiles.values()) {
-      const ir = await this.transformFile(sf);
+      const ir = await this.processFile(sf);
 
       if (ir) {
         result.set(sf.fileName, ir);
@@ -99,14 +88,14 @@ export class Compiler {
     return result;
   }
 
-  async transformFiles(filePaths: string[]): Promise<Map<string, FileIR>> {
+  async processFiles(filePaths: string[]): Promise<Map<string, FileIR>> {
     const allSourceFiles = this.#sourceFiles.getAll();
     const result = new Map<string, FileIR>();
 
     for (const path of filePaths) {
       const sf = allSourceFiles.get(path);
       if (sf) {
-        const ir = await this.transformFile(sf);
+        const ir = await this.processFile(sf);
 
         if (ir) {
           result.set(sf.fileName, ir);
@@ -114,9 +103,7 @@ export class Compiler {
       }
     }
 
-    if (result.size > 0) {
-      await this.#fileWriter.writeEverything();
-    }
+    await this.#fileWriter.writeEverything();
 
     perf.log();
 

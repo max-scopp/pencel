@@ -1,4 +1,3 @@
-import { log } from "node:console";
 import { Config } from "../config.ts";
 import type {
   BasePluginOptions,
@@ -54,14 +53,15 @@ export class Plugins {
     perf.start("initialize-plugins");
 
     Plugins.registeredPlugins.forEach(async ([klass, defaultOptions], name) => {
+      const requiredPlugins = ["transform"] as Array<PluginNames>;
+
       const userOptions = this.#config.getUserOptionsForPlugin(name);
       const mergedOptions = {
         ...defaultOptions,
         ...userOptions,
       } as BasePluginOptions;
 
-      // Skip if explicitly disabled or not in config and disabled by default
-      if (mergedOptions.enabled === false) {
+      if (!requiredPlugins.includes(name) && mergedOptions.enabled === false) {
         return;
       }
 

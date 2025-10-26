@@ -1,3 +1,4 @@
+import { throwError } from "@pencel/utils";
 import type { Node } from "typescript";
 import { inject } from "../core/container.ts";
 import type { ComponentIR } from "./component.ts";
@@ -21,13 +22,13 @@ export type KnownIRs = {
 /**
  *  Recursively unwraps IRRef<T> to T through object trees and arrays
  */
-export type ImplodeIRRef<T> = T extends IRRef<infer U, infer _N extends Node>
-  ? ImplodeIRRef<U>
+export type ImplodeIRRefs<T> = T extends IRRef<infer U, infer _N extends Node>
+  ? ImplodeIRRefs<U>
   : T extends (infer U)[]
-    ? ImplodeIRRef<U>[]
+    ? ImplodeIRRefs<U>[]
     : T extends object
       ? {
-          [K in keyof T]: ImplodeIRRef<T[K]>;
+          [K in keyof T]: ImplodeIRRefs<T[K]>;
         }
       : T;
 
@@ -57,7 +58,7 @@ export function IRM(kind: IRKind) {
 export class IRRef<T extends IR, TNode extends Node> {
   constructor(
     readonly ir: T,
-    readonly node: TNode,
+    public node: TNode,
   ) {
     inject(IRRI).register(this);
   }
@@ -67,11 +68,11 @@ export class IRRef<T extends IR, TNode extends Node> {
  * Intermediate Representation Reference Index
  */
 export class IRRI {
-  #all = new Set<IRRef<IR, Node>>();
+  #nodeToIrr = new WeakMap<Node, IRRef<IR, Node>>();
   #byKind = new Map<IRKind, Set<IRRef<IR, Node>>>();
 
   register<TIR extends IR, TNode extends Node>(irr: IRRef<TIR, TNode>) {
-    this.#all.add(irr);
+    this.#nodeToIrr.set(irr.node, irr);
 
     let bucket = this.#byKind.get(irr.ir.kind);
 
@@ -81,6 +82,22 @@ export class IRRI {
     }
 
     bucket.add(irr);
+  }
+
+  /**
+   * Get the IRRef for a given node, if it exists in the IRRI
+   */
+  getIrrForNode(node: Node): IRRef<IR, Node> | undefined {
+    return this.#nodeToIrr.get(node);
+  }
+
+  updateNode(oldNode: Node, newNode: Node) {
+    const irr =
+      this.#nodeToIrr.get(oldNode) ?? throwError("IRRef not found for node");
+
+    this.#nodeToIrr.delete(oldNode);
+    irr.node = newNode;
+    this.#nodeToIrr.set(newNode, irr);
   }
 
   allByKind<K extends IRKind>(kind: K): IRRef<KnownIRs[K], Node>[] {
@@ -110,7 +127,7 @@ export class IRRI {
   /**
    *  Unwraps IRRef instances and removes AST nodes for serialization
    */
-  implode<T>(value: T): ImplodeIRRef<T> {
+  implode<T>(value: T): ImplodeIRRefs<T> {
     const seen = new WeakSet<object>();
 
     const implodeValue = (val: unknown): unknown => {
@@ -150,6 +167,6 @@ export class IRRI {
       return val;
     };
 
-    return implodeValue(value) as ImplodeIRRef<T>;
+    return implodeValue(value) as ImplodeIRRefs<T>;
   }
 }

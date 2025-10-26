@@ -1,4 +1,6 @@
-import type ts from "typescript";
+import type { Node, SourceFile } from "typescript";
+import type { FileIR } from "../ir/file.ts";
+import type { ImplodeIRRefs, IR, IRRef } from "../ir/irri.ts";
 
 export interface BasePluginOptions {
   enabled?: boolean;
@@ -41,9 +43,22 @@ export type CssPostprocessHook = {
 };
 
 /** Generate code from TypeScript AST (mutable) */
+// TODO: Remove
 export type CodegenHook = {
-  hook: "codegen";
-  input: ts.SourceFile;
+  hook: "transform";
+  irr: IRRef<IR, Node>;
+};
+
+/** Generate project-level files from the complete IR tree */
+export type GenerateHook = {
+  hook: "generate";
+  irs: Array<ImplodeIRRefs<FileIR>>;
+};
+
+/** Derive framework-specific files from IR and source file */
+export type DeriveHook = {
+  hook: "derive";
+  irr: IRRef<FileIR, SourceFile>;
 };
 
 /**
@@ -52,7 +67,9 @@ export type CodegenHook = {
 export type PluggableHooks =
   | CssPreprocessHook
   | CssPostprocessHook
-  | CodegenHook;
+  | CodegenHook
+  | GenerateHook
+  | DeriveHook;
 
 export type HookOf<TKind extends PluggableHooks["hook"]> = Extract<
   PluggableHooks,

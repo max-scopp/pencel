@@ -1,6 +1,5 @@
 import { createLog } from "@pencel/utils";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
-import type { BasePluginOptions } from "../../compiler/types/plugins.ts";
 
 const log = createLog("AngularOutput");
 
@@ -13,20 +12,23 @@ declare module "../../compiler/types/plugins.ts" {
   }
 }
 
-type AngularOutputOptions = {};
+type AngularOutputOptions = {
+  outputPath?: string;
+};
 
 class AngularOutput extends PencelPlugin {
   constructor(userOptions: AngularOutputOptions) {
     super();
-    log(
-      `Angular output plugin initialized with options: ${JSON.stringify(userOptions)}`,
-    );
-
-    this.handle("codegen", (hook) => {
-      log(`Processing codegen hook for file: ${hook.input.fileName}`);
-      // Angular-specific code generation logic would go here
+    this.handle("derive", (hook) => {
+      log(
+        `Generate Framework bindings for file: ${hook.irr.node.fileName} to ${
+          userOptions.outputPath
+        }`,
+      );
     });
   }
 }
 
-Plugins.register("angular", AngularOutput, {});
+Plugins.register("angular", AngularOutput, {
+  outputPath: "out/angular",
+});

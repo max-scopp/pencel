@@ -1,5 +1,5 @@
 import { dirname, relative } from "node:path";
-import ts from "typescript";
+import ts, { transform } from "typescript";
 
 /**
  * Rewrite all import/export/module specifiers in a SourceFile.
@@ -167,7 +167,7 @@ export function updateSourceFileImports(
     };
   };
 
-  const result = ts.transform(sf, [transformer]);
+  const result = transform(sf, [transformer]);
   const transformed = result.transformed[0] as ts.SourceFile;
   result.dispose();
   return transformed;

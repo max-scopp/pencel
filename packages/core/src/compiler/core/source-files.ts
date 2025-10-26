@@ -59,7 +59,8 @@ export class SourceFiles {
     );
   }
 
-  newFile(fileName: string): ts.SourceFile {
+  newFile(fileName: string, statements?: ts.Statement[]): ts.SourceFile {
+    // Create empty source file first to get proper initialization
     const sourceFile = ts.createSourceFile(
       fileName,
       "",
@@ -67,8 +68,37 @@ export class SourceFiles {
       true,
       ts.ScriptKind.TS,
     );
+
     // Automatically register generated files so they're tracked and cleaned up
     this.#generatedFiles.set(fileName, sourceFile);
+
+    if (statements) {
+      this.setStatements(sourceFile, statements);
+    }
+
     return sourceFile;
+  }
+
+  /**
+   * Updates or resets a SourceFile's statements
+   * Returns a new SourceFile with updated statements, replacing it in the internal maps
+   */
+  setStatements(
+    sourceFile: ts.SourceFile,
+    statements: ts.Statement[],
+  ): ts.SourceFile {
+    const updated = ts.factory.updateSourceFile(sourceFile, statements);
+
+    // Update the file in the appropriate map
+    const fileName = sourceFile.fileName;
+    if (this.#sourceFiles.has(fileName)) {
+      this.#sourceFiles.set(fileName, updated);
+    } else if (this.#generatedFiles.has(fileName)) {
+      this.#generatedFiles.set(fileName, updated);
+    } else {
+      throw new Error(`Source file not found in either map: ${fileName}`);
+    }
+
+    return updated;
   }
 }
