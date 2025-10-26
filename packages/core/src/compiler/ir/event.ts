@@ -7,7 +7,7 @@ import {
 } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
-import { IRM } from "./ref.ts";
+import { IRM } from "./irri.ts";
 
 export class EventIR extends IRM("Event") implements EventOptions {
   eventName?: string;

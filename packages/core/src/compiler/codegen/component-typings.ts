@@ -1,10 +1,10 @@
 import { pascalCase } from "@pencel/utils";
 import ts from "typescript";
 import { inject } from "../core/container.ts";
-import { IRIndex } from "../ir/ref.ts";
+import { IRRI } from "../ir/irri.ts";
 
 export class ComponentTypings {
-  readonly #ir = inject(IRIndex);
+  readonly #ir = inject(IRRI);
 
   /*
   Declares global or module-level TypeScript types for custom web components used in your project.

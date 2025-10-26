@@ -5,7 +5,7 @@ import {
   type SourceFile,
 } from "typescript";
 import { ComponentIR } from "./component.ts";
-import { IRM, IRRef } from "./ref.ts";
+import { IRM, IRRef } from "./irri.ts";
 
 export class FileIR extends IRM("File") {
   readonly fileName: string;

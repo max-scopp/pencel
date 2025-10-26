@@ -5,7 +5,7 @@ import { isPropertyDeclaration } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
 import type { ASTNode } from "../../ts-utils/node.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
-import { IRM } from "./ref.ts";
+import { IRM } from "./irri.ts";
 
 export class PropertyIR extends IRM("Prop") {
   readonly attr?: string | ASTNode | null;

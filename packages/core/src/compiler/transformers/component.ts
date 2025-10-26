@@ -4,7 +4,7 @@ import { recordToObjectLiteral } from "../../ts-utils/recordToObjectLiteral.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { inject } from "../core/container.ts";
 import { ComponentIR } from "../ir/component.ts";
-import type { IRRef } from "../ir/ref.ts";
+import type { IRRef } from "../ir/irri.ts";
 import { PropertyTransformer } from "./props.ts";
 import { Transformer } from "./transformer.ts";
 

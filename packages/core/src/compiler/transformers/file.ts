@@ -2,7 +2,7 @@ import type { SourceFile } from "typescript";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
 import { FileIR } from "../ir/file.ts";
-import type { IRRef } from "../ir/ref.ts";
+import type { IRRef } from "../ir/irri.ts";
 import { replaceQualifier } from "../utils/replaceQualifier.ts";
 import { ComponentTransformer } from "./component.ts";
 import { Transformer } from "./transformer.ts";

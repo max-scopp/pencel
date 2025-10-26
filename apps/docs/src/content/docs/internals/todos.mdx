@@ -4,60 +4,45 @@ sidebar:
   order: 1000
 ---
 
-Personal list of tasks for feature parity with Stencil.
+**Legend:** ✅ Working | ⚠️ Partial | ❌ Not started
 
-## Core Features
+## Zero-VDOM Architecture
 
-- [ ] Migrate VDOM to Snabbdom?
-- [ ] First Output Targets:
-    - [ ] React
-    - [ ] Angular
-- [ ] Component IR: multiple components per file
-- [ ] Namespace-aware component tags
-- [ ] Props & State
-- [ ] Event & Listen
-- [ ] Replace `!` with `declare` (esp. `@Element`)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| JSX to AST parsing | ❌ | Parse component JSX into analyzable AST |
+| Compile-time codegen | ❌ | Generate optimized update functions from AST |
+| Compile-time diffing | ❌ | Generate update code for changed properties |
+| Direct DOM instructions | ❌ | Eliminate VDOM overhead |
+| Event binding compilation | ❌ | Resolve event listeners at compile-time |
 
-### Critical Decorators
+## Core Pipeline
 
-- [ ] `@Watch()` - property/state watching
-- [ ] `@Method()` - expose public methods (async)
-- [ ] `@Element()` - direct element reference
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Program | ✅ | File discovery & tsconfig validation |
+| SourceFiles | ✅ | In-memory file registry |
+| FileProcessor | ✅ | IR building from AST |
+| IRRI | ✅ | IR tracking by kind |
+| Transformers | ✅ | AST synchronization |
+| SourcePrinter | ✅ | AST to source code |
+| FileWriter | ⚠️ | Only writes ir.json; needs `writeAllFiles()` |
 
-### Lifecycle Methods
+## Plugin System
 
-- [ ] `componentWillUpdate()`
-- [ ] `componentDidUpdate()`
-- [ ] `componentDidRender()`
-- [ ] `componentOnReady()`
+| Hook | Status | Notes |
+|------|--------|-------|
+| `onGenerate` | ❌ | Global file generation (ir.json, d.ts) |
+| `onDerive` | ❌ | Per-source framework adapters |
+| Import Resolution | ❌ | Missing `resolveImports()` & validation |
+| Sync AST Phase | ❌ | Cross-file type resolution |
 
-### Component Features
+## Testing Gaps
 
-- [ ] Slots & content projection
-- [ ] CSS custom properties
-- [ ] Form association
-
-## Framework Integration
-
-- [ ] `@pencel/react` package + React-specific features
-- [ ] `@pencel/angular` package + Angular-specific features
-
-## Developer Experience
-
-- [ ] CLI: component & framework generators
-- [ ] Build & bundling improvements
-- [ ] Testing utilities
-- [ ] Storybook integration
-
-## (LOW PRIORITY) Advanced Features
-
-- [ ] Store integration
-- [ ] Lazy loading & rendering optimizations
-- [ ] Theme & animation systems
-- [ ] Runtime API parity: `Watch` & `forceUpdate`
-- [ ] Lightingcss: proper CSS code framing + sourcemaps
-
-## INFRASTRUCTURE
-
-- [-] Docs & examples
-- [ ] Release automation & NPM packages
+| Test | Status | Notes |
+|------|--------|-------|
+| FileProcessor with various component patterns | ❌ | Unit tests |
+| IRRI batching by kind | ❌ | Unit tests |
+| Import resolution validation | ❌ | Integration tests |
+| FileWriter + SourcePrinter integration | ❌ | Integration tests |
+| Incremental compilation with watch mode | ❌ | Integration tests |

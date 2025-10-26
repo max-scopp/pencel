@@ -6,8 +6,8 @@ import {
 } from "typescript";
 import { recordToObjectLiteral } from "../../ts-utils/recordToObjectLiteral.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
+import type { IRRef } from "../ir/irri.ts";
 import { PropertyIR } from "../ir/prop.ts";
-import type { IRRef } from "../ir/ref.ts";
 import { Transformer } from "./transformer.ts";
 
 export class PropertyTransformer extends Transformer(PropertyIR) {

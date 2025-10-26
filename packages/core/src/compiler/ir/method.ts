@@ -5,7 +5,7 @@ import {
   type MethodDeclaration,
 } from "typescript";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
-import { IRM } from "./ref.ts";
+import { IRM } from "./irri.ts";
 
 const warn = createWarn("MethodIR");
 

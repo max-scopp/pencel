@@ -1,5 +1,5 @@
 import type { Node } from "typescript";
-import type { IR, IRRef } from "../ir/ref.ts";
+import type { IR, IRRef } from "../ir/irri.ts";
 
 export interface ITransformer {
   shouldHandle(irr: IRRef<IR, Node>): boolean;

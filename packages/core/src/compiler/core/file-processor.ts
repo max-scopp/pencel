@@ -1,7 +1,7 @@
 import type ts from "typescript";
 import { ComponentTypings } from "../codegen/component-typings.ts";
 import { FileIR } from "../ir/file.ts";
-import { IRRef } from "../ir/ref.ts";
+import { IRRef } from "../ir/irri.ts";
 import { FileTransformer } from "../transformers/file.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { inject } from "./container.ts";

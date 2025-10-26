@@ -13,9 +13,9 @@ import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
 import { EventIR } from "./event.ts";
+import { IRM, IRRef } from "./irri.ts";
 import { MethodIR } from "./method.ts";
 import { PropertyIR } from "./prop.ts";
-import { IRM, IRRef } from "./ref.ts";
 
 export interface ComponentMethod {
   name: string;

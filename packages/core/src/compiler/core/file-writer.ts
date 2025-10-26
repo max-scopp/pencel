@@ -3,13 +3,13 @@ import { relative } from "node:path";
 import { createLog } from "@pencel/utils";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
-import { IRIndex } from "../ir/ref.ts";
+import { IRRI } from "../ir/irri.ts";
 
 const log = createLog("FileWriter");
 
 export class FileWriter {
   readonly #config = inject(Config);
-  readonly #iri = inject(IRIndex);
+  readonly #iri = inject(IRRI);
 
   async writeIr(): Promise<void> {
     const irPath = "ir.json";

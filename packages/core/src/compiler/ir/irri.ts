@@ -59,11 +59,14 @@ export class IRRef<T extends IR, TNode extends Node> {
     readonly ir: T,
     readonly node: TNode,
   ) {
-    inject(IRIndex).register(this);
+    inject(IRRI).register(this);
   }
 }
 
-export class IRIndex {
+/**
+ * Intermediate Representation Reference Index
+ */
+export class IRRI {
   #all = new Set<IRRef<IR, Node>>();
   #byKind = new Map<IRKind, Set<IRRef<IR, Node>>>();
 

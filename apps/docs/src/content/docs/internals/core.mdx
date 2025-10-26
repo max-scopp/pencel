@@ -1,64 +1,154 @@
 ---
-title: Core
+title: Core Components
 sidebar:
-    order: 3
+  order: 3
 ---
 
-This diagram shows the core architecture and main dependencies of the compiler system, including the IR layer, plugin system, and processing pipeline.
+The core compiler system and how the pieces fit together. See [Compilation System](/pencel/internals/compilation/) for the pipeline overview.
+
+## System Architecture
 
 ```mermaid
-graph TD
-    %% Core Foundation
-    Context[CompilerContext]:::core
-    Container[DI Container]:::core
+graph TB
+    subgraph Discovery["Discovery & IR Building"]
+        Program["Program"]
+        SourceFiles["SourceFiles"]
+        FileProcessor["FileProcessor"]
+    end
     
-    %% Plugin System
-    PluginManager[PluginManager]:::plugin
+    subgraph IRManagement["IR & Transformation"]
+        IRRI["IRRI"]
+        Transformers["Transformers"]
+    end
     
-    %% Core Services
-    Program[Program]:::service
-    FileSystem[FileSystem]:::service
-    Registry[SourceFileRegistry]:::service
+    subgraph Output["Output Generation"]
+        Plugins["Plugins"]
+        FileWriter["FileWriter"]
+    end
     
-    %% IR Layer
-    IRBuilder[IR Builder]:::ir
+    Compiler["Compiler<br/>(Orchestrator)"]
     
-    %% Processing Pipeline
-    Transformer[FileTransformer]:::pipeline
+    Compiler --> Discovery
+    Compiler --> IRManagement
+    Compiler --> Output
     
-    %% Top Level Orchestrator
-    Compiler[Compiler]:::orchestrator
+    FileProcessor --> IRRI
+    Transformers --> IRRI
+    SourceFiles -.->|registers| IRRI
     
-    %% Dependencies
-    Container --> Context
-    PluginManager --> Context
-    
-    Program --> Context
-    FileSystem --> Context
-    Registry --> Container
-    
-    IRBuilder --> Context
-    IRBuilder --> Program
-    
-    Transformer --> Program
-    Transformer --> FileSystem
-    Transformer --> Registry
-    Transformer --> PluginManager
-    Transformer --> IRBuilder
-    
-    Compiler --> Context
-    Compiler --> PluginManager
-    Compiler --> Transformer
-    Compiler --> Registry
-    Compiler --> IRBuilder
-````
+    style Compiler fill:#fff3e0,stroke:#f57f17,stroke-width:3px,color:#000
+    style Discovery fill:#e3f2fd,stroke:#01579b,color:#000
+    style IRManagement fill:#f3e5f5,stroke:#6a1b9a,color:#000
+    style Output fill:#e8f5e9,stroke:#33691e,color:#000
+```
 
-### Notes
+## Key Components
 
-* **CompilerContext**: central shared state across all components
-* **DI Container**: manages service instantiation and lifecycle of the compiler
-* **PluginManager**: manages loading and execution of plugins and it's hooks
-* **Program/FileSystem/Registry**: core services used throughout the pipeline
-* **IRBuilder**: builds intermediate representation for transformations
-* **FileTransformer**: applies transformations/plugins to IR or source files
-* **Compiler**: orchestrates all components, executes the full compilation process
+### Program
+
+Discovers input files and validates `tsconfig.json`.
+
+- Validates TypeScript configuration
+- Globs for input files based on config pattern
+- Provides parsed `tsconfig` for compiler setup
+
+### SourceFiles
+
+Manages all source and generated files, maintains their separation, and serves as the central registry.
+
+- Maintains `#sourceFiles` (project inputs) separately from `#generatedFiles`
+- Provides API for creating generated files (auto-registers them)
+- Manages import resolution and dependency validation
+- Indexes symbols across user, generated, and derived files
+
+See [File and Dependency Management](/pencel/internals/file-management/) for detailed information.
+
+### FileProcessor
+
+Builds the IR for a single source file.
+
+- Creates `FileIR` for the source file
+- Runs `FileTransformer` to sync AST
+- Calls plugins for codegen hooks
+
+### IRRI
+
+Tracks all IR nodes created during a compilation pass, organized by kind.
+
+- Collects all IRs as they're created via auto-registration from `IRRef`
+- Organizes by IR kind (Component, Property, Event, etc.)
+- Provides typed queries for batching transformations
+- Implodes references to get pure IR tree for generation
+
+See [IRRI and IRRef](/pencel/internals/irri/) for pairing and querying strategy.
+
+### Transformers
+
+Sync AST nodes to reflect their IR state. Internal infrastructure, not exposed as plugins.
+
+Examples: `ComponentTransformer`, `PropertyTransformer`
+
+Called on all IRs of a given kind, batched via `IRRI`.
+
+### FileWriter
+
+Flushes generated and derived files to disk.
+
+- Writes all files in `SourceFiles.getAll()`
+- Handles file system I/O
+
+## Compilation Flow
+
+The `Compiler` orchestrates the entire pipeline:
+
+```typescript
+async compile(): Promise<Map<string, FileIR>> {
+  await this.#program.discover()
+  await this.#sourceFiles.loadSource()
+  this.#sourceFiles.clearGenerated()
+  
+  // 3. Build IR for all sources
+  const irs = new Map<string, FileIR>()
+  for (const sourceFile of this.#sourceFiles.getAll().values()) {
+    const ir = await this.#fileProcessor.process(sourceFile)
+    if (ir) irs.set(sourceFile.fileName, ir)
+  }
+  
+  // 4-6. Sync AST, Generate, Derive
+  await this.#plugins.runGenerators(irs)
+  await this.#plugins.runDerivatives(irs, this.#changedSourceFiles)
+  
+  // 7. Write to disk
+  await this.#fileWriter.writeEverything()
+  
+  return irs
+}
+```
+
+## Dependency Injection
+
+All core components use constructor injection from a DI container:
+
+```mermaid
+graph TB
+    Container["DI Container"]
+    Config["Config"]
+    Program
+    SourceFiles
+    FileProcessor
+    IRRI
+    Compiler
+    
+    Container -.->|provides| Config
+    Container -.->|provides| Program
+    Container -.->|provides| SourceFiles
+    Container -.->|provides| FileProcessor
+    Container -.->|provides| IRRI
+    Container -.->|provides| Compiler
+    
+    style Container fill:#fff3e0,stroke:#f57f17,color:#000
+```
+
+This enables:
+- Singleton pattern: one instance per compilation
+- Clear dependency graph
