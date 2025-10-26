@@ -5,6 +5,7 @@ export interface ITransformer {
   shouldHandle(irr: IRRef<IR, Node>): boolean;
   transform(irr: IRRef<IR, Node>): void;
 }
+
 export function Transformer<TIR extends IR>(forIr: {
   new (...args: any[]): TIR;
 }) {

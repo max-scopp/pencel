@@ -1,13 +1,13 @@
+import { basename } from "node:path";
 import { createLog } from "@pencel/utils";
-import { basename } from "path";
 import type { SourceFile } from "typescript";
 import { Config } from "../config.ts";
 import type { FileIR } from "../ir/file.ts";
-import { FileWriter } from "../output/file-writer.ts";
-import { FileProcessor } from "../processors/file-processor.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
+import { FileProcessor } from "./file-processor.ts";
+import { FileWriter } from "./file-writer.ts";
 import { Plugins } from "./plugin.ts";
 import { Program } from "./program.ts";
 import { SourceFiles } from "./source-files.ts";
