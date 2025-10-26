@@ -3,12 +3,12 @@ import { type ClassDeclaration, factory, isCallExpression } from "typescript";
 import { recordToObjectLiteral } from "../../ts-utils/recordToObjectLiteral.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { inject } from "../core/container.ts";
-import { ComponentIR } from "../ir/component.ts";
+import type { ComponentIR } from "../ir/component.ts";
 import type { IRRef } from "../ir/irri.ts";
 import { PropertyTransformer } from "./props.ts";
 import { Transformer } from "./transformer.ts";
 
-export class ComponentTransformer extends Transformer(ComponentIR) {
+export class ComponentTransformer extends Transformer {
   #propsTransformer = inject(PropertyTransformer);
 
   override transform(irr: IRRef<ComponentIR, ClassDeclaration>) {
