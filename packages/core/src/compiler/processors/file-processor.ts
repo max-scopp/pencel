@@ -4,7 +4,6 @@ import { throwTooManyComponentDecoratorsOnClass } from "../../panics/throwTooMan
 import { ComponentTypings } from "../codegen/component-typings.ts";
 import { inject } from "../core/container.ts";
 import { Plugins } from "../core/plugin.ts";
-import { Program } from "../core/program.ts";
 import { FileIR } from "../ir/file.ts";
 import { IRRef } from "../ir/ref.ts";
 import { PENCEL_DECORATORS } from "../transformers/constants.ts";
@@ -12,7 +11,6 @@ import { FileTransformer } from "../transformers/file.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 
 export class FileProcessor {
-  readonly program: Program = inject(Program);
   readonly plugins: Plugins = inject(Plugins);
 
   readonly componentTypings: ComponentTypings = inject(ComponentTypings);

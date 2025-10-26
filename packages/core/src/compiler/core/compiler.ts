@@ -9,14 +9,14 @@ import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
 import { Plugins } from "./plugin.ts";
-import { Program } from "./program.ts";
+import { SourceFiles } from "./source-files.ts";
 
 const log = createLog("Transform");
 
 export class Compiler {
   readonly #config = inject(Config);
   readonly #fileWriter = inject(FileWriter);
-  readonly #program = inject(Program);
+  readonly #sourceFiles = inject(SourceFiles);
   readonly #fileProcessor = inject(FileProcessor);
 
   get context(): PencelContext {
@@ -55,10 +55,10 @@ export class Compiler {
   }
 
   async transform(): Promise<Map<string, FileIR>> {
-    const sourceFiles = await this.#program.ts.getSourceFiles();
+    const sourceFiles = this.#sourceFiles.getAll();
     const result = new Map<string, FileIR>();
 
-    const promises = sourceFiles.map(async (sf) => {
+    const promises = Array.from(sourceFiles.values()).map(async (sf) => {
       const ir = await this.transformFile(sf);
 
       if (ir) {

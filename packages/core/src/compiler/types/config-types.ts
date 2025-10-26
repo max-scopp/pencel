@@ -14,37 +14,28 @@ import type { PluginDefs } from "./plugins.ts";
  */
 interface PencelOutputAside {
   /**
-   * @default "pen"
-   */
-  inputQualifier: string;
-
-  /**
    * @default "gen"
    */
-  outputQualifier: string;
+  qualifier: string;
 }
 
 /**
  * Pencel's Core configuration interface
  */
 export interface PencelConfig {
-  /**
-   * By default, it's using the `tsconfig.pencel.json` to resolve source components.
-   *
-   * @default tsconfig.pencel.json
-   */
   input?: {
     /**
-     * A tsconfig to use to discover components.
-     * @default tsconfig.pencel.json
+     * @default "pen"
      */
-    tsconfig: string;
+    qualifier: string;
   };
 
-  /**
-   * Right now, you can only emit next to the source.
-   */
   output?: PencelOutputAside;
+
+  /**
+   * @default "tsconfig.json"
+   */
+  tsconfig?: string;
 
   plugins?: PluginDefs;
 

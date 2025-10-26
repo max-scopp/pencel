@@ -14,8 +14,8 @@ export class FileTransformer extends Transformer(FileIR) {
   override transform(irr: IRRef<FileIR, SourceFile>) {
     replaceQualifier(
       irr.node.fileName,
-      this.#config.user.output.inputQualifier,
-      this.#config.user.output.outputQualifier,
+      this.#config.user.output.qualifier,
+      this.#config.user.output.qualifier,
     );
 
     irr.ir.components.forEach((cirr) => {

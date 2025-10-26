@@ -6,7 +6,7 @@ import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { Compiler } from "./compiler.ts";
 import { inject } from "./container.ts";
-import { Program } from "./program.ts";
+import { SourceFiles } from "./source-files.ts";
 
 const log = createLog("Watcher");
 
@@ -24,7 +24,7 @@ export class Watcher {
   #fileWriter: FileWriter = inject(FileWriter);
 
   #config = inject(Config);
-  #program = inject(Program);
+  #sourceFiles = inject(SourceFiles);
 
   private watcher?: chokidar.FSWatcher;
   private rebuildTimeout: NodeJS.Timeout | null = null;
@@ -106,8 +106,8 @@ export class Watcher {
 
   private isGeneratedFile(path: string): boolean {
     try {
-      // Get source file from the program to check if it's generated
-      const sourceFile = this.#program.ts.getSourceFile(path);
+      // Get source file from SourceFiles to check if it's generated
+      const sourceFile = this.#sourceFiles.getSourceFile(path);
       return sourceFile ? isPencelGeneratedFile(sourceFile) : false;
     } catch {
       log(
@@ -129,8 +129,10 @@ export class Watcher {
     log(`Processing ${filesToProcess.length} changed files...`);
 
     try {
+      const allSourceFiles = this.#sourceFiles.getAll();
+
       for (const filePath of filesToProcess) {
-        const sf = this.#program.ts.getSourceFile(filePath);
+        const sf = allSourceFiles.get(filePath);
 
         if (!sf) {
           log(`Skipping ${filePath}`);

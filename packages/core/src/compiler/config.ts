@@ -1,6 +1,6 @@
+import { relative } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
-import { relative } from "path";
 import type { PencelConfig } from "./types/config-types.ts";
 
 const log = createLog("Config");
@@ -10,12 +10,12 @@ const log = createLog("Config");
  */
 export const defaultConfig: Required<PencelConfig> = {
   input: {
-    tsconfig: "tsconfig.pencel.json",
+    qualifier: "pen",
   },
   output: {
-    inputQualifier: "pen",
-    outputQualifier: "gen",
+    qualifier: "gen",
   },
+  tsconfig: "tsconfig.json",
   plugins: [],
   runtime: {
     tagNamespace: "pencel",

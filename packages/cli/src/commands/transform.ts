@@ -4,6 +4,7 @@ import {
   inject,
   Plugins,
   Program,
+  SourceFiles,
   Watcher,
 } from "@pencel/core";
 import { log } from "@pencel/utils";
@@ -14,6 +15,7 @@ export class TransformCommand extends Command {
   readonly #config: Config = inject(Config);
   readonly #compiler: Compiler = inject(Compiler);
   readonly #program: Program = inject(Program);
+  readonly #sourceFiles: SourceFiles = inject(SourceFiles);
   readonly #plugins: Plugins = inject(Plugins);
   readonly #watcher: Watcher = inject(Watcher);
 
@@ -33,6 +35,7 @@ export class TransformCommand extends Command {
 
     await this.#plugins.initialize();
     await this.#program.load();
+    await this.#sourceFiles.load();
 
     await this.#compiler.transform();
 
