@@ -17,8 +17,6 @@ import { MethodIR } from "./method.ts";
 import { PropertyIR } from "./prop.ts";
 import { IRM, IRRef } from "./ref.ts";
 
-export type ComponentEvent = {};
-
 export interface ComponentMethod {
   name: string;
   isPublic: boolean;
@@ -83,15 +81,22 @@ export class ComponentIR extends IRM("Component") {
 
     this.extends =
       firstMap(classDeclaration.heritageClauses, (hc) => {
-        const correctExtends =
-          hc.token === SyntaxKind.ExtendsKeyword &&
-          hc.getText().startsWith("HTML");
-
-        if (correctExtends) {
-          return hc.getText();
+        if (hc.token !== SyntaxKind.ExtendsKeyword) {
+          return null;
         }
 
-        return null;
+        const [typeNode] = hc.types;
+        if (!typeNode) {
+          return null;
+        }
+
+        const extendsName = typeNode.getText();
+
+        if (!extendsName.startsWith("HTML")) {
+          return null;
+        }
+
+        return extendsName;
       }) ??
       throwError(
         `Component class ${this.className} must extend a valid HTML element.`,

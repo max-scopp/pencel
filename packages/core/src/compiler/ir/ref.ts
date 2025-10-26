@@ -1,4 +1,5 @@
 import type { Node } from "typescript";
+import { inject } from "../core/container.ts";
 import type { ComponentIR } from "./component.ts";
 import type { EventIR } from "./event.ts";
 import type { FileIR } from "./file.ts";
@@ -16,6 +17,19 @@ export type KnownIRs = {
   Event: EventIR;
   Render: RenderIR;
 };
+
+/**
+ *  Recursively unwraps IRRef<T> to T through object trees and arrays
+ */
+export type ImplodeIRRef<T> = T extends IRRef<infer U, infer _N extends Node>
+  ? ImplodeIRRef<U>
+  : T extends (infer U)[]
+    ? ImplodeIRRef<U>[]
+    : T extends object
+      ? {
+          [K in keyof T]: ImplodeIRRef<T[K]>;
+        }
+      : T;
 
 /**
  * Each Intermediate Representation can vary highly in structure and purpose.
@@ -44,7 +58,9 @@ export class IRRef<T extends IR, TNode extends Node> {
   constructor(
     readonly ir: T,
     readonly node: TNode,
-  ) {}
+  ) {
+    inject(IRIndex).register(this);
+  }
 }
 
 export class IRIndex {
@@ -64,10 +80,10 @@ export class IRIndex {
     bucket.add(irr);
   }
 
-  allByKind<K extends IRKind>(kind: K): IRRef<IR, Node>[] {
+  allByKind<K extends IRKind>(kind: K): IRRef<KnownIRs[K], Node>[] {
     const bucket = this.#byKind.get(kind);
     if (!bucket) return [];
-    return [...bucket];
+    return [...bucket] as IRRef<KnownIRs[K], Node>[];
   }
 
   firstIrr<K extends IRKind>(
@@ -86,5 +102,51 @@ export class IRIndex {
     }
 
     throw new Error(`firstIr: no matching IR of kind '${kind}'`);
+  }
+
+  /**
+   *  Unwraps IRRef instances and removes AST nodes for serialization
+   */
+  implode<T>(value: T): ImplodeIRRef<T> {
+    const seen = new WeakSet<object>();
+
+    const implodeValue = (val: unknown): unknown => {
+      if (val === null || typeof val !== "object") return val;
+
+      if (seen.has(val)) return null;
+      seen.add(val);
+
+      if (val instanceof IRRef) {
+        return implodeValue((val as IRRef<IR, Node>).ir);
+      }
+
+      if (Array.isArray(val)) return val.map(implodeValue);
+
+      if (Object.getPrototypeOf(val) === Object.prototype) {
+        const result: Record<string, unknown> = {};
+        for (const key in val) {
+          if (Object.prototype.propertyIsEnumerable.call(val, key)) {
+            result[key] = implodeValue((val as Record<string, unknown>)[key]);
+          }
+        }
+        return result;
+      }
+
+      if (val.constructor && val.constructor !== Object) {
+        const result: Record<string, unknown> = {};
+        for (const key of Object.getOwnPropertyNames(val)) {
+          try {
+            result[key] = implodeValue((val as Record<string, unknown>)[key]);
+          } catch {
+            // Skip inaccessible properties
+          }
+        }
+        return result;
+      }
+
+      return val;
+    };
+
+    return implodeValue(value) as ImplodeIRRef<T>;
   }
 }

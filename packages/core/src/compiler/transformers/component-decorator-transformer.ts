@@ -1,7 +1,6 @@
 import type { ComponentOptions } from "@pencel/runtime";
 import type { SourceFile } from "ts-flattered";
 import ts from "typescript";
-import type { PencelContext } from "../types/compiler-types.ts";
 import { PENCEL_DECORATORS } from "./constants.ts";
 
 const DEFAULT_INHERITANCE = "HTMLElement";
@@ -9,7 +8,7 @@ const DEFAULT_INHERITANCE = "HTMLElement";
 export class ComponentDecoratorTransformer {
   // #styles = inject(Styles);
 
-  async transform(sourceFile: SourceFile, _ctx: PencelContext): Promise<void> {
+  async transform(sourceFile: SourceFile): Promise<void> {
     await sourceFile.updateClassesAsync(async (cls) => {
       // Ensure class extends HTMLElement if it doesn't extend any HTML element
       const heritage = cls.getHeritageClause(ts.SyntaxKind.ExtendsKeyword);

@@ -80,11 +80,8 @@ export class Program {
       absolute: true,
     });
 
-    log(`Found ${this.#filePaths.length} input file(s)`);
-
     perf.end("discover-files");
-
-    log("Done");
+    log(`Found ${this.#filePaths.length} input file(s)`);
 
     return this.#filePaths;
   }

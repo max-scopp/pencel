@@ -1,55 +1,36 @@
 import { createLog } from "@pencel/utils";
 import chokidar from "chokidar";
 import { Config } from "../config.ts";
-import { FileWriter } from "../output/file-writer.ts";
-import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { perf } from "../utils/perf.ts";
 import { Compiler } from "./compiler.ts";
 import { inject } from "./container.ts";
-import { SourceFiles } from "./source-files.ts";
 
 const log = createLog("Watcher");
 
-export interface WatcherOptions {
-  /** Debounce timeout in milliseconds */
-  debounceMs?: number;
-  /** Custom file patterns to watch */
-  patterns?: string[];
-  /** Directories to ignore */
-  ignored?: string[];
-}
-
 export class Watcher {
   #compiler: Compiler = inject(Compiler);
-  #fileWriter: FileWriter = inject(FileWriter);
-
-  #config = inject(Config);
-  #sourceFiles = inject(SourceFiles);
+  #config: Config = inject(Config);
 
   private watcher?: chokidar.FSWatcher;
   private rebuildTimeout: NodeJS.Timeout | null = null;
-  private pendingFiles = new Set<string>();
+  private changedFiles: Set<string> = new Set();
 
   start(): void {
-    log(`Starting file watcher in: ${this.#config}`);
+    const { cwd, user } = this.#config;
 
-    const options = {
-      patterns: [
-        `${this.#config.cwd}/**/*.ts`,
-        `${this.#config.cwd}/**/*.tsx`,
-        `${this.#config.cwd}/**/*.js`,
-        `${this.#config.cwd}/**/*.jsx`,
-        `${this.#config.cwd}/**/pencel.config.*`,
-        `${this.#config.cwd}/**/pencil.config.*`,
-      ],
-      ignored: ["**/node_modules/**", "**/.git/**"],
-    };
+    // Watch pattern: all files matching the input qualifier
+    const pattern = `${cwd}/**/*.${user.input.qualifier}.tsx`;
 
-    // Set up file watcher with chokidar
-    this.watcher = chokidar.watch(options.patterns, {
-      ignored: options.ignored,
+    log(`Watching: ${pattern}`);
+
+    this.watcher = chokidar.watch(pattern, {
+      ignored: ["**/node_modules/**", "**/.git/**", "**/.{idea,vscode}/**"],
       persistent: true,
       ignoreInitial: true,
+      awaitWriteFinish: {
+        stabilityThreshold: 100,
+        pollInterval: 100,
+      },
     });
 
     this.watcher.on("change", this.scheduleRebuild);
@@ -57,10 +38,10 @@ export class Watcher {
     this.watcher.on("unlink", this.scheduleRebuild);
 
     this.watcher.on("error", (error) => {
-      console.error("Watcher error:", error);
+      log(`Watcher error: ${error.message}`);
     });
 
-    log("File watcher started successfully");
+    log("File watcher started");
 
     // Handle graceful shutdown
     const handleExit = () => {
@@ -83,73 +64,47 @@ export class Watcher {
       this.watcher = undefined;
     }
 
-    this.pendingFiles.clear();
     log("File watcher stopped");
   }
 
   private scheduleRebuild = (path: string): void => {
-    // Check if this is one of our generated files using the proper marker utility
-    if (this.isGeneratedFile(path)) {
-      log(`Skipping change event for generated file: ${path}`);
-      return;
-    }
-
-    this.pendingFiles.add(path);
+    this.changedFiles.add(path);
 
     if (this.rebuildTimeout) {
       clearTimeout(this.rebuildTimeout);
     }
 
-    // Debounce to handle rapid file changes
-    this.rebuildTimeout = setTimeout(this.processChanges, 100);
+    // Debounce rapid file changes
+    this.rebuildTimeout = setTimeout(() => {
+      this.rebuild().catch((error) => {
+        log(`Rebuild failed: ${error.message}`);
+      });
+    }, 100);
   };
 
-  private isGeneratedFile(path: string): boolean {
-    try {
-      // Get source file from SourceFiles to check if it's generated
-      const sourceFile = this.#sourceFiles.getSourceFile(path);
-      return sourceFile ? isPencelGeneratedFile(sourceFile) : false;
-    } catch {
-      log(
-        `Warning: Could not check if file is generated: ${path}, treating as source file`,
-      );
-      // Treat as source file if we can't determine the status
-      return false;
-    }
-  }
-
-  private processChanges = async (): Promise<void> => {
+  private async rebuild(): Promise<void> {
     const now = performance.now();
 
-    if (this.pendingFiles.size === 0) return;
-
-    const filesToProcess = Array.from(this.pendingFiles);
-    this.pendingFiles.clear();
-
-    log(`Processing ${filesToProcess.length} changed files...`);
-
     try {
-      const allSourceFiles = this.#sourceFiles.getAll();
-
-      for (const filePath of filesToProcess) {
-        const sf = allSourceFiles.get(filePath);
-
-        if (!sf) {
-          log(`Skipping ${filePath}`);
-          continue;
-        }
-
-        await this.#compiler.transformFile(sf);
-        await this.#fileWriter.writeFile(filePath);
+      if (this.changedFiles.size === 0) {
+        return;
       }
 
-      log(`Incremental rebuild complete for ${filesToProcess.length} files`);
+      const changedFilesArray = Array.from(this.changedFiles);
+      this.changedFiles.clear();
 
+      log(`Rebuilding ${changedFilesArray.length} changed file(s)...`);
+
+      // Let compiler recompute graph and transform only changed files
+      await this.#compiler.compileChangedFiles(changedFilesArray);
+
+      const duration = ((performance.now() - now) / 1000).toFixed(2);
+      log(`Rebuild complete in ${duration}s`);
       perf.log();
-
-      log(`Done in ${((performance.now() - now) / 1000).toFixed(2)}s`);
     } catch (error) {
-      console.error("Incremental rebuild failed:", error);
+      log(
+        `Rebuild error: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
-  };
+  }
 }

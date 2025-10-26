@@ -1,14 +1,4 @@
 import { pascalCase } from "@pencel/utils";
-import type { FileBuilder } from "ts-flattered";
-import {
-  $,
-  $ref,
-  global,
-  interface_,
-  namespace,
-  objLiteral,
-  param,
-} from "ts-flattered";
 import ts from "typescript";
 import { inject } from "../core/container.ts";
 import { IRIndex } from "../ir/ref.ts";
@@ -22,7 +12,7 @@ export class ComponentTypings {
   Enables TypeScript to recognize and type-check custom elements in JSX/TSX files.
   Ensures that when you use custom components in your code, you get proper IntelliSense and compile-time validation for their props and events.
   */
-  async createTypings(sf: ts.SourceFile & FileBuilder): Promise<void> {
+  async createTypings(sf: ts.SourceFile): Promise<void> {
     const cirs = this.#ir.firstIrr(
       "File",
       (irr) => irr.fileName === sf.fileName,
@@ -54,117 +44,144 @@ export class ComponentTypings {
     cirs.ir.components.forEach((cir) => {
       if (cir.ir.forIs) {
         // Create Document.createElement interface
-        // [
-        //   func("createElement", [
-        //     param("tagName").initializer($(cir.ir.forIs)),
-        //     param("options").initializer(
-        //       objLiteral({
-        //         is: cir.ir.tag,
-        //       }),
-        //     ),
-        //   ]
-        const createElementInterface = interface_("Document").addMethod(
-          "createElement",
+        const createElementMethodSignature = ts.factory.createMethodSignature(
+          undefined,
+          ts.factory.createIdentifier("createElement"),
+          undefined,
+          undefined,
           [
-            param("tagName", {
-              initializer: $(cir.ir.forIs),
-            }),
-            param("options", {
-              initializer: objLiteral({
-                is: cir.ir.tag,
-              }),
-            }),
-          ],
-          $ref(cir.ir.className),
-        );
-
-        // ts.factory.createMethodSignature(
-        //   undefined,
-        //   undefined,
-        //   ts.factory.createIdentifier("createElement"),
-        //   undefined,
-        //   [
-        //     ts.factory.createParameterDeclaration(
-        //       undefined,
-        //       undefined,
-        //       "tagName",
-        //       undefined,
-        //       ts.factory.createLiteralTypeNode(
-        //         ts.factory.createStringLiteral(cir.ir.forIs),
-        //       ),
-        //     ),
-        //     ts.factory.createParameterDeclaration(
-        //       undefined,
-        //       undefined,
-        //       "options",
-        //       undefined,
-        //       ts.factory.createTypeLiteralNode([
-        //         ts.factory.createPropertySignature(
-        //           undefined,
-        //           ts.factory.createIdentifier("is"),
-        //           undefined,
-        //           ts.factory.createLiteralTypeNode(
-        //             ts.factory.createStringLiteral(cir.ir.tag),
-        //           ),
-        //         ),
-        //       ]),
-        //     ),
-        //   ],
-        //   ts.factory.createTypeReferenceNode(cir.ir.className, undefined),
-        // ),
-
-        // Create setAttribute interface for the extended element
-        const setAttributeInterface = interface_(
-          `HTML${pascalCase(cir.ir.forIs)}Element`,
-          [
-            (ts.factory.createMethodSignature as any)(
+            ts.factory.createParameterDeclaration(
               undefined,
               undefined,
-              ts.factory.createIdentifier("setAttribute"),
+              "tagName",
               undefined,
-              [
-                ts.factory.createParameterDeclaration(
+              ts.factory.createLiteralTypeNode(
+                ts.factory.createStringLiteral(cir.ir.forIs),
+              ),
+            ),
+            ts.factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              "options",
+              undefined,
+              ts.factory.createTypeLiteralNode([
+                ts.factory.createPropertySignature(
                   undefined,
-                  undefined,
-                  "name",
-                  undefined,
-                  ts.factory.createLiteralTypeNode(
-                    ts.factory.createStringLiteral("is"),
-                  ),
-                ),
-                ts.factory.createParameterDeclaration(
-                  undefined,
-                  undefined,
-                  "value",
+                  ts.factory.createIdentifier("is"),
                   undefined,
                   ts.factory.createLiteralTypeNode(
                     ts.factory.createStringLiteral(cir.ir.tag),
                   ),
                 ),
-              ],
-              ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+              ]),
             ),
           ],
-        ).get();
+          ts.factory.createTypeReferenceNode(cir.ir.className, undefined),
+        );
+
+        const createElementInterface = ts.factory.createInterfaceDeclaration(
+          [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+          "Document",
+          undefined,
+          undefined,
+          [createElementMethodSignature],
+        );
+
+        // Create setAttribute interface for the extended element
+        const setAttributeMethodSignature = ts.factory.createMethodSignature(
+          undefined,
+          ts.factory.createIdentifier("setAttribute"),
+          undefined,
+          undefined,
+          [
+            ts.factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              "name",
+              undefined,
+              ts.factory.createLiteralTypeNode(
+                ts.factory.createStringLiteral("is"),
+              ),
+            ),
+            ts.factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              "value",
+              undefined,
+              ts.factory.createLiteralTypeNode(
+                ts.factory.createStringLiteral(cir.ir.tag),
+              ),
+            ),
+          ],
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+        );
+
+        const setAttributeInterface = ts.factory.createInterfaceDeclaration(
+          [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+          `HTML${pascalCase(cir.ir.forIs)}Element`,
+          undefined,
+          undefined,
+          [setAttributeMethodSignature],
+        );
 
         globalDeclarations.push(createElementInterface, setAttributeInterface);
       } else {
-        globalDeclarations.push(
-          interface_("HTMLElementTagNameMap").addProperty(
-            $(cir.ir.tag),
-            $ref(cir.ir.className),
+        // Create HTMLElementTagNameMap interface property
+        const htmlElementTagNameMapProperty =
+          ts.factory.createPropertySignature(
+            undefined,
+            ts.factory.createStringLiteral(cir.ir.tag),
+            undefined,
+            ts.factory.createTypeReferenceNode(cir.ir.className, undefined),
+          );
+
+        const htmlElementTagNameMapInterface =
+          ts.factory.createInterfaceDeclaration(
+            [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+            "HTMLElementTagNameMap",
+            undefined,
+            undefined,
+            [htmlElementTagNameMapProperty],
+          );
+
+        // Create JSX.IntrinsicElements interface property
+        const jsxIntrinsicElementProperty = ts.factory.createPropertySignature(
+          undefined,
+          ts.factory.createStringLiteral(cir.ir.tag),
+          undefined,
+          ts.factory.createTypeReferenceNode(
+            `JSXElementAttributes<${cir.ir.className}>`,
+            undefined,
           ),
-          namespace("JSX", [
-            interface_("IntrinsicElements").addProperty(
-              $(cir.ir.tag),
-              $ref(`JSXElementAttributes<${cir.ir.className}>`),
-            ),
-          ]),
         );
+
+        const jsxIntrinsicElementInterface =
+          ts.factory.createInterfaceDeclaration(
+            [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+            "IntrinsicElements",
+            undefined,
+            undefined,
+            [jsxIntrinsicElementProperty],
+          );
+
+        const jsxNamespace = ts.factory.createModuleDeclaration(
+          [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+          ts.factory.createIdentifier("JSX"),
+          ts.factory.createModuleBlock([jsxIntrinsicElementInterface]),
+          ts.NodeFlags.Namespace,
+        );
+
+        globalDeclarations.push(htmlElementTagNameMapInterface, jsxNamespace);
       }
     });
 
-    const globalDecl = global(globalDeclarations);
-    sf.addStatement(globalDecl);
+    // Add all declarations to the source file
+    const sourceFile = sf as ts.SourceFile & {
+      statements: ts.NodeArray<ts.Statement>;
+    };
+    sourceFile.statements = ts.factory.createNodeArray([
+      ...(sf.statements || []),
+      ...globalDeclarations,
+    ]);
   }
 }

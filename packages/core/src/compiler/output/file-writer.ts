@@ -15,10 +15,9 @@ export class FileWriter {
 
   async writeIr(): Promise<void> {
     const irPath = "ir.json";
-    await writeFile(
-      irPath,
-      JSON.stringify(this.#iri.allByKind("Component"), null, 2),
-    );
+    const componentIRs = this.#iri.allByKind("Component");
+    const implodedIRs = this.#iri.implode(componentIRs);
+    await writeFile(irPath, JSON.stringify(implodedIRs, null, 2));
     log(`Wrote IR to ${relative(this.#config.cwd, irPath)}`);
   }
 
