@@ -2,6 +2,7 @@ import { relative } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
 import type { PencelConfig } from "./types/config-types.ts";
+import type { PluginNames } from "./types/plugins.ts";
 
 const log = createLog("Config");
 
@@ -52,5 +53,21 @@ export class Config {
       (this.#result ?? throwError("Config not loaded yet.")).cwd ??
       process.cwd()
     );
+  }
+
+  getUserOptionsForPlugin<TPluginOptions extends object>(
+    pluginName: PluginNames,
+  ): TPluginOptions | null {
+    const plugins = this.user.plugins;
+
+    for (const plugin of plugins) {
+      if (typeof plugin === "string" && plugin === pluginName) {
+        return {} as TPluginOptions;
+      } else if (typeof plugin === "object" && plugin.name === pluginName) {
+        return plugin.options ?? ({} as TPluginOptions);
+      }
+    }
+
+    return null;
   }
 }

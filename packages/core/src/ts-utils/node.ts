@@ -29,7 +29,7 @@ export function isASTNode(obj: unknown): obj is ASTNode {
  */
 export interface ASTNode {
   kindName: string;
-  kind: SyntaxKind;
+  hook: SyntaxKind;
   text?: string;
   children: ASTNode[];
   pos?: number;
@@ -42,7 +42,7 @@ export interface ASTNode {
  */
 export function serializeNode(expr: Expression): ASTNode {
   const base: ASTNode = {
-    kind: expr.kind,
+    hook: expr.kind,
     kindName: SyntaxKind[expr.kind],
     pos: expr.pos,
     end: expr.end,
@@ -62,11 +62,11 @@ export function serializeNode(expr: Expression): ASTNode {
     base.children = expr.properties.map((prop) => {
       if (isPropertyAssignment(prop)) {
         return {
-          kind: prop.kind,
+          hook: prop.kind,
           kindName: SyntaxKind[prop.kind],
           children: [
             {
-              kind: prop.name.kind,
+              hook: prop.name.kind,
               kindName: SyntaxKind[prop.name.kind],
               text: getPropName(prop.name),
               children: [],
@@ -80,17 +80,17 @@ export function serializeNode(expr: Expression): ASTNode {
       }
       if (isShorthandPropertyAssignment(prop)) {
         return {
-          kind: prop.kind,
+          hook: prop.kind,
           kindName: SyntaxKind[prop.kind],
           children: [
             {
-              kind: prop.name.kind,
+              hook: prop.name.kind,
               kindName: SyntaxKind[prop.name.kind],
               text: prop.name.text,
               children: [],
             },
             {
-              kind: prop.name.kind,
+              hook: prop.name.kind,
               kindName: SyntaxKind[prop.name.kind],
               text: prop.name.text,
               children: [],
@@ -103,7 +103,7 @@ export function serializeNode(expr: Expression): ASTNode {
       }
       if (isSpreadAssignment(prop)) {
         return {
-          kind: prop.kind,
+          hook: prop.kind,
           kindName: SyntaxKind[prop.kind],
           children: [serializeNode(prop.expression)],
           pos: prop.pos,
@@ -112,7 +112,7 @@ export function serializeNode(expr: Expression): ASTNode {
         };
       }
       return {
-        kind: prop.kind,
+        hook: prop.kind,
         kindName: SyntaxKind[prop.kind],
         children: [],
         pos: prop.pos,
@@ -122,7 +122,7 @@ export function serializeNode(expr: Expression): ASTNode {
     });
   } else if (isArrowFunction(expr) || isFunctionExpression(expr)) {
     base.children = expr.parameters.map((p) => ({
-      kind: p.kind,
+      hook: p.kind,
       kindName: SyntaxKind[p.kind],
       text: p.name.getText(),
       children: [],
@@ -174,7 +174,7 @@ export function deserializeNode(ast: ASTNode): Expression {
           );
         }
         throw new Error(
-          `Unknown object literal property kind: ${child.kindName}`,
+          `Unknown object literal property hook: ${child.kindName}`,
         );
       });
       return factory.createObjectLiteralExpression(props, true);

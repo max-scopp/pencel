@@ -28,7 +28,7 @@ export class FileProcessor {
     await this.componentTypings.createTypings(sourceFile as any);
 
     await this.plugins.handle({
-      aspect: "codegen",
+      hook: "codegen",
       input: sourceFile,
     });
 

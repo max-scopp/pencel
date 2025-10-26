@@ -3,14 +3,12 @@ import { relative } from "node:path";
 import { createLog } from "@pencel/utils";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
-import { Plugins } from "../core/plugin.ts";
 import { IRIndex } from "../ir/ref.ts";
 
 const log = createLog("FileWriter");
 
 export class FileWriter {
   readonly #config = inject(Config);
-  readonly #plugins = inject(Plugins);
   readonly #iri = inject(IRIndex);
 
   async writeIr(): Promise<void> {
@@ -24,7 +22,6 @@ export class FileWriter {
   async writeEverything(): Promise<void> {
     await this.writeIr();
     await this.writeAllFiles();
-    await this.#plugins.write();
   }
 
   async writeAllFiles(): Promise<void> {

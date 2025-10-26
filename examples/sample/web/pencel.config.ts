@@ -4,4 +4,10 @@ export default defineConfig({
   runtime: {
     tagNamespace: "wb",
   },
+  plugins: [
+    {
+      name: "angular",
+      options: {},
+    },
+  ],
 });

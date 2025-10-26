@@ -29,8 +29,6 @@ export class Program {
 
     this.#tsconfigPath = resolve(config.cwd, tsconfigPath);
 
-    log(`Using ${basename(this.#tsconfigPath)}`);
-
     const readFile = (path: string) => {
       this.#tsconfigContent = ts.sys.readFile(path);
       return this.#tsconfigContent;
