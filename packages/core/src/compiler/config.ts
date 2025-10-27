@@ -41,11 +41,7 @@ export class Config {
   }
 
   get user(): Required<PencelConfig> {
-    if (!this.#result) {
-      throw new Error("");
-    }
-
-    return this.#result.config ?? throwError("Config not loaded yet.");
+    return this.#result?.config ?? throwError("Config not loaded yet.");
   }
 
   get cwd(): string {

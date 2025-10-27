@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
-import { glob } from "glob";
+import fg from "fast-glob";
 import ts from "typescript";
 import { Config } from "../config.ts";
 import { perf } from "../utils/perf.ts";
@@ -74,7 +74,7 @@ export class Program {
     perf.start("discover-files");
 
     const pattern = `**/*.${config.user.input.qualifier}.tsx`;
-    this.#filePaths = await glob(pattern, {
+    this.#filePaths = await fg(pattern, {
       cwd: config.cwd,
       absolute: true,
     });

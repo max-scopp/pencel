@@ -48,15 +48,15 @@ export class SourceFiles {
     this.#generatedFiles.clear();
   }
 
-  getAll(): readonly RenamableSourceFile[] {
-    const result: RenamableSourceFile[] = [];
+  getAll(): Map<string, RenamableSourceFile> {
+    const result = new Map<string, RenamableSourceFile>();
 
-    for (const [, sourceFile] of this.#sourceFiles) {
-      result.push(sourceFile);
+    for (const [filePath, sourceFile] of this.#sourceFiles) {
+      result.set(filePath, sourceFile);
     }
 
-    for (const [, sourceFile] of this.#generatedFiles) {
-      result.push(sourceFile);
+    for (const [filePath, sourceFile] of this.#generatedFiles) {
+      result.set(filePath, sourceFile);
     }
 
     return result;

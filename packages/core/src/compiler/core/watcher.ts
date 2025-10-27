@@ -64,6 +64,8 @@ export class Watcher {
       this.watcher = undefined;
     }
 
+    this.changedFiles.clear();
+
     log("File watcher stopped");
   }
 

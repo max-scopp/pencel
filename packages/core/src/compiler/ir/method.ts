@@ -3,6 +3,7 @@ import {
   type ClassElement,
   isMethodDeclaration,
   type MethodDeclaration,
+  SyntaxKind,
 } from "typescript";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { IRM } from "./irri.ts";
@@ -23,20 +24,30 @@ export class MethodIR extends IRM("Method") {
   static isPencelMethodMember(
     member: ClassElement,
   ): member is MethodDeclaration {
-    if (isMethodDeclaration(member)) {
-      try {
-        singleDecorator(member, "Method");
-
-        warn(
-          `Decorating ${member.getText()} with @Method is not necessary. All non-private elements are accessible by nature.`,
-        );
-
-        return true;
-      } catch {
-        return true;
-      }
+    if (!isMethodDeclaration(member)) {
+      return false;
     }
 
-    return false;
+    try {
+      singleDecorator(member, "Method");
+      warn(
+        `Decorating ${member.getText()} with @Method is not necessary. All public methods are accessible by nature.`,
+      );
+    } catch {
+      // Decorator not found, which is fine
+    }
+
+    // Check if method is public (not protected, private, or #private)
+    const hasProtected = member.modifiers?.some(
+      (m) => m.kind === SyntaxKind.ProtectedKeyword,
+    );
+
+    const hasPrivate = member.modifiers?.some(
+      (m) => m.kind === SyntaxKind.PrivateKeyword,
+    );
+
+    const isPrivateName = member.name?.kind === SyntaxKind.PrivateIdentifier;
+
+    return !hasProtected && !hasPrivate && !isPrivateName;
   }
 }

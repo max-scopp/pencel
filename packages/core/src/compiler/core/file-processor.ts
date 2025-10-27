@@ -11,6 +11,7 @@ import { ComponentTransformer } from "../transformers/component.ts";
 import { FileTransformer } from "../transformers/file.ts";
 import { PropertyTransformer } from "../transformers/props.ts";
 import type { ITransformer } from "../transformers/transformer.ts";
+import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { inject } from "./container.ts";
 import { Plugins } from "./plugin.ts";
 import { SourceFiles } from "./source-files.ts";
@@ -52,11 +53,11 @@ export class FileProcessor {
     return fileIrr;
   }
 
-  shouldProcess(_sourceFile: SourceFile): boolean {
-    // // Don't touch our own generated files
-    // if (isPencelGeneratedFile(sourceFile)) {
-    //   return false;
-    // }
+  shouldProcess(sourceFile: SourceFile): boolean {
+    // Don't touch our own generated files
+    if (isPencelGeneratedFile(sourceFile)) {
+      return false;
+    }
 
     return true;
   }

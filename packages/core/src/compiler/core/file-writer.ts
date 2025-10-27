@@ -28,16 +28,16 @@ export class FileWriter {
 
   async writeAllFiles(): Promise<void> {
     perf.start("file-write");
-    const files = await this.#sourceFiles.getAll();
+    const files = this.#sourceFiles.getAll();
     let progress = 1;
-    for (const contents of files) {
+    for (const contents of files.values()) {
       const outputFilePath = contents.outputFileName ?? contents.fileName;
 
       await mkdir(dirname(outputFilePath), { recursive: true });
       const printed = await this.#sourcePrinter.printFile(contents);
       await writeFile(outputFilePath, printed);
       progress++;
-      percentage(progress / files.length, {
+      percentage(progress / files.size, {
         prefix: "Writing",
       });
     }
