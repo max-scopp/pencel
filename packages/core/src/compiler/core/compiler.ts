@@ -39,7 +39,6 @@ export class Compiler {
 
   /**
    * Incremental compile: reloads graph, then transforms only specified files
-   * // TODO: writing files missing
    */
   async compileChangedFiles(
     changedFiles: string[],
