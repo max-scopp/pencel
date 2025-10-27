@@ -12,10 +12,12 @@ import { inject } from "../core/container.ts";
 import { ComponentIR } from "../ir/component.ts";
 import type { IRRef } from "../ir/irri.ts";
 import { PropertyTransformer } from "./props.ts";
+import { RenderTransformer } from "./render.ts";
 import { Transformer } from "./transformer.ts";
 
 export class ComponentTransformer extends Transformer(ComponentIR) {
   #propsTransformer = inject(PropertyTransformer);
+  #renderTransformer = inject(RenderTransformer);
 
   override transform(irr: IRRef<ComponentIR, ClassDeclaration>) {
     const decorator = singleDecorator(irr.node, "Component");
@@ -58,12 +60,31 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
       }
     });
 
+    // Transform render method if it exists
+    let updatedMembers = irr.node.members;
+    if (irr.ir.render) {
+      updatedMembers = factory.createNodeArray(
+        irr.node.members.map((member) => {
+          if (member === irr.ir.render?.node) {
+            return this.#renderTransformer.transform(irr.ir.render);
+          }
+          return member;
+        }),
+      );
+    }
+
+    // Combine modifiers and decorators
+    const combinedModifiers = [
+      ...(updatedDecorators ?? []),
+      ...(irr.node.modifiers ?? []),
+    ];
+
     return factory.createClassDeclaration(
-      updatedDecorators,
+      combinedModifiers,
       irr.node.name,
       irr.node.typeParameters,
       irr.node.heritageClauses,
-      irr.node.members,
+      updatedMembers,
     );
   }
 }

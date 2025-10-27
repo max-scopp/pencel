@@ -55,7 +55,8 @@ interface JSXElementIR {
   tagName: string;              // "div", "Host", "MyComponent"
   attributes: JSXAttributeIR[];
   children: JSXNodeIR[];
-  isComponent: boolean;         // uppercase = component
+  isFunction: boolean;          // true for Host, uppercase names (functional components)
+                                // false for lowercase names like "div", "span" (HTML elements)
 }
 ```
 
@@ -66,7 +67,7 @@ interface JSXSelfClosingIR {
   kind: "SelfClosing";
   tagName: string;              // "img", "slot", "br"
   attributes: JSXAttributeIR[];
-  isComponent: boolean;
+  isFunction: boolean;          // true for functional components, false for HTML elements
 }
 ```
 
@@ -150,10 +151,10 @@ The `RenderIR` produces:
       "kind": "SelfClosing",
       "tagName": "slot",
       "attributes": [],
-      "isComponent": false
+      "isFunction": false
     }
   ],
-  "isComponent": true
+  "isFunction": true
 }
 ```
 
@@ -193,10 +194,10 @@ Produces an IR with:
       "children": [
         { "kind": "Text", "text": "Click me" }
       ],
-      "isComponent": false
+      "isFunction": false
     }
   ],
-  "isComponent": false
+  "isFunction": false
 }
 ```
 
@@ -220,14 +221,21 @@ JSX is often wrapped in parentheses. The parser unwraps them:
 
 ### Component Detection
 
-Tags starting with uppercase or named `Host` are components:
+Tags starting with uppercase or named `Host` are functional components:
 
 ```typescript
-#isComponentTag(tagName: string): boolean {
+#isFunctionComponent(tagName: string): boolean {
   if (tagName === "Host") return true;
   return tagName[0] === tagName[0]?.toUpperCase();
 }
 ```
+
+**Functional Components** (must be called):
+- `Host` - special Pencel wrapper
+- `MyButton`, `MyComponent` - uppercase names (user-defined components)
+
+**HTML Elements** (created with `createElement`):
+- `div`, `span`, `button` - lowercase names (standard HTML tags)
 
 ### Text Normalization
 

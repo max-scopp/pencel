@@ -49,9 +49,12 @@ export interface JSXElementIR extends JSXNodeIR {
   attributes: JSXAttributeIR[];
   children: JSXNodeIR[];
   /**
-   * Whether this references a component (uppercase) vs HTML tag (lowercase)
+   * Whether this is a functional component (uppercase, Host, etc) that must be called,
+   * vs an HTML element that can be created with createElement.
+   * Functional: Host, MyComponent, Button → must call Host(...), MyComponent(...)
+   * Elements: div, span, button → createElement("div", ...)
    */
-  isComponent: boolean;
+  isFunction: boolean;
 }
 
 /**
@@ -61,7 +64,12 @@ export interface JSXSelfClosingIR extends JSXNodeIR {
   kind: JSXNodeKind.SelfClosing;
   tagName: string;
   attributes: JSXAttributeIR[];
-  isComponent: boolean;
+  /**
+   * Whether this is a functional component vs an HTML element.
+   * Functional: MyComponent, MySlot → must call MyComponent(...), MySlot(...)
+   * Elements: img, input, slot → createElement("img", ...)
+   */
+  isFunction: boolean;
 }
 
 /**
@@ -202,7 +210,7 @@ export class RenderIR extends IRM("Render") {
       tagName,
       attributes: this.#parseAttributes(element.openingElement.attributes),
       children: this.#parseChildren(element.children),
-      isComponent: this.#isComponentTag(tagName),
+      isFunction: this.#isFunctionComponent(tagName),
     };
   }
 
@@ -213,7 +221,7 @@ export class RenderIR extends IRM("Render") {
       kind: JSXNodeKind.SelfClosing,
       tagName,
       attributes: this.#parseAttributes(element.attributes),
-      isComponent: this.#isComponentTag(tagName),
+      isFunction: this.#isFunctionComponent(tagName),
     };
   }
 
@@ -348,14 +356,18 @@ export class RenderIR extends IRM("Render") {
   }
 
   /**
-   * Determines if a tag name represents a component vs HTML element.
-   * Components start with uppercase or are special Pencel elements.
+   * Determines if a tag name represents a functional component vs HTML element.
+   * Functional components: uppercase names, or special Pencel functions like "Host"
+   * HTML elements: lowercase names like "div", "span", "button"
+   *
+   * Functional components must be called: Host(...), MyButton(...)
+   * HTML elements are created: createElement("div", ...)
    */
-  #isComponentTag(tagName: string): boolean {
-    // Special Pencel elements
+  #isFunctionComponent(tagName: string): boolean {
+    // Special Pencel functional components
     if (tagName === "Host") return true;
 
-    // First character uppercase = component
+    // First character uppercase = functional component
     return tagName[0] === tagName[0]?.toUpperCase();
   }
 }
