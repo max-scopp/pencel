@@ -30,12 +30,14 @@ export class FileWriter {
     perf.start("file-write");
     const files = await this.#sourceFiles.getAll();
     let progress = 1;
-    for (const [outputFilePath, contents] of files) {
+    for (const contents of files) {
+      const outputFilePath = contents.outputFileName ?? contents.fileName;
+
       await mkdir(dirname(outputFilePath), { recursive: true });
       const printed = await this.#sourcePrinter.printFile(contents);
       await writeFile(outputFilePath, printed);
       progress++;
-      percentage(progress / files.size, {
+      percentage(progress / files.length, {
         prefix: "Writing",
       });
     }

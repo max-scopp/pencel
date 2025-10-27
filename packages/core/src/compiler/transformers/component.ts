@@ -1,3 +1,4 @@
+import type { ComponentOptions } from "@pencel/runtime";
 import { throwError } from "@pencel/utils";
 import {
   type ClassDeclaration,
@@ -30,10 +31,9 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
         recordToObjectLiteral({
           tag: irr.ir.tag,
           extends: irr.ir.extends,
-          forIs: irr.ir.forIs,
           styles: irr.ir.styles,
           styleUrls: irr.ir.styleUrls,
-        }),
+        } satisfies ComponentOptions),
       ],
     );
 

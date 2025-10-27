@@ -1,7 +1,7 @@
-import type { SourceFile } from "typescript";
 import { factory } from "typescript";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
+import type { RenamableSourceFile } from "../core/source-files.ts";
 import { FileIR } from "../ir/file.ts";
 import type { IRRef } from "../ir/irri.ts";
 import { replaceQualifier } from "../utils/replaceQualifier.ts";
@@ -12,10 +12,10 @@ export class FileTransformer extends Transformer(FileIR) {
   #config = inject(Config);
   #componentTransformer = inject(ComponentTransformer);
 
-  override transform(irr: IRRef<FileIR, SourceFile>) {
-    irr.node.fileName = replaceQualifier(
+  override transform(irr: IRRef<FileIR, RenamableSourceFile>) {
+    irr.node.outputFileName = replaceQualifier(
       irr.node.fileName,
-      this.#config.user.output.qualifier,
+      this.#config.user.input.qualifier,
       this.#config.user.output.qualifier,
     );
 

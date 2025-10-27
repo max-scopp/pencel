@@ -1,15 +1,26 @@
 import { readFileSync } from "node:fs";
 import { throwError } from "@pencel/utils";
-import ts from "typescript";
+import {
+  createSourceFile,
+  factory,
+  ScriptKind,
+  ScriptTarget,
+  type SourceFile,
+  type Statement,
+} from "typescript";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
+
+export interface RenamableSourceFile extends SourceFile {
+  outputFileName?: string;
+}
 
 export class SourceFiles {
   readonly program: Program = inject(Program);
 
-  #generatedFiles = new Map<string, ts.SourceFile>();
+  #generatedFiles = new Map<string, SourceFile>();
 
-  #sourceFiles = new Map<string, ts.SourceFile>();
+  #sourceFiles = new Map<string, RenamableSourceFile>();
 
   /**
    * Loads source files from disk based on file paths discovered by Program
@@ -18,12 +29,12 @@ export class SourceFiles {
   async loadSource(): Promise<void> {
     for (const filePath of this.program.filePaths) {
       const source = readFileSync(filePath, "utf-8");
-      const sourceFile = ts.createSourceFile(
+      const sourceFile = createSourceFile(
         filePath,
         source,
-        ts.ScriptTarget.Latest,
+        ScriptTarget.Latest,
         true,
-        ts.ScriptKind.TSX,
+        ScriptKind.TSX,
       );
       this.#sourceFiles.set(filePath, sourceFile);
     }
@@ -37,21 +48,21 @@ export class SourceFiles {
     this.#generatedFiles.clear();
   }
 
-  getAll(): Map<string, ts.SourceFile> {
-    const result = new Map<string, ts.SourceFile>();
+  getAll(): readonly RenamableSourceFile[] {
+    const result: RenamableSourceFile[] = [];
 
-    for (const [filePath, sourceFile] of this.#sourceFiles) {
-      result.set(filePath, sourceFile);
+    for (const [, sourceFile] of this.#sourceFiles) {
+      result.push(sourceFile);
     }
 
-    for (const [filePath, sourceFile] of this.#generatedFiles) {
-      result.set(filePath, sourceFile);
+    for (const [, sourceFile] of this.#generatedFiles) {
+      result.push(sourceFile);
     }
 
     return result;
   }
 
-  getSourceFile(filePath: string): ts.SourceFile {
+  getSourceFile(filePath: string): SourceFile {
     return (
       this.#sourceFiles.get(filePath) ??
       this.#generatedFiles.get(filePath) ??
@@ -59,14 +70,14 @@ export class SourceFiles {
     );
   }
 
-  newFile(fileName: string, statements?: ts.Statement[]): ts.SourceFile {
+  newFile(fileName: string, statements?: Statement[]): SourceFile {
     // Create empty source file first to get proper initialization
-    const sourceFile = ts.createSourceFile(
+    const sourceFile = createSourceFile(
       fileName,
       "",
-      ts.ScriptTarget.Latest,
+      ScriptTarget.Latest,
       true,
-      ts.ScriptKind.TS,
+      ScriptKind.TS,
     );
 
     // Automatically register generated files so they're tracked and cleaned up
@@ -83,11 +94,8 @@ export class SourceFiles {
    * Updates or resets a SourceFile's statements
    * Returns a new SourceFile with updated statements, replacing it in the internal maps
    */
-  setStatements(
-    sourceFile: ts.SourceFile,
-    statements: ts.Statement[],
-  ): ts.SourceFile {
-    const updated = ts.factory.updateSourceFile(sourceFile, statements);
+  setStatements(sourceFile: SourceFile, statements: Statement[]): SourceFile {
+    const updated = factory.updateSourceFile(sourceFile, statements);
 
     // Update the file in the appropriate map
     const fileName = sourceFile.fileName;
