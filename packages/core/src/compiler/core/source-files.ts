@@ -94,7 +94,10 @@ export class SourceFiles {
    * Updates or resets a SourceFile's statements
    * Returns a new SourceFile with updated statements, replacing it in the internal maps
    */
-  setStatements(sourceFile: SourceFile, statements: Statement[]): SourceFile {
+  setStatements(
+    sourceFile: SourceFile,
+    statements: readonly Statement[],
+  ): SourceFile {
     const updated = factory.updateSourceFile(sourceFile, statements);
 
     // Update the file in the appropriate map

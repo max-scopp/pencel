@@ -43,7 +43,6 @@ export class FileProcessor {
     });
 
     this.visitAndTransform([fileIrr]);
-    this.#sourceFiles.setStatements(fileIrr.node, [...fileIrr.node.statements]);
 
     await this.plugins.handle({
       hook: "derive",
@@ -106,6 +105,10 @@ export class FileProcessor {
       if (transformedFile !== fileIrr.node) {
         fileIrr.node = transformedFile;
       }
+    });
+
+    transformedFiles.forEach((file) => {
+      this.#sourceFiles.setStatements(file, file.statements);
     });
 
     return transformedFiles;
