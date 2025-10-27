@@ -53,7 +53,7 @@ export class Plugins {
     perf.start("initialize-plugins");
 
     Plugins.registeredPlugins.forEach(async ([klass, defaultOptions], name) => {
-      const requiredPlugins = ["transform"] as Array<PluginNames>;
+      const requiredPlugins: Array<PluginNames> = [];
 
       const userOptions = this.#config.getUserOptionsForPlugin(name);
       const mergedOptions = {

@@ -18,8 +18,9 @@ export class Watcher {
   start(): void {
     const { cwd, user } = this.#config;
 
-    // Watch pattern: all files matching the input qualifier
-    const pattern = `${cwd}/**/*.${user.input.qualifier}.tsx`;
+    // Watch pattern: all files matching the input qualifier and supported extensions
+    const extensions = ["ts", "tsx"];
+    const pattern = `${cwd}/**/*.${user.input.qualifier}.{${extensions.join(",")}}`;
 
     log(`Watching: ${pattern}`);
 
