@@ -7,7 +7,13 @@ import {
   throwError,
 } from "@pencel/utils";
 import type ts from "typescript";
-import { type ClassDeclaration, SyntaxKind } from "typescript";
+import {
+  type ClassDeclaration,
+  type ClassElement,
+  isMethodDeclaration,
+  type MethodDeclaration,
+  SyntaxKind,
+} from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { Config } from "../config.ts";
@@ -16,6 +22,7 @@ import { EventIR } from "./event.ts";
 import { IRM, IRRef } from "./irri.ts";
 import { MethodIR } from "./method.ts";
 import { PropertyIR } from "./prop.ts";
+import { RenderIR } from "./render.ts";
 
 export interface ComponentMethod {
   name: string;
@@ -54,6 +61,7 @@ export class ComponentIR extends IRM("Component") {
   readonly props: Array<IRRef<PropertyIR, ts.PropertyDeclaration>>;
   readonly events: Array<IRRef<EventIR, ts.MethodDeclaration>>;
   readonly methods: Array<IRRef<MethodIR, ts.MethodDeclaration>>;
+  readonly render?: IRRef<RenderIR, ts.MethodDeclaration>;
 
   constructor(sourceFile: ts.SourceFile, classDeclaration: ClassDeclaration) {
     super();
@@ -117,32 +125,55 @@ export class ComponentIR extends IRM("Component") {
       }),
     };
 
-    const { properties, events, methods } = switchMapObject(
-      classDeclaration.members,
-      {
-        properties: (member) => {
-          if (PropertyIR.isPencelPropMember(member)) {
-            return new IRRef(new PropertyIR(member), member);
-          }
-          return;
-        },
-        events: (member) => {
-          if (EventIR.isPencelEventMember(member)) {
-            return new IRRef(new EventIR(member), member);
-          }
-          return;
-        },
-        methods: (member) => {
-          if (MethodIR.isPencelMethodMember(member)) {
-            return new IRRef(new MethodIR(member), member);
-          }
-          return;
-        },
+    const {
+      properties,
+      events,
+      methods,
+      render: [render],
+    } = switchMapObject(classDeclaration.members, {
+      properties: (member) => {
+        if (PropertyIR.isPencelPropMember(member)) {
+          return new IRRef(new PropertyIR(member), member);
+        }
+        return;
       },
-    );
+      events: (member) => {
+        if (EventIR.isPencelEventMember(member)) {
+          return new IRRef(new EventIR(member), member);
+        }
+        return;
+      },
+      methods: (member) => {
+        if (MethodIR.isPencelMethodMember(member)) {
+          return new IRRef(new MethodIR(member), member);
+        }
+        return;
+      },
+      render: (member) => {
+        if (isPencelRenderMember(member)) {
+          return new IRRef(new RenderIR(member), member);
+        }
+        return;
+      },
+    });
 
     this.props = properties;
     this.events = events;
     this.methods = methods;
+    this.render = render;
   }
+}
+
+function isPencelRenderMember(
+  member: ClassElement,
+): member is MethodDeclaration {
+  if (!isMethodDeclaration(member)) {
+    return false;
+  }
+
+  if (member.name?.getText() === "render") {
+    return true;
+  }
+
+  return false;
 }

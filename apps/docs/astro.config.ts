@@ -32,6 +32,10 @@ export default defineConfig({
           label: "Introduction",
           items: [
             {
+              label: "Why Pencel?",
+              slug: "why-pencel",
+            },
+            {
               label: "Getting Started",
               slug: "getting-started",
             },
