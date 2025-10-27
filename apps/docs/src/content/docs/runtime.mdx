@@ -1,0 +1,74 @@
+---
+title: Runtime API
+sidebar:
+  order: 2
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution">Pencel is moving towards a zero-VDOM architecture with compile-time static analysis. This describes the intended direction.</Aside>
+
+Pencel uses a zero-VDOM, compile-time approach to component rendering. The runtime provides a minimal decorator-based API for defining component metadata.
+
+## Decorators
+
+### `@Prop()`
+
+Defines reactive component properties that can be set from outside.
+
+```typescript
+@Prop() label: string
+@Prop() disabled: boolean = false
+```
+
+### `@State()`
+
+Defines internal component state. Changes trigger re-renders.
+
+```typescript
+@State() isOpen: boolean = false
+@State() count: number = 0
+```
+
+### `@Event()`
+
+Defines custom events the component can emit. Make sure to use `declare` here since the runtime will provide the implementation.
+
+```typescript
+@Event() declare onClick: EventEmitter<void>
+@Event() declare onChange: EventEmitter<string>
+```
+
+## Lifecycle Hooks
+
+### `componentDidLoad()`
+
+Called after the component has been created and the DOM has been painted.
+
+```typescript
+componentDidLoad() {
+  // Initialize component
+}
+```
+
+### `componentDidUpdate()`
+
+Called after the component has been updated.
+
+```typescript
+componentDidUpdate() {
+  // Handle updates
+}
+```
+
+### `render()`
+
+Render and updates the component. After compilation, this method will be transformed into DOM manipulation code and returns `void`.
+
+You can call this method at any time to force a UI update.
+
+```typescript
+render() {
+  return <div>{this.label}</div>
+}
+```

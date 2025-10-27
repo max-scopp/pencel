@@ -1,68 +1,114 @@
-import { createLog } from "@pencel/utils";
-import { glob } from "fast-glob";
-import { program, programFromTsConfig } from "ts-flattered";
+import { resolve } from "node:path";
+import { createLog, throwError } from "@pencel/utils";
+import fg from "fast-glob";
 import ts from "typescript";
+import { Config } from "../config.ts";
 import { perf } from "../utils/perf.ts";
-import { CompilerContext } from "./compiler-context.ts";
 import { inject } from "./container.ts";
 
 const log = createLog("Project");
 
 export class Program {
-  readonly context: CompilerContext = inject(CompilerContext);
+  readonly config: Config = inject(Config);
+  #tsconfigPath?: string;
+  #tsconfigContent?: string;
+  #filePaths: string[] = [];
 
-  ts!: ts.Program;
+  tsconfig!: ts.ParsedCommandLine;
 
-  async load(): Promise<ts.Program> {
-    log("Loading program...");
+  /**
+   * Discovers input files by loading and validating tsconfig, then globbing for files
+   * Should be called once on startup and re-called on tsconfig changes
+   */
+  async discover(): Promise<string[]> {
+    const config = this.config;
 
-    const config = this.context.config;
+    perf.start("verify-tsconfig");
 
-    perf.start("program-creation");
-    if (typeof config.input === "string") {
-      perf.start("glob-resolution");
+    const tsconfigPath =
+      config.user.tsconfig ?? throwError("tsconfig not specified");
 
-      const files = await glob(config.input, {
-        cwd: this.context.cwd,
-        absolute: true,
-      });
+    this.#tsconfigPath = resolve(config.cwd, tsconfigPath);
 
-      perf.end("glob-resolution");
+    const readFile = (path: string) => {
+      this.#tsconfigContent = ts.sys.readFile(path);
+      return this.#tsconfigContent;
+    };
 
-      // Use tsconfig from the context directory
-      const tsconfigPath = ts.findConfigFile(
-        this.context.cwd,
-        ts.sys.fileExists,
-        "tsconfig.json",
+    const configFile = ts.readConfigFile(this.#tsconfigPath, readFile);
+
+    if (configFile.error) {
+      throw new Error(
+        `Failed to read tsconfig: ${ts.formatDiagnostic(configFile.error, {
+          getCanonicalFileName: (f) => f,
+          getCurrentDirectory: () => config.cwd,
+          getNewLine: () => "\n",
+        })}`,
       );
-
-      if (!tsconfigPath) {
-        throw new Error(`Could not find tsconfig.json in ${this.context.cwd}`);
-      }
-
-      const { config: parsedTsConfig } = ts.readConfigFile(
-        tsconfigPath,
-        ts.sys.readFile,
-      );
-
-      const { options: baseCompilerOptions } = ts.parseJsonConfigFileContent(
-        parsedTsConfig,
-        ts.sys,
-        this.context.cwd,
-      );
-
-      this.ts = program({
-        rootNames: files,
-        compilerOptions: baseCompilerOptions,
-      });
-    } else if (config.input.tsconfig) {
-      this.ts = programFromTsConfig(config.input.tsconfig);
     }
 
-    perf.end("program-creation");
+    this.tsconfig = ts.parseJsonConfigFileContent(
+      configFile.config,
+      ts.sys,
+      config.cwd,
+    );
 
-    log("Done");
+    this.#verifyConfig();
 
-    return this.ts;
+    if (this.tsconfig.errors.length > 0) {
+      throw new Error(
+        `Failed to parse tsconfig: ${this.tsconfig.errors
+          .map((d) =>
+            ts.formatDiagnostic(d, {
+              getCanonicalFileName: (f) => f,
+              getCurrentDirectory: () => config.cwd,
+              getNewLine: () => "\n",
+            }),
+          )
+          .join("\n")}`,
+      );
+    }
+
+    perf.end("verify-tsconfig");
+
+    perf.start("discover-files");
+
+    const pattern = `**/*.${config.user.input.qualifier}.tsx`;
+    this.#filePaths = await fg(pattern, {
+      cwd: config.cwd,
+      absolute: true,
+    });
+
+    perf.end("discover-files");
+    log(`Found ${this.#filePaths.length} input file(s)`);
+
+    return this.#filePaths;
+  }
+
+  /**
+   * Returns the discovered file paths
+   */
+  get filePaths(): string[] {
+    return this.#filePaths;
+  }
+
+  #verifyConfig(): void {
+    const opts = this.tsconfig.options;
+
+    if (opts.jsx !== ts.JsxEmit.Preserve) {
+      throw new Error(`[TSC] compilerOptions.jsx: must be "preserve"`);
+    }
+
+    if (opts.jsxImportSource !== "@pencel/runtime") {
+      throw new Error(
+        `[TSC] compilerOptions.jsxImportSource: must be "@pencel/runtime"`,
+      );
+    }
+
+    if (!opts.experimentalDecorators) {
+      throw new Error(
+        `[TSC] compilerOptions.experimentalDecorators: must be true`,
+      );
+    }
   }
 }

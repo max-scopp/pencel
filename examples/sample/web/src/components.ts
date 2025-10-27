@@ -1,1 +1,1 @@
-import "./components/pen-button";
+import "./components/pen-button.pen";

@@ -33,12 +33,14 @@ export class Styles {
       const input = getContent(path);
 
       alwaysStyles += await this.plugins.handle({
-        aspect: "css:postprocess",
-        input: await this.plugins.handle({
-          aspect: "css:preprocess",
-          input,
-          path,
-        }),
+        hook: "css:postprocess",
+        input: (
+          await this.plugins.handle({
+            hook: "css:preprocess",
+            input,
+            path,
+          })
+        ).input,
         path,
       });
     }
@@ -52,15 +54,19 @@ export class Styles {
         const path = getPath(styleUrl);
         const input = getContent(path);
 
-        inlinedStyleUrls[media] = await this.plugins.handle({
-          aspect: "css:postprocess",
-          input: await this.plugins.handle({
-            aspect: "css:preprocess",
-            input,
+        inlinedStyleUrls[media] = (
+          await this.plugins.handle({
+            hook: "css:postprocess",
+            input: (
+              await this.plugins.handle({
+                hook: "css:preprocess",
+                input,
+                path,
+              })
+            ).input,
             path,
-          }),
-          path,
-        });
+          })
+        ).input;
       }
     }
 

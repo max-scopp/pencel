@@ -1,9 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "include": ["src"],
-  "compilerOptions": {
-    "composite": true
-  },
+  "compilerOptions": {},
   "references": [
     { "path": "../../packages/runtime" },
     { "path": "../../packages/cli" },

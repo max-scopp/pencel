@@ -1,107 +1,97 @@
-import { throwError } from "@pencel/utils";
-import {
-  PLUGIN_SKIP,
-  type PluginFunction,
-  type PluginHandler,
-  type PluginNames,
-  type PluginRegistry,
-  type TransformHandler,
+import { Config } from "../config.ts";
+import type {
+  BasePluginOptions,
+  HookHandler,
+  HookKind,
+  PluggableHooks,
+  PluginNames,
+  PluginOptionsOf,
 } from "../types/plugins.ts";
 import { perf } from "../utils/perf.ts";
-import { CompilerContext } from "./compiler-context.ts";
 import { inject } from "./container.ts";
 
-export class Plugins {
-  readonly #context = inject(CompilerContext);
+export class PencelPlugin {
+  readonly #plugins = inject(Plugins);
 
-  static pluginsToInitialize: Map<
-    string,
-    { pluginFn: PluginFunction<PluginNames>; defaults: object }
+  handle<TKind extends HookKind>(
+    hook: TKind,
+    handler: HookHandler<TKind>,
+  ): void {
+    this.#plugins.registerHook(hook, handler);
+  }
+}
+
+type PluginConstructor<TName extends PluginNames> = {
+  new (userOptions: PluginOptionsOf<TName>): PencelPlugin;
+};
+
+export class Plugins {
+  static readonly registeredPlugins: Map<
+    PluginNames,
+    [PluginConstructor<PluginNames>, object]
   > = new Map();
 
-  plugins: Map<string, PluginHandler> = new Map<string, PluginHandler>();
-
-  static register<TPlugin extends PluginNames>(
-    name: TPlugin,
-    defaults: PluginRegistry[TPlugin],
-    pluginFn: PluginFunction<TPlugin>,
+  static register<TName extends PluginNames>(
+    name: TName,
+    pluginClass: PluginConstructor<TName>,
+    defaultOptions?: PluginOptionsOf<TName>,
   ): void {
-    if (Plugins.pluginsToInitialize.has(name)) {
-      throwError(`Plugin '${name}' is already registered`);
-    }
-
-    Plugins.pluginsToInitialize.set(name, {
-      pluginFn: pluginFn as PluginFunction<PluginNames>,
-      defaults,
-    });
+    perf.start(`register-plugin:${name}`);
+    Plugins.registeredPlugins.set(name, [pluginClass, defaultOptions ?? {}]);
+    perf.end(`register-plugin:${name}`);
   }
+
+  readonly #config = inject(Config);
+
+  readonly #instances: Map<string, unknown> = new Map();
+  readonly #hookHandlers: Map<
+    HookKind,
+    ((hook: PluggableHooks) => void | Promise<void>)[]
+  > = new Map();
 
   async initialize(): Promise<void> {
     perf.start("initialize-plugins");
 
-    for (const [
-      name,
-      { pluginFn, defaults },
-    ] of Plugins.pluginsToInitialize.entries()) {
-      const userEntry = this.#context.config.plugins?.find((p) => {
-        return typeof p === "string" ? p === name : p.name === name;
-      });
+    Plugins.registeredPlugins.forEach(async ([klass, defaultOptions], name) => {
+      const requiredPlugins: Array<PluginNames> = [];
 
-      const userOptions =
-        typeof userEntry === "string" ? {} : (userEntry?.options ?? {});
+      const userOptions = this.#config.getUserOptionsForPlugin(name);
+      const mergedOptions = {
+        ...defaultOptions,
+        ...userOptions,
+      } as BasePluginOptions;
 
-      if (userOptions) {
-        const plugin = await pluginFn(
-          {
-            ...defaults,
-            ...userOptions,
-          },
-          this.#context,
-        );
-
-        if (plugin) {
-          this.plugins.set(name, plugin);
-        }
+      if (!requiredPlugins.includes(name) && mergedOptions.enabled === false) {
+        return;
       }
-    }
+
+      perf.start(`initialize-plugin:${name}`);
+      const instance = new klass(mergedOptions as PluginOptionsOf<typeof name>);
+      this.#instances.set(name, instance);
+      perf.end(`initialize-plugin:${name}`);
+    });
 
     perf.end("initialize-plugins");
   }
 
-  // TODO: Not implemented
-  async cleanup(): Promise<void> {
-    for (const plugin of this.plugins.values()) {
-      if (plugin?.cleanup) {
-        await plugin.cleanup();
-      }
+  async handle<THook extends PluggableHooks>(hook: THook): Promise<THook> {
+    perf.start(`handle-hook:${hook.hook}`);
+
+    const handlers = this.#hookHandlers.get(hook.hook) ?? [];
+    for (const handler of handlers) {
+      await handler(hook);
     }
+
+    perf.end(`handle-hook:${hook.hook}`);
+    return hook;
   }
 
-  async write(): Promise<void> {
-    for (const plugin of this.plugins.values()) {
-      if (plugin?.write) {
-        await plugin.write();
-      }
-    }
-  }
-
-  async handle<THandle extends TransformHandler>(
-    handle: THandle,
-  ): Promise<THandle["input"]> {
-    let intermediate = handle.input;
-
-    for (const plugin of this.plugins.values()) {
-      if (plugin) {
-        const r = await plugin.transform(handle);
-
-        if (r === PLUGIN_SKIP) {
-          continue;
-        }
-
-        intermediate = r;
-      }
-    }
-
-    return intermediate;
+  registerHook<TKind extends HookKind>(
+    hookKind: TKind,
+    handler: HookHandler<TKind>,
+  ): void {
+    const handlers = this.#hookHandlers.get(hookKind) ?? [];
+    handlers.push(handler as (hook: PluggableHooks) => void | Promise<void>);
+    this.#hookHandlers.set(hookKind, handlers);
   }
 }

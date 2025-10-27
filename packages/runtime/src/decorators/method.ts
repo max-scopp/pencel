@@ -19,12 +19,8 @@ import { ConsumerError } from "@pencel/utils";
  */
 export function Method(): PropertyDecorator {
   return (target, propertyKey) => {
-    // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {
-        console.warn(
-          "[Pencel] Accessing @Method property is no longer necessary. All non-private elements are accessible by nature.",
-        );
         return this[propertyKey];
       },
 

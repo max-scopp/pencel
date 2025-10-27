@@ -3,17 +3,15 @@
   "compilerOptions": {
     "jsx": "preserve",
     "jsxImportSource": "@pencel/runtime",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "*.pen": ["*.gen.ts"]
+    }
   },
   "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "../../../packages/runtime/tsconfig.json"
-    },
-    {
-      "path": "../../../packages/cli/tsconfig.json"
-    }
+    { "path": "./tsconfig.app.json" },
+    { "path": "../../../packages/runtime/tsconfig.json" },
+    { "path": "../../../packages/cli/tsconfig.json" }
   ]
 }

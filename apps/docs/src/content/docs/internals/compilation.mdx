@@ -1,0 +1,128 @@
+---
+title: Compilation System
+sidebar:
+  order: 2
+---
+
+Deep dive into how Pencel's compilation pipeline works. See [Architecture](/pencel/internals/architecture/) for the high-level overview.
+
+**⚠️ Note:** This describes intended architecture. See [TODOs](/pencel/internals/todos/) for implementation status.
+
+## Phases
+
+### 1. Discover ✅
+
+Scans the file system per `pencel.config.ts` to find all source files matching the input pattern (e.g., `**/*.pen.tsx`).
+
+- Validates `tsconfig.json`
+- Globs for input files based on `config.input.qualifier`
+
+### 2. Load ✅
+
+Reads source files from disk and creates TypeScript `SourceFile` objects.
+
+- Reads file content
+- Creates `ts.SourceFile` for analysis
+- Stored separately from generated files
+
+### 3. Build IR ✅
+
+Transforms AST into an Intermediate Representation—a complete, immutable object graph of components, props, events, and metadata.
+
+- Parses decorators: `@Component`, `@Prop`, `@Event`, etc.
+- Extracts metadata and relationships
+- IR is immutable and captures semantic intent
+
+### 4. Sync AST ⚠️
+
+Updates AST nodes to reflect IR state. Resolves cross-file dependencies and finalizes the "true source code."
+
+**What happens:**
+- Resolves type references across components
+- Injects type definitions
+- Updates import statements
+- Ensures consistency
+
+**⚠️ Status:** Planned but not yet implemented.
+
+### 5. Generate ⚠️
+
+Runs **generators**: plugins that always fully rebuild from the complete IR tree.
+
+**Examples:**
+- `ir.json`: IR dump for debugging
+- `component.d.ts`: type definitions for all components
+- Schema files
+
+**Key traits:**
+- Stateless: consume entire IR each time
+- No 1:1 mapping requirement
+- Always fully rebuilt, even in watch mode
+- Hook: `plugin.generate({ irs: Array<ImplodeIRRefs<FileIR>> })`
+- Access all file IRs at once for cross-file generation
+
+
+### 6. Derive ⚠️
+
+Runs **derivatives**: plugins that generate framework-specific outputs with 1:1 mapping to source files.
+
+**Examples:**
+- `component.react.tsx`: React wrapper
+- `component.angular.ts`: Angular directive
+- `component.vue.ts`: Vue component
+
+**Key traits:**
+- Maps exactly one source file → one derivative
+- Only regenerate when source changed (incremental win)
+- Access full IR to resolve types, but output is per-source-file
+- Hook: `plugin.derive({ irr: IRRef<FileIR, SourceFile> })`
+- Paired with the specific FileIR being processed
+
+### 7. Write ⚠️
+
+Flushes all generated files to disk via `FileWriter`.
+
+**⚠️ Status:** Partially implemented. Only writes `ir.json` currently.
+
+## File Organization
+
+Three categories of files:
+
+```typescript
+sourceFiles.loadSource()        // Project source files
+sourceFiles.clearGenerated()    // Clear last pass's generated files
+sourceFiles.newFile(name)       // Create a generated file
+```
+
+**Project Source Files** ✅
+- User-written `.pen.tsx` components
+- Persisted across compilation passes
+- Updated by Sync phase
+
+**Generated Files** ✅
+- Cleared at start of each pass
+- Populated by generators/derivatives via `newFile()`
+- Include global and per-source outputs
+
+**Key guarantee:** No stale files from previous passes; clear distinction between user code and generated code.
+
+## Plugin Hooks
+
+Plugins listen for hooks using the `handle()` method:
+
+
+```typescript
+class AngularOutput extends PencelPlugin {
+  constructor(userOptions: AngularOutputOptions) {
+    super();
+
+    this.handle("transform", (hook) => {
+      // Process Angular code generation
+    });
+  }
+}
+```
+
+**⚠️ Status:** Hook interfaces are evolving. Currently `codegen`, `generate`, and `derive` hooks are available.
+
+See [Core Components](/pencel/internals/core/) for orchestration details.

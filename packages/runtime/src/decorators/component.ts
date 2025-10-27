@@ -2,7 +2,7 @@ import {
   ConsumerError,
   createLog,
   getExtendsByInheritance,
-  getTrueTag,
+  normalizeTag,
 } from "@pencel/utils";
 import { pencelConfig, ready$ } from "../config.ts";
 import { wrapComponentForRegistration } from "../core/pencilCustomElementWrap.tsx";
@@ -114,7 +114,7 @@ async function defineCustomElement(
 ) {
   await ready$;
 
-  const trueTag = getTrueTag(tagName, pencelConfig.tagNamespace);
+  const trueTag = normalizeTag(tagName, pencelConfig.tagNamespace);
 
   log(
     "define",

@@ -1,79 +1,111 @@
-import { createLog } from "@pencel/utils";
+import { basename } from "node:path";
 import type { SourceFile } from "typescript";
-import { Config } from "../config/config.ts";
-import { SourceFiles } from "../factories/source-files.ts";
-import { FileWriter } from "../output/file-writer.ts";
-import { FileProcessor } from "../processors/file-processor.ts";
-import { ProjectProcessor } from "../processors/project-processor.ts";
-import type { PencelContext } from "../types/compiler-types.ts";
-import { isPencelGeneratedFile } from "../utils/marker.ts";
+import { Config } from "../config.ts";
+import type { FileIR } from "../ir/file.ts";
+import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
+import { FileProcessor } from "./file-processor.ts";
+import { FileWriter } from "./file-writer.ts";
 import { Plugins } from "./plugin.ts";
 import { Program } from "./program.ts";
-
-const log = createLog("Transform");
+import { SourceFiles } from "./source-files.ts";
 
 export class Compiler {
   readonly #config = inject(Config);
+  readonly #program = inject(Program);
+  readonly #plugins = inject(Plugins);
+  readonly #sourceFiles = inject(SourceFiles);
+  readonly #fileProcessor = inject(FileProcessor);
   readonly #fileWriter = inject(FileWriter);
-  readonly #fileProcessor: FileProcessor = inject(FileProcessor);
-  readonly #projectProcessor: ProjectProcessor = inject(ProjectProcessor);
-  readonly #sourceFileRegistry = inject(SourceFiles);
 
-  readonly #program: Program = inject(Program);
+  async init(configFile?: string): Promise<void> {
+    perf.start("initialize");
 
-  get context(): PencelContext {
-    return {
-      cwd: this.#config.cwd,
-      config: this.#config.config,
-    };
+    await this.#config.load(configFile);
+    await this.#plugins.initialize();
+
+    perf.end("initialize");
   }
 
-  async transformFile(filePath: string): Promise<void> {
-    if (!this.#program || !this.context || !this.#sourceFileRegistry) {
-      throw new Error("Compiler not set up. Call setup() first.");
-    }
+  async compile(): Promise<Map<string, FileIR>> {
+    perf.start("compile");
 
-    const sourceFile = this.#program.ts.getSourceFile(filePath);
-    if (!sourceFile) {
-      log(`File not found in program: ${filePath}`);
-      return;
-    }
+    await this.#buildGraph();
+    const result = await this.processAllFiles();
 
-    // Check if this is one of our own generated files to avoid infinite loops
-    if (isPencelGeneratedFile(sourceFile)) {
-      log(`Skipping generated file: ${filePath}`);
-      return;
-    }
-
-    log(`Transforming single file: ${filePath}`);
-
-    const newComponentFile = await this.#fileProcessor.process(sourceFile);
-
-    if (newComponentFile) {
-      // Create and register the transformed file
-      const sourceFileFactory = new SourceFiles();
-      const transformedFile =
-        sourceFileFactory.createTransformedFile(sourceFile);
-      this.#sourceFileRegistry.registerTransformedFile(
-        transformedFile,
-        filePath,
-      );
-    }
+    perf.end("compile");
+    return result;
   }
 
-  async transform(): Promise<Map<string, SourceFile>> {
-    const result = await this.#projectProcessor.processFilesInProject();
+  /**
+   * Incremental compile: reloads graph, then transforms only specified files
+   */
+  async compileChangedFiles(
+    changedFiles: string[],
+  ): Promise<Map<string, FileIR>> {
+    await this.#buildGraph();
+    return this.processFiles(changedFiles);
+  }
+
+  async #buildGraph(): Promise<void> {
+    perf.start("build-graph");
+    await this.#program.discover();
+    await this.#sourceFiles.loadSource();
+    // Clear generated files from previous pass so plugins can repopulate
+    this.#sourceFiles.clearGenerated();
+    perf.end("build-graph");
+  }
+
+  async processFile(
+    sourceFile: SourceFile,
+  ): Promise<FileIR | null | undefined> {
+    perf.start(`transform:${basename(sourceFile.fileName)}`);
+
+    const fileIrr = await this.#fileProcessor.process(sourceFile);
+
+    perf.end(`transform:${basename(sourceFile.fileName)}`);
+
+    return fileIrr?.ir;
+  }
+
+  async processAllFiles(): Promise<Map<string, FileIR>> {
+    const sourceFiles = this.#sourceFiles.getAll();
+    const result = new Map<string, FileIR>();
+
+    for (const sf of sourceFiles.values()) {
+      const ir = await this.processFile(sf);
+
+      if (ir) {
+        result.set(sf.fileName, ir);
+      }
+    }
 
     await this.#fileWriter.writeEverything();
+
+    perf.log();
 
     return result;
   }
 
-  async cleanup(): Promise<void> {
-    const plugins = inject(Plugins);
-    if (plugins) {
-      await plugins.cleanup();
+  async processFiles(filePaths: string[]): Promise<Map<string, FileIR>> {
+    const allSourceFiles = this.#sourceFiles.getAll();
+    const result = new Map<string, FileIR>();
+
+    for (const path of filePaths) {
+      const sf = allSourceFiles.get(path);
+      if (sf) {
+        const ir = await this.processFile(sf);
+
+        if (ir) {
+          result.set(sf.fileName, ir);
+        }
+      }
     }
+
+    await this.#fileWriter.writeEverything();
+
+    perf.log();
+
+    return result;
   }
 }

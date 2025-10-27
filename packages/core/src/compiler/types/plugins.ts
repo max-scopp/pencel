@@ -1,106 +1,83 @@
-import type { CustomAtRules, TransformOptions } from "lightningcss";
-import type * as sass from "sass-embedded";
-import type ts from "typescript";
-import type { PencelConfig } from "./config-types.ts";
+import type { Node, SourceFile } from "typescript";
+import type { FileIR } from "../ir/file.ts";
+import type { ImplodeIRRefs, IR, IRRef } from "../ir/irri.ts";
+
+export interface BasePluginOptions {
+  enabled?: boolean;
+}
 
 export interface PluginRegistry {
   _: object;
-  css: {
-    enabled?: boolean;
-    lightningCssOptions?: Omit<
-      TransformOptions<CustomAtRules>,
-      "code" | "filename"
-    >;
-  };
-  scss: {
-    enabled?: boolean;
-    scssOptions?: sass.StringOptions<"async">;
-  };
-
-  angular: {
-    enabled: boolean;
-    /**
-     * Relative to the config file, where to output angular code to make
-     * the web components available as Angular components.
-     */
-    proxyFile: string;
-  };
 }
 
 export type PluginNames = keyof Omit<PluginRegistry, "_">;
 
-export type PluginDefs<TPlugin extends PluginNames = PluginNames> = Array<
+export type PluginOptionsOf<TName extends PluginNames> =
+  PluginRegistry[TName] extends { options: infer TOptions & BasePluginOptions }
+    ? TOptions
+    : never;
+
+export type PluginDefs<
+  TPlugin extends PluginNames = PluginNames,
+  TOptions extends object = never,
+> = Array<
   | TPlugin
   | {
       name: TPlugin;
-      options?: PluginRegistry[TPlugin];
+      options?: TOptions;
     }
 >;
 
-/**
- * Context passed to plugin execution
- */
-export interface PluginContext {
-  /**
-   * Current working directory
-   */
-  cwd: string;
+/** Transform user styles to standard CSS */
+export type CssPreprocessHook = {
+  hook: "css:preprocess";
+  input: string;
+  path: string;
+};
 
-  /**
-   * The complete Pencil configuration
-   */
-  config: PencelConfig;
-}
+/** Transform standard CSS to optimized CSS */
+export type CssPostprocessHook = {
+  hook: "css:postprocess";
+  input: string;
+  path: string;
+};
 
-export const PLUGIN_SKIP: unique symbol = Symbol("__$pencel_plugin_skip$");
+/** Generate code from TypeScript AST (mutable) */
+// TODO: Remove
+export type CodegenHook = {
+  hook: "transform";
+  irr: IRRef<IR, Node>;
+};
 
-export type TransformHandler =
-  | {
-      // Plugins changing user styles to standard CSS
-      aspect: "css:preprocess";
-      input: string;
-      path: string;
-    }
-  | {
-      // Plugins changing standard CSS to optimized CSS
-      aspect: "css:postprocess";
-      input: string;
-      path: string;
-    }
-  | {
-      // Plugins generating further code, e.g. outputting Angular, React, etc. component code
-      // You are allowed to modify the input TypeScript AST here; You receive the just-about to-be-emitted AST
-      // and can modify it as you like.
-      aspect: "codegen";
-      input: ts.SourceFile;
-    };
+/** Generate project-level files from the complete IR tree */
+export type GenerateHook = {
+  hook: "generate";
+  irs: Array<ImplodeIRRefs<FileIR>>;
+};
 
-// TODO: Rename to PluginHooks ?
-export type PluginHandler = {
-  /**
-   * Work done when all files have been processed and the compiler is about to quit.
-   * TODO: Not implemented
-   */
-  cleanup?: () => Promise<void>;
-
-  /**
-   * Right after the core transformed files have been written, this function is called
-   * to allow plugins to write additional files, e.g. an Angular module file.
-   */
-  write?: () => Promise<void>;
-
-  /**
-   * Transform function that processes content
-   */
-  transform: <THandler extends TransformHandler>(
-    handle: THandler,
-  ) => Promise<THandler["input"] | typeof PLUGIN_SKIP>;
+/** Derive framework-specific files from IR and source file */
+export type DeriveHook = {
+  hook: "derive";
+  irr: IRRef<FileIR, SourceFile>;
 };
 
 /**
- * Plugin function type - a simple function that receives user options and context
+ * Union of all pluggable hooks in the system
  */
-export type PluginFunction<TPlugin extends PluginNames> = (
-  options: PluginRegistry[TPlugin],
-  context: PluginContext,
-) => Promise<PluginHandler | null>;
+export type PluggableHooks =
+  | CssPreprocessHook
+  | CssPostprocessHook
+  | CodegenHook
+  | GenerateHook
+  | DeriveHook;
+
+export type HookOf<TKind extends PluggableHooks["hook"]> = Extract<
+  PluggableHooks,
+  { hook: TKind }
+>;
+
+export type HookHandler<TKind extends PluggableHooks["hook"]> = (
+  hook: HookOf<TKind>,
+) => void | Promise<void>;
+
+export type HookKind = PluggableHooks["hook"];

@@ -1,59 +1,41 @@
 import type { PencilRuntimeConfig } from "@pencel/runtime";
 import type { PluginDefs } from "./plugins.ts";
 
-interface PencilOutputToFolder {
-  mode: "folder";
-  path: string;
-}
-
-interface PencilOutputAside {
-  mode: "aside";
-
-  /**
-   * A regular expression that's using the basename of the file
-   * to determine the output file name.
-   */
-  replace: [RegExp, string];
-}
-
 /**
  * Pencel's Core configuration interface
  */
 export interface PencelConfig {
-  /**
-   * The base directory for source files.
-   * @default "src"
-   */
-  srcBase?: string;
+  input?: {
+    /**
+     * @default "pen"
+     */
+    qualifier: string;
+  };
 
   /**
-   * The input folder or glob pattern to process.
-   * Defaults to the tsconfig next to the config file.
+   * Pencel treats files using the pattern `<basename>.<qualifier>.<ext>`.
+   *
+   * It discovers components via `inputQualifier` and emits output files
+   * next to them using `outputQualifier`.
+   *
+   * Example:
+   *   component/my-component.pen.ts
+   * becomes:
+   *   component/my-component.gen.ts
    */
-  input?:
-    | string
-    | {
-        /**
-         * Path to the tsconfig.json file to use, relative to this config file.
-         */
-        tsconfig: string;
-      };
+  output?: {
+    /**
+     * @default "gen"
+     */
+    qualifier: string;
+  };
+
+  /**
+   * @default "tsconfig.json"
+   */
+  tsconfig?: string;
 
   plugins?: PluginDefs;
 
-  output?: PencilOutputToFolder | PencilOutputAside;
   runtime?: PencilRuntimeConfig;
 }
-
-export interface ComponentMetadata {
-  tagName?: string;
-  selector?: string;
-  extends?: string;
-  tagNamespace?: string;
-}
-
-export interface TransformResult {
-  meta: ComponentMetadata;
-}
-
-export type TransformResults = Map<string, TransformResult[]>;

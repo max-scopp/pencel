@@ -6,33 +6,59 @@ sidebar:
 
 Pencel is designed to be build-agnostic and framework-friendly, taking a different approach from traditional Web Component compilers.
 
-## Build Process & Runtime
+## Compilation Pipeline
+
+The compiler transforms project source files through a streamlined process:
 
 ```mermaid
 graph TB
-    subgraph "Build Time"
-        CLI[CLI Entry Point] --> Compiler[Compiler Core]
-        Compiler --> TSAnalysis[TypeScript Analysis]
-        Compiler --> MetaExtractor[Metadata Extraction]
-        Compiler --> CodeGen[Code Generation]
-        
-        UserBuild[User Build System] --> Runtime[Runtime Components]
-        UserBuild --> UserBundle[User Bundler]
+    Source["Project Source Files"]
+    Verify["Verify tsconfig"]
+    Discover["Discover files"]
+    SourceFiles["Build AST"]
+    BuildIR["Build IR"]
+    UpdateAST["Update AST from IR"]
+    
+    subgraph Parallel[" "]
+        Generate["Generate global files"]
+        Derive["Derive framework adapters"]
     end
     
-    subgraph "Runtime"
-        ComponentRuntime[Component Runtime] --> VDOM[Virtual DOM]
-        ComponentRuntime --> LC[Lifecycle Manager]
-        ComponentRuntime --> PropSystem[Property System]
-        ComponentRuntime --> EventSystem[Event System]
-    end
+    Merge["Update Import Statements"]
+    Write["Write to Disk"]
+    
+    Source --> Verify --> Discover --> SourceFiles --> BuildIR --> UpdateAST
+    UpdateAST --> Generate
+    UpdateAST --> Derive
+    Generate --> Merge
+    Derive --> Merge
+    Merge --> Write
+    
+    style Source fill:#b3e5fc,stroke:#0277bd,color:#000
+    style Verify fill:#e8f5e9,stroke:#33691e,color:#000
+    style Discover fill:#e8f5e9,stroke:#33691e,color:#000
+    style SourceFiles fill:#e8f5e9,stroke:#33691e,color:#000
+    style BuildIR fill:#e8f5e9,stroke:#33691e,color:#000
+    style UpdateAST fill:#ffe0b2,stroke:#e65100,color:#000
+    style Generate fill:#fff59d,stroke:#fbc02d,color:#000
+    style Derive fill:#c8e6c9,stroke:#388e3c,color:#000
+    style Merge fill:#f8bbd0,stroke:#c2185b,color:#000
+    style Write fill:#e8f5e9,stroke:#33691e,color:#000
 ```
 
-## Key Differences from Other Tools
+**Key phases:**
+1. **Verify & Discover**: Check config, find source files
+2. **Build AST**: Create `ts.SourceFiles` registry
+3. **Build IR**: Extract component metadata into immutable IR
+4. **Update AST**: Sync AST nodes using IRRef (from IR state)
+5. **Generate & Derive**: Create global files and framework adapters
+6. **Merge**: Resolve imports, update file references
+7. **Write**: Flush to disk
 
-Unlike traditional compilers that provide their own compilation pipeline, Pencel:
+## Key Concepts
 
-- Works with any build system
-- Outputs pure TypeScript source code
-- No enforced bundler or dev server
-- No automatic polyfills
+- **Project Source Files**: User-written `.pen.tsx` files
+- **IR (Intermediate Representation)**: Immutable object graph of the component system
+- **Generators**: Global output files (no 1:1 mapping), always fully rebuilt
+- **Derivatives**: Framework adapters (1:1 per source file)
+- **AST Sync**: Makes sure the AST is consistent with the computed IR before printing

@@ -1,8 +1,7 @@
 import { warn } from "node:console";
 import { createLog } from "@pencel/utils";
 import { type ErrorLocation, transform } from "lightningcss";
-import { Plugins } from "../compiler/core/plugin.ts";
-import { PLUGIN_SKIP } from "../compiler/types/plugins.ts";
+import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
 
 const log = createLog("CSS");
 
@@ -12,52 +11,58 @@ function isErrorLocation(err: unknown): err is SyntaxError & ErrorLocation {
   );
 }
 
-Plugins.register(
-  "css",
-  {
-    enabled: true,
-    lightningCssOptions: {
-      minify: true,
-    },
-  },
-  (options) => {
-    if (!options.enabled) {
-      return Promise.resolve(null);
-    }
+declare module "../compiler/types/plugins.ts" {
+  interface PluginRegistry {
+    css: {
+      class: CssPlugin;
+      options: CssPluginOptions;
+    };
+  }
+}
 
-    log("Using CSS plugin");
+interface CssPluginOptions {
+  lightningCssOptions?: {
+    minify?: boolean;
+  };
+}
 
-    return Promise.resolve({
-      transform: (handle) => {
-        if (handle.aspect === "css:postprocess") {
-          log(`Handle ${handle.path}`);
+class CssPlugin extends PencelPlugin {
+  readonly #options: CssPluginOptions;
 
-          try {
-            const result = transform({
-              ...options.lightningCssOptions,
-              code: Buffer.from(handle.input),
-              filename: handle.path,
-            });
+  constructor(options: CssPluginOptions) {
+    super();
+    this.#options = options;
 
-            result.warnings.forEach((warning) => {
-              warn(`${warning.message}`);
-            });
+    this.handle("css:postprocess", (hook) => {
+      log(`Handle ${hook.path}`);
 
-            return Promise.resolve(result.code.toString());
-          } catch (err) {
-            if (isErrorLocation(err)) {
-              warn(
-                `CSS Syntax Error in ${handle.path}:${err.line}:${err.column}\n\t${err.message}`,
-              );
-              return Promise.resolve(handle.input);
-            }
+      try {
+        const result = transform({
+          ...this.#options.lightningCssOptions,
+          code: Buffer.from(hook.input),
+          filename: hook.path,
+        });
 
-            throw err;
-          }
+        result.warnings.forEach((warning) => {
+          warn(`${warning.message}`);
+        });
+
+        hook.input = result.code.toString();
+      } catch (err) {
+        if (isErrorLocation(err)) {
+          warn(
+            `CSS Syntax Error in ${hook.path}:${err.line}:${err.column}\n\t${err.message}`,
+          );
+        } else {
+          throw err;
         }
-
-        return Promise.resolve(PLUGIN_SKIP);
-      },
+      }
     });
+  }
+}
+
+Plugins.register("css", CssPlugin, {
+  lightningCssOptions: {
+    minify: true,
   },
-);
+});

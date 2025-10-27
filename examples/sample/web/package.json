@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "generate:src": " bun ../../../packages/cli/src/main.ts",
     "generate": "pencel",
     "generate:watch": "pencel --watch"
   },

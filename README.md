@@ -1,7 +1,7 @@
 # ✏️ Pencel
 
 > Draw components with familiar syntax — no magic, no lock-in.  
-> *Write once. Ship clean.*
+> *Graphite points, fission sparks*
 
 ## ⚡ Quick Example
 
