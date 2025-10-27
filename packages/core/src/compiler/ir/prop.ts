@@ -18,7 +18,7 @@ export class PropertyIR extends IRM("Prop") {
     super();
 
     const decorator = singleDecorator(propertyDeclaration, "Prop");
-    const [propOptions] =
+    const [propOptions = {}] =
       decoratorArgs<readonly [PropOptions]>(decorator) ??
       throwError("@Prop must have arguments");
 
