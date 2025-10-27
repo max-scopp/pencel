@@ -9,4 +9,5 @@ export default defineConfig({
   banner: "/* Pencel CLI v0.0.0 - License: MIT */",
   platform: "node",
   external: ["lightningcss"],
+  dts: { build: true },
 });
