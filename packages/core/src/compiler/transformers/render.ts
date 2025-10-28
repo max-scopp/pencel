@@ -49,7 +49,9 @@ export class RenderTransformer extends Transformer(RenderIR) {
    */
   #visitNode(node: Node): Node {
     if (isReturnStatement(node)) {
-      return this.#transformReturn(node as unknown as { expression?: Expression });
+      return this.#transformReturn(
+        node as unknown as { expression?: Expression },
+      );
     }
 
     // For if statements, transform both branches
@@ -124,7 +126,8 @@ export class RenderTransformer extends Transformer(RenderIR) {
   #transformExpression(expr: Expression): Expression {
     // Unwrap parenthesized expressions
     if (expr.kind === SyntaxKind.ParenthesizedExpression) {
-      const unwrapped = (expr as unknown as { expression: Expression }).expression;
+      const unwrapped = (expr as unknown as { expression: Expression })
+        .expression;
       return this.#transformExpression(unwrapped);
     }
 
@@ -194,23 +197,40 @@ export class RenderTransformer extends Transformer(RenderIR) {
    * For other custom components, keep the wrapper but transform children
    */
   #transformCustomComponent(jsx: JsxElement): Expression {
-    const openingElement = (jsx as unknown as { openingElement: { tagName: { text: string }; attributes: { properties?: unknown } } }).openingElement;
+    const openingElement = (
+      jsx as unknown as {
+        openingElement: {
+          tagName: { text: string };
+          attributes: { properties?: unknown };
+        };
+      }
+    ).openingElement;
     const tagName = openingElement.tagName.text;
-    
+
     // Special handling for <Host> component
     if (tagName === "Host") {
       // Get Host attributes to apply to 'this'
       const hostAttributes = openingElement.attributes.properties;
       if (hostAttributes && Array.isArray(hostAttributes)) {
         for (const attr of hostAttributes) {
-          if (attr.kind === SyntaxKind.JsxAttribute && (attr as { name?: { text: string } }).name) {
+          if (
+            attr.kind === SyntaxKind.JsxAttribute &&
+            (attr as { name?: { text: string } }).name
+          ) {
             const attrName = (attr as { name: { text: string } }).name.text;
-            const initializer = (attr as { initializer?: { kind: SyntaxKind; expression?: Expression } }).initializer;
-            
+            const initializer = (
+              attr as {
+                initializer?: { kind: SyntaxKind; expression?: Expression };
+              }
+            ).initializer;
+
             // Handle event attributes (onMouseEnter, etc.)
             if (attrName.startsWith("on")) {
               const eventName = attrName.slice(2).toLowerCase();
-              if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
+              if (
+                initializer?.kind === SyntaxKind.JsxExpression &&
+                initializer.expression
+              ) {
                 this.#prependStatements.push(
                   factory.createExpressionStatement(
                     factory.createCallExpression(
@@ -229,7 +249,10 @@ export class RenderTransformer extends Transformer(RenderIR) {
               }
             } else {
               // Regular attributes (class, etc.)
-              if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
+              if (
+                initializer?.kind === SyntaxKind.JsxExpression &&
+                initializer.expression
+              ) {
                 this.#prependStatements.push(
                   factory.createExpressionStatement(
                     factory.createCallExpression(
@@ -250,41 +273,56 @@ export class RenderTransformer extends Transformer(RenderIR) {
           }
         }
       }
-      
+
       // Transform children and return the first child directly
-      const children = (jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }).children;
+      const children = (
+        jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }
+      ).children;
       if (children && children.length > 0) {
         // Find the first non-whitespace child
         for (const child of children) {
-          if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
+          if (
+            child.kind === SyntaxKind.JsxElement ||
+            child.kind === SyntaxKind.JsxSelfClosingElement
+          ) {
             return this.#transformExpression(child as unknown as Expression);
           }
           if (child.kind === SyntaxKind.JsxExpression) {
-            const expr = (child as unknown as { expression?: Expression }).expression;
+            const expr = (child as unknown as { expression?: Expression })
+              .expression;
             if (expr) {
               return this.#transformExpression(expr);
             }
           }
         }
       }
-      
+
       // If no children, return null
       return factory.createNull();
     }
-    
+
     // For other custom components, recursively visit all children and transform nested JSX
     return visitEachChild(
       jsx as unknown as Expression,
       (node) => {
-        if (node.kind === SyntaxKind.JsxElement || node.kind === SyntaxKind.JsxSelfClosingElement) {
-          return this.#transformExpression(node as Expression) as unknown as typeof node;
+        if (
+          node.kind === SyntaxKind.JsxElement ||
+          node.kind === SyntaxKind.JsxSelfClosingElement
+        ) {
+          return this.#transformExpression(
+            node as Expression,
+          ) as unknown as typeof node;
         }
         if (node.kind === SyntaxKind.JsxExpression) {
-          const expr = (node as unknown as { expression?: Expression }).expression;
+          const expr = (node as unknown as { expression?: Expression })
+            .expression;
           if (expr) {
             const transformed = this.#transformExpression(expr);
             // Return a new JsxExpression with the transformed expression
-            return factory.createJsxExpression(undefined, transformed) as unknown as typeof node;
+            return factory.createJsxExpression(
+              undefined,
+              transformed,
+            ) as unknown as typeof node;
           }
         }
         return node;
@@ -354,13 +392,19 @@ export class RenderTransformer extends Transformer(RenderIR) {
 
     // Handle children
     const children: Expression[] = [];
-    const jsxWithChildren = jsx as unknown as { children?: Array<{ kind: SyntaxKind; text?: string; expression?: Expression }> };
-    
+    const jsxWithChildren = jsx as unknown as {
+      children?: Array<{
+        kind: SyntaxKind;
+        text?: string;
+        expression?: Expression;
+      }>;
+    };
+
     if (jsxWithChildren.children && jsxWithChildren.children.length > 0) {
       for (let i = 0; i < jsxWithChildren.children.length; i++) {
         const child = jsxWithChildren.children[i];
         if (!child) continue;
-        
+
         if (child.kind === SyntaxKind.JsxText) {
           const text = child.text || "";
           if (text.trim()) {
@@ -415,9 +459,14 @@ export class RenderTransformer extends Transformer(RenderIR) {
             const transformed = this.#transformExpression(expr as Expression);
             children.push(transformed);
           }
-        } else if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
+        } else if (
+          child.kind === SyntaxKind.JsxElement ||
+          child.kind === SyntaxKind.JsxSelfClosingElement
+        ) {
           // Recursively transform nested JSX elements
-          const transformed = this.#transformExpression(child as unknown as Expression);
+          const transformed = this.#transformExpression(
+            child as unknown as Expression,
+          );
           children.push(transformed);
         }
       }
@@ -500,19 +549,23 @@ export class RenderTransformer extends Transformer(RenderIR) {
     const attrs = attributes as Array<{
       kind: SyntaxKind;
       name?: { text: string };
-      initializer?: { kind: SyntaxKind; text?: string; expression?: Expression };
+      initializer?: {
+        kind: SyntaxKind;
+        text?: string;
+        expression?: Expression;
+      };
     }>;
-    
+
     if (!Array.isArray(attrs)) return;
 
     for (const attr of attrs) {
       if (attr.kind === SyntaxKind.JsxAttribute && attr.name) {
         const attrName = attr.name.text;
-        
+
         // Check if this is an event handler (starts with "on")
         if (attrName.startsWith("on")) {
           const eventName = attrName.slice(2).toLowerCase(); // onClick -> click
-          
+
           if (attr.initializer?.kind === SyntaxKind.JsxExpression) {
             const expr = attr.initializer.expression;
             if (expr) {
@@ -583,10 +636,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
                       "setAttribute",
                     ),
                     undefined,
-                    [
-                      factory.createStringLiteral(attrName),
-                      expr as Expression,
-                    ],
+                    [factory.createStringLiteral(attrName), expr as Expression],
                   ),
                 ),
               );

@@ -1,4 +1,8 @@
-import { Component, type ComponentInterface, type VNode } from "@pencel/runtime";
+import {
+  Component,
+  type ComponentInterface,
+  type VNode,
+} from "@pencel/runtime";
 
 @Component({
   tag: "test-nested-div",

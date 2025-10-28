@@ -1,4 +1,9 @@
-import { Component, Prop, type ComponentInterface, type VNode } from "@pencel/runtime";
+import {
+  Component,
+  type ComponentInterface,
+  Prop,
+  type VNode,
+} from "@pencel/runtime";
 
 @Component({
   tag: "test-features",
