@@ -1,6 +1,4 @@
-// --- zero-dom.ts ---
-
-export const cacheLexer = Symbol("cacheLexer");
+export const cacheLexer = Symbol("_$pen_clex");
 
 export interface CacheOwner {
   [cacheLexer]?: ReturnType<typeof createLexerCache>;

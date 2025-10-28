@@ -1,4 +1,4 @@
-import { componentCtrl } from "../controllers/component.ts";
+import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import { deepEqual } from "../utils/equal.ts";
 
 export interface StoreOptions {
@@ -32,21 +32,38 @@ export interface ConnectOptions extends StoreOptions {
  */
 export function Store(options?: StoreOptions): PropertyDecorator {
   return (target, propertyKey) => {
-    // Define getter/setter for the state property
+    // Define getter/setter for the store property
     Object.defineProperty(target, propertyKey, {
       get() {
-        return componentCtrl().getStore(this, propertyKey);
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        if (!ctx?.stores) {
+          ctx.stores = new Map();
+        }
+        return ctx.stores.get(propertyKey);
       },
 
       set(value: unknown) {
-        const ctrl = componentCtrl();
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        if (!ctx?.stores) {
+          ctx.stores = new Map();
+        }
 
         const equalFn = options?.equal ?? deepEqual;
-
-        const isEqual = equalFn(value, ctrl.getStore(this, propertyKey));
+        const oldValue = ctx.stores.get(propertyKey);
+        const isEqual = equalFn(value, oldValue);
 
         if (!isEqual) {
-          ctrl.setStore(this, propertyKey, value);
+          ctx.stores.set(propertyKey, value);
+
+          const shouldUpdate = this.componentShouldUpdate?.(
+            value,
+            oldValue,
+            propertyKey,
+          );
+
+          if (shouldUpdate !== false) {
+            this.render?.();
+          }
         }
       },
 
@@ -69,32 +86,69 @@ export function Store(options?: StoreOptions): PropertyDecorator {
  */
 export function Connected(options?: ConnectOptions): PropertyDecorator {
   return (target: object, propertyKey: string | symbol) => {
-    // Define getter/setter for the state property
+    // Define getter/setter for the connected store property
     Object.defineProperty(target, propertyKey, {
       get() {
-        const sctx = componentCtrl().findStore(
-          this,
-          options?.name ?? String(propertyKey),
-        );
+        // biome-ignore lint/suspicious/noExplicitAny: element traversal requires any
+        const findStoreInParent = (el: any): unknown => {
+          if (!el) return null;
 
-        return sctx.store;
+          const storeName = options?.name ?? String(propertyKey);
+          const ctx = el[PENCIL_COMPONENT_CONTEXT];
+
+          if (ctx?.stores?.has(storeName)) {
+            return ctx.stores.get(storeName);
+          }
+
+          // Check parent
+          if (el.parentElement) {
+            return findStoreInParent(el.parentElement);
+          }
+
+          return null;
+        };
+
+        return findStoreInParent(this);
       },
 
       set(value: unknown) {
-        const ctrl = componentCtrl();
+        // Find parent component with the store and update it
+        // biome-ignore lint/suspicious/noExplicitAny: element traversal requires any
+        const findAndSetStore = (el: any): void => {
+          if (!el) return;
 
-        const equalFn = options?.equal ?? deepEqual;
+          const storeName = options?.name ?? String(propertyKey);
+          const ctx = el[PENCIL_COMPONENT_CONTEXT];
 
-        const isEqual = equalFn(value, ctrl.getStore(this, propertyKey));
+          if (ctx?.stores?.has(storeName)) {
+            const equalFn = options?.equal ?? deepEqual;
+            const oldValue = ctx.stores.get(storeName);
+            const isEqual = equalFn(value, oldValue);
 
-        if (!isEqual) {
-          const sctx = componentCtrl().findStore(
-            this,
-            options?.name ?? String(propertyKey),
-          );
+            if (!isEqual) {
+              ctx.stores.set(storeName, value);
 
-          ctrl.setStore(sctx.component, propertyKey, value);
-        }
+              const shouldUpdate = el.componentShouldUpdate?.(
+                value,
+                oldValue,
+                storeName,
+              );
+
+              if (shouldUpdate !== false) {
+                el.render?.();
+              }
+            }
+
+            return;
+          }
+
+          // Check parent
+          if (el.parentElement) {
+            findAndSetStore(el.parentElement);
+          }
+        };
+
+        findAndSetStore(this);
       },
 
       enumerable: true,

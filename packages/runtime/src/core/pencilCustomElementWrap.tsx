@@ -1,5 +1,4 @@
-import { ConsumerError, createPerformanceTree, error } from "@pencel/utils";
-import { componentCtrl } from "../controllers/component.ts";
+import { createPerformanceTree, error } from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
 import {
   coerceAttributeValue,
@@ -18,7 +17,6 @@ import {
   type ConstructablePencilComponent,
   PROP_NAMES,
 } from "./types.ts";
-import type { VNode } from "./vdom/types.ts";
 
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
@@ -87,7 +85,7 @@ function interopStyleAttachment(
     const stylesElm = mergeStyleSheetsToStyleTag(styles);
 
     if (options.scoped) {
-      throw new ConsumerError("Scoped styles are not implemented yet");
+      throw new Error("Scoped styles are not implemented yet");
     }
     component.insertBefore(stylesElm, component.firstChild);
   }
@@ -125,7 +123,14 @@ export function wrapComponentForRegistration<
     // biome-ignore lint/suspicious/noExplicitAny: must be any for super()
     constructor(...args: any[]) {
       super(...args);
-      componentCtrl().connect(this, customElementExtends);
+      // Initialize component context
+      this[PENCIL_COMPONENT_CONTEXT] = {
+        extends: customElementExtends,
+        props: new Map(),
+        popts: new Map(),
+        state: new Map(),
+        stores: new Map(),
+      };
     }
 
     // Get observed attributes from the prop map
@@ -163,26 +168,18 @@ export function wrapComponentForRegistration<
       this.#hydratePerf.start("lifecycle");
       await super.connectedCallback?.();
       await super.componentWillLoad?.();
+
+      // Initial render
+      await super.componentWillRender?.();
+      super.render?.();
+      super.componentDidLoad?.();
+      super.componentDidRender?.();
       this.#hydratePerf.end("lifecycle");
 
-      componentCtrl().markStableAndLoaded(this);
+      this.setAttribute("hydrated", "");
+
       this.#hydratePerf.end("hydrate");
-    }
-
-    override componentDidLoad(): void {
-      this.setAttribute("p.hydrated", "");
       this.#hydratePerf.log();
-      super.componentDidLoad?.();
-    }
-
-    override componentShouldUpdate<TValue>(
-      newValue: TValue,
-      oldValue: TValue | undefined,
-      propName: string | symbol,
-    ): boolean {
-      return (
-        super.componentShouldUpdate?.(newValue, oldValue, propName) ?? true
-      );
     }
 
     override attributeChangedCallback(
@@ -195,7 +192,6 @@ export function wrapComponentForRegistration<
     }
 
     override disconnectedCallback(): void {
-      componentCtrl().disconnect(this);
       super.disconnectedCallback?.();
     }
 
@@ -204,7 +200,7 @@ export function wrapComponentForRegistration<
       const popts = ctx?.popts ?? [];
 
       if (!ctx) {
-        throw new ConsumerError(
+        throw new Error(
           `Missing component context on ${simpleCustomElementDisplayText(this)}. Did you forget to call super() in the constructor?`,
         );
       }
@@ -230,12 +226,13 @@ export function wrapComponentForRegistration<
       return super.componentWillRender?.();
     }
 
-    override render(): VNode {
+    override render(): JSX.Element {
       try {
-        return super.render!();
+        const result = super.render?.();
+        return result as JSX.Element;
       } catch (origin) {
         error(origin);
-        throw new ConsumerError(
+        throw new Error(
           `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
         );
       }
@@ -249,7 +246,6 @@ export function wrapComponentForRegistration<
 export function initializeProps(
   component: ComponentInterfaceWithContext,
 ): void {
-  const ctrl = componentCtrl();
   const props = component[PROP_NAMES];
 
   props?.forEach((propOptions, propName) => {
@@ -260,12 +256,8 @@ export function initializeProps(
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
 
-    // TODO: This may be deleted
     component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
-    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, undefined);
-
-    ctrl.setProp(
-      component,
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(
       propName,
       resolveAttribute(component, propName, propOptions),
     );
@@ -288,11 +280,10 @@ export function updatePropsByAttribute(
   attrName: string,
   newValue: string | null,
 ): void {
-  const ctrl = componentCtrl();
   const propName = component[ATTR_MAP]?.get(attrName);
 
   if (!propName) {
-    throw new ConsumerError(
+    throw new Error(
       `Attribute "${attrName}" is not mapped to any property on ${simpleCustomElementDisplayText(component)}.`,
     );
   }
@@ -304,5 +295,17 @@ export function updatePropsByAttribute(
     Boolean(newValue),
   );
 
-  ctrl.setProp(component, propName, propValue);
+  const ctx = component[PENCIL_COMPONENT_CONTEXT];
+  const oldValue = ctx?.props.get(propName);
+  ctx?.props.set(propName, propValue);
+
+  const shouldUpdate = component.componentShouldUpdate?.(
+    propValue,
+    oldValue,
+    propName,
+  );
+
+  if (shouldUpdate !== false) {
+    component.render?.();
+  }
 }

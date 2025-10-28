@@ -9,7 +9,6 @@ export * from "./log.ts";
 export * from "./normalizeTag.ts";
 export * from "./pascalCase.ts";
 export * from "./switchMapObject.ts";
-export * from "./throwConsumerError.ts";
 export * from "./throwError.ts";
 export * from "./throwWithCodeFrame.ts";
 

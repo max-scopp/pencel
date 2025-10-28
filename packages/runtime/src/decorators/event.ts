@@ -1,4 +1,4 @@
-import { ConsumerError, createLog, dashCase } from "@pencel/utils";
+import { createLog, dashCase } from "@pencel/utils";
 import type { ComponentInterface } from "../core/types.ts";
 
 const log = createLog("EventDecorator");
@@ -89,7 +89,7 @@ export function Event(userOptions?: string | EventOptions): PropertyDecorator {
       },
 
       set() {
-        throw new ConsumerError(
+        throw new Error(
           "You cannot set the value of an @Event property. You should use new EventEmitter(options).emit(data) instead.",
         );
       },

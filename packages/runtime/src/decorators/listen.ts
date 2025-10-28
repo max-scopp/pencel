@@ -1,4 +1,3 @@
-import { ConsumerError } from "@pencel/utils";
 import type { CustomElement } from "../core/types.ts";
 
 export type ListenTargetOptions = "body" | "document" | "window";
@@ -46,7 +45,7 @@ export function Listen(
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod !== "function") {
-      throw new ConsumerError(
+      throw new Error(
         `@Listen can only be applied to methods, but ${String(propertyKey)} is not a function`,
       );
     }

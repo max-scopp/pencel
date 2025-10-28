@@ -1,5 +1,3 @@
-import type { JSXChildren, VNode } from "../vdom/types.ts";
-
 /**
  * Props is a dictionary of string keys to unknown values.
  * NOTE: You should generally use a more specific type for props
@@ -11,7 +9,7 @@ export type Props = Record<string, unknown>;
  * Props that definitely define optional children.
  */
 export type PropsWithChildren<TProps extends Props = Props> = TProps & {
-  children?: JSXChildren;
+  children?: JSX.Children;
 };
 
 /**
@@ -20,7 +18,7 @@ export type PropsWithChildren<TProps extends Props = Props> = TProps & {
  */
 export type ComponentFunction<TProps extends Props = Props> = (
   props: TProps,
-) => JSXNode | null;
+) => JSX.Element | null;
 
 /**
  * A JSX element produced by the automatic runtime.
@@ -39,20 +37,3 @@ export interface JSXDevElement extends JSXElement {
   lineNumber?: number;
   columnNumber?: number;
 }
-
-/**
- * A JSX node is anything that can appear in JSX:
- * - A full element
- * - A primitive (string, number, boolean)
- * - null
- * - A VNode from your vdom
- * - An array of JSX nodes
- */
-export type JSXNode =
-  | JSXElement
-  | string
-  | number
-  | boolean
-  | null
-  | VNode
-  | JSXNode[];

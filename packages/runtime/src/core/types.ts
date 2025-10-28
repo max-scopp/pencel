@@ -1,9 +1,16 @@
-import type { PencilComponentContext } from "../controllers/component.ts";
 import type { PropOptions } from "../decorators/prop.ts";
 import {
   PENCIL_COMPONENT_CONTEXT,
   PENCIL_OBSERVED_ATTRIBUTES,
 } from "./symbols.ts";
+
+export interface PencilComponentContext {
+  extends?: string;
+  props: Map<string | number | symbol, unknown>;
+  popts: Map<string | number | symbol, PropOptions | undefined>;
+  state: Map<string | number | symbol, unknown>;
+  stores?: Map<string | number | symbol, unknown>;
+}
 
 /**
  * The Custom Elements API interface that all Pencil components implement.
@@ -49,8 +56,8 @@ export type ConstructablePencilComponent = ComponentProtoMeta &
     ...args: any[]
   ) => ComponentInterfaceWithContext);
 
-export const PROP_NAMES: unique symbol = Symbol("__$pencil_prop_names$");
-export const ATTR_MAP: unique symbol = Symbol("__$pencil_attr_map$");
+export const PROP_NAMES: unique symbol = Symbol("_$pen_pnames");
+export const ATTR_MAP: unique symbol = Symbol("_$pen_attrmap");
 
 /**
  * Each consumer facing component registration using `@Component` decorator
@@ -138,8 +145,4 @@ export interface ComponentInterface extends CustomElement {
  * A component is considered "alive" immediately after the consumer's `componentWillLoad`
  * lifecycle hook has completed successfully and all internal setup is finished,
  * but before the first render is attempted.
- *
- * A component can be alive without ever being rendered once if the scheduler
- * decides not to render it for some reason (e.g., it is not attached to the DOM).
  */
-export type PencilComponentPhase = "mounting" | "alive" | "disconnected";

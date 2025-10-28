@@ -5,7 +5,7 @@ import {
   setChildren,
   setProps,
   setText,
-} from "./zero-dom";
+} from "../../../../packages/runtime/src/core/zero-dom";
 
 // --- Todo Item Component ---
 export function TodoItem(
