@@ -5,6 +5,7 @@
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "jsx": "react-jsx",
     "lib": ["dom"],
+    "baseUrl": "src",
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -26,5 +27,5 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "references": []
 }

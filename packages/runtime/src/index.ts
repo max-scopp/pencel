@@ -2,6 +2,7 @@ export type { PencelRuntimeConfig as PencilRuntimeConfig } from "./config.ts";
 export { pencelInit } from "./config.ts";
 export * from "./core/jsx/jsx-helpers.ts";
 export type * from "./core/jsx/types.ts";
+export type * from "./core/once.ts";
 export type * from "./core/types.ts";
 export { renderVNode } from "./core/vdom/renderVNode.ts";
 export type * from "./core/vdom/types.ts";

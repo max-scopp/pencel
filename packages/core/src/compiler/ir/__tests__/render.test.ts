@@ -67,14 +67,14 @@ describe("RenderIR", () => {
 
     if (root?.kind === JSXNodeKind.Element) {
       expect(root.tagName).toBe("Host");
-      expect(root.isComponent).toBe(true);
+      expect(root.isFunction).toBe(true);
       expect(root.children).toHaveLength(1);
 
       const slot = root.children[0] as JSXSelfClosingIR;
       expect(slot?.kind).toBe(JSXNodeKind.SelfClosing);
       if (slot?.kind === JSXNodeKind.SelfClosing) {
         expect(slot.tagName).toBe("slot");
-        expect(slot.isComponent).toBe(false);
+        expect(slot.isFunction).toBe(false);
       }
     }
   });
@@ -138,6 +138,7 @@ describe("RenderIR", () => {
         type: "prop",
         name: "className",
         value: { type: "string", value: "test" },
+        isEventHandler: false,
       });
 
       // data-id={123}
@@ -145,6 +146,7 @@ describe("RenderIR", () => {
         type: "prop",
         name: "data-id",
         value: { type: "expression", value: "123" },
+        isEventHandler: false,
       });
 
       // disabled (boolean shorthand)
@@ -152,6 +154,7 @@ describe("RenderIR", () => {
         type: "prop",
         name: "disabled",
         value: { type: "true" },
+        isEventHandler: false,
       });
     }
   });

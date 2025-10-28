@@ -1,96 +1,36 @@
 import {
+  type Block,
   type Expression,
   factory,
   isReturnStatement,
+  type JsxElement,
+  type JsxSelfClosingElement,
   type MethodDeclaration,
+  type Node,
   type Statement,
   SyntaxKind,
+  visitEachChild,
 } from "typescript";
 import type { IRRef } from "../ir/irri.ts";
-import {
-  type JSXElementIR,
-  type JSXExpressionIR,
-  type JSXNodeIR,
-  JSXNodeKind,
-  type JSXPropIR,
-  type JSXSelfClosingIR,
-  type JSXTextIR,
-  RenderIR,
-} from "../ir/render.ts";
+import { RenderIR } from "../ir/render.ts";
 import { Transformer } from "./transformer.ts";
 
-/**
- * Metadata about an element for reactive rendering
- */
-interface ElementMetadata {
-  name: string;
-  tagName: string;
-  isFunction: boolean;
-  attributes: Array<{ name: string; expression: string | null }>;
-  children: ElementMetadata[];
-  textContent: string | null;
-  dynamicContent: string | null;
-}
-
 export class RenderTransformer extends Transformer(RenderIR) {
-  #elementCounter = 0;
-  #elementMetadata: Map<string, ElementMetadata> = new Map();
-  #dynamicExpressions: Set<string> = new Set();
+  #varCounter = 0;
+  #prependStatements: Statement[] = [];
 
   override transform(
     irr: IRRef<RenderIR, MethodDeclaration>,
   ): MethodDeclaration {
-    if (!irr.ir.root) {
-      return irr.node;
-    }
+    // Reset state for each method
+    this.#varCounter = 0;
+    this.#prependStatements = [];
 
-    // Reset state for each render method
-    this.#elementCounter = 0;
-    this.#elementMetadata.clear();
-    this.#dynamicExpressions.clear();
+    // Transform the method body recursively
+    const newBody = irr.node.body
+      ? (this.#visitNode(irr.node.body) as unknown as Block)
+      : irr.node.body;
 
-    // Keep all statements before the return statement
-    const statementsBeforeReturn: Statement[] = [];
-    if (irr.node.body) {
-      for (const stmt of irr.node.body.statements) {
-        if (isReturnStatement(stmt)) {
-          break;
-        }
-        statementsBeforeReturn.push(stmt);
-      }
-    }
-
-    // Build metadata tree from JSX
-    const rootMetadata = this.#buildElementMetadata(irr.ir.root);
-
-    // Generate element declarations (private fields on class instance)
-    const elementNames: string[] = [];
-    this.#collectElementNames(rootMetadata, elementNames);
-
-    const letDeclaration = factory.createVariableStatement(
-      undefined,
-      factory.createVariableDeclarationList(
-        elementNames.map((name) =>
-          factory.createVariableDeclaration(name, undefined, undefined),
-        ),
-        1, // let declaration
-      ),
-    );
-
-    // Generate render statements (create if not exists, always update inline)
-    const renderStatements = this.#generateRenderStatements(rootMetadata);
-
-    // Combine: statements before return + let declarations + render logic
-    const newStatements = [
-      ...statementsBeforeReturn,
-      letDeclaration,
-      ...renderStatements,
-    ];
-
-    // Update the method body
-    const newBody = factory.createBlock(newStatements, true);
-
-    // Return updated method
     return factory.updateMethodDeclaration(
       irr.node,
       irr.node.modifiers,
@@ -105,337 +45,578 @@ export class RenderTransformer extends Transformer(RenderIR) {
   }
 
   /**
-   * Build metadata tree from JSX IR for reactive rendering
+   * Visit and transform any node recursively
    */
-  #buildElementMetadata(node: JSXNodeIR): ElementMetadata | null {
-    switch (node.kind) {
-      case JSXNodeKind.Element: {
-        const element = node as JSXElementIR;
-        this.#elementCounter++;
-        const name = `elm$${element.tagName}_${this.#elementCounter}`;
-
-        const attributes = element.attributes.map((attr) => {
-          if (attr.type === "prop") {
-            const prop = attr as JSXPropIR;
-            let expression: string | null = null;
-            if (prop.value.type === "expression") {
-              expression = (prop.value as { type: string; value: string })
-                .value;
-              this.#dynamicExpressions.add(expression);
-            }
-            return { name: prop.name, expression };
-          }
-          return { name: "", expression: null };
-        });
-
-        const metadata: ElementMetadata = {
-          name,
-          tagName: element.tagName,
-          isFunction: element.isFunction,
-          attributes,
-          children: [],
-          textContent: null,
-          dynamicContent: null,
-        };
-
-        // Process children
-        for (const child of element.children) {
-          if (child.kind === JSXNodeKind.Text) {
-            metadata.textContent = (child as JSXTextIR).text;
-          } else if (child.kind === JSXNodeKind.Expression) {
-            const expr = child as JSXExpressionIR;
-            metadata.dynamicContent = expr.expression;
-            this.#dynamicExpressions.add(expr.expression);
-          } else {
-            const childMeta = this.#buildElementMetadata(child);
-            if (childMeta) {
-              metadata.children.push(childMeta);
-            }
-          }
-        }
-
-        this.#elementMetadata.set(name, metadata);
-        return metadata;
-      }
-
-      case JSXNodeKind.SelfClosing: {
-        const element = node as JSXSelfClosingIR;
-        this.#elementCounter++;
-        const name = `elm$${element.tagName}_${this.#elementCounter}`;
-
-        const attributes = element.attributes.map((attr) => {
-          if (attr.type === "prop") {
-            const prop = attr as JSXPropIR;
-            let expression: string | null = null;
-            if (prop.value.type === "expression") {
-              expression = (prop.value as { type: string; value: string })
-                .value;
-              this.#dynamicExpressions.add(expression);
-            }
-            return { name: prop.name, expression };
-          }
-          return { name: "", expression: null };
-        });
-
-        const metadata: ElementMetadata = {
-          name,
-          tagName: element.tagName,
-          isFunction: element.isFunction,
-          attributes,
-          children: [],
-          textContent: null,
-          dynamicContent: null,
-        };
-
-        this.#elementMetadata.set(name, metadata);
-        return metadata;
-      }
-
-      case JSXNodeKind.Fragment: {
-        const fragment = node as unknown as { children: JSXNodeIR[] };
-        const children: ElementMetadata[] = [];
-        for (const child of fragment.children) {
-          const childMeta = this.#buildElementMetadata(child);
-          if (childMeta) {
-            children.push(childMeta);
-          }
-        }
-        // Return first child or null for fragments
-        return children.length > 0 ? children[0] : null;
-      }
-
-      case JSXNodeKind.Text:
-      case JSXNodeKind.Expression:
-        // Handled in parent
-        return null;
+  #visitNode(node: Node): Node {
+    if (isReturnStatement(node)) {
+      return this.#transformReturn(node as unknown as { expression?: Expression });
     }
 
-    return null;
-  }
-
-  /**
-   * Collect all element names for let declaration
-   */
-  #collectElementNames(
-    metadata: ElementMetadata | null,
-    names: string[],
-  ): void {
-    if (!metadata) return;
-
-    names.push(metadata.name);
-    for (const child of metadata.children) {
-      this.#collectElementNames(child, names);
-    }
-  }
-
-  /**
-   * Generate render statements that:
-   * 1. Create elements on first render (if not already created)
-   * 2. Update properties with inline if-checks
-   * 3. Attach to component instance (this)
-   */
-  #generateRenderStatements(metadata: ElementMetadata | null): Statement[] {
-    const statements: Statement[] = [];
-    if (!metadata) return statements;
-
-    this.#generateRenderFor(metadata, statements, true);
-    return statements;
-  }
-
-  /**
-   * Recursively generate render logic for element and children
-   */
-  #generateRenderFor(
-    metadata: ElementMetadata,
-    statements: Statement[],
-    isRoot: boolean,
-  ): void {
-    // Check if element exists (if (!elm$div_1) { ... })
-    const creationStatements = this.#generateElementCreation(metadata);
-    const elementCheck = factory.createIfStatement(
-      factory.createPrefixUnaryExpression(
-        SyntaxKind.ExclamationToken,
-        factory.createIdentifier(metadata.name),
-      ),
-      factory.createBlock(creationStatements, false),
-      undefined,
-    );
-    statements.push(elementCheck);
-
-    // Update element properties (always run, with if-checks inside for efficiency)
-    const updateStatements = this.#generateElementUpdates(metadata);
-    statements.push(...updateStatements);
-
-    // Attach to component if this is root element
-    if (isRoot) {
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createThis(),
-              "appendChild",
-            ),
-            undefined,
-            [factory.createIdentifier(metadata.name)],
-          ),
-        ),
+    // For if statements, transform both branches
+    if (node.kind === SyntaxKind.IfStatement) {
+      const ifStmt = node as unknown as {
+        expression: Expression;
+        thenStatement: Statement;
+        elseStatement?: Statement;
+      };
+      return factory.updateIfStatement(
+        node as unknown as Parameters<typeof factory.updateIfStatement>[0],
+        ifStmt.expression,
+        this.#visitNode(ifStmt.thenStatement) as Statement,
+        ifStmt.elseStatement
+          ? (this.#visitNode(ifStmt.elseStatement) as Statement)
+          : undefined,
       );
     }
+
+    // Recursively visit children
+    return visitEachChild(node, (child) => this.#visitNode(child), undefined);
   }
 
   /**
-   * Generate statements to create an element and its children
-   * Only called if element doesn't exist (!elm$div_1)
+   * Transform a return statement
    */
-  #generateElementCreation(metadata: ElementMetadata): Statement[] {
-    const statements: Statement[] = [];
+  #transformReturn(returnStmt: { expression?: Expression }): Statement {
+    if (!returnStmt.expression) {
+      return factory.createReturnStatement();
+    }
 
-    // Create element: elm$div_1 = document.createElement("div") or Host()
-    let createExpression: Expression;
-    if (metadata.isFunction) {
-      createExpression = factory.createCallExpression(
-        factory.createIdentifier(metadata.tagName),
+    // Save the current prepend statements
+    const savedPrepend = this.#prependStatements;
+    this.#prependStatements = [];
+
+    // Transform the return expression
+    const transformedExpr = this.#transformExpression(returnStmt.expression);
+
+    // If we generated statements, wrap in IIFE
+    if (this.#prependStatements.length > 0) {
+      const iifeBody = [
+        ...this.#prependStatements,
+        factory.createReturnStatement(transformedExpr),
+      ];
+
+      const iife = factory.createCallExpression(
+        factory.createFunctionExpression(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          [],
+          undefined,
+          factory.createBlock(iifeBody, true),
+        ),
         undefined,
         [],
       );
-    } else {
-      createExpression = factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier("document"),
-          "createElement",
-        ),
-        undefined,
-        [factory.createStringLiteral(metadata.tagName)],
+
+      this.#prependStatements = savedPrepend;
+      return factory.createReturnStatement(iife);
+    }
+
+    // No transformation needed
+    this.#prependStatements = savedPrepend;
+    return factory.createReturnStatement(transformedExpr);
+  }
+
+  /**
+   * Transform an expression, detecting JSX and converting to zero-dom calls
+   */
+  #transformExpression(expr: Expression): Expression {
+    // Unwrap parenthesized expressions
+    if (expr.kind === SyntaxKind.ParenthesizedExpression) {
+      const unwrapped = (expr as unknown as { expression: Expression }).expression;
+      return this.#transformExpression(unwrapped);
+    }
+
+    // Handle conditional expressions: condition ? <A/> : <B/>
+    if (expr.kind === SyntaxKind.ConditionalExpression) {
+      const cond = expr as unknown as {
+        condition: Expression;
+        whenTrue: Expression;
+        whenFalse: Expression;
+      };
+      return factory.createConditionalExpression(
+        cond.condition,
+        factory.createToken(SyntaxKind.QuestionToken),
+        this.#transformExpression(cond.whenTrue),
+        factory.createToken(SyntaxKind.ColonToken),
+        this.#transformExpression(cond.whenFalse),
       );
     }
 
-    statements.push(
-      factory.createExpressionStatement(
-        factory.createBinaryExpression(
-          factory.createIdentifier(metadata.name),
-          SyntaxKind.EqualsToken,
-          createExpression,
+    // Handle binary expressions: condition && <A/>
+    if (expr.kind === SyntaxKind.BinaryExpression) {
+      const binary = expr as unknown as {
+        left: Expression;
+        right: Expression;
+        operatorToken: { kind: SyntaxKind };
+      };
+      // Only transform right side if it's JSX
+      if (binary.operatorToken.kind === SyntaxKind.AmpersandAmpersandToken) {
+        return factory.createBinaryExpression(
+          binary.left,
+          binary.operatorToken.kind,
+          this.#transformExpression(binary.right),
+        );
+      }
+    }
+
+    // Check if this is a JSX element
+    if (expr.kind === SyntaxKind.JsxElement) {
+      const jsx = expr as unknown as JsxElement;
+      const tagName = (
+        jsx.openingElement.tagName as unknown as { text: string }
+      ).text;
+      // For custom components (capitalized), transform children but keep the component
+      if (/^[A-Z]/.test(tagName)) {
+        return this.#transformCustomComponent(jsx);
+      }
+      return this.#transformJsxElement(jsx);
+    }
+
+    if (expr.kind === SyntaxKind.JsxSelfClosingElement) {
+      const jsx = expr as unknown as JsxSelfClosingElement;
+      const tagName = (jsx.tagName as unknown as { text: string }).text;
+      // For custom components (capitalized), transform attributes but keep the component
+      if (/^[A-Z]/.test(tagName)) {
+        return this.#transformCustomSelfClosing(jsx);
+      }
+      return this.#transformJsxSelfClosing(jsx);
+    }
+
+    // For other expressions, leave unchanged
+    return expr;
+  }
+
+  /**
+   * Transform children of a custom component (like <Host>)
+   * For Host components, extract children and apply Host attributes to 'this'
+   * For other custom components, keep the wrapper but transform children
+   */
+  #transformCustomComponent(jsx: JsxElement): Expression {
+    const openingElement = (jsx as unknown as { openingElement: { tagName: { text: string }; attributes: { properties?: unknown } } }).openingElement;
+    const tagName = openingElement.tagName.text;
+    
+    // Special handling for <Host> component
+    if (tagName === "Host") {
+      // Get Host attributes to apply to 'this'
+      const hostAttributes = openingElement.attributes.properties;
+      if (hostAttributes && Array.isArray(hostAttributes)) {
+        for (const attr of hostAttributes) {
+          if (attr.kind === SyntaxKind.JsxAttribute && (attr as { name?: { text: string } }).name) {
+            const attrName = (attr as { name: { text: string } }).name.text;
+            const initializer = (attr as { initializer?: { kind: SyntaxKind; expression?: Expression } }).initializer;
+            
+            // Handle event attributes (onMouseEnter, etc.)
+            if (attrName.startsWith("on")) {
+              const eventName = attrName.slice(2).toLowerCase();
+              if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
+                this.#prependStatements.push(
+                  factory.createExpressionStatement(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createThis(),
+                        "addEventListener",
+                      ),
+                      undefined,
+                      [
+                        factory.createStringLiteral(eventName),
+                        initializer.expression,
+                      ],
+                    ),
+                  ),
+                );
+              }
+            } else {
+              // Regular attributes (class, etc.)
+              if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
+                this.#prependStatements.push(
+                  factory.createExpressionStatement(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createThis(),
+                        "setAttribute",
+                      ),
+                      undefined,
+                      [
+                        factory.createStringLiteral(attrName),
+                        initializer.expression,
+                      ],
+                    ),
+                  ),
+                );
+              }
+            }
+          }
+        }
+      }
+      
+      // Transform children and return the first child directly
+      const children = (jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }).children;
+      if (children && children.length > 0) {
+        // Find the first non-whitespace child
+        for (const child of children) {
+          if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
+            return this.#transformExpression(child as unknown as Expression);
+          }
+          if (child.kind === SyntaxKind.JsxExpression) {
+            const expr = (child as unknown as { expression?: Expression }).expression;
+            if (expr) {
+              return this.#transformExpression(expr);
+            }
+          }
+        }
+      }
+      
+      // If no children, return null
+      return factory.createNull();
+    }
+    
+    // For other custom components, recursively visit all children and transform nested JSX
+    return visitEachChild(
+      jsx as unknown as Expression,
+      (node) => {
+        if (node.kind === SyntaxKind.JsxElement || node.kind === SyntaxKind.JsxSelfClosingElement) {
+          return this.#transformExpression(node as Expression) as unknown as typeof node;
+        }
+        if (node.kind === SyntaxKind.JsxExpression) {
+          const expr = (node as unknown as { expression?: Expression }).expression;
+          if (expr) {
+            const transformed = this.#transformExpression(expr);
+            // Return a new JsxExpression with the transformed expression
+            return factory.createJsxExpression(undefined, transformed) as unknown as typeof node;
+          }
+        }
+        return node;
+      },
+      undefined,
+    ) as Expression;
+  }
+
+  /**
+   * Transform attributes of a custom self-closing component
+   */
+  #transformCustomSelfClosing(jsx: JsxSelfClosingElement): Expression {
+    // For self-closing custom components, just return as-is
+    // (no children to transform)
+    return jsx as unknown as Expression;
+  }
+
+  /**
+   * Transform a JSX element into zero-dom code
+   */
+  #transformJsxElement(jsx: JsxElement): Expression {
+    const varName = this.#genVar();
+    const openingElem = jsx.openingElement as unknown as {
+      tagName: { text: string };
+      attributes: { properties?: unknown };
+    };
+    const tagName = openingElem.tagName.text || "div";
+
+    // Generate element creation
+    const createExpr = this.#createElementCreation(tagName);
+    const onceCall = factory.createCallExpression(
+      factory.createIdentifier("once"),
+      undefined,
+      [
+        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
+        factory.createArrowFunction(
+          undefined,
+          undefined,
+          [],
+          undefined,
+          factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+          createExpr,
+        ),
+      ],
+    );
+
+    // Add the element declaration statement
+    this.#prependStatements.push(
+      factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              varName,
+              undefined,
+              undefined,
+              onceCall,
+            ),
+          ],
+          1, // let
         ),
       ),
     );
 
-    // Create and append children recursively
-    for (const child of metadata.children) {
-      // Check if child exists, create if not
-      const childCreationStatements = this.#generateElementCreation(child);
-      const childCheck = factory.createIfStatement(
-        factory.createPrefixUnaryExpression(
-          SyntaxKind.ExclamationToken,
-          factory.createIdentifier(child.name),
-        ),
-        factory.createBlock(childCreationStatements, false),
-        undefined,
-      );
-      statements.push(childCheck);
+    // Set attributes - JSX attributes are in a properties array
+    this.#handleAttributes(varName, openingElem.attributes.properties);
 
-      // Append child to parent
-      statements.push(
+    // Handle children
+    const children: Expression[] = [];
+    const jsxWithChildren = jsx as unknown as { children?: Array<{ kind: SyntaxKind; text?: string; expression?: Expression }> };
+    
+    if (jsxWithChildren.children && jsxWithChildren.children.length > 0) {
+      for (let i = 0; i < jsxWithChildren.children.length; i++) {
+        const child = jsxWithChildren.children[i];
+        if (!child) continue;
+        
+        if (child.kind === SyntaxKind.JsxText) {
+          const text = child.text || "";
+          if (text.trim()) {
+            const textVarName = `${varName}_text_${this.#varCounter++}`;
+            const textOnce = factory.createCallExpression(
+              factory.createIdentifier("once"),
+              undefined,
+              [
+                factory.createStringLiteral(textVarName),
+                factory.createArrowFunction(
+                  undefined,
+                  undefined,
+                  [],
+                  undefined,
+                  factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier("document"),
+                      "createTextNode",
+                    ),
+                    undefined,
+                    [factory.createStringLiteral(text)],
+                  ),
+                ),
+              ],
+            );
+
+            this.#prependStatements.push(
+              factory.createVariableStatement(
+                undefined,
+                factory.createVariableDeclarationList(
+                  [
+                    factory.createVariableDeclaration(
+                      textVarName,
+                      undefined,
+                      undefined,
+                      textOnce,
+                    ),
+                  ],
+                  1,
+                ),
+              ),
+            );
+
+            children.push(factory.createIdentifier(textVarName));
+          }
+        } else if (child.kind === SyntaxKind.JsxExpression) {
+          // Handle JSX expressions like {variable} or {expression}
+          const expr = child.expression;
+          if (expr) {
+            // Transform the expression (might contain JSX in conditionals)
+            const transformed = this.#transformExpression(expr as Expression);
+            children.push(transformed);
+          }
+        } else if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
+          // Recursively transform nested JSX elements
+          const transformed = this.#transformExpression(child as unknown as Expression);
+          children.push(transformed);
+        }
+      }
+    }
+
+    // Set children if any
+    if (children.length > 0) {
+      this.#prependStatements.push(
         factory.createExpressionStatement(
           factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier(metadata.name),
-              "appendChild",
-            ),
+            factory.createIdentifier("setChildren"),
             undefined,
-            [factory.createIdentifier(child.name)],
+            [
+              factory.createIdentifier(varName),
+              factory.createArrayLiteralExpression(children),
+            ],
           ),
         ),
       );
     }
 
-    return statements;
+    return factory.createIdentifier(varName);
   }
 
   /**
-   * Generate update statements with inline if-checks
-   * Only updates when values differ: if (elm$div_1.class != `card ${this.theme}`)
+   * Transform a self-closing JSX element
    */
-  #generateElementUpdates(metadata: ElementMetadata): Statement[] {
-    const statements: Statement[] = [];
+  #transformJsxSelfClosing(jsx: JsxSelfClosingElement): Expression {
+    const varName = this.#genVar();
+    const jsxData = jsx as unknown as {
+      tagName: { text: string };
+      attributes: { properties?: unknown };
+    };
+    const tagName = jsxData.tagName.text || "div";
 
-    // Update dynamic attributes with if-checks
-    for (const attr of metadata.attributes) {
-      if (!attr.name || !attr.expression) continue; // Only dynamic
-
-      const valueExpr = factory.createIdentifier(attr.expression);
-      const currentValue = factory.createPropertyAccessExpression(
-        factory.createIdentifier(metadata.name),
-        attr.name,
-      );
-
-      // if (elm$div_1.class != `card ${this.theme}`)
-      const ifCheck = factory.createIfStatement(
-        factory.createBinaryExpression(
-          currentValue,
-          SyntaxKind.ExclamationEqualsEqualsToken,
-          valueExpr,
+    const createExpr = this.#createElementCreation(tagName);
+    const onceCall = factory.createCallExpression(
+      factory.createIdentifier("once"),
+      undefined,
+      [
+        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
+        factory.createArrowFunction(
+          undefined,
+          undefined,
+          [],
+          undefined,
+          factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+          createExpr,
         ),
-        factory.createBlock(
+      ],
+    );
+
+    this.#prependStatements.push(
+      factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
           [
-            factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(metadata.name),
-                  "setAttribute",
+            factory.createVariableDeclaration(
+              varName,
+              undefined,
+              undefined,
+              onceCall,
+            ),
+          ],
+          1,
+        ),
+      ),
+    );
+
+    // Set attributes - JSX attributes are in a properties array
+    this.#handleAttributes(varName, jsxData.attributes.properties);
+
+    return factory.createIdentifier(varName);
+  }
+
+  /**
+   * Handle JSX attributes - both static and dynamic
+   */
+  #handleAttributes(varName: string, attributes: unknown): void {
+    const attrs = attributes as Array<{
+      kind: SyntaxKind;
+      name?: { text: string };
+      initializer?: { kind: SyntaxKind; text?: string; expression?: Expression };
+    }>;
+    
+    if (!Array.isArray(attrs)) return;
+
+    for (const attr of attrs) {
+      if (attr.kind === SyntaxKind.JsxAttribute && attr.name) {
+        const attrName = attr.name.text;
+        
+        // Check if this is an event handler (starts with "on")
+        if (attrName.startsWith("on")) {
+          const eventName = attrName.slice(2).toLowerCase(); // onClick -> click
+          
+          if (attr.initializer?.kind === SyntaxKind.JsxExpression) {
+            const expr = attr.initializer.expression;
+            if (expr) {
+              // Generate: $0.addEventListener("click", handler)
+              this.#prependStatements.push(
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier(varName),
+                      "addEventListener",
+                    ),
+                    undefined,
+                    [
+                      factory.createStringLiteral(eventName),
+                      expr as Expression,
+                    ],
+                  ),
                 ),
-                undefined,
-                [factory.createStringLiteral(attr.name), valueExpr],
+              );
+            }
+          }
+        } else {
+          // Regular attribute
+          if (!attr.initializer) {
+            // Boolean attribute like <input disabled />
+            this.#prependStatements.push(
+              factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(varName),
+                    "setAttribute",
+                  ),
+                  undefined,
+                  [
+                    factory.createStringLiteral(attrName),
+                    factory.createStringLiteral(""),
+                  ],
+                ),
               ),
-            ),
-          ],
-          false,
-        ),
-        undefined,
-      );
-
-      statements.push(ifCheck);
-    }
-
-    // Update dynamic text content with if-check
-    if (metadata.dynamicContent) {
-      const currentText = factory.createPropertyAccessExpression(
-        factory.createIdentifier(metadata.name),
-        "textContent",
-      );
-
-      const valueExpr = factory.createIdentifier(metadata.dynamicContent);
-
-      // if (elm$h1_2.textContent != this.title)
-      const ifCheck = factory.createIfStatement(
-        factory.createBinaryExpression(
-          currentText,
-          SyntaxKind.ExclamationEqualsEqualsToken,
-          valueExpr,
-        ),
-        factory.createBlock(
-          [
-            factory.createExpressionStatement(
-              factory.createBinaryExpression(
-                currentText,
-                SyntaxKind.EqualsToken,
-                valueExpr,
+            );
+          } else if (attr.initializer.kind === SyntaxKind.StringLiteral) {
+            // Static string attribute: class="foo"
+            const attrValue = attr.initializer.text || "";
+            this.#prependStatements.push(
+              factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(varName),
+                    "setAttribute",
+                  ),
+                  undefined,
+                  [
+                    factory.createStringLiteral(attrName),
+                    factory.createStringLiteral(attrValue),
+                  ],
+                ),
               ),
-            ),
-          ],
-          false,
-        ),
-        undefined,
-      );
-
-      statements.push(ifCheck);
+            );
+          } else if (attr.initializer.kind === SyntaxKind.JsxExpression) {
+            // Dynamic attribute: class={expression}
+            const expr = attr.initializer.expression;
+            if (expr) {
+              this.#prependStatements.push(
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier(varName),
+                      "setAttribute",
+                    ),
+                    undefined,
+                    [
+                      factory.createStringLiteral(attrName),
+                      expr as Expression,
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+        }
+      }
     }
+  }
 
-    // Recursively update children
-    for (const child of metadata.children) {
-      const childUpdates = this.#generateElementUpdates(child);
-      statements.push(...childUpdates);
-    }
+  /**
+   * Generate a new variable name
+   */
+  #genVar(): string {
+    const varName = `$${this.#varCounter}`;
+    this.#varCounter++;
+    return varName;
+  }
 
-    return statements;
+  /**
+   * Create element factory expression
+   */
+  #createElementCreation(tagName: string): Expression {
+    return factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createIdentifier("document"),
+        "createElement",
+      ),
+      undefined,
+      [factory.createStringLiteral(tagName)],
+    );
   }
 }

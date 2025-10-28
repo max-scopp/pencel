@@ -101,6 +101,16 @@ export interface JSXExpressionIR extends JSXNodeIR {
    * Whether this is a simple identifier (true) vs complex expression (false)
    */
   isSimple: boolean;
+  /**
+   * For collection rendering - the array expression being mapped over
+   * Example: "this.todos" in {this.todos.map(t => ...)}
+   */
+  mapExpr?: string;
+  /**
+   * For collection rendering - the JSX returned by the map function
+   * Example: TodoItem IR in {this.todos.map(t => <TodoItem {...t} />)}
+   */
+  mapFn?: JSXRootIR;
 }
 
 /**
@@ -115,6 +125,10 @@ export interface JSXPropIR {
   type: "prop";
   name: string;
   value: JSXAttributeValueIR;
+  /**
+   * Whether this is an event handler (follows "on" prefix convention like onClick, onInput)
+   */
+  isEventHandler: boolean;
 }
 
 /**
@@ -305,6 +319,7 @@ export class RenderIR extends IRM("Render") {
     if (attr.kind === SyntaxKind.JsxAttribute) {
       const jsxAttr = attr as JsxAttribute;
       const name = jsxAttr.name.getText();
+      const isEventHandler = name.startsWith("on");
 
       // Boolean shorthand: <input disabled />
       if (!jsxAttr.initializer) {
@@ -312,6 +327,7 @@ export class RenderIR extends IRM("Render") {
           type: "prop",
           name,
           value: { type: "true" },
+          isEventHandler,
         };
       }
 
@@ -324,6 +340,7 @@ export class RenderIR extends IRM("Render") {
             type: "string",
             value: (jsxAttr.initializer as StringLiteral).text,
           },
+          isEventHandler,
         };
       }
 
@@ -339,6 +356,7 @@ export class RenderIR extends IRM("Render") {
             type: "expression",
             value: expr.expression.getText(),
           },
+          isEventHandler,
         };
       }
     }
