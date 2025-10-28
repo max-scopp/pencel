@@ -27,7 +27,7 @@ export class Button extends HTMLElement {
 
 * 🛠 **No Compiler Lock-in** — works with any bundler
 * 🧩 **Framework Agnostic** — React, Angular, or vanilla
-* 📦 **Tiny Runtime** — ~7 kB gzipped
+* 📦 **Tiny Runtime** — ~3.2 kB gzipped
 * 🎯 **Pure Output** — standard TypeScript Web Components
 * 🖌 **Full Control** — extend and customize
 
