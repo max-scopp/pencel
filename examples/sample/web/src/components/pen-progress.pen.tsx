@@ -20,7 +20,7 @@ export class PenProgressElement
   @Prop() size: "sm" | "md" | "lg" = "md";
   @Prop() showLabel: boolean = false;
 
-  render(): VNode {
+  render() {
     const percentage = Math.min((this.value / this.max) * 100, 100);
     const variantClass = `progress-variant-${this.variant}`;
     const colorClass = `progress-color-${this.color}`;

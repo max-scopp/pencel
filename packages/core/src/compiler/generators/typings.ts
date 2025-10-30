@@ -40,7 +40,7 @@ class ComponentTypings extends PencelPlugin {
 
     for (const fileIR of fileIRs) {
       for (const cir of fileIR.components) {
-        if (cir.forIs) {
+        if (cir.extends) {
           // Create Document.createElement interface
           const createElementMethodSignature = factory.createMethodSignature(
             undefined,
@@ -54,7 +54,7 @@ class ComponentTypings extends PencelPlugin {
                 "tagName",
                 undefined,
                 factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.forIs),
+                  factory.createStringLiteral(cir.extends),
                 ),
               ),
               factory.createParameterDeclaration(
@@ -116,7 +116,7 @@ class ComponentTypings extends PencelPlugin {
 
           const setAttributeInterface = factory.createInterfaceDeclaration(
             [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-            `HTML${pascalCase(cir.forIs)}Element`,
+            cir.heritage,
             undefined,
             undefined,
             [setAttributeMethodSignature],

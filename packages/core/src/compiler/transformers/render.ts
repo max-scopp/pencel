@@ -1,4 +1,3 @@
-import { $, arrow, block, call, exprStmt, propAccess, ret } from "ts-flattered";
 import {
   type Block,
   type Expression,
@@ -8,6 +7,7 @@ import {
   type JsxSelfClosingElement,
   type MethodDeclaration,
   type Node,
+  NodeFlags,
   type Statement,
   SyntaxKind,
   visitEachChild,
@@ -81,7 +81,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
    */
   #transformReturn(returnStmt: { expression?: Expression }): Statement {
     if (!returnStmt.expression) {
-      return ret() as unknown as Statement;
+      return factory.createReturnStatement();
     }
 
     // Save the current prepend statements
@@ -95,18 +95,29 @@ export class RenderTransformer extends Transformer(RenderIR) {
     if (this.#prependStatements.length > 0) {
       const iifeBody = [
         ...this.#prependStatements,
-        ret(transformedExpr) as unknown as Statement,
+        factory.createReturnStatement(transformedExpr),
       ];
 
-      const iife = call(arrow([], block(iifeBody)), []);
+      const iife = factory.createCallExpression(
+        factory.createArrowFunction(
+          undefined,
+          undefined,
+          [],
+          undefined,
+          factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+          factory.createBlock(iifeBody, true),
+        ),
+        undefined,
+        [],
+      );
 
       this.#prependStatements = savedPrepend;
-      return ret(iife) as unknown as Statement;
+      return factory.createReturnStatement(iife);
     }
 
     // No transformation needed
     this.#prependStatements = savedPrepend;
-    return ret(transformedExpr) as unknown as Statement;
+    return factory.createReturnStatement(transformedExpr);
   }
 
   /**
@@ -307,11 +318,13 @@ export class RenderTransformer extends Transformer(RenderIR) {
             .expression;
           if (expr) {
             const transformed = this.#transformExpression(expr);
-            // Return a new JsxExpression with the transformed expression
-            return factory.createJsxExpression(
-              undefined,
+            // Create a new JSX expression node with the transformed inner expression
+            return factory.updateJsxExpression(
+              node as unknown as Parameters<
+                typeof factory.updateJsxExpression
+              >[0],
               transformed,
-            ) as unknown as typeof node;
+            );
           }
         }
         return node;
@@ -342,10 +355,13 @@ export class RenderTransformer extends Transformer(RenderIR) {
 
     // Generate element creation
     const createExpr = this.#createElementCreation(tagName);
-    const onceCall = call(factory.createIdentifier("once"), [
-      $(`${tagName}_${this.#varCounter - 1}`),
-      arrow([], createExpr),
-    ]);
+    const onceCall = this.#call(
+      this.#propAccess(factory.createIdentifier("this"), "#lex"),
+      [
+        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
+        this.#arrow(createExpr),
+      ],
+    );
 
     // Add the element declaration statement
     this.#prependStatements.push(
@@ -360,7 +376,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
               onceCall as unknown as Expression,
             ),
           ],
-          1, // let
+          NodeFlags.Let,
         ),
       ),
     );
@@ -387,19 +403,21 @@ export class RenderTransformer extends Transformer(RenderIR) {
           const text = child.text || "";
           if (text.trim()) {
             const textVarName = `${varName}_text_${this.#varCounter++}`;
-            const textOnce = call(factory.createIdentifier("once"), [
-              $(textVarName),
-              arrow(
-                [],
-                call(
-                  propAccess(
-                    factory.createIdentifier("document"),
-                    "createTextNode",
+            const textOnce = this.#call(
+              this.#propAccess(factory.createIdentifier("this"), "#lex"),
+              [
+                factory.createStringLiteral(textVarName),
+                this.#arrow(
+                  this.#call(
+                    this.#propAccess(
+                      factory.createIdentifier("document"),
+                      "createTextNode",
+                    ),
+                    [factory.createStringLiteral(text)],
                   ),
-                  [$(text)],
                 ),
-              ),
-            ]);
+              ],
+            );
 
             this.#prependStatements.push(
               factory.createVariableStatement(
@@ -446,12 +464,12 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Set children if any
     if (children.length > 0) {
       this.#prependStatements.push(
-        exprStmt(
-          call(factory.createIdentifier("setChildren"), [
+        this.#exprStmt(
+          this.#call(factory.createIdentifier("setChildren"), [
             factory.createIdentifier(varName),
             factory.createArrayLiteralExpression(children),
           ]),
-        ) as unknown as Statement,
+        ),
       );
     }
 
@@ -470,10 +488,13 @@ export class RenderTransformer extends Transformer(RenderIR) {
     const tagName = jsxData.tagName.text || "div";
 
     const createExpr = this.#createElementCreation(tagName);
-    const onceCall = call(factory.createIdentifier("once"), [
-      $(`${tagName}_${this.#varCounter - 1}`),
-      arrow([], createExpr),
-    ]);
+    const onceCall = this.#call(
+      this.#propAccess(factory.createIdentifier("this"), "#lex"),
+      [
+        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
+        this.#arrow(createExpr),
+      ],
+    );
 
     this.#prependStatements.push(
       factory.createVariableStatement(
@@ -527,15 +548,18 @@ export class RenderTransformer extends Transformer(RenderIR) {
             if (exprNode) {
               // Generate: $0.addEventListener("click", handler)
               this.#prependStatements.push(
-                exprStmt(
-                  call(
-                    propAccess(
+                this.#exprStmt(
+                  this.#call(
+                    this.#propAccess(
                       factory.createIdentifier(varName),
                       "addEventListener",
                     ),
-                    [$(eventName), exprNode as Expression],
+                    [
+                      factory.createStringLiteral(eventName),
+                      exprNode as Expression,
+                    ],
                   ),
-                ) as unknown as Statement,
+                ),
               );
             }
           }
@@ -544,44 +568,104 @@ export class RenderTransformer extends Transformer(RenderIR) {
           if (!attr.initializer) {
             // Boolean attribute like <input disabled />
             this.#prependStatements.push(
-              exprStmt(
-                call(
-                  propAccess(factory.createIdentifier(varName), "setAttribute"),
-                  [$(attrName), $("")],
+              this.#exprStmt(
+                this.#call(
+                  this.#propAccess(
+                    factory.createIdentifier(varName),
+                    "setAttribute",
+                  ),
+                  [
+                    factory.createStringLiteral(attrName),
+                    factory.createStringLiteral(""),
+                  ],
                 ),
-              ) as unknown as Statement,
+              ),
             );
           } else if (attr.initializer.kind === SyntaxKind.StringLiteral) {
             // Static string attribute: class="foo"
             const attrValue = attr.initializer.text || "";
             this.#prependStatements.push(
-              exprStmt(
-                call(
-                  propAccess(factory.createIdentifier(varName), "setAttribute"),
-                  [$(attrName), $(attrValue)],
+              this.#exprStmt(
+                this.#call(
+                  this.#propAccess(
+                    factory.createIdentifier(varName),
+                    "setAttribute",
+                  ),
+                  [
+                    factory.createStringLiteral(attrName),
+                    factory.createStringLiteral(attrValue),
+                  ],
                 ),
-              ) as unknown as Statement,
+              ),
             );
           } else if (attr.initializer.kind === SyntaxKind.JsxExpression) {
             // Dynamic attribute: class={expression}
             const exprNode = attr.initializer.expression;
             if (exprNode) {
               this.#prependStatements.push(
-                exprStmt(
-                  call(
-                    propAccess(
+                this.#exprStmt(
+                  this.#call(
+                    this.#propAccess(
                       factory.createIdentifier(varName),
                       "setAttribute",
                     ),
-                    [$(attrName), exprNode as Expression],
+                    [
+                      factory.createStringLiteral(attrName),
+                      exprNode as Expression,
+                    ],
                   ),
-                ) as unknown as Statement,
+                ),
               );
             }
           }
         }
       }
     }
+  }
+
+  /**
+   * Create a call expression: fn(args...)
+   */
+  #call(func: Expression, args: Expression[]): Expression {
+    return factory.createCallExpression(func, undefined, args);
+  }
+
+  /**
+   * Create an arrow function: () => expr or () => { statements }
+   */
+  #arrow(body: Expression | Block): Expression {
+    if ("statements" in body) {
+      return factory.createArrowFunction(
+        undefined,
+        undefined,
+        [],
+        undefined,
+        factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+        body,
+      );
+    }
+    return factory.createArrowFunction(
+      undefined,
+      undefined,
+      [],
+      undefined,
+      factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+      body,
+    );
+  }
+
+  /**
+   * Create property access: obj.prop
+   */
+  #propAccess(obj: Expression, prop: string): Expression {
+    return factory.createPropertyAccessExpression(obj, prop);
+  }
+
+  /**
+   * Create expression statement
+   */
+  #exprStmt(expr: Expression): Statement {
+    return factory.createExpressionStatement(expr);
   }
 
   /**

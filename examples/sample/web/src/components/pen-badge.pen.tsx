@@ -17,7 +17,7 @@ export class PenBadgeElement extends HTMLElement implements ComponentInterface {
   @Prop() max?: number;
   @Prop() dot: boolean = false;
 
-  render(): VNode {
+  render() {
     const variantClass = `badge-variant-${this.variant}`;
     const sizeClass = `badge-size-${this.size}`;
 

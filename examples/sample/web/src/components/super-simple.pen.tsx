@@ -8,7 +8,7 @@ import {
   tag: "super-simple",
 })
 export class SuperSimple extends HTMLElement implements ComponentInterface {
-  render(): VNode {
+  render() {
     return <div>Test</div>;
   }
 }

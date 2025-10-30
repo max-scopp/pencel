@@ -4,6 +4,7 @@
     "jsx": "preserve",
     "jsxImportSource": "@pencel/runtime",
     "experimentalDecorators": true,
+    "baseUrl": ".",
     "paths": {
       "*.pen": ["*.gen.ts"]
     }

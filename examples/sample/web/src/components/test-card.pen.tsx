@@ -8,7 +8,7 @@ import {
   tag: "test-card",
 })
 export class TestCard extends HTMLElement implements ComponentInterface {
-  render(): VNode {
+  render() {
     return (
       <div class="card">
         <h2>Title</h2>

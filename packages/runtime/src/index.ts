@@ -3,7 +3,7 @@ export { pencelInit } from "./config.ts";
 export * from "./core/jsx/jsx-helpers.ts";
 export type * from "./core/jsx/types.ts";
 export type * from "./core/types.ts";
-export type * from "./core/zero-dom.ts";
+export * from "./core/zero-dom.ts";
 export * from "./decorators/component.ts";
 export * from "./decorators/element.ts";
 export * from "./decorators/event.ts";

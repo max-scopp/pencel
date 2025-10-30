@@ -1,9 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Prop,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Prop } from "@pencel/runtime";
 
 @Component({
   tag: "test-features",
@@ -22,7 +17,7 @@ export class TestFeatures extends HTMLElement implements ComponentInterface {
     console.log("Clicked!");
   };
 
-  render(): VNode {
+  render() {
     const className = `test-${this.active ? "active" : "inactive"}`;
 
     return (

@@ -55,7 +55,7 @@ export class PenDropdownElement
     }
   };
 
-  render(): VNode {
+  render() {
     const placementClass = `dropdown-placement-${this.placement}`;
     const isOpenClass = this.isOpen ? "dropdown-open" : "";
 

@@ -5,6 +5,8 @@ import {
   factory,
   getDecorators,
   isCallExpression,
+  isDecorator,
+  isIdentifier,
 } from "typescript";
 import { recordToObjectLiteral } from "../../ts-utils/recordToObjectLiteral.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
@@ -48,7 +50,14 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
     // Get all decorators and replace the updated one
     const decorators = getDecorators(irr.node);
     const updatedDecorators = decorators
-      ? decorators.map((d) => (d === decorator ? updatedDecorator : d))
+      ? [
+          ...decorators.filter((d) => {
+            if (!isCallExpression(d.expression)) return true;
+            const expr = d.expression.expression;
+            return !isIdentifier(expr) || expr.text !== "Component";
+          }),
+          updatedDecorator,
+        ]
       : [updatedDecorator];
 
     // Transform properties using the IR
@@ -71,12 +80,32 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
           return member;
         }),
       );
+
+      // Add #lex field if it doesn't already exist
+      if (!this.#hasLexField(updatedMembers)) {
+        const lexField = factory.createPropertyDeclaration(
+          undefined,
+          factory.createIdentifier("#lex"),
+          undefined,
+          undefined,
+          factory.createCallExpression(
+            factory.createIdentifier("createLexerCache"),
+            undefined,
+            [],
+          ),
+        );
+        updatedMembers = factory.createNodeArray([lexField, ...updatedMembers]);
+      }
     }
 
-    // Combine modifiers and decorators
+    // Combine modifiers (excluding decorators) and updated decorators
+    const nonDecoratorModifiers = (irr.node.modifiers ?? []).filter(
+      (modifier) => !isDecorator(modifier),
+    );
+
     const combinedModifiers = [
       ...(updatedDecorators ?? []),
-      ...(irr.node.modifiers ?? []),
+      ...nonDecoratorModifiers,
     ];
 
     return factory.createClassDeclaration(
@@ -86,5 +115,16 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
       irr.node.heritageClauses,
       updatedMembers,
     );
+  }
+
+  #hasLexField(members: ReturnType<typeof factory.createNodeArray>): boolean {
+    return members.some((member) => {
+      const memberWithName = member as { name?: { text?: string } | string };
+      const name = memberWithName.name;
+      if (typeof name === "string") {
+        return name === "#lex";
+      }
+      return name?.text === "#lex";
+    });
   }
 }

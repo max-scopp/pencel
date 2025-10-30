@@ -12,7 +12,7 @@ export class HTMLPenDetailsElement
   extends HTMLDetailsElement
   implements ComponentInterface
 {
-  render(): VNode {
+  render() {
     return (
       <Host>
         <slot />

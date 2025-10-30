@@ -201,8 +201,8 @@ describe("RenderTransformer E2E with zero-dom", () => {
           continue;
         }
         if (h === w) continue;
-        if (h) parent.replaceChild(w, h);
-        else parent.appendChild(w);
+        if (h) parent.replaceChild(w as any, h);
+        else parent.appendChild(w as any);
       }
     }
 

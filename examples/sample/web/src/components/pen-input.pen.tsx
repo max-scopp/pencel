@@ -40,7 +40,7 @@ export class PenInputElement extends HTMLElement implements ComponentInterface {
     this.focused = false;
   };
 
-  render(): VNode {
+  render() {
     const sizeClass = `input-size-${this.size}`;
     const stateClass = this.error
       ? "input-error"

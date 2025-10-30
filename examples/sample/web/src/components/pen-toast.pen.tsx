@@ -48,7 +48,7 @@ export class PenToastElement extends HTMLElement implements ComponentInterface {
     this.close.emit();
   };
 
-  render(): VNode {
+  render() {
     if (!this.visible) {
       return null;
     }

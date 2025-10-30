@@ -16,7 +16,7 @@ export class HTMLTodoItemElement
   @Prop() text: string = "";
   @Prop() completed: boolean = false;
 
-  render(): VNode {
+  render() {
     return (
       <Host>
         <div className="todo-item">

@@ -44,16 +44,16 @@ export class ComponentIR extends IRM("Component") {
   readonly tag: string;
 
   /**
-   * The value of the `extends` attribute for the custom element.
+   * The value of the `extends` keyword for the custom element.
    * E.g. HTMLButtonElement
    */
-  readonly extends: string;
+  readonly heritage: string;
 
   /**
-   * The tag name for the "is" attribute if extending a built-in element.
+   * The tag name if extending a built-in element.
    * E.g. `<button is="pencil-button">` would be "button"
    */
-  readonly forIs: string | undefined;
+  readonly extends: string | undefined;
 
   readonly styles: string[];
   readonly styleUrls: StyleUrls;
@@ -87,7 +87,7 @@ export class ComponentIR extends IRM("Component") {
       this.#config.user.runtime.tagNamespace,
     );
 
-    this.extends =
+    this.heritage =
       firstMap(classDeclaration.heritageClauses, (hc) => {
         if (hc.token !== SyntaxKind.ExtendsKeyword) {
           return null;
@@ -110,7 +110,7 @@ export class ComponentIR extends IRM("Component") {
         `Component class ${this.className} must extend a valid HTML element.`,
       );
 
-    this.forIs = getTagByExtendsString(this.extends);
+    this.extends = getTagByExtendsString(this.heritage);
 
     this.styles = Array.isArray(componentOptions.styles)
       ? componentOptions.styles

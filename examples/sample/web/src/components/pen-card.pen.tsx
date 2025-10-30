@@ -13,7 +13,7 @@ export class PenCardElement extends HTMLElement implements ComponentInterface {
   @Prop() variant: "elevated" | "outlined" | "filled" = "elevated";
   @Prop() padding: "sm" | "md" | "lg" = "md";
 
-  render(): VNode {
+  render() {
     const paddingClass = `card-padding-${this.padding}`;
     const variantClass = `card-variant-${this.variant}`;
 

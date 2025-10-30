@@ -46,7 +46,7 @@ export class PenModalElement extends HTMLElement implements ComponentInterface {
     }
   };
 
-  render(): VNode {
+  render() {
     const sizeClass = `modal-size-${this.size}`;
     const isOpenClass = this.isOpen ? "modal-open" : "";
 

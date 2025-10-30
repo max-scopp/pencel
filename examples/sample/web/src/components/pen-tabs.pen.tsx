@@ -31,7 +31,7 @@ export class PenTabsElement extends HTMLElement implements ComponentInterface {
     this.tabChange.emit(tabId);
   };
 
-  render(): VNode {
+  render() {
     const variantClass = `tabs-variant-${this.variant}`;
     const sizeClass = `tabs-size-${this.size}`;
 

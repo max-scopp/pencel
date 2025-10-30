@@ -16,7 +16,7 @@ export class PenStackElement extends HTMLElement implements ComponentInterface {
   @Prop() justify: "start" | "center" | "end" | "between" | "around" = "start";
   @Prop() wrap: boolean = false;
 
-  render(): VNode {
+  render() {
     const directionClass = `stack-direction-${this.direction}`;
     const gapClass = `stack-gap-${this.gap}`;
     const alignClass = `stack-align-${this.align}`;
