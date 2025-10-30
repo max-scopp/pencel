@@ -128,6 +128,56 @@ export class RenderTransformer extends Transformer(RenderIR) {
       return this.#transformExpression(unwrapped);
     }
 
+    // Handle arrow functions with JSX bodies - transform the body but keep
+    // any prepended statements within the function body
+    if (expr.kind === SyntaxKind.ArrowFunction) {
+      const arrow = expr as unknown as {
+        body: Expression | Block;
+        parameters: unknown;
+      };
+
+      // Skip transformation if body is already a block (has statements)
+      if ("statements" in arrow.body) {
+        return expr; // Block bodies need different handling
+      }
+
+      // For expression bodies, check if they contain JSX or need transformation
+      // Save current prepend statements
+      const savedPrepend = this.#prependStatements;
+      this.#prependStatements = [];
+
+      // Transform the expression body
+      const transformedBody = this.#transformExpression(
+        arrow.body as Expression,
+      );
+
+      // If we generated any prepended statements from JSX transformation,
+      // convert the arrow function to have a block body with those statements
+      let finalBody: Expression | Block = transformedBody;
+      if (this.#prependStatements.length > 0) {
+        const statements = [
+          ...this.#prependStatements,
+          factory.createReturnStatement(
+            transformedBody as unknown as Expression,
+          ),
+        ];
+        finalBody = factory.createBlock(statements, true);
+      }
+
+      // Restore prepend statements
+      this.#prependStatements = savedPrepend;
+
+      return factory.updateArrowFunction(
+        expr as unknown as Parameters<typeof factory.updateArrowFunction>[0],
+        undefined,
+        undefined,
+        arrow.parameters as Parameters<typeof factory.updateArrowFunction>[3],
+        undefined,
+        factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+        finalBody as Expression | Block,
+      );
+    }
+
     // Handle conditional expressions: condition ? <A/> : <B/>
     if (expr.kind === SyntaxKind.ConditionalExpression) {
       const cond = expr as unknown as {
@@ -159,6 +209,23 @@ export class RenderTransformer extends Transformer(RenderIR) {
           this.#transformExpression(binary.right),
         );
       }
+    }
+
+    // Handle call expressions to transform arguments (e.g., map callbacks)
+    if (expr.kind === SyntaxKind.CallExpression) {
+      const call = expr as unknown as {
+        expression: Expression;
+        arguments: Expression[];
+      };
+      const transformedArgs = call.arguments.map((arg) =>
+        this.#transformExpression(arg),
+      );
+      return factory.updateCallExpression(
+        expr as unknown as Parameters<typeof factory.updateCallExpression>[0],
+        call.expression,
+        undefined,
+        transformedArgs,
+      );
     }
 
     // Check if this is a JSX element
