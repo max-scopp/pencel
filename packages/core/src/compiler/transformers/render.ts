@@ -1223,12 +1223,12 @@ export class RenderTransformer extends Transformer(RenderIR) {
         // Check the root element itself first
         if (isFirstElement) {
           isFirstElement = false;
-          
+
           // Root element without explicit key needs index
           if (!hasKey) {
             hasElementWithoutKey = true;
           }
-          
+
           // Continue checking nested child elements
           if ("children" in jsxNode && jsxNode.children) {
             const children = jsxNode.children as unknown as Array<{
