@@ -8,6 +8,7 @@ import {
   type MethodDeclaration,
   type Node,
   NodeFlags,
+  type ParameterDeclaration,
   type Statement,
   SyntaxKind,
   visitEachChild,
@@ -16,9 +17,22 @@ import type { IRRef } from "../ir/irri.ts";
 import { RenderIR } from "../ir/render.ts";
 import { Transformer } from "./transformer.ts";
 
+/**
+ * Tracks context for loop processing (parameter name and index variable)
+ */
+interface LoopContext {
+  paramName: string; // Name of loop parameter (e.g., "todo")
+  indexName?: string; // Name of index variable if available (e.g., "index")
+  needsIndex: boolean; // Whether we need to add index parameter to signature
+  isRootElement: boolean; // Whether this element should use the key/index interpolation
+  scopeKeyExpr?: Expression; // Scope key expression for hierarchical memoization (e.g., "todo.id" or "index")
+}
+
 export class RenderTransformer extends Transformer(RenderIR) {
   #varCounter = 0;
   #prependStatements: Statement[] = [];
+  #loopContextStack: LoopContext[] = []; // Stack of loop contexts
+  #prependStatementsStack: Statement[][] = []; // Stack for nested prepend statements
 
   override transform(
     irr: IRRef<RenderIR, MethodDeclaration>,
@@ -217,6 +231,18 @@ export class RenderTransformer extends Transformer(RenderIR) {
         expression: Expression;
         arguments: Expression[];
       };
+
+      // Check if this is a .map() or .forEach() with JSX
+      const methodCall = this.#isLoopMethodCall(call.expression);
+      if (methodCall && call.arguments.length > 0) {
+        const callback = call.arguments[0];
+        return this.#transformLoopCall(
+          expr as unknown as Parameters<typeof factory.updateCallExpression>[0],
+          call.expression,
+          callback as Expression,
+        );
+      }
+
       const transformedArgs = call.arguments.map((arg) =>
         this.#transformExpression(arg),
       );
@@ -409,14 +435,108 @@ export class RenderTransformer extends Transformer(RenderIR) {
     };
     const tagName = openingElem.tagName.text || "div";
 
+    // Extract key from attributes if in a loop
+    const { keyExpr, remainingAttrs } = this.#extractKeyFromJsx(
+      openingElem.attributes.properties,
+    );
+    openingElem.attributes.properties = remainingAttrs;
+
+    // Build cmc key with hierarchical scope if inside loops
+    let cmcKey: Expression;
+    const baseKey = `${tagName}_${this.#varCounter - 1}`;
+    const loopContext = this.#getCurrentLoopContext();
+    const hierarchicalScopeKey = this.#buildHierarchicalScopeKey();
+
+    if (loopContext?.isRootElement) {
+      // Mark this as no longer the root for subsequent sibling elements
+      loopContext.isRootElement = false;
+
+      // For root element: combine hierarchical scope (parents) with explicit key or current scope
+      let key: Expression = factory.createStringLiteral(`${baseKey}_`);
+
+      if (hierarchicalScopeKey) {
+        // We have parent scopes - add them first
+        key = factory.createBinaryExpression(
+          key,
+          SyntaxKind.PlusToken,
+          hierarchicalScopeKey,
+        );
+
+        // Then add the element's own key/scope
+        if (keyExpr) {
+          // Explicit key - add it after parent scopes
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createBinaryExpression(
+              factory.createStringLiteral("_"),
+              SyntaxKind.PlusToken,
+              keyExpr,
+            ),
+          );
+        } else if (loopContext.scopeKeyExpr) {
+          // No explicit key, but we have the current loop's scope key - add it
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createBinaryExpression(
+              factory.createStringLiteral("_"),
+              SyntaxKind.PlusToken,
+              loopContext.scopeKeyExpr,
+            ),
+          );
+        }
+      } else {
+        // No parent scopes - just use explicit key or current scope
+        if (keyExpr) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            keyExpr,
+          );
+        } else if (loopContext.scopeKeyExpr) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            loopContext.scopeKeyExpr,
+          );
+        } else if (loopContext.indexName) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createIdentifier(loopContext.indexName),
+          );
+        }
+      }
+
+      cmcKey = key;
+    } else {
+      // Child element in loop - use hierarchical scope for uniqueness
+      if (hierarchicalScopeKey) {
+        // Parent scopes exist - use them
+        cmcKey = factory.createBinaryExpression(
+          factory.createStringLiteral(`${baseKey}_`),
+          SyntaxKind.PlusToken,
+          hierarchicalScopeKey,
+        );
+      } else if (loopContext?.scopeKeyExpr) {
+        // No parent scopes, but we're in a loop - use current loop's scope
+        cmcKey = factory.createBinaryExpression(
+          factory.createStringLiteral(`${baseKey}_`),
+          SyntaxKind.PlusToken,
+          loopContext.scopeKeyExpr,
+        );
+      } else {
+        // Element outside loop
+        cmcKey = factory.createStringLiteral(baseKey);
+      }
+    }
+
     // Generate element creation
     const createExpr = this.#createElementCreation(tagName);
     const onceCall = this.#call(
       this.#propAccess(factory.createIdentifier("this"), "#cmc"),
-      [
-        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
-        this.#arrow(createExpr),
-      ],
+      [cmcKey, this.#arrow(createExpr)],
     );
 
     // Add the element declaration statement
@@ -458,11 +578,46 @@ export class RenderTransformer extends Transformer(RenderIR) {
         if (child.kind === SyntaxKind.JsxText) {
           const text = child.text || "";
           if (text.trim()) {
-            const textVarName = `${varName}_text_${this.#varCounter++}`;
+            // Build the text node key with hierarchical scope for uniqueness
+            let textKey: Expression;
+            const baseTextKey = `${varName}_text_${this.#varCounter++}`;
+            const textHierarchicalScope = this.#buildHierarchicalScopeKey();
+
+            if (loopContext?.scopeKeyExpr) {
+              // We're in a loop - add the scope to text node key
+              if (textHierarchicalScope) {
+                // Parent scopes exist - combine with current scope
+                textKey = factory.createBinaryExpression(
+                  factory.createStringLiteral(`${baseTextKey}_`),
+                  SyntaxKind.PlusToken,
+                  factory.createBinaryExpression(
+                    textHierarchicalScope,
+                    SyntaxKind.PlusToken,
+                    factory.createBinaryExpression(
+                      factory.createStringLiteral("_"),
+                      SyntaxKind.PlusToken,
+                      loopContext.scopeKeyExpr,
+                    ),
+                  ),
+                );
+              } else {
+                // No parent scopes - just add current scope
+                textKey = factory.createBinaryExpression(
+                  factory.createStringLiteral(`${baseTextKey}_`),
+                  SyntaxKind.PlusToken,
+                  loopContext.scopeKeyExpr,
+                );
+              }
+            } else {
+              // Not in a loop - use static key
+              textKey = factory.createStringLiteral(baseTextKey);
+            }
+
+            const textVarName = `${varName}_text_${this.#varCounter - 1}`;
             const textOnce = this.#call(
               this.#propAccess(factory.createIdentifier("this"), "#cmc"),
               [
-                factory.createStringLiteral(textVarName),
+                textKey,
                 this.#arrow(
                   this.#call(factory.createIdentifier("dctn"), [
                     factory.createStringLiteral(text),
@@ -539,13 +694,107 @@ export class RenderTransformer extends Transformer(RenderIR) {
     };
     const tagName = jsxData.tagName.text || "div";
 
+    // Extract key from attributes if in a loop
+    const { keyExpr, remainingAttrs } = this.#extractKeyFromJsx(
+      jsxData.attributes.properties,
+    );
+    jsxData.attributes.properties = remainingAttrs;
+
+    // Build cmc key with hierarchical scope if inside loops
+    let cmcKey: Expression;
+    const baseKey = `${tagName}_${this.#varCounter - 1}`;
+    const loopContext = this.#getCurrentLoopContext();
+    const hierarchicalScopeKey = this.#buildHierarchicalScopeKey();
+
+    if (loopContext?.isRootElement) {
+      // Mark this as no longer the root for subsequent sibling elements
+      loopContext.isRootElement = false;
+
+      // For root element: combine hierarchical scope (parents) with explicit key or current scope
+      let key: Expression = factory.createStringLiteral(`${baseKey}_`);
+
+      if (hierarchicalScopeKey) {
+        // We have parent scopes - add them first
+        key = factory.createBinaryExpression(
+          key,
+          SyntaxKind.PlusToken,
+          hierarchicalScopeKey,
+        );
+
+        // Then add the element's own key/scope
+        if (keyExpr) {
+          // Explicit key - add it after parent scopes
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createBinaryExpression(
+              factory.createStringLiteral("_"),
+              SyntaxKind.PlusToken,
+              keyExpr,
+            ),
+          );
+        } else if (loopContext.scopeKeyExpr) {
+          // No explicit key, but we have the current loop's scope key - add it
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createBinaryExpression(
+              factory.createStringLiteral("_"),
+              SyntaxKind.PlusToken,
+              loopContext.scopeKeyExpr,
+            ),
+          );
+        }
+      } else {
+        // No parent scopes - just use explicit key or current scope
+        if (keyExpr) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            keyExpr,
+          );
+        } else if (loopContext.scopeKeyExpr) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            loopContext.scopeKeyExpr,
+          );
+        } else if (loopContext.indexName) {
+          key = factory.createBinaryExpression(
+            key,
+            SyntaxKind.PlusToken,
+            factory.createIdentifier(loopContext.indexName),
+          );
+        }
+      }
+
+      cmcKey = key;
+    } else {
+      // Child element in loop - use hierarchical scope for uniqueness
+      if (hierarchicalScopeKey) {
+        // Parent scopes exist - use them
+        cmcKey = factory.createBinaryExpression(
+          factory.createStringLiteral(`${baseKey}_`),
+          SyntaxKind.PlusToken,
+          hierarchicalScopeKey,
+        );
+      } else if (loopContext?.scopeKeyExpr) {
+        // No parent scopes, but we're in a loop - use current loop's scope
+        cmcKey = factory.createBinaryExpression(
+          factory.createStringLiteral(`${baseKey}_`),
+          SyntaxKind.PlusToken,
+          loopContext.scopeKeyExpr,
+        );
+      } else {
+        // Element outside loop
+        cmcKey = factory.createStringLiteral(baseKey);
+      }
+    }
+
     const createExpr = this.#createElementCreation(tagName);
     const onceCall = this.#call(
       this.#propAccess(factory.createIdentifier("this"), "#cmc"),
-      [
-        factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
-        this.#arrow(createExpr),
-      ],
+      [cmcKey, this.#arrow(createExpr)],
     );
 
     this.#prependStatements.push(
@@ -728,5 +977,409 @@ export class RenderTransformer extends Transformer(RenderIR) {
     return this.#call(factory.createIdentifier("dce"), [
       factory.createStringLiteral(tagName),
     ]);
+  }
+
+  /**
+   * Check if an expression is a .map() or .forEach() method call
+   */
+  #isLoopMethodCall(expr: Expression): boolean {
+    if (expr.kind !== SyntaxKind.PropertyAccessExpression) {
+      return false;
+    }
+
+    const propAccess = expr as unknown as { name?: { text: string } };
+    const methodName = propAccess.name?.text;
+    return methodName === "map" || methodName === "forEach";
+  }
+
+  /**
+   * Transform a loop call (.map() or .forEach()) with proper index handling
+   */
+  #transformLoopCall(
+    callExpr: Parameters<typeof factory.updateCallExpression>[0],
+    methodExpr: Expression,
+    callback: Expression,
+  ): Expression {
+    // Only arrow functions and function expressions with JSX bodies need transformation
+    if (callback.kind !== SyntaxKind.ArrowFunction) {
+      const transformedCallback = this.#transformExpression(callback);
+      return factory.updateCallExpression(callExpr, methodExpr, undefined, [
+        transformedCallback,
+      ]);
+    }
+
+    const arrowFunc = callback as unknown as {
+      parameters: Array<{
+        name?: { text: string };
+      }>;
+      body: Expression | Block;
+    };
+
+    // Get the original parameter name (e.g., "todo")
+    const paramName = arrowFunc.parameters[0]?.name?.text || "item";
+    const hasIndexParam = !!arrowFunc.parameters[1];
+
+    // Pre-pass: Check if we need index for child elements without explicit keys
+    let needsIndex = false;
+    if (!hasIndexParam) {
+      // Only check if user hasn't already provided index
+      needsIndex = this.#callbackNeedsIndexForKeys(arrowFunc.body);
+    }
+
+    // Determine the index name: use provided one or generate unique name based on depth
+    let indexName: string | undefined;
+    if (arrowFunc.parameters[1]) {
+      // User provided index parameter - use it as-is
+      indexName = arrowFunc.parameters[1].name?.text;
+    } else if (needsIndex) {
+      // Generate unique index name based on loop depth to avoid shadowing
+      // depth 0 = "index", depth 1 = "index1", depth 2 = "index2", etc.
+      const depth = this.#loopContextStack.length;
+      indexName = depth === 0 ? "index" : `index${depth}`;
+    }
+
+    // Extract JSX key prop from first JSX element to use as scope key
+    // Fallback to index with auto-incremented suffix (index, index2, index3, etc.)
+    let scopeKeyExpr: Expression | undefined;
+    const jsxKeyFromBody = this.#extractJsxKeyFromBody(arrowFunc.body);
+    if (jsxKeyFromBody) {
+      // User provided a JSX key - use it as scope key
+      scopeKeyExpr = jsxKeyFromBody;
+    } else if (indexName) {
+      // No explicit key - use index identifier (unique per depth)
+      scopeKeyExpr = factory.createIdentifier(indexName);
+    }
+
+    // Push loop context onto stack
+    // Mark the first element as root (will be marked during JSX transformation)
+    const loopContext: LoopContext = {
+      paramName,
+      indexName: indexName || (needsIndex ? "index" : undefined),
+      needsIndex,
+      isRootElement: true, // First element is root until proven otherwise
+      scopeKeyExpr,
+    };
+    this.#loopContextStack.push(loopContext);
+
+    // Save current prepend statements and create a new scope for the callback
+    const savedPrependStatements = this.#prependStatements;
+    this.#prependStatements = [];
+    this.#prependStatementsStack.push(savedPrependStatements);
+
+    // Transform the callback body with loop context
+    let transformedBody: Expression | Block;
+    if ("statements" in arrowFunc.body) {
+      // Block body - transform statements
+      const block = arrowFunc.body as Block;
+      const transformedStatements: Statement[] = [];
+      for (const stmt of block.statements) {
+        const transformed = this.#visitNode(stmt);
+        if (transformed) {
+          transformedStatements.push(transformed as Statement);
+        }
+      }
+      transformedBody = factory.createBlock(transformedStatements, true);
+    } else {
+      // Expression body - transform expression and wrap with prepended statements
+      const transformedExpr = this.#transformExpression(
+        arrowFunc.body as Expression,
+      );
+
+      // If we have prepended statements from JSX transformation, wrap in a block
+      if (this.#prependStatements.length > 0) {
+        const stmts: Statement[] = [
+          ...this.#prependStatements,
+          factory.createReturnStatement(transformedExpr),
+        ];
+        transformedBody = factory.createBlock(stmts, true);
+      } else {
+        transformedBody = transformedExpr;
+      }
+    }
+
+    // Restore prepend statements to parent scope
+    this.#prependStatementsStack.pop();
+    this.#prependStatements = savedPrependStatements;
+
+    // Pop loop context
+    this.#loopContextStack.pop();
+
+    // Build new parameters array (cast to proper types)
+    const arrowFuncTyped = callback as unknown as {
+      parameters: ParameterDeclaration[];
+      body: Expression | Block;
+    };
+    const newParams: ParameterDeclaration[] = [...arrowFuncTyped.parameters];
+
+    // Add index parameter if needed for child elements without explicit keys
+    if (needsIndex && !arrowFunc.parameters[1] && indexName) {
+      newParams.push(
+        factory.createParameterDeclaration(
+          undefined,
+          undefined,
+          factory.createIdentifier(indexName),
+          undefined,
+          undefined,
+          undefined,
+        ),
+      );
+    }
+
+    // Update the arrow function with transformed body and potentially new parameters
+    const transformedCallback = factory.updateArrowFunction(
+      callback as unknown as Parameters<typeof factory.updateArrowFunction>[0],
+      undefined,
+      undefined,
+      newParams,
+      undefined,
+      factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+      transformedBody,
+    );
+
+    return factory.updateCallExpression(callExpr, methodExpr, undefined, [
+      transformedCallback,
+    ]);
+  }
+
+  /**
+   * Get the current loop context (if inside a loop)
+   */
+  #getCurrentLoopContext(): LoopContext | undefined {
+    return this.#loopContextStack[this.#loopContextStack.length - 1];
+  }
+
+  /**
+   * Extract the 'key' prop from JSX attributes and return both the key value and remaining attributes
+   */
+  #extractKeyFromJsx(attributes: unknown): {
+    keyExpr: Expression | null;
+    remainingAttrs: unknown;
+  } {
+    const attrs = attributes as Array<{
+      kind: SyntaxKind;
+      name?: { text: string };
+      initializer?: {
+        kind: SyntaxKind;
+        expression?: Expression;
+      };
+    }>;
+
+    if (!Array.isArray(attrs)) {
+      return { keyExpr: null, remainingAttrs: attributes };
+    }
+
+    let keyExpr: Expression | null = null;
+    const remainingAttrs = attrs.filter((attr) => {
+      if (attr.kind === SyntaxKind.JsxAttribute && attr.name?.text === "key") {
+        if (
+          attr.initializer?.kind === SyntaxKind.JsxExpression &&
+          attr.initializer.expression
+        ) {
+          keyExpr = attr.initializer.expression;
+        }
+        return false; // Remove key attribute
+      }
+      return true;
+    });
+
+    return { keyExpr, remainingAttrs };
+  }
+
+  /**
+   * Check if callback body has JSX elements without explicit keys
+   * If so, we need to add index parameter for stable memoization
+   */
+  #callbackNeedsIndexForKeys(body: Expression | Block): boolean {
+    let hasElementWithoutKey = false;
+    let isFirstElement = true;
+
+    const checkNode = (node: Node): Node => {
+      // Look for JSX elements
+      if (
+        node.kind === SyntaxKind.JsxElement ||
+        node.kind === SyntaxKind.JsxSelfClosingElement
+      ) {
+        const jsxNode = node as unknown as {
+          openingElement?: {
+            attributes?: {
+              properties?: Array<{
+                kind: SyntaxKind;
+                name?: { text: string };
+              }>;
+            };
+          };
+          tagName?: { text: string };
+          kind: SyntaxKind;
+        };
+
+        // Check if this element has a key prop
+        const hasKey =
+          jsxNode.openingElement?.attributes?.properties?.some(
+            (attr) =>
+              attr.kind === SyntaxKind.JsxAttribute &&
+              attr.name?.text === "key",
+          ) ?? false;
+
+        // Check the root element itself first
+        if (isFirstElement) {
+          isFirstElement = false;
+          
+          // Root element without explicit key needs index
+          if (!hasKey) {
+            hasElementWithoutKey = true;
+          }
+          
+          // Continue checking nested child elements
+          if ("children" in jsxNode && jsxNode.children) {
+            const children = jsxNode.children as unknown as Array<{
+              kind: SyntaxKind;
+            }>;
+            for (const child of children) {
+              checkNode(child as Node);
+            }
+          }
+        } else if (!hasKey) {
+          // Found a non-root element without explicit key
+          hasElementWithoutKey = true;
+        }
+        return node;
+      }
+
+      // Recursively visit children
+      if (!hasElementWithoutKey) {
+        return visitEachChild(node, checkNode, undefined);
+      }
+      return node;
+    };
+
+    checkNode(body as Node);
+    return hasElementWithoutKey;
+  }
+
+  /**
+   * Extract the JSX key prop from the first root element in the callback body
+   * Returns the key expression if found, otherwise null
+   */
+  #extractJsxKeyFromBody(body: Expression | Block): Expression | null {
+    const checkNode = (node: Node): Expression | null => {
+      if (
+        node.kind === SyntaxKind.JsxElement ||
+        node.kind === SyntaxKind.JsxSelfClosingElement
+      ) {
+        const jsxNode = node as unknown as {
+          openingElement?: {
+            attributes?: {
+              properties?: Array<{
+                kind: SyntaxKind;
+                name?: { text: string };
+                initializer?: {
+                  kind: SyntaxKind;
+                  expression?: Expression;
+                };
+              }>;
+            };
+          };
+        };
+
+        // Look for key prop in attributes
+        if (jsxNode.openingElement?.attributes?.properties) {
+          for (const attr of jsxNode.openingElement.attributes.properties) {
+            if (
+              attr.kind === SyntaxKind.JsxAttribute &&
+              attr.name?.text === "key"
+            ) {
+              if (
+                attr.initializer?.kind === SyntaxKind.JsxExpression &&
+                attr.initializer.expression
+              ) {
+                return attr.initializer.expression;
+              }
+            }
+          }
+        }
+        // Return null after checking the first JSX element (don't traverse deeper)
+        return null;
+      }
+
+      // For block bodies, check statements
+      if (node.kind === SyntaxKind.Block) {
+        const blockNode = node as unknown as {
+          statements?: Array<{ kind: SyntaxKind }>;
+        };
+        if (blockNode.statements) {
+          for (const stmt of blockNode.statements) {
+            const result = checkNode(stmt as Node);
+            if (result) return result;
+          }
+        }
+        return null;
+      }
+
+      // For return/expression statements, check the expression
+      if (
+        node.kind === SyntaxKind.ReturnStatement ||
+        node.kind === SyntaxKind.ExpressionStatement
+      ) {
+        const exprNode = node as unknown as { expression?: Expression };
+        if (exprNode.expression) {
+          return checkNode(exprNode.expression as unknown as Node);
+        }
+      }
+
+      // For parenthesized expressions, unwrap
+      if (node.kind === SyntaxKind.ParenthesizedExpression) {
+        const parenNode = node as unknown as { expression: Expression };
+        return checkNode(parenNode.expression as unknown as Node);
+      }
+
+      return null;
+    };
+
+    return checkNode(body as Node);
+  }
+
+  /**
+  /**
+   * Build hierarchical scope key by concatenating all PARENT loop context scope keys
+   * (excluding the current/immediate loop level)
+   * Returns a concatenated expression or null if no parent loop contexts
+   */
+  #buildHierarchicalScopeKey(): Expression | null {
+    // Only include parent contexts, not the current one
+    if (this.#loopContextStack.length <= 1) {
+      return null;
+    }
+
+    // Collect all scope key expressions from parent contexts (all but the last one)
+    const scopeKeys: Expression[] = [];
+    for (let i = 0; i < this.#loopContextStack.length - 1; i++) {
+      const context = this.#loopContextStack[i];
+      if (context.scopeKeyExpr) {
+        scopeKeys.push(context.scopeKeyExpr);
+      }
+    }
+
+    if (scopeKeys.length === 0) {
+      return null;
+    }
+
+    // Concatenate all parent scope keys with "_" separator
+    // Start with first key
+    let result = scopeKeys[0];
+
+    // Add remaining keys
+    for (let i = 1; i < scopeKeys.length; i++) {
+      result = factory.createBinaryExpression(
+        result,
+        SyntaxKind.PlusToken,
+        factory.createBinaryExpression(
+          factory.createStringLiteral("_"),
+          SyntaxKind.PlusToken,
+          scopeKeys[i],
+        ),
+      );
+    }
+
+    return result;
   }
 }
