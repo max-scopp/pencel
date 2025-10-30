@@ -3,7 +3,6 @@ import {
   type ComponentInterface,
   Host,
   Prop,
-  type VNode,
 } from "@pencel/runtime";
 
 @Component({
@@ -14,9 +13,8 @@ export class HTMLSimpleButtonElement
   implements ComponentInterface
 {
   @Prop() label: string = "Click me";
-  @Prop() disabled: boolean = false;
 
-  render(): VNode {
+  render() {
     return (
       <Host>
         <button disabled={this.disabled}>{this.label}</button>

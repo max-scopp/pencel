@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { Window } from "happy-dom";
+import { type Document, type Text, Window } from "happy-dom";
 import {
   createPrinter,
   createSourceFile,
@@ -140,20 +140,20 @@ describe("RenderTransformer E2E with zero-dom", () => {
         }
 
         if (name === "className") {
-          (el as HTMLElement).className = value;
+          el.className = value;
         } else if (name === "checked") {
           // Boolean property - only set to true if value is truthy
           const boolValue =
             value === "true" || (value as unknown) === true || value === "";
           isSettingProperty = true;
-          (el as HTMLInputElement).checked = boolValue;
+          (el as any as HTMLInputElement).checked = boolValue;
           isSettingProperty = false;
         } else if (name === "disabled") {
           // Boolean property - only set to true if value is truthy
           const boolValue =
             value === "true" || (value as unknown) === true || value === "";
           isSettingProperty = true;
-          (el as HTMLButtonElement).disabled = boolValue;
+          (el as any as HTMLButtonElement).disabled = boolValue;
           isSettingProperty = false;
         } else {
           originalSetAttribute(name, value);
@@ -178,7 +178,7 @@ describe("RenderTransformer E2E with zero-dom", () => {
       parent: HTMLElement | DocumentFragment,
       children: (Node | string | boolean | number | null | undefined)[],
     ) {
-      const childNodes: Node[] = children
+      const childNodes: (Node | Text)[] = children
         .filter((child) => child != null)
         .map((child) => {
           if (
