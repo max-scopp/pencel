@@ -81,20 +81,20 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
         }),
       );
 
-      // Add #lex field if it doesn't already exist
-      if (!this.#hasLexField(updatedMembers)) {
-        const lexField = factory.createPropertyDeclaration(
+      // Add #cmc field if it doesn't already exist
+      if (!this.#hasCmcField(updatedMembers)) {
+        const cmcField = factory.createPropertyDeclaration(
           undefined,
-          factory.createIdentifier("#lex"),
+          factory.createIdentifier("#cmc"),
           undefined,
           undefined,
           factory.createCallExpression(
-            factory.createIdentifier("createLexerCache"),
+            factory.createIdentifier("mc"),
             undefined,
             [],
           ),
         );
-        updatedMembers = factory.createNodeArray([lexField, ...updatedMembers]);
+        updatedMembers = factory.createNodeArray([cmcField, ...updatedMembers]);
       }
     }
 
@@ -117,14 +117,14 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
     );
   }
 
-  #hasLexField(members: ReturnType<typeof factory.createNodeArray>): boolean {
+  #hasCmcField(members: ReturnType<typeof factory.createNodeArray>): boolean {
     return members.some((member) => {
       const memberWithName = member as { name?: { text?: string } | string };
       const name = memberWithName.name;
       if (typeof name === "string") {
-        return name === "#lex";
+        return name === "#cmc";
       }
-      return name?.text === "#lex";
+      return name?.text === "#cmc";
     });
   }
 }

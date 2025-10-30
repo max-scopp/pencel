@@ -91,9 +91,9 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Transform the return expression
     const transformedExpr = this.#transformExpression(returnStmt.expression);
 
-    // Create setChildren(this, [transformedExpr]) call
+    // Create sc(this, [transformedExpr]) call
     const setChildrenCall = factory.createCallExpression(
-      factory.createIdentifier("setChildren"),
+      factory.createIdentifier("sc"),
       undefined,
       [
         factory.createIdentifier("this"),
@@ -101,7 +101,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
       ],
     );
 
-    // If we generated statements, add them before setChildren
+    // If we generated statements, add them before sc
     if (this.#prependStatements.length > 0) {
       const statements = [
         ...this.#prependStatements.map((stmt) => stmt),
@@ -112,7 +112,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
       return factory.createBlock(statements, true);
     }
 
-    // No transformation needed, just call setChildren
+    // No transformation needed, just call sc
     this.#prependStatements = savedPrepend;
     return factory.createExpressionStatement(setChildrenCall);
   }
@@ -296,18 +296,12 @@ export class RenderTransformer extends Transformer(RenderIR) {
                 initializer.expression
               ) {
                 this.#prependStatements.push(
-                  factory.createExpressionStatement(
-                    factory.createCallExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createThis(),
-                        "addEventListener",
-                      ),
-                      undefined,
-                      [
-                        factory.createStringLiteral(eventName),
-                        initializer.expression,
-                      ],
-                    ),
+                  this.#exprStmt(
+                    this.#call(factory.createIdentifier("ael"), [
+                      factory.createThis(),
+                      factory.createStringLiteral(eventName),
+                      initializer.expression,
+                    ]),
                   ),
                 );
               }
@@ -318,18 +312,16 @@ export class RenderTransformer extends Transformer(RenderIR) {
                 initializer.expression
               ) {
                 this.#prependStatements.push(
-                  factory.createExpressionStatement(
-                    factory.createCallExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createThis(),
-                        "setAttribute",
-                      ),
-                      undefined,
-                      [
-                        factory.createStringLiteral(attrName),
-                        initializer.expression,
-                      ],
-                    ),
+                  this.#exprStmt(
+                    this.#call(factory.createIdentifier("sp"), [
+                      factory.createThis(),
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral(attrName),
+                          initializer.expression,
+                        ),
+                      ]),
+                    ]),
                   ),
                 );
               }
@@ -420,7 +412,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Generate element creation
     const createExpr = this.#createElementCreation(tagName);
     const onceCall = this.#call(
-      this.#propAccess(factory.createIdentifier("this"), "#lex"),
+      this.#propAccess(factory.createIdentifier("this"), "#cmc"),
       [
         factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
         this.#arrow(createExpr),
@@ -468,17 +460,13 @@ export class RenderTransformer extends Transformer(RenderIR) {
           if (text.trim()) {
             const textVarName = `${varName}_text_${this.#varCounter++}`;
             const textOnce = this.#call(
-              this.#propAccess(factory.createIdentifier("this"), "#lex"),
+              this.#propAccess(factory.createIdentifier("this"), "#cmc"),
               [
                 factory.createStringLiteral(textVarName),
                 this.#arrow(
-                  this.#call(
-                    this.#propAccess(
-                      factory.createIdentifier("document"),
-                      "createTextNode",
-                    ),
-                    [factory.createStringLiteral(text)],
-                  ),
+                  this.#call(factory.createIdentifier("dctn"), [
+                    factory.createStringLiteral(text),
+                  ]),
                 ),
               ],
             );
@@ -529,7 +517,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
     if (children.length > 0) {
       this.#prependStatements.push(
         this.#exprStmt(
-          this.#call(factory.createIdentifier("setChildren"), [
+          this.#call(factory.createIdentifier("sc"), [
             factory.createIdentifier(varName),
             factory.createArrayLiteralExpression(children),
           ]),
@@ -553,7 +541,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
 
     const createExpr = this.#createElementCreation(tagName);
     const onceCall = this.#call(
-      this.#propAccess(factory.createIdentifier("this"), "#lex"),
+      this.#propAccess(factory.createIdentifier("this"), "#cmc"),
       [
         factory.createStringLiteral(`${tagName}_${this.#varCounter - 1}`),
         this.#arrow(createExpr),
@@ -613,16 +601,11 @@ export class RenderTransformer extends Transformer(RenderIR) {
               // Generate: $0.addEventListener("click", handler)
               this.#prependStatements.push(
                 this.#exprStmt(
-                  this.#call(
-                    this.#propAccess(
-                      factory.createIdentifier(varName),
-                      "addEventListener",
-                    ),
-                    [
-                      factory.createStringLiteral(eventName),
-                      exprNode as Expression,
-                    ],
-                  ),
+                  this.#call(factory.createIdentifier("ael"), [
+                    factory.createIdentifier(varName),
+                    factory.createStringLiteral(eventName),
+                    exprNode as Expression,
+                  ]),
                 ),
               );
             }
@@ -633,16 +616,15 @@ export class RenderTransformer extends Transformer(RenderIR) {
             // Boolean attribute like <input disabled />
             this.#prependStatements.push(
               this.#exprStmt(
-                this.#call(
-                  this.#propAccess(
-                    factory.createIdentifier(varName),
-                    "setAttribute",
-                  ),
-                  [
-                    factory.createStringLiteral(attrName),
-                    factory.createStringLiteral(""),
-                  ],
-                ),
+                this.#call(factory.createIdentifier("sp"), [
+                  factory.createIdentifier(varName),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      factory.createStringLiteral(attrName),
+                      factory.createStringLiteral(""),
+                    ),
+                  ]),
+                ]),
               ),
             );
           } else if (attr.initializer.kind === SyntaxKind.StringLiteral) {
@@ -650,16 +632,15 @@ export class RenderTransformer extends Transformer(RenderIR) {
             const attrValue = attr.initializer.text || "";
             this.#prependStatements.push(
               this.#exprStmt(
-                this.#call(
-                  this.#propAccess(
-                    factory.createIdentifier(varName),
-                    "setAttribute",
-                  ),
-                  [
-                    factory.createStringLiteral(attrName),
-                    factory.createStringLiteral(attrValue),
-                  ],
-                ),
+                this.#call(factory.createIdentifier("sp"), [
+                  factory.createIdentifier(varName),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      factory.createStringLiteral(attrName),
+                      factory.createStringLiteral(attrValue),
+                    ),
+                  ]),
+                ]),
               ),
             );
           } else if (attr.initializer.kind === SyntaxKind.JsxExpression) {
@@ -668,16 +649,15 @@ export class RenderTransformer extends Transformer(RenderIR) {
             if (exprNode) {
               this.#prependStatements.push(
                 this.#exprStmt(
-                  this.#call(
-                    this.#propAccess(
-                      factory.createIdentifier(varName),
-                      "setAttribute",
-                    ),
-                    [
-                      factory.createStringLiteral(attrName),
-                      exprNode as Expression,
-                    ],
-                  ),
+                  this.#call(factory.createIdentifier("sp"), [
+                    factory.createIdentifier(varName),
+                    factory.createObjectLiteralExpression([
+                      factory.createPropertyAssignment(
+                        factory.createStringLiteral(attrName),
+                        exprNode as Expression,
+                      ),
+                    ]),
+                  ]),
                 ),
               );
             }
@@ -742,16 +722,11 @@ export class RenderTransformer extends Transformer(RenderIR) {
   }
 
   /**
-   * Create element factory expression
+   * Create element factory expression (dce call)
    */
   #createElementCreation(tagName: string): Expression {
-    return factory.createCallExpression(
-      factory.createPropertyAccessExpression(
-        factory.createIdentifier("document"),
-        "createElement",
-      ),
-      undefined,
-      [factory.createStringLiteral(tagName)],
-    );
+    return this.#call(factory.createIdentifier("dce"), [
+      factory.createStringLiteral(tagName),
+    ]);
   }
 }
