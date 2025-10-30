@@ -30,12 +30,30 @@ export function setProps(el: Element, props: Record<string, any> | null) {
 // helper to set children (idempotent, handles both single and multiple)
 export function setChildren(
   parent: HTMLElement | DocumentFragment,
-  children: Node[],
+  children: (Node | Node[] | string | null | undefined)[],
 ) {
+  // Flatten and filter to only valid Node instances, converting strings to TextNodes
+  const flatChildren: Node[] = [];
+  const flatten = (
+    arr: (Node | Node[] | string | null | undefined)[],
+  ): void => {
+    for (const child of arr) {
+      if (child == null) continue;
+      if (Array.isArray(child)) {
+        flatten(child as (Node | Node[] | string | null | undefined)[]);
+      } else if (typeof child === "string") {
+        flatChildren.push(document.createTextNode(child));
+      } else if (child instanceof Node) {
+        flatChildren.push(child);
+      }
+    }
+  };
+  flatten(children);
+
   const old = parent.childNodes;
-  const max = Math.max(old.length, children.length);
+  const max = Math.max(old.length, flatChildren.length);
   for (let i = 0; i < max; i++) {
-    const w = children[i];
+    const w = flatChildren[i];
     const h = old[i];
     if (!w) {
       if (h) parent.removeChild(h);
