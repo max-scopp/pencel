@@ -38,14 +38,22 @@ class ComponentsExportGenerator extends PencelPlugin {
 
   async #generateComponentsExports(
     fileIRs: Array<ImplodeIRRefs<FileIR>>,
-    outputPath: string,
+    path: string,
   ): Promise<void> {
     const exportStatements: Statement[] = [];
-    const outputDir = dirname(outputPath);
+    const sourceFile = this.#sourceFiles.newFile(path);
+    const outputDir = dirname(sourceFile.fileName);
 
     for (const fileIR of fileIRs) {
-      for (const cir of fileIR.components) {
-        let relativePath = relative(outputDir, fileIR.fileName);
+      for (const componentIR of fileIR.components) {
+        // Get the source file and its absolute output path
+        const componentSourceFile = this.#sourceFiles.getSourceFile(
+          componentIR.fileName,
+        );
+        const outputFilePath =
+          this.#sourceFiles.getOutputPath(componentSourceFile);
+
+        let relativePath = relative(outputDir, outputFilePath);
 
         relativePath = relativePath.replace(/\\/g, "/");
         if (!relativePath.startsWith(".")) {
@@ -56,7 +64,7 @@ class ComponentsExportGenerator extends PencelPlugin {
         const exportSpecifier = factory.createExportSpecifier(
           false,
           undefined,
-          cir.className,
+          componentIR.className,
         );
 
         const exportDeclaration = factory.createExportDeclaration(
@@ -70,7 +78,7 @@ class ComponentsExportGenerator extends PencelPlugin {
       }
     }
 
-    this.#sourceFiles.newFile(outputPath, exportStatements);
+    this.#sourceFiles.setStatements(sourceFile, exportStatements);
 
     log(`Generated components with ${exportStatements.length} re-exports`);
   }

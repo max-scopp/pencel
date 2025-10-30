@@ -73,6 +73,11 @@ export class SourceFiles {
     );
   }
 
+  getOutputPath(sourceFile: SourceFile): string {
+    const renamable = sourceFile as RenamableSourceFile;
+    return renamable.outputFileName ?? sourceFile.fileName;
+  }
+
   newFile(fileName: string, statements?: Statement[]): SourceFile {
     // Resolve fileName relative to baseDir and cwd
     const resolvedFileName = join(
