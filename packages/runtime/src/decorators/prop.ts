@@ -1,3 +1,4 @@
+import { createLog } from "@pencel/utils";
 import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import {
   ATTR_MAP,
@@ -5,6 +6,8 @@ import {
   PROP_NAMES,
 } from "../core/types.ts";
 import { resolveAttributeName } from "../utils/attributes.ts";
+
+const log = createLog("Prop");
 
 /**
  * Explicit type conversion function for attribute values.
@@ -104,6 +107,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
         const ctx = this[PENCIL_COMPONENT_CONTEXT];
         const oldValue = ctx?.props.get(propertyName);
         ctx?.props.set(propertyName, value);
+        log(`${propertyName}: ${oldValue} → ${value}`);
 
         const shouldUpdate = this.componentShouldUpdate?.(
           value,

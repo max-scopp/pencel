@@ -1,4 +1,4 @@
-import { createPerformanceTree, error } from "@pencel/utils";
+import { createLog, createPerformanceTree, error } from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
 import {
   coerceAttributeValue,
@@ -17,6 +17,8 @@ import {
   type ConstructablePencilComponent,
   PROP_NAMES,
 } from "./types.ts";
+
+const log = createLog("Wrapper");
 
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
@@ -117,12 +119,41 @@ let cid = 0;
 export function wrapComponentForRegistration<
   T extends ConstructablePencilComponent,
 >(klass: T, options: ComponentOptions, customElementExtends?: string): T {
-  return class PencilCustomElementWrap extends klass {
+  /**
+   * Copy property descriptors (getters/setters) from a source prototype chain
+   * to a target object. This ensures @State/@Prop/@Store descriptors are
+   * accessible without the wrapper being in between.
+   */
+  const copyAccessorDescriptors = (target: object, source: object): void => {
+    let proto = source;
+    while (proto && proto !== Object.prototype) {
+      for (const key of Object.getOwnPropertyNames(proto)) {
+        if (key === "constructor") continue;
+
+        const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+        if (descriptor && (descriptor.get || descriptor.set)) {
+          Object.defineProperty(target, key, {
+            get: descriptor.get,
+            set: descriptor.set,
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+          });
+        }
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+  };
+
+  class PencilCustomElementWrap extends klass {
     #hydratePerf = createPerformanceTree("Hydration");
+    #renderPerf = createPerformanceTree("Render");
+    #renderFrameId: number | null = null;
+    #pendingRender = false;
 
     // biome-ignore lint/suspicious/noExplicitAny: must be any for super()
     constructor(...args: any[]) {
       super(...args);
+
       // Initialize component context
       this[PENCIL_COMPONENT_CONTEXT] = {
         extends: customElementExtends,
@@ -131,6 +162,38 @@ export function wrapComponentForRegistration<
         state: new Map(),
         stores: new Map(),
       };
+
+      // Capture initial values from class fields before copying descriptors
+      let proto = klass.prototype;
+      while (proto && proto !== Object.prototype) {
+        for (const key of Object.getOwnPropertyNames(proto)) {
+          if (key === "constructor") continue;
+
+          const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+          // If it's a state/prop descriptor and we have an own property with a value,
+          // initialize it in the context
+          if (descriptor && (descriptor.get || descriptor.set)) {
+            const ownDescriptor = Object.getOwnPropertyDescriptor(this, key);
+            if (
+              ownDescriptor &&
+              ownDescriptor.value !== undefined &&
+              !this[PENCIL_COMPONENT_CONTEXT]?.state.has(key)
+            ) {
+              this[PENCIL_COMPONENT_CONTEXT]?.state.set(
+                key,
+                ownDescriptor.value,
+              );
+              // Delete the own property so descriptor is used instead
+              // biome-ignore lint/suspicious/noExplicitAny: property deletion required
+              delete (this as any)[key];
+            }
+          }
+        }
+        proto = Object.getPrototypeOf(proto);
+      }
+
+      // Copy property descriptors to this instance
+      copyAccessorDescriptors(this, klass.prototype);
     }
 
     // Get observed attributes from the prop map
@@ -140,6 +203,7 @@ export function wrapComponentForRegistration<
 
     override async connectedCallback(): Promise<void> {
       this.#hydratePerf.start("hydrate");
+      log(`connectedCallback: ${simpleCustomElementDisplayText(this)}`);
 
       // Setup phase
       this.setAttribute(`p.cid.${++cid}`, "");
@@ -147,6 +211,7 @@ export function wrapComponentForRegistration<
       // Shadow DOM initialization if needed
       if (options.shadow) {
         this.attachShadow({ mode: "open" });
+        log("  shadow DOM attached");
       }
 
       // Props initialization
@@ -167,13 +232,13 @@ export function wrapComponentForRegistration<
       // Lifecycle methods
       this.#hydratePerf.start("lifecycle");
       await super.connectedCallback?.();
-      await super.componentWillLoad?.();
+      await this.componentWillLoad?.();
 
       // Initial render
-      await super.componentWillRender?.();
-      super.render?.();
-      super.componentDidLoad?.();
-      super.componentDidRender?.();
+      await this.componentWillRender?.();
+      this.render();
+      this.componentDidLoad?.();
+      this.componentDidRender?.();
       this.#hydratePerf.end("lifecycle");
 
       this.setAttribute("hydrated", "");
@@ -187,11 +252,37 @@ export function wrapComponentForRegistration<
       oldValue: string | null,
       newValue: string | null,
     ): void {
+      log(`attributeChanged ${name}: ${oldValue} → ${newValue}`);
       updatePropsByAttribute(this, name, newValue);
       super.attributeChangedCallback?.(name, oldValue, newValue);
     }
 
+    override componentShouldUpdate<TValue>(
+      newValue: TValue,
+      oldValue: TValue | undefined,
+      propName: string | symbol,
+    ): boolean {
+      const shouldUpdate = super.componentShouldUpdate?.(
+        newValue,
+        oldValue,
+        propName,
+      );
+
+      if (shouldUpdate === false) {
+        log(`  componentShouldUpdate returned false for ${String(propName)}`);
+      }
+
+      return shouldUpdate ?? true;
+    }
+
     override disconnectedCallback(): void {
+      log(`disconnectedCallback: ${simpleCustomElementDisplayText(this)}`);
+      // Cancel any pending render when component is removed
+      if (this.#renderFrameId !== null) {
+        cancelAnimationFrame(this.#renderFrameId);
+        this.#renderFrameId = null;
+        this.#pendingRender = false;
+      }
       super.disconnectedCallback?.();
     }
 
@@ -226,18 +317,47 @@ export function wrapComponentForRegistration<
       return super.componentWillRender?.();
     }
 
-    override render(): JSX.Element {
+    #scheduleRender(): void {
+      // If already scheduled for next frame, don't queue another one
+      if (this.#pendingRender) {
+        return;
+      }
+
+      this.#pendingRender = true;
+      this.#renderFrameId = requestAnimationFrame(() => {
+        this.#pendingRender = false;
+        this.#renderFrameId = null;
+        this.#doRender();
+      });
+    }
+
+    #doRender(): void {
+      this.#renderPerf.start("total");
+      log(`render: ${simpleCustomElementDisplayText(this)}`);
+
       try {
-        const result = super.render?.();
-        return result as JSX.Element;
+        super.render?.();
       } catch (origin) {
         error(origin);
         throw new Error(
-          `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
+          `Error rendering ${simpleCustomElementDisplayText(this)}`,
         );
+      } finally {
+        this.#renderPerf.end("total");
+        this.#renderPerf.log();
       }
     }
-  } as T;
+
+    override render(): JSX.Element {
+      this.#scheduleRender();
+      return undefined as unknown as JSX.Element;
+    }
+  }
+
+  // Copy property descriptors to the wrapper's prototype
+  copyAccessorDescriptors(PencilCustomElementWrap.prototype, klass.prototype);
+
+  return PencilCustomElementWrap as T;
 }
 
 /**

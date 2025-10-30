@@ -1,5 +1,8 @@
+import { createLog } from "@pencel/utils";
 import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import { deepEqual } from "../utils/equal.ts";
+
+const log = createLog("Store");
 
 export interface StoreOptions {
   /**
@@ -54,6 +57,7 @@ export function Store(options?: StoreOptions): PropertyDecorator {
 
         if (!isEqual) {
           ctx.stores.set(propertyKey, value);
+          log(`${String(propertyKey)}: ${oldValue} → ${value}`);
 
           const shouldUpdate = this.componentShouldUpdate?.(
             value,
@@ -127,6 +131,7 @@ export function Connected(options?: ConnectOptions): PropertyDecorator {
 
             if (!isEqual) {
               ctx.stores.set(storeName, value);
+              log(`${storeName}: ${oldValue} → ${value}`);
 
               const shouldUpdate = el.componentShouldUpdate?.(
                 value,
