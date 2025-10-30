@@ -1,0 +1,103 @@
+---
+title: Render Transformer
+sidebar:
+  order: 6
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Transforms JSX render methods into zero-DOM factory function calls. Three specialized modules handle orchestration, JSX transformation, and loop management.
+
+## How It Works
+
+The **RenderTransformer** converts JSX into factory function calls:
+
+```typescript
+// Input: JSX render method
+render() {
+  return (
+    <div class="container">
+      <h1>Hello {this.name}</h1>
+      <ul>
+        {this.todos.map((todo) => (
+          <li key={todo.id}>{todo.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Output: Factory function calls
+render() {
+  let $0 = this.#cmc("div_0", () => dce("div"));
+  sp($0, { class: "container" });
+  let $1 = this.#cmc("h1_1", () => dce("h1"));
+  let $1_text_2 = this.#cmc("$1_text_2", () => dctn("Hello "));
+  sc($1, [$1_text_2, this.name]);
+  let $3 = this.#cmc("ul_3", () => dce("ul"));
+  sc($3, [
+    this.todos.map((todo) => {
+      let $4 = this.#cmc("li_4_" + todo.id, () => dce("li"));
+      let $4_text_5 = this.#cmc("$4_text_5_" + todo.id, () => dctn(""));
+      sc($4, [$4_text_5, todo.text]);
+      return $4;
+    }),
+  ]);
+  sc($0, [$1, $3]);
+  sc(this, [$0]);
+}
+```
+
+Key factory functions:
+- `dce()` - create element
+- `dctn()` - create text node
+- `sp()` - set property
+- `sc()` - set children
+- `ael()` - add event listener
+- `cmc()` - component memoization cache
+
+## Architecture
+
+Three specialized modules working together:
+
+- **`render.ts` (Orchestrator)** — Recursively visits render method AST. Dispatches JSX elements to the JSX transformer and `.map()`/`.forEach()` calls to the loop handler. Manages statement buffers across scopes.
+
+- **`render.jsx.ts` (JSX Transformer)** — Converts JSX elements/self-closing tags into factory function calls with memoization. Builds hierarchical cache keys for root elements in loops. Emits prepended statements (variable declarations, property sets, child appends) into the current scope buffer.
+
+- **`render.loop.ts` (Loop Manager)** — Tracks nesting depth via a context stack. Manages index variable naming (`index`, `index1`, `index2` for depths 0, 1, 2). Builds hierarchical scope keys by concatenating all parent loop contexts.
+
+## Key Concepts
+
+**Hierarchical Memoization Keys**
+
+Pencel uses hierarchical cache keys to optimize nested loops. Each loop depth gets a unique index name (`index`, `index1`, `index2`). Root elements in loops include this in the cache key:
+
+- Single loop: `"li_4_" + todo.id`
+- Nested (2 levels): `"span_2_index_index1" + cell.id`
+
+This prevents cache collisions and ensures proper element reuse across iterations.
+
+**Statement Scoping**
+
+<Aside type="caution">
+Prepended statements (element creations) execute **inside** the loop callback, not before/after. When exiting a loop scope, the JSX transformer syncs back to the parent's statement buffer via `setPrependStatements()`.
+</Aside>
+
+## Debugging
+
+| Issue | Root Cause | Fix |
+|-------|-----------|-----|
+| Double element creation | Statements bubble to parent instead of staying in loop | Wrap statements in block inside callback body |
+| Missing index parameter | Index not detected in keys | Check JSX key attributes for "index" usage |
+| Incorrect cache keys | Hierarchical scope not built | Verify `buildHierarchicalScopeKey()` joins all stack entries |
+
+## Key Points
+
+- **Hierarchical Keys:** Root elements include depth hierarchy (e.g., `"li_4_index_index1"`)
+- **Index Naming:** Depths 0, 1, 2 use `index`, `index1`, `index2`
+- **Transformer Sync:** `setPrependStatements()` ensures JSX transformer uses correct statement buffer
+
+<Aside type="caution">
+**Statement Scoping:** Prepended statements execute **inside** loop callbacks, not before/after
+</Aside>
+
