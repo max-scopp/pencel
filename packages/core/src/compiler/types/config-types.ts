@@ -31,6 +31,11 @@ export interface PencelConfig {
   };
 
   /**
+   * @default "src"
+   */
+  baseDir?: string;
+
+  /**
    * @default "tsconfig.json"
    */
   tsconfig?: string;

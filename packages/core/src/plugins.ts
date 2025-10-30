@@ -1,3 +1,4 @@
+import "./compiler/generators/components.ts";
 import "./compiler/generators/ir.ts";
 import "./compiler/generators/typings.ts";
 import "./plugins/css.ts";

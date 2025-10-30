@@ -91,33 +91,30 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Transform the return expression
     const transformedExpr = this.#transformExpression(returnStmt.expression);
 
-    // If we generated statements, wrap in IIFE
+    // Create setChildren(this, [transformedExpr]) call
+    const setChildrenCall = factory.createCallExpression(
+      factory.createIdentifier("setChildren"),
+      undefined,
+      [
+        factory.createIdentifier("this"),
+        factory.createArrayLiteralExpression([transformedExpr]),
+      ],
+    );
+
+    // If we generated statements, add them before setChildren
     if (this.#prependStatements.length > 0) {
-      const iifeBody = [
-        ...this.#prependStatements,
-        factory.createReturnStatement(transformedExpr),
+      const statements = [
+        ...this.#prependStatements.map((stmt) => stmt),
+        factory.createExpressionStatement(setChildrenCall),
       ];
 
-      const iife = factory.createCallExpression(
-        factory.createArrowFunction(
-          undefined,
-          undefined,
-          [],
-          undefined,
-          factory.createToken(SyntaxKind.EqualsGreaterThanToken),
-          factory.createBlock(iifeBody, true),
-        ),
-        undefined,
-        [],
-      );
-
       this.#prependStatements = savedPrepend;
-      return factory.createReturnStatement(iife);
+      return factory.createBlock(statements, true);
     }
 
-    // No transformation needed
+    // No transformation needed, just call setChildren
     this.#prependStatements = savedPrepend;
-    return factory.createReturnStatement(transformedExpr);
+    return factory.createExpressionStatement(setChildrenCall);
   }
 
   /**
