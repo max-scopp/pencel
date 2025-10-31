@@ -10,8 +10,14 @@
     }
   },
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "../../../packages/runtime/tsconfig.json" },
-    { "path": "../../../packages/cli/tsconfig.json" }
+    {
+      "path": "../../../packages/runtime"
+    },
+    {
+      "path": "../../../packages/cli"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
   ]
 }
