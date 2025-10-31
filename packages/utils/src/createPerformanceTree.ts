@@ -2,6 +2,9 @@ import { getAnsiFromStyle } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 import { createLog } from "./log.ts";
 
+// This can be overridden via tsdown's `define` option for tree-shaking
+const PENCEL_PERF_LOG_ENABLED = true;
+
 export interface PerformanceMark {
   name: string;
   startTime: number;
@@ -18,6 +21,14 @@ export interface PerformanceTreeController {
 export function createPerformanceTree(
   namespace = "Perf",
 ): PerformanceTreeController {
+  if (!PENCEL_PERF_LOG_ENABLED) {
+    return {
+      start: () => {},
+      end: () => {},
+      log: () => {},
+    };
+  }
+
   // Create namespaced logger for performance metrics
   const logger = createLog(namespace);
 

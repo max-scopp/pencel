@@ -336,6 +336,8 @@ export function wrapComponentForRegistration<
       log(`render: ${simpleCustomElementDisplayText(this)}`);
 
       try {
+        // Execute the component's render method
+        // Mutations are automatically batched via requestAnimationFrame
         super.render?.();
       } catch (origin) {
         error(origin);

@@ -20,28 +20,60 @@ export function mc() {
 
 /**
  * set properties (formerly setProps)
- * Intelligently handles setting properties or attributes
+ * Intelligently handles setting properties or attributes.
  */
 export function sp(el: Element, props: Record<string, unknown> | null) {
   if (!props) return;
+
   for (const k in props) {
-    if (k in el) {
-      (el as unknown as Record<string, unknown>)[k] = props[k];
-    } else {
-      el.setAttribute(k, String(props[k]));
+    const v = props[k];
+
+    switch (k) {
+      case "style": {
+        const styleObj = v as Record<string, string>;
+        const style = (el as HTMLElement).style as unknown as Record<
+          string,
+          string
+        >;
+
+        for (const styleKey in styleObj) {
+          const styleValue = styleObj[styleKey];
+          const current = style[styleKey];
+          if (current !== styleValue) {
+            style[styleKey] = styleValue;
+          }
+        }
+        break;
+      }
+      default: {
+        if (k in el) {
+          const current = (el as unknown as Record<string, unknown>)[k];
+          if (current !== v) {
+            (el as unknown as Record<string, unknown>)[k] = v;
+          }
+        } else {
+          const strValue = String(v);
+          const current = el.getAttribute(k);
+          if (current !== strValue) {
+            el.setAttribute(k, strValue);
+          }
+        }
+      }
     }
   }
 }
 
 /**
  * set children (formerly setChildren)
- * Idempotent, handles both single and multiple children
+ * Simple reconciliation without any batching or scheduling
+ * - Reuses stable nodes that haven't changed
+ * - Applies mutations immediately as-is
  */
 export function sc(
   parent: Element | HTMLElement | DocumentFragment,
   children: (Node | Node[] | string | number | boolean | null | undefined)[],
 ) {
-  // Flatten and filter to only valid Node instances, converting strings to TextNodes
+  // Flatten children array
   const flatChildren: Node[] = [];
   const flatten = (
     arr: (Node | Node[] | string | number | boolean | null | undefined)[],
@@ -49,19 +81,9 @@ export function sc(
     for (const child of arr) {
       if (child == null) continue;
       if (Array.isArray(child)) {
-        flatten(
-          child as (
-            | Node
-            | Node[]
-            | string
-            | number
-            | boolean
-            | null
-            | undefined
-          )[],
-        );
-      } else if (typeof child === "string") {
-        flatChildren.push(document.createTextNode(child));
+        flatten(child);
+      } else if (typeof child === "string" || typeof child === "number") {
+        flatChildren.push(document.createTextNode(String(child)));
       } else if (child instanceof Node) {
         flatChildren.push(child);
       }
@@ -71,16 +93,46 @@ export function sc(
 
   const old = parent.childNodes;
   const max = Math.max(old.length, flatChildren.length);
+
+  // Reconcile and apply mutations immediately
   for (let i = 0; i < max; i++) {
     const w = flatChildren[i];
     const h = old[i];
+
     if (!w) {
+      // Remove extra old nodes
       if (h) parent.removeChild(h);
       continue;
     }
-    if (h === w) continue;
-    if (h) parent.replaceChild(w, h);
-    else parent.appendChild(w);
+
+    if (h === w) {
+      // Node is already in place, skip
+      continue;
+    }
+
+    if (!h) {
+      // Append new node
+      parent.appendChild(w);
+      continue;
+    }
+
+    // Check if nodes are semantically equivalent and can be reused
+    const canReuse =
+      h.nodeType === w.nodeType &&
+      (h.nodeType === Node.TEXT_NODE
+        ? (h as Text).data === (w as Text).data
+        : h.nodeName === w.nodeName);
+
+    if (canReuse) {
+      // Reuse node, update text if needed
+      if (h.nodeType === Node.TEXT_NODE) {
+        (h as Text).data = (w as Text).data;
+      }
+      continue;
+    }
+
+    // Replace node only when types differ
+    parent.replaceChild(w, h);
   }
 }
 
