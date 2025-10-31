@@ -9,7 +9,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "jsxImportSource": "@pencel/runtime",
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "DOM.AsyncIterable"
+    ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
@@ -23,8 +28,13 @@
     "experimentalDecorators": true,
     "target": "esnext",
     "paths": {
-      "@pencel/*": ["./packages/*/src"]
+      "@pencel/*": [
+        "./packages/*/src"
+      ]
     }
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
