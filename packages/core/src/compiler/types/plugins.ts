@@ -1,4 +1,5 @@
-import type { SourceFile } from "typescript";
+import type { ClassDeclaration, SourceFile } from "typescript";
+import type { ComponentIR } from "../ir/component.ts";
 import type { FileIR } from "../ir/file.ts";
 import type { ImplodeIRRefs, IRRef } from "../ir/irri.ts";
 
@@ -40,6 +41,7 @@ export type CssPostprocessHook = {
   hook: "css:postprocess";
   input: string;
   path: string;
+  irr?: IRRef<ComponentIR, ClassDeclaration>;
 };
 
 /** Generate project-level files from the complete IR tree */

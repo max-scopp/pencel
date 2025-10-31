@@ -57,23 +57,25 @@ export class FileIR extends IRM("File") {
       },
     );
 
-    // Second pass: process styles and create ComponentIRs in parallel
+    // Second pass: create ComponentIRs and process styles in parallel
     const componentIRs = await Promise.all(
       classDeclarationsWithOptions.map(
         async ({ classDeclaration, componentOptions }) => {
-          // Process styles asynchronously (SCSS compilation, minification, etc.)
+          // Create ComponentIR first (without styles)
+          const componentIR = new ComponentIR(sourceFile, classDeclaration);
+          const componentIRRef = new IRRef(componentIR, classDeclaration);
+
+          // Then process styles with the ComponentIR reference
           const processedStyles = await StyleIR.process(
             sourceFile,
             componentOptions,
+            componentIRRef,
           );
 
-          // Then construct ComponentIR with processed styles
-          const componentIR = new ComponentIR(
-            sourceFile,
-            classDeclaration,
-            processedStyles,
-          );
-          return new IRRef(componentIR, classDeclaration);
+          // Adopt the processed styles into the ComponentIR
+          componentIR.adoptStyles(processedStyles);
+
+          return componentIRRef;
         },
       ),
     );
