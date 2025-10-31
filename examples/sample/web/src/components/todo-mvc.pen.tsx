@@ -15,6 +15,7 @@ interface Todo {
 
 @Component({
   tag: "todo-mvc",
+  styleUrl: "./todo-mvc.scss",
 })
 export class TodoMvcElement extends HTMLElement implements ComponentInterface {
   @State() todos: Todo[] = [];
@@ -103,6 +104,9 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
               <li
                 key={todo.id}
                 class={`todo-item ${todo.completed ? "completed" : ""}`}
+                style={{
+                  textDecoration: todo.completed ? "line-through" : "none",
+                }}
               >
                 <input
                   type="checkbox"

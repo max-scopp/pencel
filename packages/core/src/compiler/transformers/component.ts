@@ -1,4 +1,4 @@
-import type { ComponentOptions } from "@pencel/runtime";
+import { type ComponentOptions, INTERNALS } from "@pencel/runtime";
 import { throwError } from "@pencel/utils";
 import {
   type ClassDeclaration,
@@ -32,12 +32,17 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
       callExpression.expression,
       callExpression.typeArguments,
       [
-        recordToObjectLiteral({
-          tag: irr.ir.tag,
-          extends: irr.ir.extends,
-          styles: irr.ir.styles,
-          styleUrls: irr.ir.styleUrls,
-        } satisfies ComponentOptions),
+        recordToObjectLiteral(
+          {
+            tag: irr.ir.normalizedTag,
+            extends: irr.ir.extends,
+            [INTERNALS]: {
+              styles: irr.ir.processedStyles,
+              styleUrls: irr.ir.processedStyleUrls,
+            },
+          } satisfies ComponentOptions,
+          { symbolNames: new Map([[INTERNALS, "INTERNALS"]]) },
+        ),
       ],
     );
 

@@ -68,7 +68,7 @@ class ComponentTypings extends PencelPlugin {
                     factory.createIdentifier("is"),
                     undefined,
                     factory.createLiteralTypeNode(
-                      factory.createStringLiteral(cir.tag),
+                      factory.createStringLiteral(cir.normalizedTag),
                     ),
                   ),
                 ]),
@@ -107,7 +107,7 @@ class ComponentTypings extends PencelPlugin {
                 "value",
                 undefined,
                 factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.tag),
+                  factory.createStringLiteral(cir.normalizedTag),
                 ),
               ),
             ],
@@ -130,7 +130,7 @@ class ComponentTypings extends PencelPlugin {
           // Create HTMLElementTagNameMap interface property
           const htmlElementTagNameMapProperty = factory.createPropertySignature(
             undefined,
-            factory.createStringLiteral(cir.tag),
+            factory.createStringLiteral(cir.normalizedTag),
             undefined,
             factory.createTypeReferenceNode(cir.className, undefined),
           );
@@ -147,7 +147,7 @@ class ComponentTypings extends PencelPlugin {
           // Create JSX.IntrinsicElements interface property
           const jsxIntrinsicElementProperty = factory.createPropertySignature(
             undefined,
-            factory.createStringLiteral(cir.tag),
+            factory.createStringLiteral(cir.normalizedTag),
             undefined,
             factory.createTypeReferenceNode(
               `JSXElementAttributes<${cir.className}>`,

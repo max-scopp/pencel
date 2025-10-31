@@ -5,7 +5,6 @@ import {
   Host,
   Prop,
   State,
-  type VNode,
 } from "@pencel/runtime";
 
 @Component({

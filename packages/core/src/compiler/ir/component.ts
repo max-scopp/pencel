@@ -39,10 +39,9 @@ export class ComponentIR extends IRM("Component") {
   // Metadata about the component in source
   readonly className: string;
   readonly fileName: string;
-  readonly sourceTag: string;
 
   // User-provided fields from @Component decorator
-  readonly tag: string;
+  readonly sourceTag: string;
   readonly shadow?: boolean;
   readonly scoped?: boolean;
   readonly extends?: string;
@@ -85,14 +84,12 @@ export class ComponentIR extends IRM("Component") {
       classDeclaration.name?.text ??
       throwError("A component must have a class name.");
 
+    // Store user-provided options as public fields
     this.sourceTag =
       componentOptions.tag ??
       throwError(
         `@Component for class ${this.className} must have a 'tag' property.`,
       );
-
-    // Store user-provided options as public fields
-    this.tag = componentOptions.tag;
     this.shadow = componentOptions.shadow;
     this.scoped = componentOptions.scoped;
     this.extends = componentOptions.extends;

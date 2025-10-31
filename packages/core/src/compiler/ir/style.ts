@@ -7,21 +7,8 @@ import { Plugins } from "../core/plugin.ts";
 import { IRM } from "./irri.ts";
 
 /**
- * StyleProps represents the user-provided style configuration from @Component decorator.
- * These are the raw, unprocessed style references (inline strings and file paths).
- */
-export type StyleProps = Pick<
-  ComponentOptions,
-  "styles" | "styleUrl" | "styleUrls"
->;
-
-/**
  * StyleIR is the flat IR representation of processed component styles.
  * Contains both user-provided style references and processed CSS as public readonly fields.
- *
- * StyleIR = { styles, styleUrl, styleUrls, processedStyles, processedStyleUrls }
- *
- * The IR is the single source of truth. Transformers extract a subset as [INTERNALS] for runtime.
  */
 export class StyleIR extends IRM("Style") {
   // User-provided fields from @Component decorator
@@ -42,7 +29,7 @@ export class StyleIR extends IRM("Style") {
    * @param processedStyleUrls - Final processed styleUrls from plugin pipeline
    */
   private constructor(
-    userOptions: StyleProps,
+    userOptions: ComponentOptions,
     processedStyles: string,
     processedStyleUrls: Record<string, string>,
   ) {
@@ -134,14 +121,6 @@ export class StyleIR extends IRM("Style") {
     }
 
     // Create IR with user options and processed styles
-    return new StyleIR(
-      {
-        styles: componentOptions.styles,
-        styleUrl: componentOptions.styleUrl,
-        styleUrls: componentOptions.styleUrls,
-      },
-      inlineStyles,
-      processedStyleUrls,
-    );
+    return new StyleIR(componentOptions, inlineStyles, processedStyleUrls);
   }
 }

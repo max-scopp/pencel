@@ -1,5 +1,17 @@
 import { wrapComponentForRegistration } from "../core/pencilCustomElementWrap.tsx";
 import type { ConstructablePencilComponent } from "../core/types.ts";
+import { INTERNALS } from "../internals.ts";
+
+export interface ComponentInternals {
+  /**
+   * Processed styles string for the component.
+   */
+  styles: string;
+  /**
+   * Processed style URLs for the component.
+   */
+  styleUrls: Record<string, string>;
+}
 
 export interface ComponentOptions {
   tag: string;
@@ -10,6 +22,8 @@ export interface ComponentOptions {
   styleUrls?: Record<string, string>;
   extends?: string;
   formAssociated?: boolean;
+
+  [INTERNALS]?: ComponentInternals;
 }
 
 /**

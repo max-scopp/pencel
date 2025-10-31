@@ -5,6 +5,7 @@ import {
   fromToText,
 } from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
+import { INTERNALS } from "../internals.ts";
 import {
   coerceAttributeValue,
   reflectAttributeValue,
@@ -34,27 +35,20 @@ function buildStyles(
 ): CSSStyleSheet[] {
   const styles = new Set<CSSStyleSheet>();
 
-  const raws = options.styles
-    ? Array.isArray(options.styles)
-      ? options.styles
-      : [options.styles]
-    : [];
+  const internals = options[INTERNALS];
 
-  for (const i in raws) {
-    if (Object.hasOwn(raws, i)) {
-      const style = raws[i];
-      const sheet = new CSSStyleSheet();
-      try {
-        sheet.replaceSync(style);
-        styles.add(sheet);
-      } catch (e) {
-        console.warn(
-          `Could not parse CSS string for ${simpleCustomElementDisplayText(
-            component,
-          )}:`,
-          e,
-        );
-      }
+  const sheet = new CSSStyleSheet();
+  if (internals?.styles) {
+    try {
+      sheet.replaceSync(internals.styles);
+      styles.add(sheet);
+    } catch (e) {
+      console.warn(
+        `Could not parse CSS string for ${simpleCustomElementDisplayText(
+          component,
+        )}:`,
+        e,
+      );
     }
   }
 
@@ -348,6 +342,7 @@ export function wrapComponentForRegistration<
         // Execute the component's render method
         // Mutations are automatically batched via requestAnimationFrame
         super.render?.();
+        // Styles are already attached in connectedCallback, don't reattach
       } catch (origin) {
         error(origin);
         throw new Error(
