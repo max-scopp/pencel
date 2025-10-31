@@ -99,20 +99,22 @@ You've created your first Web Component! Explore deeper:
 
 ## Multi-Framework Support
 
-By default, Pencel outputs native Web Components. To generate framework-specific bindings, enable output plugins in your configuration:
+By default, Pencel outputs native Web Components. To generate framework-specific bindings (React, Angular, Vue), enable framework plugins in your configuration:
 
 ```ts
 // pencel.config.ts
 import { defineConfig } from '@pencel/cli';
 
 export default defineConfig({
-  outputs: {
-    react: { path: 'out/react' },
-    angular: { path: 'out/angular' }
-  }
+  plugins: [
+    { name: 'react', options: { outputPath: 'out/react' } },
+    { name: 'angular', options: { outputPath: 'out/angular' } }
+  ]
 });
 ```
 
+Each plugin generates framework-specific wrappers from your components (one per source file).
+
 <Aside type="note">
-Output plugins are configured in `pencel.config.ts`. See [Framework Outputs](/pencel/outputs) for details on available options.
+Framework plugins are configured via `pencel.config.ts`. See [Plugins](/pencel/plugins) for available options and custom plugin development.
 </Aside>
