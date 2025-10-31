@@ -11,10 +11,10 @@
   "exclude": ["node_modules", "dist"],
   "references": [
     {
-      "path": "../utils"
+      "path": "../utils/tsconfig.json"
     },
     {
-      "path": "../runtime"
+      "path": "../runtime/tsconfig.json"
     }
   ]
 }

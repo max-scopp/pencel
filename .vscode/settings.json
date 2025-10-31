@@ -29,5 +29,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "[mdx]": {
     "editor.defaultFormatter": "unifiedjs.vscode-mdx"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   }
 }
