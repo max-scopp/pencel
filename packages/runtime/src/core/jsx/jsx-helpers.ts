@@ -1,31 +1,26 @@
 import type { CustomElement } from "../types.ts";
-import { normalizeChildren } from "../vdom/normalizeChildren.ts";
-import { type JSXChildren, type VNode, VNodeKind } from "../vdom/types.ts";
 import type { Props, PropsWithChildren } from "./types.ts";
 
-export function Fragment(props: PropsWithChildren): VNode {
-  const i = props.key ? String(props.key) : null;
-
-  return {
-    k: VNodeKind.Fragment,
-    c: normalizeChildren(props.children, i),
-    i,
-  };
+class CompileTimeConstructError extends Error {
+  constructor(constructName: string) {
+    super(`${constructName} is a compile-time construct`);
+    this.name = "CompileTimeConstructError";
+  }
 }
 
 /**
- * A meta-component that represents a registered custom element.
- * No tag type is needed — the element is already registered in the DOM.
+ * Fragment component for rendering multiple children without a wrapper.
+ * Used at compile-time; throws if called at runtime.
  */
-export function Host(this: CustomElement, props: Props = {}): JSX.Element {
-  return {
-    k: VNodeKind.Host,
-    p: props,
-    c: normalizeChildren(
-      props.children as JSXChildren,
-      props?.key ? String(props.key) : null,
-    ),
-    el: this,
-    i: props?.key ? String(props.key) : null,
-  };
+export function Fragment(_props: PropsWithChildren): JSX.Element {
+  throw new CompileTimeConstructError("Fragment");
+}
+
+/**
+ * Host component that represents the custom element itself.
+ * Used within a component to render into the element's shadow DOM or directly.
+ * Used at compile-time; throws if called at runtime.
+ */
+export function Host(this: CustomElement, _props?: Props): JSX.Element {
+  throw new CompileTimeConstructError("Host");
 }

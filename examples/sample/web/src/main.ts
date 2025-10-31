@@ -1,6 +1,2 @@
-import { pencelInit } from "@pencel/runtime";
-import "./components";
-
-await pencelInit({
-  namespace: "wb",
-});
+import "./components/perf-test.gen.tsx";
+import "./components/todo-mvc.gen.tsx";

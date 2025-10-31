@@ -10,6 +10,7 @@ const log = createLog("Config");
  * Default Pencil configuration
  */
 export const defaultConfig: Required<PencelConfig> = {
+  baseDir: "src",
   input: {
     qualifier: "pen",
   },
@@ -17,7 +18,7 @@ export const defaultConfig: Required<PencelConfig> = {
     qualifier: "gen",
   },
   tsconfig: "tsconfig.json",
-  plugins: ["css", "typings", "ir"],
+  plugins: ["css", "typings", "ir", "components"],
   runtime: {
     tagNamespace: "pencel",
   },

@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { throwError } from "@pencel/utils";
 import {
   createSourceFile,
@@ -8,6 +9,7 @@ import {
   type SourceFile,
   type Statement,
 } from "typescript";
+import { Config } from "../config.ts";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
 
@@ -16,7 +18,8 @@ export interface RenamableSourceFile extends SourceFile {
 }
 
 export class SourceFiles {
-  readonly program: Program = inject(Program);
+  #program = inject(Program);
+  #config = inject(Config);
 
   #generatedFiles = new Map<string, SourceFile>();
 
@@ -27,7 +30,7 @@ export class SourceFiles {
    * Should be called after Program.discover() and re-called on file changes
    */
   async loadSource(): Promise<void> {
-    for (const filePath of this.program.filePaths) {
+    for (const filePath of this.#program.filePaths) {
       const source = readFileSync(filePath, "utf-8");
       const sourceFile = createSourceFile(
         filePath,
@@ -70,10 +73,22 @@ export class SourceFiles {
     );
   }
 
+  getOutputPath(sourceFile: SourceFile): string {
+    const renamable = sourceFile as RenamableSourceFile;
+    return renamable.outputFileName ?? sourceFile.fileName;
+  }
+
   newFile(fileName: string, statements?: Statement[]): SourceFile {
+    // Resolve fileName relative to baseDir and cwd
+    const resolvedFileName = join(
+      this.#config.cwd,
+      this.#config.user.baseDir,
+      fileName,
+    );
+
     // Create empty source file first to get proper initialization
     const sourceFile = createSourceFile(
-      fileName,
+      resolvedFileName,
       "",
       ScriptTarget.Latest,
       true,
@@ -81,7 +96,7 @@ export class SourceFiles {
     );
 
     // Automatically register generated files so they're tracked and cleaned up
-    this.#generatedFiles.set(fileName, sourceFile);
+    this.#generatedFiles.set(resolvedFileName, sourceFile);
 
     if (statements) {
       this.setStatements(sourceFile, statements);

@@ -10,6 +10,7 @@ import { type IR, IRRef, IRRI } from "../ir/irri.ts";
 import { ComponentTransformer } from "../transformers/component.ts";
 import { FileTransformer } from "../transformers/file.ts";
 import { PropertyTransformer } from "../transformers/props.ts";
+import { RenderTransformer } from "../transformers/render.ts";
 import type { ITransformer } from "../transformers/transformer.ts";
 import { isPencelGeneratedFile } from "../utils/marker.ts";
 import { inject } from "./container.ts";
@@ -20,9 +21,10 @@ export class FileProcessor {
   #irri = inject(IRRI);
   #sourceFiles = inject(SourceFiles);
   #transformers = [
-    inject(FileTransformer),
+    inject(RenderTransformer),
     inject(ComponentTransformer),
     inject(PropertyTransformer),
+    inject(FileTransformer),
   ];
 
   readonly plugins: Plugins = inject(Plugins);
@@ -34,16 +36,14 @@ export class FileProcessor {
       return null;
     }
 
-    const file = new FileIR(sourceFile);
+    // Create FileIR asynchronously to process all component styles
+    const file = await FileIR.create(sourceFile);
     const fileIrr = new IRRef(file, sourceFile);
 
-    await this.plugins.handle({
-      hook: "transform",
-      irr: fileIrr,
-    });
-
+    // Apply AST transformations based on IR
     this.visitAndTransform([fileIrr]);
 
+    // Let plugins derive framework-specific outputs
     await this.plugins.handle({
       hook: "derive",
       irr: fileIrr,

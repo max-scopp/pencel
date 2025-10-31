@@ -3,8 +3,8 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
   entry: [
     "./src/index.ts",
-    "./src/jsx-runtime.tsx",
-    "./src/jsx-dev-runtime.tsx",
+    "./src/jsx-runtime.d.ts",
+    "./src/jsx-dev-runtime.d.ts",
   ],
   outDir: "./dist",
   format: ["esm"],

@@ -1,6 +1,11 @@
-import { ConsumerError, createPerformanceTree, error } from "@pencel/utils";
-import { componentCtrl } from "../controllers/component.ts";
+import {
+  createLog,
+  createPerformanceTree,
+  error,
+  fromToText,
+} from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
+import { INTERNALS } from "../internals.ts";
 import {
   coerceAttributeValue,
   reflectAttributeValue,
@@ -18,7 +23,8 @@ import {
   type ConstructablePencilComponent,
   PROP_NAMES,
 } from "./types.ts";
-import type { VNode } from "./vdom/types.ts";
+
+const log = createLog("Wrapper");
 
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
@@ -29,27 +35,20 @@ function buildStyles(
 ): CSSStyleSheet[] {
   const styles = new Set<CSSStyleSheet>();
 
-  const raws = options.styles
-    ? Array.isArray(options.styles)
-      ? options.styles
-      : [options.styles]
-    : [];
+  const internals = options[INTERNALS];
 
-  for (const i in raws) {
-    if (Object.hasOwn(raws, i)) {
-      const style = raws[i];
-      const sheet = new CSSStyleSheet();
-      try {
-        sheet.replaceSync(style);
-        styles.add(sheet);
-      } catch (e) {
-        console.warn(
-          `Could not parse CSS string for ${simpleCustomElementDisplayText(
-            component,
-          )}:`,
-          e,
-        );
-      }
+  const sheet = new CSSStyleSheet();
+  if (internals?.styles) {
+    try {
+      sheet.replaceSync(internals.styles);
+      styles.add(sheet);
+    } catch (e) {
+      console.warn(
+        `Could not parse CSS string for ${simpleCustomElementDisplayText(
+          component,
+        )}:`,
+        e,
+      );
     }
   }
 
@@ -87,7 +86,7 @@ function interopStyleAttachment(
     const stylesElm = mergeStyleSheetsToStyleTag(styles);
 
     if (options.scoped) {
-      throw new ConsumerError("Scoped styles are not implemented yet");
+      throw new Error("Scoped styles are not implemented yet");
     }
     component.insertBefore(stylesElm, component.firstChild);
   }
@@ -119,13 +118,85 @@ let cid = 0;
 export function wrapComponentForRegistration<
   T extends ConstructablePencilComponent,
 >(klass: T, options: ComponentOptions, customElementExtends?: string): T {
-  return class PencilCustomElementWrap extends klass {
-    #hydratePerf = createPerformanceTree("Hydration");
+  /**
+   * Copy property descriptors (getters/setters) from a source prototype chain
+   * to a target object. This ensures @State/@Prop/@Store descriptors are
+   * accessible without the wrapper being in between.
+   */
+  const copyAccessorDescriptors = (target: object, source: object): void => {
+    let proto = source;
+    while (proto && proto !== Object.prototype) {
+      for (const key of Object.getOwnPropertyNames(proto)) {
+        if (key === "constructor") continue;
+
+        const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+        if (descriptor && (descriptor.get || descriptor.set)) {
+          Object.defineProperty(target, key, {
+            get: descriptor.get,
+            set: descriptor.set,
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+          });
+        }
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+  };
+
+  class PencilCustomElementWrap extends klass {
+    #hydratePerf = createPerformanceTree(
+      `Hydration ${simpleCustomElementDisplayText(this)}`,
+    );
+    #renderPerf = createPerformanceTree(
+      `Render ${simpleCustomElementDisplayText(this)}`,
+    );
+    #renderFrameId: number | null = null;
+    #pendingRender = false;
 
     // biome-ignore lint/suspicious/noExplicitAny: must be any for super()
     constructor(...args: any[]) {
       super(...args);
-      componentCtrl().connect(this, customElementExtends);
+
+      // Initialize component context
+      this[PENCIL_COMPONENT_CONTEXT] = {
+        extends: customElementExtends,
+        props: new Map(),
+        popts: new Map(),
+        state: new Map(),
+        stores: new Map(),
+      };
+
+      // Capture initial values from class fields before copying descriptors
+      let proto = klass.prototype;
+      while (proto && proto !== Object.prototype) {
+        for (const key of Object.getOwnPropertyNames(proto)) {
+          if (key === "constructor") continue;
+
+          const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+          // If it's a state/prop descriptor and we have an own property with a value,
+          // initialize it in the context
+          if (descriptor && (descriptor.get || descriptor.set)) {
+            const ownDescriptor = Object.getOwnPropertyDescriptor(this, key);
+            if (
+              ownDescriptor &&
+              ownDescriptor.value !== undefined &&
+              !this[PENCIL_COMPONENT_CONTEXT]?.state.has(key)
+            ) {
+              this[PENCIL_COMPONENT_CONTEXT]?.state.set(
+                key,
+                ownDescriptor.value,
+              );
+              // Delete the own property so descriptor is used instead
+              // biome-ignore lint/suspicious/noExplicitAny: property deletion required
+              delete (this as any)[key];
+            }
+          }
+        }
+        proto = Object.getPrototypeOf(proto);
+      }
+
+      // Copy property descriptors to this instance
+      copyAccessorDescriptors(this, klass.prototype);
     }
 
     // Get observed attributes from the prop map
@@ -135,6 +206,7 @@ export function wrapComponentForRegistration<
 
     override async connectedCallback(): Promise<void> {
       this.#hydratePerf.start("hydrate");
+      log(`connectedCallback: ${simpleCustomElementDisplayText(this)}`);
 
       // Setup phase
       this.setAttribute(`p.cid.${++cid}`, "");
@@ -142,6 +214,7 @@ export function wrapComponentForRegistration<
       // Shadow DOM initialization if needed
       if (options.shadow) {
         this.attachShadow({ mode: "open" });
+        log("  shadow DOM attached");
       }
 
       // Props initialization
@@ -162,27 +235,19 @@ export function wrapComponentForRegistration<
       // Lifecycle methods
       this.#hydratePerf.start("lifecycle");
       await super.connectedCallback?.();
-      await super.componentWillLoad?.();
+      await this.componentWillLoad?.();
+
+      // Initial render
+      await this.componentWillRender?.();
+      this.render();
+      this.componentDidLoad?.();
+      this.componentDidRender?.();
       this.#hydratePerf.end("lifecycle");
 
-      componentCtrl().markStableAndLoaded(this);
+      this.setAttribute("hydrated", "");
+
       this.#hydratePerf.end("hydrate");
-    }
-
-    override componentDidLoad(): void {
-      this.setAttribute("p.hydrated", "");
       this.#hydratePerf.log();
-      super.componentDidLoad?.();
-    }
-
-    override componentShouldUpdate<TValue>(
-      newValue: TValue,
-      oldValue: TValue | undefined,
-      propName: string | symbol,
-    ): boolean {
-      return (
-        super.componentShouldUpdate?.(newValue, oldValue, propName) ?? true
-      );
     }
 
     override attributeChangedCallback(
@@ -190,12 +255,37 @@ export function wrapComponentForRegistration<
       oldValue: string | null,
       newValue: string | null,
     ): void {
+      log(fromToText(name, oldValue, newValue));
       updatePropsByAttribute(this, name, newValue);
       super.attributeChangedCallback?.(name, oldValue, newValue);
     }
 
+    override componentShouldUpdate<TValue>(
+      newValue: TValue,
+      oldValue: TValue | undefined,
+      propName: string | symbol,
+    ): boolean {
+      const shouldUpdate = super.componentShouldUpdate?.(
+        newValue,
+        oldValue,
+        propName,
+      );
+
+      if (shouldUpdate === false) {
+        log(`  componentShouldUpdate returned false for ${String(propName)}`);
+      }
+
+      return shouldUpdate ?? true;
+    }
+
     override disconnectedCallback(): void {
-      componentCtrl().disconnect(this);
+      log(`disconnectedCallback: ${simpleCustomElementDisplayText(this)}`);
+      // Cancel any pending render when component is removed
+      if (this.#renderFrameId !== null) {
+        cancelAnimationFrame(this.#renderFrameId);
+        this.#renderFrameId = null;
+        this.#pendingRender = false;
+      }
       super.disconnectedCallback?.();
     }
 
@@ -204,7 +294,7 @@ export function wrapComponentForRegistration<
       const popts = ctx?.popts ?? [];
 
       if (!ctx) {
-        throw new ConsumerError(
+        throw new Error(
           `Missing component context on ${simpleCustomElementDisplayText(this)}. Did you forget to call super() in the constructor?`,
         );
       }
@@ -230,17 +320,50 @@ export function wrapComponentForRegistration<
       return super.componentWillRender?.();
     }
 
-    override render(): VNode {
+    #scheduleRender(): void {
+      // If already scheduled for next frame, don't queue another one
+      if (this.#pendingRender) {
+        return;
+      }
+
+      this.#pendingRender = true;
+      this.#renderFrameId = requestAnimationFrame(() => {
+        this.#pendingRender = false;
+        this.#renderFrameId = null;
+        this.#doRender();
+      });
+    }
+
+    #doRender(): void {
+      this.#renderPerf.start("total");
+      log(`render: ${simpleCustomElementDisplayText(this)}`);
+
       try {
-        return super.render!();
+        // Execute the component's render method
+        // Mutations are automatically batched via requestAnimationFrame
+        super.render?.();
+        // Styles are already attached in connectedCallback, don't reattach
       } catch (origin) {
         error(origin);
-        throw new ConsumerError(
-          `A error occoured while trying to render ${simpleCustomElementDisplayText(this)}`,
+        throw new Error(
+          `Error rendering ${simpleCustomElementDisplayText(this)}`,
         );
+      } finally {
+        this.#renderPerf.end("total");
+        this.#renderPerf.log();
       }
     }
-  } as T;
+
+    override render(): JSX.Element {
+      this.#scheduleRender();
+      return undefined as unknown as JSX.Element;
+    }
+  }
+
+  // Copy property descriptors to the wrapper's prototype
+  copyAccessorDescriptors(PencilCustomElementWrap.prototype, klass.prototype);
+
+  return PencilCustomElementWrap as T;
 }
 
 /**
@@ -249,7 +372,6 @@ export function wrapComponentForRegistration<
 export function initializeProps(
   component: ComponentInterfaceWithContext,
 ): void {
-  const ctrl = componentCtrl();
   const props = component[PROP_NAMES];
 
   props?.forEach((propOptions, propName) => {
@@ -260,12 +382,8 @@ export function initializeProps(
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES] ??= [];
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
 
-    // TODO: This may be deleted
     component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
-    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, undefined);
-
-    ctrl.setProp(
-      component,
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(
       propName,
       resolveAttribute(component, propName, propOptions),
     );
@@ -288,11 +406,10 @@ export function updatePropsByAttribute(
   attrName: string,
   newValue: string | null,
 ): void {
-  const ctrl = componentCtrl();
   const propName = component[ATTR_MAP]?.get(attrName);
 
   if (!propName) {
-    throw new ConsumerError(
+    throw new Error(
       `Attribute "${attrName}" is not mapped to any property on ${simpleCustomElementDisplayText(component)}.`,
     );
   }
@@ -304,5 +421,17 @@ export function updatePropsByAttribute(
     Boolean(newValue),
   );
 
-  ctrl.setProp(component, propName, propValue);
+  const ctx = component[PENCIL_COMPONENT_CONTEXT];
+  const oldValue = ctx?.props.get(propName);
+  ctx?.props.set(propName, propValue);
+
+  const shouldUpdate = component.componentShouldUpdate?.(
+    propValue,
+    oldValue,
+    propName,
+  );
+
+  if (shouldUpdate !== false) {
+    component.render?.();
+  }
 }

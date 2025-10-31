@@ -1,11 +1,13 @@
-import { ConsumerError } from "@pencel/utils";
-import { componentCtrl } from "../controllers/component.ts";
+import { createLog, fromToText } from "@pencel/utils";
+import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import {
   ATTR_MAP,
   type ComponentInterfaceWithContext,
   PROP_NAMES,
 } from "../core/types.ts";
 import { resolveAttributeName } from "../utils/attributes.ts";
+
+const log = createLog("Prop");
 
 /**
  * Explicit type conversion function for attribute values.
@@ -33,18 +35,12 @@ import { resolveAttributeName } from "../utils/attributes.ts";
  */
 export type TypeCoercionFn<T> = (value: unknown) => T;
 
-/**
- * Function that resolves attribute name from property name.
- * e.g. myPropName → my-prop-name
- */
-export type AttrResolver = (propName: string | number | symbol) => string;
-
 export interface PropOptions {
   /**
    * Name of the corresponding attribute.
    * If not provided, the property name is used in dash-case.
    */
-  attr?: string | AttrResolver;
+  attr?: string;
 
   /**
    * Whether to reflect property changes to attributes
@@ -79,7 +75,6 @@ export function Prop(options?: PropOptions): PropertyDecorator {
   return (target, propertyKey) => {
     const component = target as ComponentInterfaceWithContext;
     const propertyName = propertyKey as string;
-    const ctrl = componentCtrl();
 
     component[PROP_NAMES] ??= new Map();
     component[PROP_NAMES].set(propertyName, options);
@@ -89,17 +84,34 @@ export function Prop(options?: PropOptions): PropertyDecorator {
 
     Object.defineProperty(component, propertyName, {
       get() {
-        return ctrl.getProp(this, propertyName);
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        const meta = ctx?.popts;
+        return (
+          ctx?.props.get(propertyName) ?? meta?.get(propertyName)?.fallbackValue
+        );
       },
 
       set(value: unknown) {
-        if (options?.mutable) {
-          ctrl.setProp(this, propertyName, value);
+        if (!options?.mutable) {
+          throw new Error(
+            `Property "${propertyName}" is immutable. To make it mutable, set the "mutable" option to true in the @Prop() decorator.`,
+          );
         }
 
-        throw new ConsumerError(
-          `Property "${propertyName}" is immutable. To make it mutable, set the "mutable" option to true in the @Prop() decorator.`,
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        const oldValue = ctx?.props.get(propertyName);
+        ctx?.props.set(propertyName, value);
+        log(fromToText(propertyName, oldValue, value));
+
+        const shouldUpdate = this.componentShouldUpdate?.(
+          value,
+          oldValue,
+          propertyName,
         );
+
+        if (shouldUpdate !== false) {
+          this.render?.();
+        }
       },
 
       enumerable: true,

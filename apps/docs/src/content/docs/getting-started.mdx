@@ -70,24 +70,6 @@ With this code, you can use the component in your HTML like this:
 <pen-hello name="Max"></pen-hello>
 ```
 
-### Make it yours
-
-You can customize the namespace and other runtime-related settings using the `pencelInit()` function.
-Other defaults and plugins can be provided by your [configuration file](/pencel/configuration).
-
-```ts
-// main.ts
-import { pencelInit } from "@pencel/runtime";
-import "./components";
-
-await pencelInit({
-  namespace: "wb",
-});
-
-// Now you can use your components with the "wb" namespace
-// <wb-hello></wb-hello>
-```
-
 ## Framework Outputs
 
 By default, Pencel ships **native Web Components only**.

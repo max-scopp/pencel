@@ -9,7 +9,8 @@ import { inject } from "./container.ts";
 const log = createLog("Project");
 
 export class Program {
-  readonly config: Config = inject(Config);
+  readonly #config: Config = inject(Config);
+
   #tsconfigPath?: string;
   #tsconfigContent?: string;
   #filePaths: string[] = [];
@@ -21,7 +22,7 @@ export class Program {
    * Should be called once on startup and re-called on tsconfig changes
    */
   async discover(): Promise<string[]> {
-    const config = this.config;
+    const config = this.#config;
 
     perf.start("verify-tsconfig");
 

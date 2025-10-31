@@ -1,2 +1,4 @@
 ir.json
+src/components.d.ts
+src/components.ts
 *.gen.*

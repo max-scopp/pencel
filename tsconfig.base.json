@@ -2,10 +2,13 @@
   "compilerOptions": {
     "composite": true,
     "resolveJsonModule": true,
+    "rootDir": ".",
     "declaration": true,
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
+    "jsx": "preserve",
+    "jsxImportSource": "@pencel/runtime",
     "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -17,6 +20,7 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
+    "experimentalDecorators": true,
     "target": "esnext",
     "paths": {
       "@pencel/*": ["./packages/*/src"]

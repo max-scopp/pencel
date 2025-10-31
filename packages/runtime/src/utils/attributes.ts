@@ -83,7 +83,5 @@ export function resolveAttributeName(
   propName: string | number | symbol,
   propOptions?: PropOptions,
 ): string {
-  return typeof propOptions?.attr === "function"
-    ? propOptions.attr(propName)
-    : propOptions?.attr || dashCase(String(propName));
+  return propOptions?.attr || dashCase(String(propName));
 }

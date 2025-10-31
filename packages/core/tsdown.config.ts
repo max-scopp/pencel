@@ -8,4 +8,5 @@ export default defineConfig({
   sourcemap: true,
   platform: "node",
   external: ["lightningcss"],
+  dts: { build: true },
 });

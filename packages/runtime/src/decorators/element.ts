@@ -1,6 +1,4 @@
-import { ConsumerError } from "@pencel/utils";
-
-const GOT_WARNED = Symbol("warned-once");
+const GOT_WARNED = Symbol("_$pen_got_warned");
 
 /**
  * This Decorator exists for backward compatibility.
@@ -35,7 +33,7 @@ export function Element(): PropertyDecorator {
       },
 
       set() {
-        throw new ConsumerError("You cannot override the @Element property.");
+        throw new Error("You cannot override the @Element property.");
       },
 
       enumerable: true,

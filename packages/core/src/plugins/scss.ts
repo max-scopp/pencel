@@ -1,6 +1,9 @@
 import { dirname } from "node:path";
+import { createLog } from "@pencel/utils";
 import * as sass from "sass-embedded";
 import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
+
+const log = createLog("SCSS");
 
 declare module "../compiler/types/plugins.ts" {
   interface PluginRegistry {
@@ -29,6 +32,7 @@ class ScssPlugin extends PencelPlugin {
     this.#options = options;
 
     this.handle("css:preprocess", async (hook) => {
+      log(`Handle ${hook.path}`);
       const fileDir = dirname(hook.path);
 
       const result = await sass.compileStringAsync(hook.input, {

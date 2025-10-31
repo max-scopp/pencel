@@ -1,5 +1,3 @@
-import type { VNode } from "../vdom/types.ts";
-
 declare namespace CustomJSX {
   // biome-ignore lint/complexity/noBannedTypes: placeholder for user extensions
   type IntrinsicElements = {};
@@ -7,7 +5,8 @@ declare namespace CustomJSX {
 
 declare global {
   namespace JSX {
-    type Element = VNode;
+    type Element = object | null;
+    type Children = JSX.Element | JSX.Element[];
 
     interface IntrinsicElements
       extends JSXBase.IntrinsicElements,

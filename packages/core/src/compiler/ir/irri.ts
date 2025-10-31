@@ -7,6 +7,7 @@ import type { FileIR } from "./file.ts";
 import type { MethodIR } from "./method.ts";
 import type { PropertyIR } from "./prop.ts";
 import type { RenderIR } from "./render.ts";
+import type { StyleIR } from "./style.ts";
 
 export type IRKind = keyof KnownIRs;
 
@@ -17,6 +18,7 @@ export type KnownIRs = {
   Method: MethodIR;
   Event: EventIR;
   Render: RenderIR;
+  Style: StyleIR;
 };
 
 /**

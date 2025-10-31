@@ -1,5 +1,8 @@
-import { componentCtrl } from "../controllers/component.ts";
+import { createLog, fromToText } from "@pencel/utils";
+import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import { deepEqual } from "../utils/equal.ts";
+
+const log = createLog("State");
 
 export interface StateOptions {
   /**
@@ -30,18 +33,30 @@ export function State(options?: StateOptions): PropertyDecorator {
     // Define getter/setter for the state property
     Object.defineProperty(target, propertyKey, {
       get() {
-        return componentCtrl().getState(this, propertyKey);
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        return ctx?.state.get(propertyKey);
       },
 
       set(value: unknown) {
-        const ctrl = componentCtrl();
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+        const oldValue = ctx?.state.get(propertyKey);
 
         const equalFn = options?.equal ?? deepEqual;
-
-        const isEqual = equalFn(value, ctrl.getState(this, propertyKey));
+        const isEqual = equalFn(value, oldValue);
 
         if (!isEqual) {
-          ctrl.setState(this, propertyKey, value);
+          ctx?.state.set(propertyKey, value);
+          log(fromToText(String(propertyKey), oldValue, value));
+
+          const shouldUpdate = this.componentShouldUpdate?.(
+            value,
+            oldValue,
+            propertyKey,
+          );
+
+          if (shouldUpdate !== false) {
+            this.render?.();
+          }
         }
       },
 

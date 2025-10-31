@@ -1,5 +1,3 @@
-import { ConsumerError } from "@pencel/utils";
-
 /**
  * This Decorator exists for backward compatibility.
  * It provides a warning when accessed and prevents overriding of the decorated property.
@@ -25,7 +23,7 @@ export function Method(): PropertyDecorator {
       },
 
       set() {
-        throw new ConsumerError("You cannot override the @Method property.");
+        throw new Error("You cannot override the @Method property.");
       },
 
       enumerable: true,

@@ -2,6 +2,7 @@ export * from "./arrays.ts";
 export * from "./coordinated-logging.ts";
 export * from "./createPerformanceTree.ts";
 export * from "./dashCase.ts";
+export * from "./fromToText.ts";
 export * from "./getExtendsByInheritance.ts";
 export * from "./getTagByExtendsString.ts";
 export * from "./isBrowser.ts";
@@ -9,7 +10,6 @@ export * from "./log.ts";
 export * from "./normalizeTag.ts";
 export * from "./pascalCase.ts";
 export * from "./switchMapObject.ts";
-export * from "./throwConsumerError.ts";
 export * from "./throwError.ts";
 export * from "./throwWithCodeFrame.ts";
 

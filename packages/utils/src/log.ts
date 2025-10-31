@@ -10,22 +10,15 @@ import { coordLog } from "./coordinated-logging.ts";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
-const PENCIL_DO_LOGGING = (): boolean => {
-  return true;
-  // return Boolean(
-  //   globalThis.PENCIL_DEBUG ||
-  //     process.env.DEBUG ||
-  //     (isBrowser
-  //       ? new URLSearchParams(window.location.search).get("pencilDebug")
-  //       : null),
-};
+// This can be overridden via tsdown's `define` option for tree-shaking
+const PENCEL_LOG_ENABLED = true;
 
 export function log(
   message: string,
   style?: string,
   ...other: unknown[]
 ): void {
-  if (!PENCIL_DO_LOGGING()) {
+  if (!PENCEL_LOG_ENABLED) {
     return;
   }
 
@@ -75,7 +68,7 @@ export function debug(
   style?: string,
   ...other: unknown[]
 ): void {
-  if (!PENCIL_DO_LOGGING()) {
+  if (!PENCEL_LOG_ENABLED) {
     return;
   }
   log(message, style, ...other);
@@ -85,7 +78,7 @@ export function createDebugLog(
   namespace: string,
 ): (message: string, style?: string, ...other: unknown[]) => void {
   return (message: string, style?: string, ...other: unknown[]) => {
-    if (!PENCIL_DO_LOGGING()) {
+    if (!PENCEL_LOG_ENABLED) {
       return;
     }
     const prefixedMessage = `[${namespace}] ${message}`;
@@ -105,7 +98,7 @@ export function error(
   style?: string,
   ...other: unknown[]
 ): void {
-  if (!PENCIL_DO_LOGGING()) {
+  if (!PENCEL_LOG_ENABLED) {
     return;
   }
 
@@ -199,7 +192,6 @@ export function createError(
   return combined;
 }
 
-
 export function createWarn(
   namespace: string,
 ): (message: string, style?: string, ...other: unknown[]) => void {
@@ -214,7 +206,7 @@ export function warn(
   style?: string,
   ...other: unknown[]
 ): void {
-  if (!PENCIL_DO_LOGGING()) {
+  if (!PENCEL_LOG_ENABLED) {
     return;
   }
 

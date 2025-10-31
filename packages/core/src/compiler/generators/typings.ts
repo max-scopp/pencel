@@ -1,4 +1,4 @@
-import { createLog, pascalCase } from "@pencel/utils";
+import { createLog } from "@pencel/utils";
 import ts, { factory } from "typescript";
 import { inject } from "../core/container.ts";
 import { PencelPlugin, Plugins } from "../core/plugin.ts";
@@ -40,7 +40,7 @@ class ComponentTypings extends PencelPlugin {
 
     for (const fileIR of fileIRs) {
       for (const cir of fileIR.components) {
-        if (cir.forIs) {
+        if (cir.extends) {
           // Create Document.createElement interface
           const createElementMethodSignature = factory.createMethodSignature(
             undefined,
@@ -54,7 +54,7 @@ class ComponentTypings extends PencelPlugin {
                 "tagName",
                 undefined,
                 factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.forIs),
+                  factory.createStringLiteral(cir.extends),
                 ),
               ),
               factory.createParameterDeclaration(
@@ -68,7 +68,7 @@ class ComponentTypings extends PencelPlugin {
                     factory.createIdentifier("is"),
                     undefined,
                     factory.createLiteralTypeNode(
-                      factory.createStringLiteral(cir.tag),
+                      factory.createStringLiteral(cir.normalizedTag),
                     ),
                   ),
                 ]),
@@ -107,7 +107,7 @@ class ComponentTypings extends PencelPlugin {
                 "value",
                 undefined,
                 factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.tag),
+                  factory.createStringLiteral(cir.normalizedTag),
                 ),
               ),
             ],
@@ -116,7 +116,7 @@ class ComponentTypings extends PencelPlugin {
 
           const setAttributeInterface = factory.createInterfaceDeclaration(
             [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-            `HTML${pascalCase(cir.forIs)}Element`,
+            cir.heritage,
             undefined,
             undefined,
             [setAttributeMethodSignature],
@@ -130,7 +130,7 @@ class ComponentTypings extends PencelPlugin {
           // Create HTMLElementTagNameMap interface property
           const htmlElementTagNameMapProperty = factory.createPropertySignature(
             undefined,
-            factory.createStringLiteral(cir.tag),
+            factory.createStringLiteral(cir.normalizedTag),
             undefined,
             factory.createTypeReferenceNode(cir.className, undefined),
           );
@@ -147,7 +147,7 @@ class ComponentTypings extends PencelPlugin {
           // Create JSX.IntrinsicElements interface property
           const jsxIntrinsicElementProperty = factory.createPropertySignature(
             undefined,
-            factory.createStringLiteral(cir.tag),
+            factory.createStringLiteral(cir.normalizedTag),
             undefined,
             factory.createTypeReferenceNode(
               `JSXElementAttributes<${cir.className}>`,
