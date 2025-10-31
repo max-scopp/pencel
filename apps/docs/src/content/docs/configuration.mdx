@@ -1,93 +1,156 @@
 ---
 title: Configuration
-description: Learn how to configure Pencel for your project needs.
+description: Set up pencel.config.ts for plugins, namespace, and output options.
 sidebar:
   order: 1
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import { Code } from '@astrojs/starlight/components';
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
-In order to use extended features like [Sass](plugins/scss) or modify default behaviors, you can use Pencel's CLI.
+Pencel is **zero-config by default**—you can start building Web Components without any configuration. For advanced features like Sass, custom namespaces, or framework outputs, use a `pencel.config.ts` file.
 
-The CLI provides simple access and configuration to Pencel's core build processor. The CLI will read a configuration file (`pencel.config.ts`) in the root of your project to determine which plugins and options to enable.
+## Setup
 
-To get started, you first need to install the Pencel CLI as a development dependency:
+First, install the Pencel CLI:
 
-<Tabs syncKey="pkg">
-<TabItem label="npm">
-
-```sh
-npm install -D @pencel/cli
-````
-
-</TabItem>
-<TabItem label="pnpm">
-
-```sh
-pnpm add -D @pencel/cli
-```
-
-</TabItem>
-<TabItem label="yarn">
-
-```sh
-yarn add -D @pencel/cli
-```
-
-</TabItem>
-<TabItem label="bun">
-
-```sh
-bun add -D @pencel/cli
-```
-
-</TabItem>
+<Tabs storageKey="pkg-manager">
+  <TabItem label="npm">
+    ```sh
+    npm install -D @pencel/cli
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```sh
+    pnpm add -D @pencel/cli
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```sh
+    yarn add -D @pencel/cli
+    ```
+  </TabItem>
+  <TabItem label="bun">
+    ```sh
+    bun add -D @pencel/cli
+    ```
+  </TabItem>
 </Tabs>
 
-Then, create a `pencel.config.ts` file in the root of your project. The configuration below sets overrides the default tag namespace for your project:
+Then create a `pencel.config.ts` in your project root:
 
-import pencelConfig from '../../../../../examples/sample/web/pencel.config.ts?raw';
+```typescript
+// pencel.config.ts
+import { defineConfig } from '@pencel/cli';
 
-<Code code={pencelConfig} lang="json" title="pencel.config.ts" />
-
-The full configuration reference can be found in the [API documentation](https://github.com/max-scopp/pencel/blob/main/packages/core/src/compiler/types/config-types.ts#L22).
-
-#### Supported Configuration formats
-
-Pencel is using [`c12`](https://github.com/unjs/c12) under the head and all configuration formats supported by `c12` are supported by Pencel as well.
-However, it is highly recommended to use `pencel.config.ts` with `defineConfig` to get the best DX and type safety.
-
-## Adopting to your Build System
-
-Right now, you can only use Pencel's CLI to generate your components. 
-In the future, Pencel may provide plugins and integrations for popular build systems.
-
-The simplest way to integrate Pencel into your build process is to add a script in your `package.json` that runs the Pencel CLI before your build step.
-
-```diff lang="json"
-// package.json
-{
-  "scripts": {
-+    "generate": "pencel",
-+    "generate:watch": "pencel --watch"
+export default defineConfig({
+  input: {
+    qualifier: 'pen'        // Find files matching *.pen.ts
   },
-}
+  output: {
+    qualifier: 'gen'        // Output files as *.gen.ts
+  },
+  baseDir: 'src',           // Base directory for discovery
+  plugins: [                // Core and output plugins
+    'css',
+    // Framework output plugins would go here too
+  ],
+  runtime: {
+    tagNamespace: 'my'      // Component tags prefixed with 'my-'
+  }
+});
 ```
 
-### Adoption in Nx
+<Aside type="tip">
+Use `defineConfig` for full TypeScript support and autocomplete in your editor.
+</Aside>
 
-If you're using [Nx](https://nx.dev/), you can use [Command Chaining](https://nx.dev/docs/reference/nx/executors#chaining-commands) in parallel.
+## Configuration Options
+
+**`input.qualifier`** – Pattern for discovering component files (default: `"pen"`)  
+Files matching `*.pen.ts` are treated as Pencel components.
+
+**`output.qualifier`** – Pattern for generated output files (default: `"gen"`)  
+Compiled components are written as `*.gen.ts` next to source files.
+
+**`baseDir`** – Base directory for file discovery (default: `"src"`)
+
+**`tsconfig`** – Path to your TypeScript config (default: `"tsconfig.json"`)
+
+**`plugins`** – Array of plugins to enable. Plugins include core plugins (CSS, SCSS) and output plugins that generate framework-specific code. Each plugin can specify where to write its output via `outputPath` or similar options.  
+See [Plugins](/pencel/plugins) for available options.
+
+**`runtime.tagNamespace`** – Global namespace prefix for all component tags (default: `"pen"`)  
+Set to `"my"` to generate tags like `my-button`, `my-card`, etc.
+
+## Integration with Your Build System
+
+<Aside type="note">
+A Vite plugin for Pencel may be added in the future. For now, run `pencel compile` before you build.
+</Aside>
+
+## Build Integration
+
+
+### NPM Scripts
+
+Add a build script to your `package.json`:
 
 ```json
-"serve": {
-    "executor": "nx:run-commands",
-    "options": {
-        "commands": [
-          "vite dev",
-          "pencel --watch",
-        ],
-        "parallel": true
-    }
+{
+  "scripts": {
+    "build": "pencel compile"
+  }
 }
 ```
+
+Then run:
+
+```sh
+npm run build
+```
+
+### Nx Workspace
+
+For monorepos using Nx, create a `pencel.config.ts` and reference it in your `project.json`:
+
+```json
+{
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pencel compile --config pencel.config.ts"
+      }
+    }
+  }
+}
+```
+
+Or configure Pencel as an Nx plugin for automatic project graph integration.
+
+### Plugins with Output Configuration
+
+Plugins can specify where their output should be written. For example, a React plugin would generate React wrapper components:
+
+```typescript
+// pencel.config.ts
+import { defineConfig } from '@pencel/cli';
+
+export default defineConfig({
+  input: {
+    qualifier: 'pen'
+  },
+  output: {
+    qualifier: 'gen'
+  },
+  plugins: [
+    'css',
+    {
+      name: 'react',
+      outputPath: './src/generated/react'
+    }
+  ]
+});
+```
+
+The `react` plugin will generate React wrapper components in the specified `outputPath`. See [Plugins](/pencel/plugins) for available plugins and their output options.

@@ -1,38 +1,93 @@
 ---
-title: SCSS
+title: SCSS Plugin
 sidebar:
     order: 2
 ---
 
-Enable support for [Sass](https://sass-lang.com/) to style your components using [`sass-embedded`](https://www.npmjs.com/package/sass-embedded).
+import { Aside } from '@astrojs/starlight/components';
+
+The SCSS plugin adds support for [Sass](https://sass-lang.com/) stylesheets using [`sass-embedded`](https://www.npmjs.com/package/sass-embedded). This lets you use variables, mixins, nesting, and other Sass features in your component styles.
+
+## Installation
+
+The SCSS plugin is not enabled by default. Install it first:
+
+```bash
+npm install --save-dev sass-embedded
+```
 
 ## Basic Usage
 
-```diff lang="ts"
-// pencel.config.ts
+Enable the plugin in your config:
+
+```typescript
 import { defineConfig } from '@pencel/core';
 
 export default defineConfig({
-    plugins: [
-+        "scss"
-    ]
+  plugins: [
+    'scss'  // Enable SCSS support
+  ]
 });
 ```
 
-## Advanced Configuration
+Then use Sass in your components:
 
-```diff lang="ts"
-// pencel.config.ts
+```typescript
+import { Component } from '@pencel/runtime';
+
+const styles = `
+  $primary: #007bff;
+  $radius: 4px;
+
+  button {
+    background: $primary;
+    border-radius: $radius;
+    padding: 8px 16px;
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+`;
+
+@Component({
+  tag: 'my-button',
+  styles  // Scss will be compiled to CSS automatically
+})
+export class MyButton extends HTMLElement {
+  render() {
+    return <button>Click me</button>;
+  }
+}
+```
+
+## Features
+
+✅ **Variables** – Reuse values with `$variableName`  
+✅ **Mixins** – Create reusable style blocks with `@mixin`  
+✅ **Nesting** – Organize styles hierarchically  
+✅ **Functions** – Use built-in Sass functions  
+✅ **Imports** – Split styles across files with `@import`  
+
+## Configuration
+
+Customize SCSS compilation:
+
+```typescript
 import { defineConfig } from '@pencel/core';
 
 export default defineConfig({
-    plugins: [
-+        {
-+            name: "scss",
-+            options: {
-+                enabled: true
-+            }
-+        }
-    ]
+  plugins: [
+    {
+      name: 'scss',
+      options: {
+        enabled: true  // Enable/disable the plugin
+      }
+    }
+  ]
 });
 ```
+
+<Aside type="note">
+SCSS is compiled to CSS at build time. The compiled CSS is then processed by the CSS plugin (inlining, optimization, minification).
+</Aside>

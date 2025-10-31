@@ -2,21 +2,17 @@
 title: Styleguide
 ---
 
-### Component Declaration
+## Component Declaration
 
-* Use the `@Component` decorator for definition.
-* Use lowercase `tag`, matching HTML semantics.
-  * Do **NOT** prefix the namespace if it’s set in your config.
+Use `@Component` with a lowercase `tag` matching HTML semantics. Don't prefix the namespace – it's configured globally.
 
 ```ts
 @Component({ tag: "button" })
-````
+```
 
-### Class Naming
+## Class Naming
 
-* You **SHOULD** use the namespace defined in your `pencel.config` in your class name: `HTML<Namespace><Name>Element`.
-* You **SHOULD** implement `ComponentInterface` to enable IntelliSense for lifecycle hooks.
-* Extend the corresponding native HTML element (`HTMLButtonElement`, `HTMLDetailsElement`, etc.).
+Follow the pattern `HTML<Namespace><Name>Element`, extend the corresponding native HTML element, and implement `ComponentInterface` for IntelliSense.
 
 ```ts
 export class HTMLPenButtonElement
@@ -24,12 +20,9 @@ export class HTMLPenButtonElement
   implements ComponentInterface
 ```
 
-### Render Structure
+## Render Method
 
-* `render()` **MUST** return a `VNode`.
-* You **SHOULD** return `<Host>` as the top-level JSX node.
-* Do **NOT** implement inline logic — keep this pure and minimal.
-* You **SHOULD** use [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring) for complex objects or arrays.
+Return a `<Host>`. Keep logic minimal—use destructuring for complex data, avoid inline computations.
 
 ```ts
 render(): VNode {
@@ -44,8 +37,6 @@ render(): VNode {
 }
 ```
 
-### Minimalism
+## Keep It Simple
 
-* Do **NOT** use lifecycle methods unless necessary.
-* Do **NOT** add props/handlers unless the component adds real behavior.
-* One responsibility per component.
+Avoid lifecycle methods and extra props unless they add real value. Each component should have one clear responsibility.

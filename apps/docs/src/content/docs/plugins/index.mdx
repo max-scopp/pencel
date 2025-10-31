@@ -1,18 +1,42 @@
 ---
-title: Overview
+title: Plugins Overview
 sidebar:
     order: 0
 ---
 
-Plugins are central to Pencel.
-Core plugins provide features for component authoring, while Output plugins handle framework integration and library consumption.
+import { Aside } from '@astrojs/starlight/components';
 
-By default, no core plugins are required unless you use extended language features like [Sass](./scss.md).
+Plugins extend Pencel's compiler to add features like CSS preprocessing, type generation, and framework bindings. There are two plugin categories:
 
-No output plugins are enabled by default — without a config, you only generate raw web components.
+**Core Plugins** – Enhance component authoring (styling, preprocessors)  
+**Output Plugins** – Generate framework-specific bindings (React, Angular, Vue). See [Outputs](../outputs/) for more details.
 
-## Default Plugins
+By default, only the **CSS plugin** is enabled. Additional core plugins like SCSS are opt-in. Output plugins must be explicitly configured in your `pencel.config.ts`.
 
-The following plugins are enabled by default to help you get started:
+## Available Plugins
 
-* [CSS](./css.md) is enabled to optimize your CSS.
+- **[CSS](./css.md)** – Inline, optimize, and minify component styles (enabled by default)
+- **[SCSS](./scss.md)** – Sass support for advanced styling
+- **[Custom Plugins](./custom.md)** – Build your own plugins (API still in development)
+
+## Configuration
+
+Plugins are configured in your `pencel.config.ts`:
+
+```typescript
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+  plugins: [
+    // String format (uses default options)
+    'css',
+    'scss',
+    
+    // Object format (with custom options)
+    {
+      name: 'scss',
+      options: { enabled: true }
+    }
+  ]
+});
+```

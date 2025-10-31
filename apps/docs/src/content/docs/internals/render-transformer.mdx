@@ -6,7 +6,7 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components';
 
-Transforms JSX render methods into zero-DOM factory function calls. Three specialized modules handle orchestration, JSX transformation, and loop management.
+Converts JSX render methods into zero-DOM factory function calls. Three specialized modules handle orchestration, JSX transformation, and loop management.
 
 ## How It Works
 
@@ -58,30 +58,19 @@ Key factory functions:
 
 ## Architecture
 
-Three specialized modules working together:
-
-- **`render.ts` (Orchestrator)** — Recursively visits render method AST. Dispatches JSX elements to the JSX transformer and `.map()`/`.forEach()` calls to the loop handler. Manages statement buffers across scopes.
-
-- **`render.jsx.ts` (JSX Transformer)** — Converts JSX elements/self-closing tags into factory function calls with memoization. Builds hierarchical cache keys for root elements in loops. Emits prepended statements (variable declarations, property sets, child appends) into the current scope buffer.
-
-- **`render.loop.ts` (Loop Manager)** — Tracks nesting depth via a context stack. Manages index variable naming (`index`, `index1`, `index2` for depths 0, 1, 2). Builds hierarchical scope keys by concatenating all parent loop contexts.
+- **`render.ts`** – Orchestrates AST traversal. Dispatches JSX to the JSX transformer and loops to the loop handler.
+- **`render.jsx.ts`** – Converts JSX into factory function calls with memoization.
+- **`render.loop.ts`** – Tracks nesting depth and builds hierarchical scope keys.
 
 ## Key Concepts
 
-**Hierarchical Memoization Keys**
-
-Pencel uses hierarchical cache keys to optimize nested loops. Each loop depth gets a unique index name (`index`, `index1`, `index2`). Root elements in loops include this in the cache key:
-
+**Hierarchical Memoization Keys** – Nested loops use hierarchical keys to prevent cache collisions:
 - Single loop: `"li_4_" + todo.id`
 - Nested (2 levels): `"span_2_index_index1" + cell.id`
 
-This prevents cache collisions and ensures proper element reuse across iterations.
+**Index Naming** – Depths 0, 1, 2 use `index`, `index1`, `index2`.
 
-**Statement Scoping**
-
-<Aside type="caution">
-Prepended statements (element creations) execute **inside** the loop callback, not before/after. When exiting a loop scope, the JSX transformer syncs back to the parent's statement buffer via `setPrependStatements()`.
-</Aside>
+**Statement Scoping** – Prepended statements execute inside loop callbacks, not before/after.
 
 ## Debugging
 
@@ -95,9 +84,5 @@ Prepended statements (element creations) execute **inside** the loop callback, n
 
 - **Hierarchical Keys:** Root elements include depth hierarchy (e.g., `"li_4_index_index1"`)
 - **Index Naming:** Depths 0, 1, 2 use `index`, `index1`, `index2`
-- **Transformer Sync:** `setPrependStatements()` ensures JSX transformer uses correct statement buffer
-
-<Aside type="caution">
-**Statement Scoping:** Prepended statements execute **inside** loop callbacks, not before/after
-</Aside>
+- **Prepended Statements** execute inside loop callbacks, not before/after
 

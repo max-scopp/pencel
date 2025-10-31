@@ -4,50 +4,56 @@ description: Learn how to set up and start using Pencel in your project.
 sidebar:
   order: 0
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
-Pencel is a build-agnostic, framework-friendly Web Component toolkit that takes a different approach from traditional compilers.  
-Unlike tools that provide their own compilation pipeline, Pencel outputs pure TypeScript source code that integrates with any build system.
+## What is Pencel?
 
-To get started, you'll need to install the core runtime first.
+Pencel is a **build-agnostic Web Component compiler** that transforms TypeScript decorators into vanilla Web Components. Write once, output everywhere—React, Angular, Vue, or vanilla Web Components from a single source.
 
-<Tabs syncKey="pkg">
-<TabItem label="npm">
+If you're wondering whether Pencel is right for your project, see **[Why Pencel?](/pencel/why-pencel)** for a comparison with other tools and use-case guidance.
 
-```sh
-npm install @pencel/runtime
-````
+**Key benefits:**
+- 🎯 **Write once, deploy everywhere** – Output to React, Angular, Vue, or vanilla Web Components from a single source
+- ⚡ **Zero runtime overhead** – Compiles to standard Web Components with minimal footprint
+- 🔧 **Framework-agnostic** – Works with any build tool (Vite, Webpack, esbuild, etc.)
+- 📦 **TypeScript-first** – Full type safety and IDE support
 
-</TabItem>
-<TabItem label="pnpm">
+## Installation
 
-```sh
-pnpm add @pencel/runtime
-```
+Install the Pencel runtime to start building Web Components:
 
-</TabItem>
-<TabItem label="yarn">
-
-```sh
-yarn add @pencel/runtime
-```
-
-</TabItem>
-<TabItem label="bun">
-
-```sh
-bun add @pencel/runtime
-```
-
-</TabItem>
+<Tabs storageKey="pkg-manager">
+  <TabItem label="npm">
+    ```sh
+    npm install @pencel/runtime
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```sh
+    pnpm add @pencel/runtime
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```sh
+    yarn add @pencel/runtime
+    ```
+  </TabItem>
+  <TabItem label="bun">
+    ```sh
+    bun add @pencel/runtime
+    ```
+  </TabItem>
 </Tabs>
 
-### Your First Component
+## Your First Component
 
-To write simple Web Components with Pencel, you do not need any additional plugins or configuration.
+Creating a Web Component with Pencel requires no configuration—just decorators and TypeScript.
+
+### Define the Component
+
+Create a new file `components/Hello.tsx` with a simple component:
 
 ```tsx
-// components/Hello.tsx
 import { Component, Prop } from '@pencel/runtime';
 
 @Component({
@@ -62,17 +68,51 @@ export class Hello extends HTMLElement {
 }
 ```
 
-Using the `@Component` decorator, the class and provided tag are registered as a custom element using the default namespace `pen`.
-With this code, you can use the component in your HTML like this:
+The `@Component` decorator registers your class as a custom element with the default `pen` namespace. The resulting tag is `pen-hello`.
+
+<Aside type="tip">
+**Tag naming:** Pencel automatically prefixes your component tag with the namespace (default: `pen`), so `tag: 'hello'` becomes `pen-hello`. This ensures no conflicts with browser or third-party components.
+</Aside>
+
+### Use the Component
+
+Add it to your HTML file:
 
 ```html
-// index.html
 <pen-hello name="Max"></pen-hello>
 ```
 
-## Framework Outputs
+Or in JSX/TSX:
 
-By default, Pencel ships **native Web Components only**.
+```tsx
+<pen-hello name="Max" />
+```
 
-Bindings for other frameworks, such as React or Angular, require enabling [output plugins](/pencel/outputs) in your config.
-This will be further explained in the [Configuration](/pencel/configuration) section.
+## Next Steps
+
+You've created your first Web Component! Explore deeper:
+
+- **[Decorators](/pencel/decorators)** – Learn `@Prop`, `@Event`, `@Method`, and advanced features
+- **[Configuration](/pencel/configuration)** – Configure your `pencel.config.ts` for production
+- **[Framework Outputs](/pencel/outputs)** – Generate React, Angular, or Vue bindings
+- **[Examples](/pencel/examples)** – Full project examples with different frameworks
+
+## Multi-Framework Support
+
+By default, Pencel outputs native Web Components. To generate framework-specific bindings, enable output plugins in your configuration:
+
+```ts
+// pencel.config.ts
+import { defineConfig } from '@pencel/cli';
+
+export default defineConfig({
+  outputs: {
+    react: { path: 'out/react' },
+    angular: { path: 'out/angular' }
+  }
+});
+```
+
+<Aside type="note">
+Output plugins are configured in `pencel.config.ts`. See [Framework Outputs](/pencel/outputs) for details on available options.
+</Aside>

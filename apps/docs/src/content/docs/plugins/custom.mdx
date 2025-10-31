@@ -1,11 +1,43 @@
 ---
-title: Custom Plugin
+title: Custom Plugins
 sidebar:
     order: 1000
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-In your `pencel.config`, you can also add your own plugin strings. 
+You can extend Pencel with custom plugins to add project-specific transformations, code generation, or integration with external tools.
 
-<Aside type="caution">The internal plugin API is still under heavy development.</Aside>
+<Aside type="caution">
+The plugin API is still in early development. Expect breaking changes in future releases. Use with caution in production.
+</Aside>
+
+## Creating a Custom Plugin
+
+Custom plugins are configured as objects in your `pencel.config.ts`:
+
+```typescript
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+  plugins: [
+    {
+      name: 'my-custom-plugin',
+      // Plugin implementation goes here
+    }
+  ]
+});
+```
+
+## Plugin Lifecycle
+
+Plugins hook into the compiler at specific points:
+
+- **setup** – Called when the plugin is initialized
+- **generate** – Called to generate global files from the complete IR
+- **derive** – Called to generate per-source outputs (framework adapters)
+- **teardown** – Called when compilation completes
+
+## Next Steps
+
+For advanced plugin development, see the [compiler architecture documentation](/pencel/internals/compiler) and study the built-in plugins in the Pencel repository.

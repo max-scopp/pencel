@@ -2,53 +2,59 @@ import type { EventOptions } from "@pencel/runtime";
 import { throwError } from "@pencel/utils";
 import {
   type ClassElement,
-  isMethodDeclaration,
-  type MethodDeclaration,
+  isPropertyDeclaration,
+  type PropertyDeclaration,
 } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { IRM } from "./irri.ts";
 
-/**
- * EventIR is the flat IR representation of an @Event-decorated method.
- * Contains both user-provided options and compiler-resolved metadata as public readonly fields.
- *
- * EventIR = { eventName, bubbles, cancelable, composed, methodName }
- *
- * The IR is the single source of truth. Transformers extract a subset as [INTERNALS].
- */
 export class EventIR extends IRM("Event") {
-  // User-provided fields from @Event decorator
   eventName?: string;
   bubbles?: boolean;
   cancelable?: boolean;
   composed?: boolean;
 
-  // Compiler-resolved metadata (flat, alongside user fields)
-  readonly methodName: string;
+  readonly propertyName: string;
+  readonly tsType: string;
+  readonly detailTsType?: string;
 
-  constructor(methodDeclaration: MethodDeclaration) {
+  constructor(propertyDeclaration: PropertyDeclaration) {
     super();
 
-    const decorator = singleDecorator(methodDeclaration, "Event");
-    const [eventOptions] =
+    const decorator = singleDecorator(propertyDeclaration, "Event");
+    const [eventOptions = {}] =
       decoratorArgs<readonly [EventOptions]>(decorator) ??
       throwError(`@Event decorator requires an options object`);
 
-    // Store user-provided options
     this.eventName = eventOptions.eventName;
     this.bubbles = eventOptions.bubbles;
     this.cancelable = eventOptions.cancelable;
     this.composed = eventOptions.composed;
 
-    // Store compiler-resolved metadata directly as public fields
-    this.methodName = methodDeclaration.name?.getText() ?? "unknown";
+    this.propertyName = propertyDeclaration.name?.getText() ?? "unknown";
+    this.tsType = propertyDeclaration.type?.getText() ?? "any";
+    this.detailTsType = this.extractEventDetailType(propertyDeclaration);
+  }
+
+  /**
+   * From EventEmitter<T>, extract type T, returns `undefined` if not EventEmitter<T> or missing.
+   */
+  private extractEventDetailType(
+    propertyDeclaration: PropertyDeclaration,
+  ): string | undefined {
+    const typeNode = propertyDeclaration.type;
+    if (!typeNode) return;
+
+    const typeText = typeNode.getText();
+    const match = typeText.match(/EventEmitter\s*<\s*(.+?)\s*>$/);
+    return match?.[1];
   }
 
   static isPencelEventMember(
     member: ClassElement,
-  ): member is MethodDeclaration {
-    if (isMethodDeclaration(member)) {
+  ): member is PropertyDeclaration {
+    if (isPropertyDeclaration(member)) {
       try {
         singleDecorator(member, "Event");
         return true;

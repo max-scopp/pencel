@@ -245,7 +245,6 @@ export function wrapComponentForRegistration<
       await this.componentWillLoad?.();
 
       // Initial render
-      await this.componentWillRender?.();
       this.render();
       this.componentDidLoad?.();
       this.componentDidRender?.();
@@ -334,18 +333,19 @@ export function wrapComponentForRegistration<
       }
 
       this.#pendingRender = true;
-      this.#renderFrameId = requestAnimationFrame(() => {
+      this.#renderFrameId = requestAnimationFrame(async () => {
         this.#pendingRender = false;
         this.#renderFrameId = null;
-        this.#doRender();
+        await this.#doRender();
       });
     }
 
-    #doRender(): void {
+    async #doRender() {
       this.#renderPerf.start("total");
       log(`render: ${simpleCustomElementDisplayText(this)}`);
 
       try {
+        await this.componentWillRender?.();
         // Execute the component's render method
         // Mutations are automatically batched via requestAnimationFrame
         super.render?.();

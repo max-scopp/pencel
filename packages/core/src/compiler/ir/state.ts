@@ -1,19 +1,16 @@
-import type { PropOptions } from "@pencel/runtime";
-import { dashCase, throwError } from "@pencel/utils";
+import type { StateOptions } from "@pencel/runtime";
+import { throwError } from "@pencel/utils";
 import type { ClassElement, PropertyDeclaration } from "typescript";
 import { isPropertyDeclaration } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
+import type { ASTNode } from "../../ts-utils/node.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { IRM } from "./irri.ts";
 
-export class PropertyIR extends IRM("Prop") {
-  readonly attr: string;
+export class StateIR extends IRM("State") {
   readonly name: string;
 
-  readonly reflect: boolean;
-  readonly mutable: boolean;
-
-  readonly fallbackValue?: unknown;
+  readonly eqal?: ASTNode;
 
   readonly tsType: string;
   readonly isRequired: boolean;
@@ -22,30 +19,26 @@ export class PropertyIR extends IRM("Prop") {
   constructor(propertyDeclaration: PropertyDeclaration) {
     super();
 
-    const decorator = singleDecorator(propertyDeclaration, "Prop");
-    const [propOptions = {}] =
-      decoratorArgs<readonly [PropOptions]>(decorator) ??
-      throwError("@Prop must have arguments");
+    const decorator = singleDecorator(propertyDeclaration, "State");
+    const [stateOptions = {}] =
+      decoratorArgs<readonly [StateOptions]>(decorator) ??
+      throwError("@State must have arguments");
 
     this.name = propertyDeclaration.name.getText();
-    this.attr = propOptions.attr ?? dashCase(this.name);
 
-    this.reflect = propOptions.reflect ?? false;
-    this.mutable = propOptions.mutable ?? true;
-
-    this.fallbackValue = propOptions.fallbackValue;
+    this.eqal = stateOptions.equal;
 
     this.tsType = propertyDeclaration.type?.getText() ?? "any";
     this.isRequired = !propertyDeclaration.questionToken;
     this.defaultValue = propertyDeclaration.initializer?.getText();
   }
 
-  static isPencelPropMember(
+  static isPencelStateMember(
     member: ClassElement,
   ): member is PropertyDeclaration {
     if (isPropertyDeclaration(member)) {
       try {
-        singleDecorator(member, "Prop");
+        singleDecorator(member, "State");
         return true;
       } catch {
         return false;

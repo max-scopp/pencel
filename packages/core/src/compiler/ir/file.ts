@@ -12,16 +12,9 @@ import { IRM, IRRef } from "./irri.ts";
 import { StyleIR } from "./style.ts";
 
 export class FileIR extends IRM("File") {
-  /** Absolute path to the source file */
   readonly fileName: string;
-
-  /** All components defined in this file with their processed styles */
   readonly components: IRRef<ComponentIR, ClassDeclaration>[];
 
-  /**
-   * Private constructor for factory pattern.
-   * Use FileIR.create() to construct a FileIR with fully processed styles.
-   */
   private constructor(
     sourceFile: SourceFile,
     components: IRRef<ComponentIR, ClassDeclaration>[],
@@ -32,11 +25,7 @@ export class FileIR extends IRM("File") {
   }
 
   /**
-   * Async factory method to create a FileIR with fully processed styles.
-   * Processes styles for all components before constructing ComponentIRs.
-   *
-   * @param sourceFile - TypeScript source file
-   * @returns FileIR instance with all components' styles processed
+   * Async factory method to create FileIR with fully processed styles for all components.
    */
   static async create(sourceFile: SourceFile): Promise<FileIR> {
     // First pass: collect all class declarations with their component options

@@ -1,6 +1,8 @@
 # Pencel Development Guide
 
-Pencel is a **Web Components compiler** that transforms TypeScript decorators (@Component, @Prop, etc.) into vanilla Web Components. The architecture consists of three main packages: `@pencel/core` (compiler), `@pencel/runtime` (decorators & JSX), and `@pencel/cli`.
+Pencel is a **component transpiler engine** that transforms TypeScript decorators (@Component, @Prop, etc.) into multiple framework outputs (React, Angular, Vue) and vanilla Web Components. Not a traditional compiler like Stencil, nor a runtime-only API like Lit—it's a code generation tool that outputs pure, framework-agnostic components.
+
+The architecture consists of three main packages: `@pencel/core` (transpiler), `@pencel/runtime` (decorators & JSX), and `@pencel/cli`.
 
 ## Design Philosophy
 

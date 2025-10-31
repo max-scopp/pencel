@@ -1,0 +1,375 @@
+---
+title: Runtime API
+description: Decorator-based API for defining components, properties, events, and lifecycle hooks.
+sidebar:
+  order: 2
+---
+
+import { Aside, Badge } from '@astrojs/starlight/components';
+
+Pencel provides a minimal decorator-based API for defining component metadata. All decorators are imported from `@pencel/runtime`.
+
+## Decorators
+
+### `@Component()`
+
+Registers the class as a Web Component with the specified tag name.
+
+```typescript
+@Component({
+  tag: 'counter'  // Prefixed with namespace → 'pen-counter'
+})
+export class Counter extends HTMLElement {
+  // Component implementation
+}
+```
+
+**Options:**
+- `tag` (required) – Component tag name (namespace prefix added automatically)
+- `shadow` (optional) – Enable shadow DOM for style encapsulation (default: `false`)
+- `scoped` (optional) – Use scoped styles instead of shadow DOM (default: `false`)
+- `styles` (optional) – Inline CSS string or array of strings
+- `styleUrl` (optional) – Path to a single CSS file
+- `styleUrls` (optional) – Object mapping IDs to CSS file paths
+- `extends` (optional) – Extend a built-in element (e.g., `'button'`)
+- `formAssociated` (optional) – Register as a form-associated custom element (default: `false`)
+
+<Aside type="tip">
+**Namespacing:** The namespace prefix (default: `pen`) prevents naming collisions and lets you change the global prefix later without updating individual component tags. Override globally in `pencel.config.ts`.
+</Aside>
+
+### `@Prop()`
+
+Defines a reactive property that can be set from outside. Changes automatically trigger re-renders. Properties are automatically synced with HTML attributes and **parsed before setting** (coerced to the correct type).
+
+```typescript
+@Prop() label: string;
+@Prop() disabled: boolean = false;
+@Prop() count: number;
+```
+
+**Options:**
+- `attribute` (optional) – Custom attribute name (defaults to property name in dash-case)
+- `reflect` (optional) – Reflect property changes back to the HTML attribute (default: `true`)
+- `mutable` (optional) – Allow property to be mutated from outside (default: `true`)
+- `required` (optional) – Mark property as required for TypeScript
+- `type` (optional) – Explicitly set the property type for type coercion
+
+### `@State()`
+
+Defines internal component state. Changes automatically trigger re-renders without exposing the property externally. State values are **not parsed**—they're set as-is.
+
+Mark state properties as `private` or `protected` to prevent accidental access from outside:
+
+```typescript
+@State() private isOpen: boolean = false;
+@State() protected currentIndex: number = 0;
+```
+
+Although technically accessible, state should not be mutated externally. Use `@Prop()` if you need externally settable values.
+
+<Aside type="note">
+Unlike `@Prop`, `@State` is internal and not accessible from outside the component. Use it for private component logic. Always mark state with `private` or `protected` to enforce this at the type level.
+</Aside>
+
+**Options:**
+- `equal` (optional) – Custom equality function to prevent unnecessary re-renders when the value doesn't actually change
+
+### `@Event()`
+
+Defines custom events the component can emit. Use `declare` to let the runtime provide the implementation.
+
+```typescript
+@Event() declare onClick: EventEmitter<void>;
+@Event() declare onChange: EventEmitter<string>;
+@Event() declare onSubmit: EventEmitter<FormData>;
+```
+
+The runtime generates the event emitter, so you only declare it. To emit an event:
+
+```typescript
+this.onClick.emit();
+this.onChange.emit('new-value');
+```
+
+**Event options:**
+- `eventName` (optional) – Custom event name (defaults to property name in dash-case)
+- `bubbles` (optional) – Allow event to bubble up the DOM (default: `true`)
+- `cancelable` (optional) – Allow event to be cancelled (default: `true`)
+- `composed` (optional) – Allow event to cross shadow DOM boundary (default: `true`)
+
+### `@Listen()`
+
+Method decorator that listens for events on the component or a global target.
+
+```typescript
+@Listen({ eventName: 'click' })
+handleClick(event: Event) {
+  console.log('Clicked!', event);
+}
+
+@Listen({ eventName: 'resize', target: 'window' })
+onWindowResize(event: Event) {
+  console.log('Window resized');
+}
+```
+
+**Options:**
+- `eventName` – Name of the event to listen for
+- `target` (optional) – Where to listen: `'body'`, `'document'`, `'window'`, or the host element (default)
+- Other standard `AddEventListenerOptions` (`capture`, `once`, `passive`, etc.)
+
+### `@Watch()`
+
+Method decorator that watches for changes to a property and executes a callback.
+
+```typescript
+@Watch('count')
+onCountChange(newValue: number, oldValue: number) {
+  console.log(`Count changed from ${oldValue} to ${newValue}`);
+}
+```
+
+### `@Store()` and `@Connected()`
+
+Enable parent-child state sharing using **globally named variables**. A `@Store()` property can be accessed by child components using `@Connected()`. When a parent's store changes, all connected children automatically update.
+
+The component that implements `@Store()` is the **source of truth**—only that component can set the store value. Connected children can read the store and trigger updates, but writes propagate back to the source component.
+
+<Aside type="caution">
+**Variable names must be unique** – Although you can have nested stores and sibling stores from a node perspective, each store **variable name** must be globally unique within the component tree to avoid collisions. Use descriptive names or the custom `name` option to prevent conflicts.
+</Aside>
+
+```typescript
+// Parent component (source of truth)
+@Component({ tag: 'app-root' })
+export class AppRoot extends HTMLElement {
+  @Store() private theme = 'light';  // Only this component sets theme
+  
+  setTheme(newTheme: string) {
+    this.theme = newTheme;  // Triggers re-render and updates all connected children
+  }
+}
+
+// Child component (connected reader)
+@Component({ tag: 'app-button' })
+export class AppButton extends HTMLElement {
+  @Connected() theme: string;  // Reads from parent's 'theme' store
+  
+  render() {
+    return <button class={this.theme}>Click me</button>;
+  }
+}
+```
+
+**`@Store()` options:**
+- `name` (optional) – Custom variable name for the store (defaults to property name)
+- `equal` (optional) – Custom equality function to prevent unnecessary re-renders when value hasn't actually changed (defaults to deep equality check)
+
+**`@Connected()` options:**
+- `name` (optional) – Name of the store variable to connect to (defaults to property name)
+
+## Lifecycle Hooks
+
+Component lifecycle methods are called at specific points in the component's creation and update cycle. Some hooks support async operations (can return a Promise).
+
+### `componentWillLoad()` <Badge text="async" variant="success" />
+
+Called before the initial render but after the component is connected to the DOM. The framework will wait for this to complete before rendering.
+
+Use this for short-lived async initialization tasks like permission checks or feature detection:
+
+```typescript
+async componentWillLoad() {
+  const hasPermission = await checkUserPermission();
+  this.isAllowed = hasPermission;
+}
+```
+
+<Aside type="note">
+For data loading, consider fetching in the background after `componentDidLoad()` instead. This keeps the initial render fast.
+</Aside>
+
+### `componentDidLoad()`
+
+Called once after the component has been created, rendered, and inserted into the DOM.
+
+Use this for synchronous initialization tasks like setting up event listeners or starting animations:
+
+```typescript
+componentDidLoad() {
+  console.log('Component mounted!');
+  this.setupEventListeners();
+}
+```
+
+### `componentWillRender()` <Badge text="async" variant="success" />
+
+Called before each render. The framework will wait for this to complete before rendering. Runs inside a `requestAnimationFrame`, which is ideal for visual updates and DOM measurements.
+
+Use this to prepare data or validate state before updating the UI:
+
+```typescript
+componentWillRender() {
+  // Safe to measure DOM here without causing layout thrashing
+  const rect = this.el?.getBoundingClientRect();
+  this.isVisible = rect?.height ?? 0 > 0;
+}
+```
+
+<Aside type="tip">
+Since `componentWillRender()` runs in a `requestAnimationFrame`, it's perfect for DOM measurements, animations, or other visual work that benefits from frame-synchronized timing.
+</Aside>
+
+### `componentDidUpdate()`
+
+Called after the component has been updated (when props or state change).
+
+Use this for side effects that depend on updated data:
+
+```typescript
+componentDidUpdate() {
+  console.log('Component updated');
+  this.logAnalytics();
+}
+```
+
+### `render()`
+
+Renders the component's UI. The method body is compiled to direct DOM manipulation code at build time—no virtual DOM overhead.
+
+Always return JSX (or a JSX-equivalent representation). The compiler transforms this into optimized DOM creation code.
+
+```typescript
+render() {
+  return (
+    <div class="list">
+      <h1>{this.title}</h1>
+      <ul>
+        {this.items.map((item) => (
+          <li key={item.id} class={item.selected ? 'selected' : ''}>
+            <span>{item.name}</span>
+            <button onClick={() => this.deleteItem(item.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+**Compiled to:**
+
+```typescript
+render() {
+  let $0 = this.#cmc("div_0", () => dce("div"));  // Create div, memoized by key "div_0"
+  sp($0, { class: "list" });                       // Set properties
+  let $1 = this.#cmc("h1_1", () => dce("h1"));
+  sc($1, [this.title]);                            // Set children
+  let $2 = this.#cmc("ul_2", () => dce("ul"));
+  sc($2, [
+    this.items.map((item) => {
+      let $3 = this.#cmc("li_3_" + item.id, () => dce("li"));  // Key includes item.id for loop stability
+      sp($3, { class: item.selected ? 'selected' : '' });      // Dynamic props
+      let $4 = this.#cmc("span_4_" + item.id, () => dce("span"));
+      sc($4, [item.name]);
+      let $5 = this.#cmc("button_5_" + item.id, () => dce("button"));
+      ael($5, "click", () => this.deleteItem(item.id));        // Attach event listener
+      sc($3, [$4, $5]);
+      return $3;
+    }),
+  ]);
+  sc($0, [$1, $2]);
+  sc(this, [$0]);  // Attach to component root
+}
+```
+
+Pencel uses minimal reconciliation that's far lighter than virtual DOM frameworks—it only reconciles children when needed, reusing DOM nodes by identity when possible and intelligently syncing text content and element attributes. See [Render Transformer](/pencel/internals/render-transformer) for the complete compilation details.
+
+<Aside type="note">
+You can call `render()` manually to queue a render on the next animation frame. Multiple calls to `render()` are automatically batched—only one render is queued per `requestAnimationFrame`, even if you call `render()` multiple times synchronously.
+</Aside>
+
+## Type Safety
+
+Implement the `ComponentInterface` for full type safety on lifecycle hooks:
+
+```typescript
+import { Component, ComponentInterface, Prop, State } from '@pencel/runtime';
+
+@Component({ tag: 'my-component' })
+export class MyComponent extends HTMLElement implements ComponentInterface {
+  @Prop() title: string = '';
+  @State() private count: number = 0;
+
+  async componentWillLoad(): Promise<void> {
+    // Typed as async-capable
+    await this.initializeData();
+  }
+
+  componentDidLoad(): void {
+    // Typed as sync-only
+    console.log('Loaded');
+  }
+
+  componentWillRender(): void | Promise<void> {
+    // Typed as async-capable
+    // Your implementation
+  }
+
+  render() {
+    return <div>{this.title}</div>;
+  }
+}
+```
+
+## Complete Example
+
+Here's a complete component using multiple decorators and lifecycle hooks:
+
+```typescript
+import { Component, Prop, State, Event, EventEmitter } from '@pencel/runtime';
+
+@Component({
+  tag: 'counter'
+})
+export class Counter extends HTMLElement {
+  @Prop() label: string = 'Count';
+  @State() count: number = 0;
+  
+  @Event() declare onChange: EventEmitter<number>;
+
+  componentDidLoad() {
+    console.log('Counter mounted');
+  }
+
+  increment() {
+    this.count++;
+    this.onChange.emit(this.count);
+  }
+
+  render() {
+    return (
+      <div>
+        <h2>{this.label}</h2>
+        <p>Current: {this.count}</p>
+        <button onClick={() => this.increment()}>
+          Increment
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+Usage:
+
+```html
+<pen-counter label="My Counter"></pen-counter>
+```
+
+Or in React (with framework binding):
+
+```tsx
+<PenCounter label="My Counter" onChange={(count) => console.log(count)} />
+```

@@ -6,6 +6,12 @@ const log = createLog("Store");
 
 export interface StoreOptions {
   /**
+   * Provide a store with this name.
+   * If not provided, the property name is used.
+   */
+  name?: string;
+
+  /**
    * Smiliar to `shouldComponentUpdate`, but for this specific state property.
    *
    * This function is called whenever the setter of this state property is invoked.
@@ -13,7 +19,7 @@ export interface StoreOptions {
   equal?: (a: unknown, b: unknown) => boolean;
 }
 
-export interface ConnectOptions extends StoreOptions {
+export interface ConnectOptions {
   /**
    * Connect to a store with this name.
    * If not provided, the property name is used.

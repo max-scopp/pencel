@@ -4,61 +4,25 @@ sidebar:
   order: 1
 ---
 
-Pencel is designed to be build-agnostic and framework-friendly, taking a different approach from traditional Web Component compilers.
+Pencel transforms component source files into framework-specific outputs. The compiler separates concerns into semantic, synchronization, and translation layers.
 
-## Compilation Pipeline
+## Compilation Phases
 
-The compiler transforms project source files through a streamlined process:
+The compiler follows a fixed sequence:
 
-```mermaid
-graph TB
-    Source["Project Source Files"]
-    Verify["Verify tsconfig"]
-    Discover["Discover files"]
-    SourceFiles["Build AST"]
-    BuildIR["Build IR"]
-    UpdateAST["Update AST from IR"]
-    
-    subgraph Parallel[" "]
-        Generate["Generate global files"]
-        Derive["Derive framework adapters"]
-    end
-    
-    Merge["Update Import Statements"]
-    Write["Write to Disk"]
-    
-    Source --> Verify --> Discover --> SourceFiles --> BuildIR --> UpdateAST
-    UpdateAST --> Generate
-    UpdateAST --> Derive
-    Generate --> Merge
-    Derive --> Merge
-    Merge --> Write
-    
-    style Source fill:#b3e5fc,stroke:#0277bd,color:#000
-    style Verify fill:#e8f5e9,stroke:#33691e,color:#000
-    style Discover fill:#e8f5e9,stroke:#33691e,color:#000
-    style SourceFiles fill:#e8f5e9,stroke:#33691e,color:#000
-    style BuildIR fill:#e8f5e9,stroke:#33691e,color:#000
-    style UpdateAST fill:#ffe0b2,stroke:#e65100,color:#000
-    style Generate fill:#fff59d,stroke:#fbc02d,color:#000
-    style Derive fill:#c8e6c9,stroke:#388e3c,color:#000
-    style Merge fill:#f8bbd0,stroke:#c2185b,color:#000
-    style Write fill:#e8f5e9,stroke:#33691e,color:#000
-```
+1. **Discover** – Validates `tsconfig.json` and globs for input files
+2. **Load** – Creates TypeScript `SourceFile` objects
+3. **Build IR** – Parses decorators into immutable IR
+4. **Sync AST** – Updates AST nodes to match IR state
+5. **Generate** – Creates global files (ir.json, components.d.ts)
+6. **Derive** – Creates framework adapters (React, Angular)
+7. **Write** – Flushes files to disk
 
-**Key phases:**
-1. **Verify & Discover**: Check config, find source files
-2. **Build AST**: Create `ts.SourceFiles` registry
-3. **Build IR**: Extract component metadata into immutable IR
-4. **Update AST**: Sync AST nodes using IRRef (from IR state)
-5. **Generate & Derive**: Create global files and framework adapters
-6. **Merge**: Resolve imports, update file references
-7. **Write**: Flush to disk
 
 ## Key Concepts
 
-- **Project Source Files**: User-written `.pen.tsx` files
-- **IR (Intermediate Representation)**: Immutable object graph of the component system
-- **Generators**: Global output files (no 1:1 mapping), always fully rebuilt
-- **Derivatives**: Framework adapters (1:1 per source file)
-- **AST Sync**: Makes sure the AST is consistent with the computed IR before printing
+- **IR** – Immutable object graph capturing component metadata and relationships
+- **Generators** – Plugins creating global files (ir.json, components.d.ts). Always fully rebuild.
+- **Derivatives** – Plugins creating framework adapters (React, Angular). One output per source file, incremental.
+
+**See [Understanding Pencel's Compiler](/pencel/internals/understanding/) for conceptual overview. See [Core Components](/pencel/internals/core/) for system architecture.**

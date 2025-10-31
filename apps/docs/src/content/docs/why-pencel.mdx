@@ -1,45 +1,54 @@
 ---
-title: Why Pencel
+title: Why Pencel?
 sidebar:
   order: -1
 ---
 
-## The Missing Piece
+## The Problem
 
-The component ecosystem has evolved in fragments. **Stencil** brought enterprise tooling but is locked into outdated internal tools and rigid compilation models. **Mitosis** solved multi-framework code generation but through template-driven abstraction that's powerful yet fragile. **Lit** delighted developers with elegant Web Components authoring but stopped short of solving framework distribution.
+The component ecosystem has fragmented into isolated silos:
 
-None combined Web Components ease, multi-framework support, modern performance, and enterprise flexibility. That's the gap Pencel fills.
+- **Stencil** – Enterprise tooling trapped in outdated compilation models
+- **Mitosis** – Powerful multi-framework generation, but template-based and fragile
+- **Lit** – Developer-friendly Web Components, but no framework integrations
+- **Framework-specific tools** – React/Vue/Angular components don't share code
 
-Pencel achieves this with a **zero-VDOM architecture** (inspired by Svelte) that parses JSX into an AST and generates direct element creation code—no JSX runtimes, no virtual DOM overhead. Web Components have minimal performance impact on visual components, making them perfect for any framework (React, Angular, Vue) without abstraction costs.
+You're forced to choose: either rebuild components for each framework, or accept tight coupling to one ecosystem. **Pencel solves this.**
 
-This approach works everywhere: web (islands or monolith), desktop (Tauri), and mobile—all from a single design system source at near-native performance.
+## How Pencel Is Different
 
-## How Pencel Works
+**Zero-VDOM Compilation** (inspired by Svelte)  
+Pencel parses JSX into an AST and generates direct element creation code—no JSX runtimes, no virtual DOM overhead. Web Components have minimal performance impact, making them perfect for any framework without abstraction costs.
 
 **IR-Driven Architecture**  
-Unlike template-driven tools, Pencel uses an Intermediate Representation system that enables powerful code generation. This gives library authors fine-grained control over outputs while keeping your source code clean—and means you're not locked into predefined conventions.
+Unlike template-driven tools (Mitosis), Pencel uses an Intermediate Representation system that enables powerful, fine-grained code generation. Your source code stays clean, and you're not locked into predefined conventions.
 
-**Web Components as Core**  
-Your components compile to Web Components first, then optionally to framework bindings (React, Angular, Vue). This means:
-- Load your library once via CDN and use it across multiple islands and websites regardless of framework
-- Share a unified component core across mixed frameworks in the same application
+**Web Components First, Framework Bindings Second**  
+Your components compile to standard Web Components, then optionally to React, Angular, or Vue wrappers. This means:
+- Load your library once via CDN and use across multiple frameworks
+- Share a unified component core in mixed-framework applications
 - Reduced bundle size—components load once, not duplicated per island
 - Future-proof with the Web Components standard
 
-**Familiar Developer API**  
-TypeScript decorators (@Component, @Prop, @Event) follow Stencil conventions. Source files compiles to all targets with zero VDOM overhead.
+**TypeScript Decorators You Know**  
+Familiar API from Stencil (`@Component`, `@Prop`, `@Event`) with modern TypeScript 5+ features and zero magic.
 
-## ✅ When to Use Pencel
+## ✅ Pencel Is For You If
 
-- Build design systems or component libraries used across multiple frameworks
-- Need islands architecture or multi-framework applications with shared components
-- Want Web Components as your core with framework bindings as adapters
-- Require flexibility to customize the compiler for your enterprise pipeline
-- Deploying to web, desktop, or mobile (Tauri) with shared design systems at near-native performance
+- **Building design systems or component libraries** used across multiple frameworks
+- **Islands architecture or multi-framework applications** with shared components
+- **Want Web Components as your core** with framework bindings as adapters
+- **Need compiler flexibility** for custom enterprise pipelines
+- **Deploying across web, desktop (Tauri), or mobile** with shared design systems at near-native performance
+- **Tired of rebuilding components** for each framework you support
 
-## ❌ When Pencel Isn't the Right Fit
+## ❌ Pencel May Not Be the Right Fit If
 
-- Building single-framework applications (React, Vue, or Angular only)
-- No existing build tooling—Pencel requires Vite, Webpack, or similar to transpile
-- Need non-standardized, deeply framework-specific integrations—Pencel bindings support standardized patterns, not niche framework quirks
-- Early-stage experimentation without DevOps infrastructure—Pencel assumes a modern build pipeline
+- Building a **single-framework application** (React, Vue, or Angular only)
+- **No existing build tooling**—Pencel requires Vite, Webpack, or esbuild
+- Need **highly framework-specific integrations** beyond standardized patterns
+- **Early-stage prototyping** without modern build infrastructure
+
+## Ready to Get Started?
+
+Check out the [Getting Started guide](/pencel/getting-started) to create your first Web Component in minutes.

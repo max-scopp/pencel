@@ -1,0 +1,112 @@
+---
+title: Dependency Injection
+sidebar:
+  order: 6
+---
+
+Pencel uses a lightweight dependency injection (DI) container inspired by Angular's approach. However, it's **only used for core compiler components**—not for general application code.
+
+## Why DI?
+
+The compiler has many interdependent services (Program, SourceFiles, FileProcessor, IRRI, etc.). DI enables:
+
+- **Singleton pattern** – One instance per compilation
+- **Automatic wiring** – Services find their dependencies without manual setup
+- **Clear dependency graph** – Easy to reason about which services depend on what
+- **Testability** – Can register mock instances for testing
+
+## Usage: `inject()`
+
+All core services use `inject()` to retrieve their dependencies:
+
+```typescript
+import { inject } from "../core/container.ts";
+import { Config } from "../config.ts";
+
+export class MyService {
+  readonly #config = inject(Config);  // ✅ Retrieve singleton instance
+  readonly #plugins = inject(Plugins);
+
+  myMethod() {
+    // Use injected services
+    this.#config.cwd
+    this.#plugins.handle(...)
+  }
+}
+```
+
+**Key points:**
+- `inject(ServiceClass)` returns the singleton instance
+- Services use private `readonly` fields with `#` prefix
+- No constructor parameters needed
+- Circular dependency detection prevents infinite loops
+
+## Circular Dependency Protection
+
+The container detects circular dependencies and throws a clear error:
+
+```
+Circular dependency detected: ServiceA is already being instantiated.
+Currently instantiating: [ServiceA -> ServiceB -> ServiceC]
+```
+
+This helps catch configuration issues early.
+
+## Scope: Core Components Only
+
+DI is **only for compiler internals**:
+
+- ✅ `Program`, `SourceFiles`, `FileProcessor`, `Compiler`
+- ✅ `IRRI`, `Plugins`, `FileWriter`, `SourcePrinter`
+- ❌ User plugins
+- ❌ Framework adapters (React, Angular, Vue)
+- ❌ Application code
+
+Plugins receive their dependencies via hook parameters, not via DI.
+
+## API Reference
+
+### `inject<T>(ctor: Constructor<T>): T`
+
+Retrieve or create a singleton instance of a service. If already instantiated, returns the cached instance.
+
+```typescript
+const config = inject(Config);
+```
+
+### `injectLazy<T>(ctor: Constructor<T>): () => T`
+
+Returns a function that calls `inject()` when invoked. Useful for deferring dependency resolution.
+
+```typescript
+const getConfig = injectLazy(Config);
+// Later...
+const config = getConfig();
+```
+
+### `register<T>(ctor: Constructor<T>, instance: T): void`
+
+Manually register a pre-created instance (useful for testing with mocks).
+
+```typescript
+const mockConfig = { cwd: "/test" };
+register(Config, mockConfig);
+```
+
+### `clear(): void`
+
+Clears all registered instances. Used between test runs to reset state.
+
+```typescript
+clear();  // Reset DI container
+```
+
+## Implementation Details
+
+The container is simple and synchronous:
+
+- **`instances` Map** – Stores all singleton instances
+- **`instantiating` Set** – Tracks services being constructed (detects cycles)
+- **`pending` Map** – Tracks async initialization (prevents concurrent instantiation)
+
+Each service creates exactly one instance per compilation, shared across all consumers.

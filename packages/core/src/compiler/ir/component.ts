@@ -23,42 +23,31 @@ import { IRM, IRRef } from "./irri.ts";
 import { MethodIR } from "./method.ts";
 import { PropertyIR } from "./prop.ts";
 import { RenderIR } from "./render.ts";
+import { StateIR } from "./state.ts";
 import type { StyleIR } from "./style.ts";
 
-/**
- * ComponentIR is the flat IR representation of a component.
- * Contains both user-provided decorator options and compiler-resolved metadata as public readonly fields.
- *
- * ComponentIR = { tag, shadow, scoped, extends, formAssociated, normalizedTag, heritage, processedStyles, processedStyleUrls, props, events, methods, render }
- *
- * The IR is the single source of truth. Transformers extract a subset as [INTERNALS] for runtime decorator enrichment.
- */
 export class ComponentIR extends IRM("Component") {
   readonly #config = inject(Config);
 
-  // Metadata about the component in source
   readonly className: string;
   readonly fileName: string;
 
-  // User-provided fields from @Component decorator
   readonly sourceTag: string;
   readonly shadow?: boolean;
   readonly scoped?: boolean;
   readonly extends?: string;
   readonly formAssociated?: boolean;
 
-  // Compiler-resolved metadata (flat, alongside user fields)
   readonly normalizedTag: string;
   readonly heritage: string;
   readonly extendsTag: string | undefined;
 
-  // Component members collected from class
   readonly props: Array<IRRef<PropertyIR, ts.PropertyDeclaration>>;
-  readonly events: Array<IRRef<EventIR, ts.MethodDeclaration>>;
+  readonly state: Array<IRRef<StateIR, ts.PropertyDeclaration>>;
+  readonly events: Array<IRRef<EventIR, ts.PropertyDeclaration>>;
   readonly methods: Array<IRRef<MethodIR, ts.MethodDeclaration>>;
   readonly render?: IRRef<RenderIR, ts.MethodDeclaration>;
 
-  // Mutable style fields, set via adoptStyles() after ComponentIR is created
   #processedStylesValue: string = "";
   #processedStyleUrlsValue: Record<string, string> = {};
 
@@ -71,11 +60,7 @@ export class ComponentIR extends IRM("Component") {
   }
 
   /**
-   * Constructs a ComponentIR from user source code.
-   * Styles are attached later via adoptStyles() to break the circular dependency.
-   *
-   * @param sourceFile - TypeScript source file for context
-   * @param classDeclaration - The component class declaration
+   * Constructs a ComponentIR from user source code; styles are attached later via adoptStyles().
    */
   constructor(sourceFile: ts.SourceFile, classDeclaration: ClassDeclaration) {
     super();
@@ -90,7 +75,6 @@ export class ComponentIR extends IRM("Component") {
       classDeclaration.name?.text ??
       throwError("A component must have a class name.");
 
-    // Store user-provided options as public fields
     this.sourceTag =
       componentOptions.tag ??
       throwError(
@@ -101,7 +85,6 @@ export class ComponentIR extends IRM("Component") {
     this.extends = componentOptions.extends;
     this.formAssociated = componentOptions.formAssociated;
 
-    // Resolve compiler metadata and store directly as public fields
     this.normalizedTag = normalizeTag(
       this.sourceTag,
       this.#config.user.runtime.tagNamespace,
@@ -135,6 +118,7 @@ export class ComponentIR extends IRM("Component") {
     // Collect component members
     const {
       properties,
+      state,
       events,
       methods,
       render: [render],
@@ -142,6 +126,12 @@ export class ComponentIR extends IRM("Component") {
       properties: (member) => {
         if (PropertyIR.isPencelPropMember(member)) {
           return new IRRef(new PropertyIR(member), member);
+        }
+        return;
+      },
+      state: (member) => {
+        if (StateIR.isPencelStateMember(member)) {
+          return new IRRef(new StateIR(member), member);
         }
         return;
       },
@@ -166,17 +156,14 @@ export class ComponentIR extends IRM("Component") {
     });
 
     this.props = properties;
+    this.state = state;
     this.events = events;
     this.methods = methods;
     this.render = render;
   }
 
   /**
-   * Attaches processed styles to this ComponentIR after it's been created.
-   * This breaks the circular dependency: ComponentIR is created first, then
-   * StyleIR is processed with the ComponentIR reference, then styles are adopted.
-   *
-   * @param styleIr - The processed StyleIR to adopt
+   * Attaches processed styles to this ComponentIR after creation to break circular dependency.
    */
   adoptStyles(styleIr: StyleIR): void {
     this.#processedStylesValue = styleIr.processedStyles;

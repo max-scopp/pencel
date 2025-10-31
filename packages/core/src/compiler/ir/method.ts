@@ -10,23 +10,13 @@ import { IRM } from "./irri.ts";
 
 const warn = createWarn("MethodIR");
 
-/**
- * MethodIR is the flat IR representation of a public method.
- * Contains compiler-resolved metadata as public readonly fields.
- *
- * MethodIR = { name, returnType }
- *
- * The IR is the single source of truth. Transformers extract a subset as [INTERNALS].
- */
 export class MethodIR extends IRM("Method") {
-  // Compiler-resolved metadata (methods are implicitly public, no user options)
   readonly name: string;
   readonly returnType?: string;
 
   constructor(methodDeclaration: MethodDeclaration) {
     super();
 
-    // Store compiler-resolved metadata directly as public fields
     this.name = methodDeclaration.name.getText();
     this.returnType = methodDeclaration.type?.getText();
   }

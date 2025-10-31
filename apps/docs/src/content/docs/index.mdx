@@ -1,9 +1,9 @@
 ---
 title: Pencel
-description: Draw your components with familiar syntax — no magic, no lock-in, just clean, shippable code.
+description: Write components once, output to React, Angular, Vue, and vanilla JS.
 head:
   - tag: title
-    content: Pencel - Graphite points, fission sparks
+    content: Pencel - Component Translation Engine
   - tag: style
     content: |
       .hero-html {
@@ -14,37 +14,33 @@ head:
       }
 template: splash
 hero:
-  tagline: Graphite points, fission sparks
+  tagline: One component, multiple frameworks
   image:
     html: ✏️
-    # file: ../../assets/pencel.png
   actions:
     - text: Get Started
       link: /pencel/getting-started
       icon: right-arrow
-    - text: View on GitHub
+    - text: GitHub
       link: https://github.com/max-scopp/pencil
       icon: github
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 
 <CardGrid stagger>
-	<Card title="Framework Agnostic" icon="puzzle">
-		Use your components in React, Angular, Vue. Perfect for universal design systems.
+	<Card title="Component Translation" icon="puzzle">
+		Write once in TypeScript + JSX. Transpile to React, Angular, Vue, vanilla JS.
 	</Card>
-	<Card title="Build Your Way" icon="setting">
-		Pencel works smoothly with Vite, Rollup, esbuild, or any bundler you love. Your project, your rules.
+	<Card title="Full Native Control" icon="document">
+		Extend HTML elements directly. HTMLButtonElement, HTMLInputElement—full platform access.
 	</Card>
-	<Card title="Deep Platform Access" icon="document">
-		Full control over custom elements internals. Extend native buttons, inputs, or any HTML element while keeping all their built-in features.
+	<Card title="Zero-VDOM Runtime" icon="rocket">
+		~4 kB gzipped. Direct DOM updates. Pure Web Components output.
 	</Card>
-	<Card title="Familiar Territory" icon="pen">
-		Jump right in with TypeScript decorators and JSX. Clean, predictable patterns that feel natural from day one.
-	</Card>
-	<Card title="Ship Light" icon="rocket">
-    Tiny ~7 kB runtime gzipped. No bloat, no surprises.
+	<Card title="TypeScript First" icon="pen">
+		Decorators, JSX, familiar patterns. Type-safe from start to finish.
 	</Card>
 </CardGrid>
 
@@ -53,21 +49,21 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ```tsx
 import { Component, Prop, Event } from '@pencel/runtime';
 
-@Component({
-  tag: 'button'
-})
-export class Button extends HTMLElement {
+@Component({ tag: 'my-button' })
+export class MyButton extends HTMLButtonElement {
   @Prop() label: string = 'Click me';
-
-  @Event()
-  declare clicked: CustomEvent<void>;
+  @Event() declare clicked: CustomEvent<void>;
 
   render() {
     return (
-      <button part="button" onClick={() => this.clicked.emit()}>
+      <Host onClick={() => this.clicked.emit()}>
         {this.label}
-      </button>
+      </Host>
     );
   }
 }
 ```
+
+<Aside>
+The compiler transforms `.pen.tsx` files into framework-specific adapters automatically.
+</Aside>

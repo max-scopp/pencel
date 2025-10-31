@@ -4,34 +4,17 @@ sidebar:
   order: 1.5
 ---
 
-A conceptual overview of how Pencel transforms component source files into framework-specific outputs.
-
-**⚠️ Note:** This describes intended architecture. See [TODOs](/pencel/internals/todos/) for implementation status.
+A conceptual overview of Pencel's three-layer architecture: semantic, synchronization, and translation.
 
 ## The Core Insight
 
-Pencel translates user intent into multiple output formats. A single `.pen.tsx` component should work in React, Angular, Vue, or vanilla JS—all from one source.
-
-**Challenge:** Generate framework code efficiently while keeping the semantic model clean.  
-**Answer:** Separate concerns into layers.
+A single `.pen.tsx` component should work in React, Angular, Vue, and vanilla JS—all from one source. Pencel separates concerns into three layers to make this efficient.
 
 ## Three Layers
 
-### 1. Semantic Layer (The IR)
+### 1. Semantic Layer
 
-The Intermediate Representation is a complete, immutable snapshot of what the user wrote:
-
-```tsx
-// components/my-button.pen.tsx
-@Component({ tag: 'my-button' })
-export class MyButton {
-  @Prop() label: string
-  @Event() onClick: EventEmitter<void>
-  render() { ... }
-}
-```
-
-Parsed into immutable IR:
+The IR captures what the user wrote—format-agnostic metadata:
 
 ```typescript
 {
@@ -41,40 +24,25 @@ Parsed into immutable IR:
 }
 ```
 
-**Format-agnostic.** Just "here's what the user wrote."
+See [Architecture](/pencel/internals/architecture/) for the 7-phase compilation pipeline.
 
-### 2. Synchronization Layer (AST Syncing)
+### 2. Synchronization Layer
 
-Before outputting anything, ensure all AST nodes sync with IR. Each IR pairs with its AST node via [IRRef](/pencel/internals/irri/). **Transformers** use IR as single source of truth to update AST.
+AST nodes sync with IR via [IRRef](/pencel/internals/irri/). **Transformers** use IR as the single source of truth to update AST.
 
-Sync means:
-- Update decorator metadata to match IR state
-- Fix property initializers
-- Extend the user's implementation as needed
+### 3. Translation Layer
 
-See [IRRI and IRRef](/pencel/internals/irri/) for details.
+Two types of outputs from IR:
 
-### 3. Translation Layer (Generate & Derive)
+- **Generators** – Global files (ir.json, components.d.ts). Always fully rebuild from complete IR.
+- **Derivatives** – Framework adapters (React, Angular, Vue). One per source file, incremental.
+- **Render Transformer** – Converts JSX render methods into zero-DOM factory function calls, optimizing component rendering.
 
-Two types of outputs:
-
-**Generators** (Global)
-- Create project-level files
-- Always fully rebuild
-- Examples: `ir.json`, `component.d.ts`, schemas
-- Stateless: consume full IR every time
-
-**Derivatives** (Per-Source)
-- Create framework-specific wrappers
-- Only regenerate when source changed
-- Examples: `component.react.tsx`, `component.angular.ts`
-- Can access full IR, but output maps 1:1 to user source
-
-That's it. No need to think about the entire pipeline.
+See [Architecture](/pencel/internals/architecture/) for pipeline phases, [Core Components](/pencel/internals/core/) for plugin hooks, and [Render Transformer](/pencel/internals/render-transformer/) for JSX compilation details.
 
 ## Mental Model
 
-Think of Pencel as a **component translation engine**:
+Pencel is a component translation engine that outputs multiple formats from a single IR:
 
 ```mermaid
 graph LR
@@ -84,7 +52,7 @@ graph LR
     React["component.react.tsx"]
     Angular["component.angular.ts"]
     IRJson["ir.json"]
-    Types["component.d.ts"]
+    Types["components.d.ts"]
     
     Source -->|parse| IR
     
@@ -103,8 +71,8 @@ graph LR
     style Types fill:#f8bbd0,stroke:#c2185b,color:#000
 ```
 
-**`.gen.ts`** is the "normalized" source: inlined CSS, resolved URLs, extended implementation. Other derivatives (React, Angular) are further transformations.
+**`.gen.ts`** is the normalized source: inlined CSS, resolved URLs, extended implementation.
 
 ## File Management
 
-As files are generated/derived, Pencel manages imports and dependencies via **SourceFiles class**. See [File and Dependency Management](/pencel/internals/file-management/) for details.
+As files are generated/derived, Pencel manages imports via **SourceFiles**. See [File and Dependency Management](/pencel/internals/file-management/) for details.

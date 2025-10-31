@@ -1,64 +1,112 @@
 ---
-title: CSS
+title: CSS Plugin
 sidebar: 
     order: 1
 ---
 
-Inlines, optimizes, and minifies your component's CSS using [`lightningcss`](https://lightningcss.dev/).
+import { Aside } from '@astrojs/starlight/components';
+
+The CSS plugin automatically inlines, optimizes, and minifies your component styles using [`lightningcss`](https://lightningcss.dev/). It's **enabled by default**.
 
 ## Basic Usage
 
-```diff lang="ts"
-// pencel.config.ts
+Define styles in your component:
+
+```typescript
+@Component({
+  tag: 'my-button',
+  styles: `
+    button {
+      background: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+    }
+  `
+})
+export class MyButton extends HTMLElement {
+  render() {
+    return <button>Click me</button>;
+  }
+}
+```
+
+Styles are automatically optimized and included in the compiled output.
+
+## Shadow DOM vs Scoped vs Global
+
+The plugin handles three rendering modes:
+
+**Shadow DOM** (`shadow: true`)
+- CSS is attached to the shadow root as-is
+- Provides full style encapsulation
+- `:host` and `:host-context()` work normally
+
+```typescript
+@Component({
+  tag: 'my-component',
+  shadow: true,  // CSS attached to shadowRoot
+  styles: css
+})
+```
+
+**Scoped** (`scoped: true`)
+- CSS is transformed automatically for light DOM
+- `:host` selectors converted to light-DOM equivalents
+- All other selectors prefixed with your component tag (e.g., `.button` → `my-component .button`)
+
+```typescript
+@Component({
+  tag: 'my-component',
+  scoped: true,  // CSS automatically scoped
+  styles: css
+})
+```
+
+**Global** (neither flag set)
+- CSS attached globally without transformations
+- Use for utility styles or reusable class definitions
+
+## Configuration
+
+To customize CSS processing:
+
+```typescript
 import { defineConfig } from '@pencel/core';
 
 export default defineConfig({
-    plugins: [
-+        "css"
-    ]
+  plugins: [
+    {
+      name: 'css',
+      options: {
+        enabled: true,           // Enable/disable the plugin
+        scopedTransform: true    // Enable automatic scoped transformations (default: true)
+      }
+    }
+  ]
 });
 ```
 
-## Advanced Configuration
+### Disable Scoped Transformations
 
-```diff lang="ts"
-// pencel.config.ts
+If you want scoped components but without automatic selector prefixing:
+
+```typescript
 import { defineConfig } from '@pencel/core';
 
 export default defineConfig({
-    plugins: [
-+        {
-+            name: "css",
-+            options: {
-+                enabled: true,
-+            }
-+        }
-    ]
+  plugins: [
+    {
+      name: 'css',
+      options: {
+        scopedTransform: false  // Don't auto-prefix selectors
+      }
+    }
+  ]
 });
 ```
 
-## Shadow-DOM Syntax
-
-For **shadow DOM components** (`shadow: true`), CSS is attached to the shadow root as-is. 
-
-For **scoped components** (`scoped: true`), shadow-DOM syntax is automatically transformed — `:host`, `:host-context(...)` selectors are converted to light-DOM equivalents and all other selectors are prefixed with your component tag.
-
-For **global components** (neither flag set), CSS is attached globally without transformations.
-
-To disable scoped transformations, set `scopedTransform: false`:
-
-```diff lang="ts"
-// pencel.config.ts
-import { defineConfig } from '@pencel/core';
-
-export default defineConfig({
-    plugins: [
-        {
-            name: "css",
-            options: {
-+                scopedTransform: false
-            }
-        }
-    ]
-});
-```
+<Aside type="tip">
+For advanced styling without scoped transformation overhead, use shadow DOM mode (`shadow: true`). This provides better encapsulation and doesn't require CSS rewriting.
+</Aside>

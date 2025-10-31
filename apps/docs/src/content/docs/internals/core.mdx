@@ -4,7 +4,7 @@ sidebar:
   order: 3
 ---
 
-The core compiler system and how the pieces fit together. See [Compilation System](/pencel/internals/compilation/) for the pipeline overview.
+The core compiler system and how the pieces fit together. See [Architecture](/pencel/internals/architecture/) for the pipeline overview.
 
 ## System Architecture
 
@@ -54,14 +54,13 @@ Discovers input files and validates `tsconfig.json`.
 
 ### SourceFiles
 
-Manages all source and generated files, maintains their separation, and serves as the central registry.
+Manages all source and generated files, maintains separation, and provides a central registry.
 
-- Maintains `#sourceFiles` (project inputs) separately from `#generatedFiles`
-- Provides API for creating generated files (auto-registers them)
-- Manages import resolution and dependency validation
-- Indexes symbols across user, generated, and derived files
+- Maintains `#sourceFiles` separately from `#generatedFiles`
+- Provides API for creating generated files (auto-registers)
+- Manages import resolution
 
-See [File and Dependency Management](/pencel/internals/file-management/) for detailed information.
+See [File and Dependency Management](/pencel/internals/file-management/) for details.
 
 ### FileProcessor
 
@@ -73,14 +72,9 @@ Builds the IR for a single source file.
 
 ### IRRI
 
-Tracks all IR nodes created during a compilation pass, organized by kind.
+Tracks all IR nodes created during compilation, organized by kind. Enables efficient batch transformations.
 
-- Collects all IRs as they're created via auto-registration from `IRRef`
-- Organizes by IR kind (Component, Property, Event, etc.)
-- Provides typed queries for batching transformations
-- Implodes references to get pure IR tree for generation
-
-See [IRRI and IRRef](/pencel/internals/irri/) for pairing and querying strategy.
+See [IRRI and IRRef](/pencel/internals/irri/) for details on pairing IR with AST nodes.
 
 ### Transformers
 
@@ -99,56 +93,39 @@ Flushes generated and derived files to disk.
 
 ## Compilation Flow
 
-The `Compiler` orchestrates the entire pipeline:
+The `Compiler` orchestrates the pipeline:
 
-```typescript
-async compile(): Promise<Map<string, FileIR>> {
-  await this.#program.discover()
-  await this.#sourceFiles.loadSource()
-  this.#sourceFiles.clearGenerated()
-  
-  // 3. Build IR for all sources
-  const irs = new Map<string, FileIR>()
-  for (const sourceFile of this.#sourceFiles.getAll().values()) {
-    const ir = await this.#fileProcessor.process(sourceFile)
-    if (ir) irs.set(sourceFile.fileName, ir)
+```ts
+class Compiler {
+  async compile(): Promise<Map<string, FileIR>> {
+    await this.#program.discover()
+    await this.#sourceFiles.loadSource()
+    this.#sourceFiles.clearGenerated()
+    
+    const irs = new Map<string, FileIR>()
+    for (const sourceFile of this.#sourceFiles.getAll().values()) {
+      const ir = await this.#fileProcessor.process(sourceFile)
+      if (ir) irs.set(sourceFile.fileName, ir)
+    }
+    
+    await this.#plugins.runGenerators(irs)
+    await this.#plugins.runDerivatives(irs, this.#changedSourceFiles)
+    await this.#fileWriter.writeEverything()
+    
+    return irs
   }
-  
-  // 4-6. Sync AST, Generate, Derive
-  await this.#plugins.runGenerators(irs)
-  await this.#plugins.runDerivatives(irs, this.#changedSourceFiles)
-  
-  // 7. Write to disk
-  await this.#fileWriter.writeEverything()
-  
-  return irs
 }
 ```
 
 ## Dependency Injection
 
-All core components use constructor injection from a DI container:
+All core components use a lightweight DI container to retrieve their dependencies. This enables singleton pattern, automatic wiring, and circular dependency detection.
 
-```mermaid
-graph TB
-    Container["DI Container"]
-    Config["Config"]
-    Program
-    SourceFiles
-    FileProcessor
-    IRRI
-    Compiler
-    
-    Container -.->|provides| Config
-    Container -.->|provides| Program
-    Container -.->|provides| SourceFiles
-    Container -.->|provides| FileProcessor
-    Container -.->|provides| IRRI
-    Container -.->|provides| Compiler
-    
-    style Container fill:#fff3e0,stroke:#f57f17,color:#000
-```
+See [Dependency Injection](/pencel/internals/dependency-injection/) for details on the DI system and its usage.
 
-This enables:
-- Singleton pattern: one instance per compilation
-- Clear dependency graph
+## Plugin Hooks
+
+Plugins listen for hooks using the `handle()` method:
+
+- **`generate`** – Create global files from complete IR (always fully rebuild)
+- **`derive`** – Create framework adapters (per-source, incremental)

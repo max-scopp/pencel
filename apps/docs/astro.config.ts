@@ -44,12 +44,8 @@ export default defineConfig({
               slug: "configuration",
             },
             {
-              label: "Runtime API",
-              slug: "runtime",
-            },
-            {
-              label: "Outputs",
-              slug: "outputs",
+              label: "Reference",
+              slug: "reference",
             },
             {
               label: "Roadmap",
@@ -69,13 +65,6 @@ export default defineConfig({
           collapsed: true,
           autogenerate: {
             directory: "outputs",
-          },
-        },
-        {
-          label: "Guides",
-          collapsed: true,
-          autogenerate: {
-            directory: "guides",
           },
         },
         {

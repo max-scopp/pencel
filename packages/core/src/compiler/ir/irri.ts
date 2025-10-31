@@ -7,6 +7,7 @@ import type { FileIR } from "./file.ts";
 import type { MethodIR } from "./method.ts";
 import type { PropertyIR } from "./prop.ts";
 import type { RenderIR } from "./render.ts";
+import type { StateIR } from "./state.ts";
 import type { StyleIR } from "./style.ts";
 
 export type IRKind = keyof KnownIRs;
@@ -15,6 +16,7 @@ export type KnownIRs = {
   File: FileIR;
   Component: ComponentIR;
   Prop: PropertyIR;
+  State: StateIR;
   Method: MethodIR;
   Event: EventIR;
   Render: RenderIR;
@@ -22,7 +24,7 @@ export type KnownIRs = {
 };
 
 /**
- *  Recursively unwraps IRRef<T> to T through object trees and arrays
+ * Recursively unwraps IRRef<T> to T through object trees and arrays.
  */
 export type ImplodeIRRefs<T> = T extends IRRef<infer U, infer _N extends Node>
   ? ImplodeIRRefs<U>
@@ -35,17 +37,14 @@ export type ImplodeIRRefs<T> = T extends IRRef<infer U, infer _N extends Node>
       : T;
 
 /**
- * Each Intermediate Representation can vary highly in structure and purpose.
- * This interface serves as a base type for all IR kinds, providing a
- * way to identify the specific type of IR.
+ * Base interface for all IR kinds, providing identification of IR type.
  */
 export interface IR {
   kind: IRKind;
 }
 
 /**
- * Intermediate Representation Mixin.
- * Creates a class that implements the IR interface of the specified kind.
+ * Intermediate Representation Mixin to implement IR interface for a given kind.
  */
 export function IRM(kind: IRKind) {
   return class implements IR {
@@ -54,8 +53,7 @@ export function IRM(kind: IRKind) {
 }
 
 /**
- * Container interface that holds a reference to an IR instance along with
- * its associated AST node and children.
+ * Container holding a reference to an IR instance, its AST node, and auto-registering with IRRI.
  */
 export class IRRef<T extends IR, TNode extends Node> {
   constructor(
@@ -87,7 +85,7 @@ export class IRRI {
   }
 
   /**
-   * Get the IRRef for a given node, if it exists in the IRRI
+   * Get the IRRef for a given node, if it exists in the IRRI.
    */
   getIrrForNode(node: Node): IRRef<IR, Node> | undefined {
     return this.#nodeToIrr.get(node);
@@ -127,7 +125,7 @@ export class IRRI {
   }
 
   /**
-   *  Unwraps IRRef instances and removes AST nodes for serialization
+   * Unwraps IRRef instances and removes AST nodes for serialization.
    */
   implode<T>(value: T): ImplodeIRRefs<T> {
     const seen = new WeakSet<object>();
