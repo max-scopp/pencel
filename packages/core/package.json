@@ -45,7 +45,9 @@
     "lightningcss": "^1.30.2",
     "sass": "^1.92.1",
     "sass-embedded": "^1.93.2",
-    "ts-flattered": "^0.2.2"
+    "ts-flattered": "^0.2.2",
+    "postcss": "^8.5.6",
+    "postcss-selector-parser": "^7.1.0"
   },
   "devDependencies": {
     "@types/babel__code-frame": "~7.0.6",

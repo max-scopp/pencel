@@ -55,8 +55,12 @@ function buildStyles(
   return Array.from(styles);
 }
 
-function mergeStyleSheetsToStyleTag(sheets: CSSStyleSheet[]): HTMLStyleElement {
+function mergeStyleSheetsToStyleTag(
+  sheets: CSSStyleSheet[],
+  component: ComponentInterfaceWithContext,
+): HTMLStyleElement {
   const style = document.createElement("style");
+  style.id = `pen-styles-${component.tagName.toLowerCase()}`;
 
   for (const sheet of sheets) {
     try {
@@ -83,12 +87,13 @@ function interopStyleAttachment(
       return;
     }
 
-    const stylesElm = mergeStyleSheetsToStyleTag(styles);
+    const stylesElm = mergeStyleSheetsToStyleTag(styles, component);
 
     if (options.scoped) {
       throw new Error("Scoped styles are not implemented yet");
     }
-    component.insertBefore(stylesElm, component.firstChild);
+
+    document.head.append(stylesElm);
   }
 }
 

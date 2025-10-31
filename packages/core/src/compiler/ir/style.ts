@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { ComponentOptions } from "@pencel/runtime";
 import type ts from "typescript";
+import type { ClassDeclaration } from "typescript";
 import { inject } from "../core/container.ts";
 import { Plugins } from "../core/plugin.ts";
-import { IRM } from "./irri.ts";
+import type { ComponentIR } from "./component.ts";
+import { IRM, type IRRef } from "./irri.ts";
 
 /**
  * StyleIR is the flat IR representation of processed component styles.
@@ -52,11 +54,13 @@ export class StyleIR extends IRM("Style") {
    *
    * @param sourceFile - TypeScript source file for relative path resolution
    * @param componentOptions - User-provided style configuration
+   * @param componentIR - Optional: Reference to the component IR for plugin hooks
    * @returns StyleIR instance with processed styles
    */
   static async process(
     sourceFile: ts.SourceFile,
     componentOptions: ComponentOptions,
+    componentIR?: IRRef<ComponentIR, ClassDeclaration>,
   ): Promise<StyleIR> {
     const plugins = inject(Plugins);
     let inlineStyles = "";
@@ -95,6 +99,7 @@ export class StyleIR extends IRM("Style") {
         hook: "css:postprocess",
         input: preprocessed.input,
         path: filePath,
+        irr: componentIR,
       });
 
       return postprocessed.input;

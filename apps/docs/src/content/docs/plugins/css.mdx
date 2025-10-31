@@ -30,9 +30,35 @@ export default defineConfig({
 +        {
 +            name: "css",
 +            options: {
-+                enabled: true
++                enabled: true,
 +            }
 +        }
+    ]
+});
+```
+
+## Shadow-DOM Syntax
+
+For **shadow DOM components** (`shadow: true`), CSS is attached to the shadow root as-is. 
+
+For **scoped components** (`scoped: true`), shadow-DOM syntax is automatically transformed — `:host`, `:host-context(...)` selectors are converted to light-DOM equivalents and all other selectors are prefixed with your component tag.
+
+For **global components** (neither flag set), CSS is attached globally without transformations.
+
+To disable scoped transformations, set `scopedTransform: false`:
+
+```diff lang="ts"
+// pencel.config.ts
+import { defineConfig } from '@pencel/core';
+
+export default defineConfig({
+    plugins: [
+        {
+            name: "css",
+            options: {
++                scopedTransform: false
+            }
+        }
     ]
 });
 ```

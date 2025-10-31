@@ -51,8 +51,6 @@ export class ComponentIR extends IRM("Component") {
   readonly normalizedTag: string;
   readonly heritage: string;
   readonly extendsTag: string | undefined;
-  readonly processedStyles: string;
-  readonly processedStyleUrls: Record<string, string>;
 
   // Component members collected from class
   readonly props: Array<IRRef<PropertyIR, ts.PropertyDeclaration>>;
@@ -60,18 +58,26 @@ export class ComponentIR extends IRM("Component") {
   readonly methods: Array<IRRef<MethodIR, ts.MethodDeclaration>>;
   readonly render?: IRRef<RenderIR, ts.MethodDeclaration>;
 
+  // Mutable style fields, set via adoptStyles() after ComponentIR is created
+  #processedStylesValue: string = "";
+  #processedStyleUrlsValue: Record<string, string> = {};
+
+  get processedStyles(): string {
+    return this.#processedStylesValue;
+  }
+
+  get processedStyleUrls(): Record<string, string> {
+    return this.#processedStyleUrlsValue;
+  }
+
   /**
-   * Constructs a ComponentIR from user source code and processed styles.
+   * Constructs a ComponentIR from user source code.
+   * Styles are attached later via adoptStyles() to break the circular dependency.
    *
    * @param sourceFile - TypeScript source file for context
    * @param classDeclaration - The component class declaration
-   * @param styleIr - Pre-processed styles
    */
-  constructor(
-    sourceFile: ts.SourceFile,
-    classDeclaration: ClassDeclaration,
-    styleIr: StyleIR,
-  ) {
+  constructor(sourceFile: ts.SourceFile, classDeclaration: ClassDeclaration) {
     super();
 
     const decorator = singleDecorator(classDeclaration, "Component");
@@ -90,8 +96,8 @@ export class ComponentIR extends IRM("Component") {
       throwError(
         `@Component for class ${this.className} must have a 'tag' property.`,
       );
-    this.shadow = componentOptions.shadow;
-    this.scoped = componentOptions.scoped;
+    this.shadow = componentOptions.shadow ?? false;
+    this.scoped = componentOptions.scoped ?? true;
     this.extends = componentOptions.extends;
     this.formAssociated = componentOptions.formAssociated;
 
@@ -125,10 +131,6 @@ export class ComponentIR extends IRM("Component") {
       );
 
     this.extendsTag = getTagByExtendsString(this.heritage);
-
-    // Store processed styles directly
-    this.processedStyles = styleIr.processedStyles;
-    this.processedStyleUrls = styleIr.processedStyleUrls;
 
     // Collect component members
     const {
@@ -167,6 +169,18 @@ export class ComponentIR extends IRM("Component") {
     this.events = events;
     this.methods = methods;
     this.render = render;
+  }
+
+  /**
+   * Attaches processed styles to this ComponentIR after it's been created.
+   * This breaks the circular dependency: ComponentIR is created first, then
+   * StyleIR is processed with the ComponentIR reference, then styles are adopted.
+   *
+   * @param styleIr - The processed StyleIR to adopt
+   */
+  adoptStyles(styleIr: StyleIR): void {
+    this.#processedStylesValue = styleIr.processedStyles;
+    this.#processedStyleUrlsValue = styleIr.processedStyleUrls;
   }
 }
 
