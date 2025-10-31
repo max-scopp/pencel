@@ -1,6 +1,6 @@
-import type { Node, SourceFile } from "typescript";
+import type { SourceFile } from "typescript";
 import type { FileIR } from "../ir/file.ts";
-import type { ImplodeIRRefs, IR, IRRef } from "../ir/irri.ts";
+import type { ImplodeIRRefs, IRRef } from "../ir/irri.ts";
 
 export interface BasePluginOptions {
   enabled?: boolean;
@@ -42,13 +42,6 @@ export type CssPostprocessHook = {
   path: string;
 };
 
-/** Generate code from TypeScript AST (mutable) */
-// TODO: Remove
-export type CodegenHook = {
-  hook: "transform";
-  irr: IRRef<IR, Node>;
-};
-
 /** Generate project-level files from the complete IR tree */
 export type GenerateHook = {
   hook: "generate";
@@ -67,7 +60,6 @@ export type DeriveHook = {
 export type PluggableHooks =
   | CssPreprocessHook
   | CssPostprocessHook
-  | CodegenHook
   | GenerateHook
   | DeriveHook;
 

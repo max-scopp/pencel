@@ -36,16 +36,14 @@ export class FileProcessor {
       return null;
     }
 
-    const file = new FileIR(sourceFile);
+    // Create FileIR asynchronously to process all component styles
+    const file = await FileIR.create(sourceFile);
     const fileIrr = new IRRef(file, sourceFile);
 
-    await this.plugins.handle({
-      hook: "transform",
-      irr: fileIrr,
-    });
-
+    // Apply AST transformations based on IR
     this.visitAndTransform([fileIrr]);
 
+    // Let plugins derive framework-specific outputs
     await this.plugins.handle({
       hook: "derive",
       irr: fileIrr,

@@ -1,4 +1,4 @@
-import { createLog, pascalCase } from "@pencel/utils";
+import { createLog } from "@pencel/utils";
 import ts, { factory } from "typescript";
 import { inject } from "../core/container.ts";
 import { PencelPlugin, Plugins } from "../core/plugin.ts";

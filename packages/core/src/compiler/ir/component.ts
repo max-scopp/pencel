@@ -23,47 +23,56 @@ import { IRM, IRRef } from "./irri.ts";
 import { MethodIR } from "./method.ts";
 import { PropertyIR } from "./prop.ts";
 import { RenderIR } from "./render.ts";
+import type { StyleIR } from "./style.ts";
 
-export interface ComponentMethod {
-  name: string;
-  isPublic: boolean;
-  decoratorType?: "Listen" | "Connected";
-}
-
-type StyleUrls = {
-  __default?: string;
-} & Record<string, string>;
-
+/**
+ * ComponentIR is the flat IR representation of a component.
+ * Contains both user-provided decorator options and compiler-resolved metadata as public readonly fields.
+ *
+ * ComponentIR = { tag, shadow, scoped, extends, formAssociated, normalizedTag, heritage, processedStyles, processedStyleUrls, props, events, methods, render }
+ *
+ * The IR is the single source of truth. Transformers extract a subset as [INTERNALS] for runtime decorator enrichment.
+ */
 export class ComponentIR extends IRM("Component") {
   readonly #config = inject(Config);
 
+  // Metadata about the component in source
   readonly className: string;
   readonly fileName: string;
-
   readonly sourceTag: string;
+
+  // User-provided fields from @Component decorator
   readonly tag: string;
+  readonly shadow?: boolean;
+  readonly scoped?: boolean;
+  readonly extends?: string;
+  readonly formAssociated?: boolean;
 
-  /**
-   * The value of the `extends` keyword for the custom element.
-   * E.g. HTMLButtonElement
-   */
+  // Compiler-resolved metadata (flat, alongside user fields)
+  readonly normalizedTag: string;
   readonly heritage: string;
+  readonly extendsTag: string | undefined;
+  readonly processedStyles: string;
+  readonly processedStyleUrls: Record<string, string>;
 
-  /**
-   * The tag name if extending a built-in element.
-   * E.g. `<button is="pencil-button">` would be "button"
-   */
-  readonly extends: string | undefined;
-
-  readonly styles: string[];
-  readonly styleUrls: StyleUrls;
-
+  // Component members collected from class
   readonly props: Array<IRRef<PropertyIR, ts.PropertyDeclaration>>;
   readonly events: Array<IRRef<EventIR, ts.MethodDeclaration>>;
   readonly methods: Array<IRRef<MethodIR, ts.MethodDeclaration>>;
   readonly render?: IRRef<RenderIR, ts.MethodDeclaration>;
 
-  constructor(sourceFile: ts.SourceFile, classDeclaration: ClassDeclaration) {
+  /**
+   * Constructs a ComponentIR from user source code and processed styles.
+   *
+   * @param sourceFile - TypeScript source file for context
+   * @param classDeclaration - The component class declaration
+   * @param styleIr - Pre-processed styles
+   */
+  constructor(
+    sourceFile: ts.SourceFile,
+    classDeclaration: ClassDeclaration,
+    styleIr: StyleIR,
+  ) {
     super();
 
     const decorator = singleDecorator(classDeclaration, "Component");
@@ -82,7 +91,15 @@ export class ComponentIR extends IRM("Component") {
         `@Component for class ${this.className} must have a 'tag' property.`,
       );
 
-    this.tag = normalizeTag(
+    // Store user-provided options as public fields
+    this.tag = componentOptions.tag;
+    this.shadow = componentOptions.shadow;
+    this.scoped = componentOptions.scoped;
+    this.extends = componentOptions.extends;
+    this.formAssociated = componentOptions.formAssociated;
+
+    // Resolve compiler metadata and store directly as public fields
+    this.normalizedTag = normalizeTag(
       this.sourceTag,
       this.#config.user.runtime.tagNamespace,
     );
@@ -110,21 +127,13 @@ export class ComponentIR extends IRM("Component") {
         `Component class ${this.className} must extend a valid HTML element.`,
       );
 
-    this.extends = getTagByExtendsString(this.heritage);
+    this.extendsTag = getTagByExtendsString(this.heritage);
 
-    this.styles = Array.isArray(componentOptions.styles)
-      ? componentOptions.styles
-      : componentOptions.styles
-        ? [componentOptions.styles]
-        : [];
+    // Store processed styles directly
+    this.processedStyles = styleIr.processedStyles;
+    this.processedStyleUrls = styleIr.processedStyleUrls;
 
-    this.styleUrls = {
-      ...componentOptions.styleUrls,
-      ...(typeof componentOptions.styleUrl === "string" && {
-        __default: componentOptions.styleUrl,
-      }),
-    };
-
+    // Collect component members
     const {
       properties,
       events,
