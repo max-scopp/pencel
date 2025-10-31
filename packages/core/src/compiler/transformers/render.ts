@@ -12,6 +12,7 @@ import {
   factory,
   isReturnStatement,
   type JsxElement,
+  type JsxFragment,
   type JsxSelfClosingElement,
   type MethodDeclaration,
   type Node,
@@ -234,6 +235,37 @@ export class RenderTransformer extends Transformer(RenderIR) {
           (e) => this.#transformExpression(e),
         ) ?? jsx
       );
+    }
+
+    // Handle JSX fragments: <>...</>
+    if (expr.kind === SyntaxKind.JsxFragment) {
+      const fragment = expr as unknown as JsxFragment;
+      // Transform each child in the fragment
+      const transformedChildren = (
+        fragment.children as unknown as Expression[]
+      ).map((child) => {
+        if (child.kind === SyntaxKind.JsxText) {
+          // Skip text nodes - they're handled by the JSX element transformer
+          return null;
+        }
+        return this.#transformExpression(child as Expression);
+      });
+
+      // Filter out nulls and create an array of transformed children
+      const filtered = transformedChildren.filter((c) => c !== null);
+
+      // If fragment has a single element, return it directly
+      if (filtered.length === 1) {
+        return filtered[0];
+      }
+
+      // If fragment has multiple elements, return them as an array
+      if (filtered.length > 0) {
+        return factory.createArrayLiteralExpression(filtered);
+      }
+
+      // Empty fragment returns empty array
+      return factory.createArrayLiteralExpression([]);
     }
 
     // For other expressions, leave unchanged
