@@ -2,6 +2,7 @@ export * from "./arrays.ts";
 export * from "./coordinated-logging.ts";
 export * from "./createPerformanceTree.ts";
 export * from "./dashCase.ts";
+export * from "./fromToText.ts";
 export * from "./getExtendsByInheritance.ts";
 export * from "./getTagByExtendsString.ts";
 export * from "./isBrowser.ts";

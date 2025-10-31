@@ -1,4 +1,4 @@
-import { createLog } from "@pencel/utils";
+import { createLog, fromToText } from "@pencel/utils";
 import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
 import { deepEqual } from "../utils/equal.ts";
 
@@ -46,7 +46,7 @@ export function State(options?: StateOptions): PropertyDecorator {
 
         if (!isEqual) {
           ctx?.state.set(propertyKey, value);
-          log(`${String(propertyKey)}: ${oldValue} → ${value}`);
+          log(fromToText(String(propertyKey), oldValue, value));
 
           const shouldUpdate = this.componentShouldUpdate?.(
             value,

@@ -1,4 +1,9 @@
-import { createLog, createPerformanceTree, error } from "@pencel/utils";
+import {
+  createLog,
+  createPerformanceTree,
+  error,
+  fromToText,
+} from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
 import {
   coerceAttributeValue,
@@ -145,8 +150,12 @@ export function wrapComponentForRegistration<
   };
 
   class PencilCustomElementWrap extends klass {
-    #hydratePerf = createPerformanceTree("Hydration");
-    #renderPerf = createPerformanceTree("Render");
+    #hydratePerf = createPerformanceTree(
+      `Hydration ${simpleCustomElementDisplayText(this)}`,
+    );
+    #renderPerf = createPerformanceTree(
+      `Render ${simpleCustomElementDisplayText(this)}`,
+    );
     #renderFrameId: number | null = null;
     #pendingRender = false;
 
@@ -252,7 +261,7 @@ export function wrapComponentForRegistration<
       oldValue: string | null,
       newValue: string | null,
     ): void {
-      log(`attributeChanged ${name}: ${oldValue} → ${newValue}`);
+      log(fromToText(name, oldValue, newValue));
       updatePropsByAttribute(this, name, newValue);
       super.attributeChangedCallback?.(name, oldValue, newValue);
     }
