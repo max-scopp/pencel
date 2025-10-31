@@ -93,7 +93,9 @@ function interopStyleAttachment(
       throw new Error("Scoped styles are not implemented yet");
     }
 
-    document.head.append(stylesElm);
+    if (!document.head.querySelector(`#${stylesElm.id}`)) {
+      document.head.append(stylesElm);
+    }
   }
 }
 
