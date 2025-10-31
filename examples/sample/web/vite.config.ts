@@ -1,29 +1,46 @@
 /// <reference types='vitest' />
-import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(() => ({
-  root: __dirname,
-  cacheDir: "../../../node_modules/.vite/examples/sample/web",
-  server: {
-    port: 4200,
-    host: "localhost",
-  },
-  preview: {
-    port: 4300,
-    host: "localhost",
-  },
-  plugins: [tsconfigPaths()],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ tsconfigPaths() ],
-  // },
-  build: {
-    outDir: "./dist",
-    emptyOutDir: true,
-    reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
+import { resolve } from "path";
+import { defineConfig } from "vite";
+
+export default defineConfig(() => {
+  const packagesPath = resolve(__dirname, "..", "..", "..", "packages");
+
+  return {
+    root: __dirname,
+    cacheDir: "../../../node_modules/.vite/examples/sample/web",
+    resolve: {
+      alias: {
+        "@pencel/utils": resolve(packagesPath, "utils/src"),
+        "@pencel/runtime": resolve(packagesPath, "runtime/src"),
+        "@pencel/core": resolve(packagesPath, "core/src"),
+        "@pencel/cli": resolve(packagesPath, "cli/src"),
+      },
     },
-  },
-}));
+    server: {
+      port: 4200,
+      host: "localhost",
+      watch: {
+        ignored: [
+          "**/node_modules/**",
+          "**/.git/**",
+          "**/dist/**",
+          "**/*.tsbuildinfo",
+        ],
+      },
+    },
+    preview: {
+      port: 4300,
+      host: "localhost",
+    },
+    plugins: [],
+    build: {
+      outDir: "./dist",
+      emptyOutDir: true,
+      reportCompressedSize: true,
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
+    },
+  };
+});
