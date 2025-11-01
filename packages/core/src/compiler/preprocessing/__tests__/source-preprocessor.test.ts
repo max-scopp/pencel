@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
+
 import { SymbolCollector } from "../symbol-collector.ts";
 import { SymbolRegistry } from "../symbol-registry.ts";
 
