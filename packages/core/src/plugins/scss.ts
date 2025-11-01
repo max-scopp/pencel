@@ -5,15 +5,6 @@ import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
 
 const log = createLog("SCSS");
 
-declare module "../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    scss: {
-      class: ScssPlugin;
-      options: ScssPluginOptions;
-    };
-  }
-}
-
 interface ScssPluginOptions {
   scssOptions?: {
     logger?: {
@@ -21,6 +12,13 @@ interface ScssPluginOptions {
       debug?: (message: string, options: unknown) => void;
     };
     loadPaths?: string[];
+  };
+}
+
+export interface ScssPluginRegistry {
+  scss: {
+    class: ScssPlugin;
+    options: ScssPluginOptions;
   };
 }
 

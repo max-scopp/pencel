@@ -13,20 +13,18 @@ function isErrorLocation(err: unknown): err is SyntaxError & ErrorLocation {
   );
 }
 
-declare module "../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    css: {
-      class: CssPlugin;
-      options: CssPluginOptions;
-    };
-  }
-}
-
 interface CssPluginOptions {
   lightningCssOptions?: {
     minify?: boolean;
   };
   scopedTransform?: boolean;
+}
+
+export interface CssPluginRegistry {
+  css: {
+    class: CssPlugin;
+    options: CssPluginOptions;
+  };
 }
 
 class CssPlugin extends PencelPlugin {

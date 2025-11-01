@@ -1,4 +1,11 @@
 import type { ClassDeclaration, SourceFile } from "typescript";
+import type { CssPluginRegistry } from "../../plugins/css.ts";
+import type { ComponentsExportGeneratorRegistry } from "../../plugins/generators/components.ts";
+import type { IRGeneratorRegistry } from "../../plugins/generators/ir.ts";
+import type { ComponentTypingsRegistry } from "../../plugins/generators/typings.ts";
+import type { AngularOutputRegistry } from "../../plugins/outputs/angular.ts";
+import type { ReactOutputRegistry } from "../../plugins/outputs/react.ts";
+import type { ScssPluginRegistry } from "../../plugins/scss.ts";
 import type { ComponentIR } from "../ir/component.ts";
 import type { FileIR } from "../ir/file.ts";
 import type { ImplodeIRRefs, IRRef } from "../ir/irri.ts";
@@ -7,7 +14,14 @@ export interface BasePluginOptions {
   enabled?: boolean;
 }
 
-export interface PluginRegistry {
+export interface PluginRegistry
+  extends ComponentsExportGeneratorRegistry,
+    IRGeneratorRegistry,
+    ComponentTypingsRegistry,
+    CssPluginRegistry,
+    ScssPluginRegistry,
+    ReactOutputRegistry,
+    AngularOutputRegistry {
   _: object;
 }
 

@@ -1,6 +1,6 @@
-import "./compiler/generators/components.ts";
-import "./compiler/generators/ir.ts";
-import "./compiler/generators/typings.ts";
+import "./plugins/generators/components.ts";
+import "./plugins/generators/ir.ts";
+import "./plugins/generators/typings.ts";
 import "./plugins/css.ts";
 import "./plugins/scss.ts";
 import "./plugins/outputs/angular.ts";
