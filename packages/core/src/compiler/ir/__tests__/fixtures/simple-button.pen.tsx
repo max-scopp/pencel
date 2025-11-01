@@ -1,4 +1,5 @@
 /// <reference types="@pencel/runtime" />
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 
 interface Props {
   label: string;
