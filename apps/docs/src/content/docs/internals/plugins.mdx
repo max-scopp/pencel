@@ -1,0 +1,216 @@
+---
+title: Plugin System
+sidebar:
+  order: 8
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Plugins extend the compiler's capabilities by hooking into the compilation pipeline. The system supports both **generators** (global files) and **derivatives** (per-source framework adapters).
+
+## Plugin Architecture
+
+Plugins are registered singleton classes that respond to compiler hooks:
+
+```typescript
+class MyPlugin extends PencelPlugin {
+  readonly #registry = inject(SymbolRegistry);
+  readonly #sourceFiles = inject(SourceFiles);
+
+  constructor(userOptions: MyPluginOptions) {
+    super();
+
+    // Register symbols
+    this.#registry.registerWellKnown([...]);
+
+    // Handle hooks
+    this.handle("generate", async (hook) => { /* ... */ });
+    this.handle("derive", (hook) => { /* ... */ });
+  }
+}
+
+// Register plugin
+Plugins.register("my-plugin", MyPlugin, { /* options */ });
+```
+
+## Hook Types
+
+### Generate Hook
+
+Fully rebuilds global files from the **complete IR tree** every compilation.
+
+**When to use:** Files that aggregate data across multiple source files (e.g., `ir.json`, `components.d.ts`, `directives.ts`)
+
+```typescript
+this.handle("generate", async (hook) => {
+  // hook.irs: Array<FileIRSnapshot>
+  // All file IRs available at once
+  
+  for (const fileIR of hook.irs) {
+    for (const component of fileIR.components) {
+      // Process all components from all files
+    }
+  }
+});
+```
+
+**No 1:1 mapping** – The handler sees the entire project state. Multiple source files contribute to one output file.
+
+### Derive Hook
+
+Creates framework-specific **per-source adapters**. Runs once per source file that changed.
+
+**When to use:** Files that map 1:1 to source files (e.g., `component.gen.ts` → `component.angular.ts`)
+
+```typescript
+this.handle("derive", (hook) => {
+  // hook.irr: IRRef<FileIR, SourceFile>
+  // Single file being processed
+  
+  const { ir, node: sourceFile } = hook.irr;
+  // Generate adapter for this specific file
+});
+```
+
+**Incremental** – Only processes files that changed. Can be much faster than full regeneration.
+
+## File Creation with Preferences
+
+When generating files, plugins can specify import preferences to control how symbols are resolved. See [Symbol Resolution - Import Preferences](/docs/internals/preprocessing/#import-preferences) for detailed examples.
+
+<Tabs storageKey="plugin-example">
+  <TabItem label="Simple Package Imports">
+    ```typescript
+    const preference: ImportPreference = {
+      style: "package",
+      packageName: "@my/components",
+    };
+
+    this.#sourceFiles.newFile(
+      "out/index.ts",
+      [exportStatement],
+      { preference }
+    );
+    ```
+  </TabItem>
+  <TabItem label="Selective Overrides">
+    ```typescript
+    const preference: ImportPreference = {
+      style: "relative",
+      consumerPath: sourceFile.fileName,
+      symbolOverrides: [
+        {
+          match: /^provide|inject/,
+          packageName: "@angular/core",
+          style: "package",
+        },
+        {
+          match: "*Internal",
+          style: "deep",
+        },
+      ],
+    };
+
+    this.#sourceFiles.newFile(
+      "out/helpers.ts",
+      [helperExports],
+      { preference }
+    );
+    ```
+  </TabItem>
+  <TabItem label="Angular Directives">
+    ```typescript
+    const componentNames = hook.irs
+      .flatMap(f => f.components)
+      .map(c => c.className);
+
+    // Register each component
+    for (const name of componentNames) {
+      this.#registry.registerInputSymbol(name, "@pencel/components");
+    }
+
+    // Create directives with package imports
+    const preference: ImportPreference = {
+      style: "package",
+      packageName: "@pencel/components",
+      symbolOverrides: componentNames.map(name => ({
+        match: name,
+        packageName: "@pencel/components",
+      })),
+    };
+
+    this.#sourceFiles.newFile(
+      "out/directives.ts",
+      [directivesArray, provideFunction],
+      { preference }
+    );
+    ```
+  </TabItem>
+</Tabs>
+
+## Symbol Registration
+
+Plugins register symbols so they're automatically imported when used:
+
+### Well-Known Symbols
+
+Stable APIs that should always be imported from a fixed module:
+
+```typescript
+this.#registry.registerWellKnown([
+  {
+    symbol: "provideAppInitializer",
+    module: "@angular/core",
+    importStyle: "named",
+  },
+  {
+    symbol: "component",
+    module: "@angular/core",
+    importStyle: "named",
+  },
+]);
+```
+
+Once registered, these symbols are imported automatically in all generated files, regardless of file location or preferences.
+
+### Project Symbols
+
+User-defined symbols (component classes, exports) discovered during compilation:
+
+```typescript
+// Typically called with preference style
+for (const component of components) {
+  this.#registry.registerInputSymbol(
+    component.className,
+    packageName,  // e.g., "@my/components"
+  );
+}
+```
+
+Project symbols can be configured per file via import preferences.
+
+## Plugin Lifecycle
+
+1. **Instantiation** – Plugin constructor runs, registers hooks and symbols
+2. **Generation** – `handle("generate")` fires with complete IR
+3. **Derivation** – `handle("derive")` fires for each changed source file
+4. **File Writing** – All files are preprocessed and written to disk
+5. **Cleanup** – Preferences and state cleared for next pass
+
+<Aside>
+**Dependency Injection:** Plugins use the container's `inject()` pattern for dependencies. Use `readonly` fields with `inject()`, not constructor parameters:
+
+```typescript
+class MyPlugin extends PencelPlugin {
+  readonly #registry = inject(SymbolRegistry);       // ✅ Correct
+  readonly #sourceFiles = inject(SourceFiles);
+
+  constructor(options: Options) {
+    super();
+    // Store user options here, use injected services in hooks
+  }
+}
+```
+
+All injected services are singletons for the compilation pass.
+</Aside>

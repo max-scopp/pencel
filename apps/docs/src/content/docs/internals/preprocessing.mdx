@@ -158,26 +158,45 @@ Existing imports are preserved; only missing symbols are added.
 
 ## Plugin Registration
 
+See [Plugin System](/docs/internals/plugins/) for details on how plugins register and control symbols.
+
 Plugins register symbols during initialization:
 
 ```typescript
-class MyPlugin extends PencelPlugin {
-  readonly #registry = inject(SymbolRegistry);
-
-  constructor() {
-    this.#registry.registerWellKnown([
-      { symbol: "myHelper", module: "@my-org/helpers" }
-    ]);
-  }
-}
+this.#registry.registerWellKnown([
+  { symbol: "myHelper", module: "@my-org/helpers" }
+]);
 ```
 
-All files then auto-import when used—no configuration needed.
+## Import Preferences
+
+Plugins can control how symbols are imported in specific files using `ImportPreference`. See [Plugin System - File Creation with Preferences](/docs/internals/plugins/#file-creation-with-preferences) for complete examples.
+
+**Quick reference:**
+
+```typescript
+const preference: ImportPreference = {
+  style: "package",           // "package" | "relative" | "deep"
+  packageName: "@my/lib",     // for "package" style
+  symbolOverrides: [
+    { match: "Component1", packageName: "@other/lib" },
+    { match: "*Helper", style: "relative" },
+  ],
+};
+
+this.#sourceFiles.newFile(fileName, statements, { preference });
+```
+
+During preprocessing, preferences control the import resolution:
+
+1. **Well-Known symbols** – Always use their registered module
+2. **Symbol overrides** – Apply pattern-matched rules if present
+3. **Global style** – Fall back to file's default preference
 
 ## Performance
 
 - **Collection** – Linear AST walk per file
-- **Registry lookup** – O(1) hash table
+- **Registry lookup** – O(1) hash table, pattern matching on symbol overrides
 - **Injection** – Single AST pass
 - **Total** – Typically less than 1ms per file
 
@@ -186,16 +205,24 @@ All files then auto-import when used—no configuration needed.
 ```mermaid
 graph TD
     Symbol["Symbol"]
-    Symbol --> WK["Well-known (@pencel/runtime)?"]
-    WK -->|Yes| Import1["Import from package"]
-    WK -->|No| Input["Input (user-defined)?"]
-    Input -->|Yes| Import2["Import from configured module"]
+    Symbol --> WK["Well-known?"]
+    WK -->|Yes| Import1["Use registered module"]
+    WK -->|No| Pref["File has preferences?"]
+    Pref -->|Yes| Override["Match symbol overrides?"]
+    Override -->|Yes| Import2["Apply override rules"]
+    Override -->|No| GlobalStyle["Apply global style"]
+    Pref -->|No| Input["Input (user-defined)?"]
+    Input -->|Yes| Import3["Use registered module"]
     Input -->|No| Ignore["Ignore"]
     
     style Symbol fill:#fff59d,stroke:#fbc02d,color:#000
     style WK fill:#42a5f5,stroke:#1565c0,color:#fff
-    style Input fill:#ab47bc,stroke:#6a1b9a,color:#fff
+    style Pref fill:#ab47bc,stroke:#6a1b9a,color:#fff
+    style Override fill:#ab47bc,stroke:#6a1b9a,color:#fff
+    style GlobalStyle fill:#ab47bc,stroke:#6a1b9a,color:#fff
     style Import1 fill:#66bb6a,stroke:#2e7d32,color:#fff
     style Import2 fill:#66bb6a,stroke:#2e7d32,color:#fff
+    style Import3 fill:#66bb6a,stroke:#2e7d32,color:#fff
     style Ignore fill:#e0e0e0,stroke:#616161,color:#000
 ```
+

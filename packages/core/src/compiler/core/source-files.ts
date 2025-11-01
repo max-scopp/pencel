@@ -13,6 +13,7 @@ import {
 import { extractExportedSymbols } from "../../ts-utils/extractExportedSymbols.ts";
 import { getRelativeImportPath } from "../../ts-utils/getRelativeImportPath.ts";
 import { Config } from "../config.ts";
+import type { ImportPreference } from "../preprocessing/symbol-registry.ts";
 import { SymbolRegistry } from "../preprocessing/symbol-registry.ts";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
@@ -38,6 +39,8 @@ export class SourceFiles {
   #generatedFiles = new Map<string, SourceFile>();
 
   #sourceFiles = new Map<string, RenamableSourceFile>();
+
+  #filePreferences = new Map<string, ImportPreference>();
 
   /**
    * Loads source files from disk based on file paths discovered by Program
@@ -65,6 +68,7 @@ export class SourceFiles {
   clearGenerated(): void {
     this.#generatedFiles.clear();
     this.#symbolRegistry.clear();
+    this.#filePreferences.clear();
   }
 
   getAll(): Map<string, RenamableSourceFile> {
@@ -94,7 +98,11 @@ export class SourceFiles {
     return renamable.outputFileName ?? sourceFile.fileName;
   }
 
-  newFile(fileName: string, statements?: Statement[]): SourceFile {
+  newFile(
+    fileName: string,
+    statements?: Statement[],
+    options?: { preference?: ImportPreference },
+  ): SourceFile {
     // Resolve fileName relative to baseDir and cwd
     const resolvedFileName = join(
       this.#config.cwd,
@@ -116,6 +124,11 @@ export class SourceFiles {
 
     if (statements) {
       this.setStatements(sourceFile, statements);
+    }
+
+    // Set import preference if provided
+    if (options?.preference) {
+      this.setImportPreference(resolvedFileName, options.preference);
     }
 
     return sourceFile;
@@ -237,5 +250,27 @@ export class SourceFiles {
 
     // Use picomatch to create a proper glob matcher
     return picomatch.makeRe(pattern) as RegExp;
+  }
+
+  /**
+   * Set import preferences for a source file to guide symbol resolution during preprocessing.
+   * File preferences take precedence over global defaults when preprocessing this file.
+   */
+  setImportPreference(filePath: string, preference: ImportPreference): void {
+    this.#filePreferences.set(filePath, preference);
+  }
+
+  /**
+   * Get import preferences for a source file, or undefined if none set.
+   */
+  getImportPreference(filePath: string): ImportPreference | undefined {
+    return this.#filePreferences.get(filePath);
+  }
+
+  /**
+   * Clear all stored import preferences (typically called during clearGenerated).
+   */
+  clearPreferences(): void {
+    this.#filePreferences.clear();
   }
 }

@@ -3,6 +3,7 @@ import ts, { factory } from "typescript";
 import { inject } from "../../compiler/core/container.ts";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 import { SourceFiles } from "../../compiler/core/source-files.ts";
+import type { ImportPreference } from "../../compiler/preprocessing/symbol-registry.ts";
 import { SymbolRegistry } from "../../compiler/preprocessing/symbol-registry.ts";
 
 const log = createLog("AngularOutput");
@@ -18,6 +19,10 @@ declare module "../../compiler/types/plugins.ts" {
 
 type AngularOutputOptions = {
   outputPath?: string;
+  /**
+   * TODO: Package name should come from base config or package.json by default.
+   */
+  packageName?: string;
 };
 
 class AngularOutput extends PencelPlugin {
@@ -39,6 +44,7 @@ class AngularOutput extends PencelPlugin {
       await this.#generateDirectives(
         hook.irs,
         userOptions.outputPath ?? "out/angular",
+        userOptions.packageName ?? "@pencel/components",
       );
     });
 
@@ -54,6 +60,7 @@ class AngularOutput extends PencelPlugin {
   async #generateDirectives(
     fileIRs: Array<{ components: Array<{ className: string }> }>,
     outputPath: string,
+    packageName: string,
   ): Promise<void> {
     // Collect all component class names from all files
     const componentClassNames: string[] = [];
@@ -132,13 +139,25 @@ class AngularOutput extends PencelPlugin {
       ),
     );
 
-    this.#sourceFiles.newFile(`${outputPath}/directives.ts`, [
-      directivesExport,
-      provideLibraryFunction,
-    ]);
+    // Create import preference for component symbols to use package-based imports
+    const preference: ImportPreference = {
+      style: "package",
+      packageName,
+      symbolOverrides: componentClassNames.map((symbol) => ({
+        match: symbol,
+        style: "package",
+        packageName,
+      })),
+    };
+
+    this.#sourceFiles.newFile(
+      `${outputPath}/directives.ts`,
+      [directivesExport, provideLibraryFunction],
+      { preference },
+    );
 
     log(
-      `Generated directives.ts with ${componentClassNames.length} components: ${componentClassNames.join(", ")}`,
+      `Generated directives.ts with ${componentClassNames.length} components from package ${packageName}`,
     );
   }
 }

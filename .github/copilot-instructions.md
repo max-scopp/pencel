@@ -139,6 +139,49 @@ Plugins.register("angular", AngularOutput, { outputPath: "out/angular" });
 ### Extending Component Metadata
 Modify `ComponentIR` constructor to parse new decorator options. The IR is built **during first AST visit**, then transformers update the AST based on IR data.
 
+### Creating Plugins with Import Preferences
+When generating files, specify how symbols should be imported:
+
+```typescript
+class AngularOutput extends PencelPlugin {
+  readonly #sourceFiles = inject(SourceFiles);
+  readonly #registry = inject(SymbolRegistry);
+
+  constructor(options: { packageName?: string }) {
+    super();
+    
+    // Register well-known symbols
+    this.#registry.registerWellKnown([
+      { symbol: "provideAppInitializer", module: "@angular/core" }
+    ]);
+
+    this.handle("generate", async (hook) => {
+      const packageName = options.packageName ?? "@my/components";
+      
+      // Register component symbols for package import
+      for (const component of hook.irs.flatMap(f => f.components)) {
+        this.#registry.registerInputSymbol(component.className, packageName);
+      }
+
+      // Create file with preference to import components from package
+      this.#sourceFiles.newFile(
+        "out/directives.ts",
+        [directivesExport, provideLibraryFunction],
+        {
+          preference: {
+            style: "package",
+            packageName,
+            symbolOverrides: hook.irs
+              .flatMap(f => f.components)
+              .map(c => ({ match: c.className, packageName })),
+          },
+        }
+      );
+    });
+  }
+}
+```
+
 ### Querying the IR Registry
 ```typescript
 // Get all components
@@ -163,6 +206,62 @@ const pureIR = irri.implode(components);
 7. plugins.handle("derive") - Create per-source adapters
 8. fileWriter.writeEverything() - Flush to disk
 ```
+
+### Import Preference System
+
+Plugins can control how symbols are imported in generated files via the `ImportPreference` system:
+
+```typescript
+interface ImportPreference {
+  style: "package" | "relative" | "deep";
+  packageName?: string;
+  consumerPath?: string;
+  symbolOverrides?: Array<{
+    match: string | RegExp;  // exact match, glob *, or regex
+    style?: "package" | "relative" | "deep";
+    packageName?: string;
+  }>;
+}
+```
+
+**Import Styles:**
+- `"package"` - Import from `packageName` (e.g., `import { X } from "@my/package"`)
+- `"relative"` - Compute relative path from file to symbol module
+- `"deep"` - Use full absolute file path to symbol module
+
+**Symbol Overrides** allow selective rules. Patterns support:
+- Exact string match: `"ComponentName"`
+- Glob wildcards: `"*Element"`, `"Pen*"`
+- RegExp: `/^HTML.*Element$/`
+
+**Creating a file with preferences:**
+
+```typescript
+const preference: ImportPreference = {
+  style: "package",
+  packageName: "@pencel/components",
+  symbolOverrides: [
+    { match: "provideAppInitializer", packageName: "@angular/core" }
+  ],
+};
+
+// Pass preference when creating file
+this.#sourceFiles.newFile(
+  "out/directives.ts",
+  [directivesExport, provideLibraryFunction],
+  { preference },  // Optional options object
+);
+```
+
+**Symbol Resolution Flow:**
+1. SourcePreprocessor collects all identifier references needing imports
+2. SymbolRegistry looks up each symbol:
+   - Check well-known symbols first (Angular, React, Vue core APIs)
+   - Check symbol overrides in preference (pattern-matched)
+   - Apply global import preference style
+3. ImportBuilder converts symbols to import requirements
+4. ImportInjector updates AST with import statements
+5. FileWriter respects file-level preferences when preprocessing
 
 ## Key Files to Reference
 

@@ -11,7 +11,7 @@ export interface SymbolConfig {
 
 export interface ImportPreference {
   /**
-   * Import style for project symbols.
+   * Global import style for all symbols.
    * - "package": use packageName for imports (e.g., `import { Button } from "@mylib/components"`)
    * - "relative": compute relative import path from consuming file to source file
    * - "deep": use the full package path (e.g., `import { Button } from "@mylib/components/button"`)
@@ -27,6 +27,25 @@ export interface ImportPreference {
    * Used to compute relative import paths.
    */
   consumerPath?: string;
+  /**
+   * Selective symbol overrides: match specific symbols and apply custom preferences.
+   * Each entry matches symbols by name, glob, or regex pattern and applies its own style/packageName.
+   */
+  symbolOverrides?: Array<{
+    /**
+     * Pattern to match symbol names.
+     * Can be a string (exact match), glob pattern, or RegExp.
+     */
+    match: string | RegExp;
+    /**
+     * Import style for matching symbols.
+     */
+    style?: "package" | "relative" | "deep";
+    /**
+     * Package name to use when style is "package".
+     */
+    packageName?: string;
+  }>;
 }
 
 /**
@@ -145,29 +164,76 @@ export class SymbolRegistry {
    * - "package": use packageName
    * - "relative": compute relative path from consumerPath to module
    * - "deep": use the full module path (file path)
+   * Checks symbol overrides first before applying global preference.
    */
   #adaptToPreference(
     config: SymbolConfig,
     preference: ImportPreference,
   ): SymbolConfig {
-    if (preference.style === "package" && preference.packageName) {
+    // Check symbol overrides first
+    if (preference.symbolOverrides) {
+      for (const override of preference.symbolOverrides) {
+        if (this.#matchesPattern(config.symbol, override.match)) {
+          return this.#applyStylePreference(
+            config,
+            override.style || preference.style,
+            override.packageName || preference.packageName,
+            preference.consumerPath,
+          );
+        }
+      }
+    }
+
+    // Apply global preference
+    return this.#applyStylePreference(
+      config,
+      preference.style,
+      preference.packageName,
+      preference.consumerPath,
+    );
+  }
+
+  /**
+   * Check if symbol matches a pattern (exact string, glob, or regex).
+   */
+  #matchesPattern(symbol: string, pattern: string | RegExp): boolean {
+    if (typeof pattern === "string") {
+      // Exact match or simple glob
+      if (pattern.includes("*")) {
+        // Simple glob: convert * to .* regex
+        const regex = new RegExp(`^${pattern.replace(/\*/g, ".*")}$`);
+        return regex.test(symbol);
+      }
+      return symbol === pattern;
+    }
+    // RegExp match
+    return pattern.test(symbol);
+  }
+
+  /**
+   * Apply a specific style preference to a config.
+   */
+  #applyStylePreference(
+    config: SymbolConfig,
+    style: string,
+    packageName: string | undefined,
+    consumerPath: string | undefined,
+  ): SymbolConfig {
+    if (style === "package" && packageName) {
       return {
         ...config,
-        module: preference.packageName,
+        module: packageName,
       };
     }
 
-    if (preference.style === "relative") {
-      if (!preference.consumerPath) {
+    if (style === "relative") {
+      if (!consumerPath) {
         throw new Error(
           `Import preference style "relative" requires consumerPath to be set`,
         );
       }
 
-      const relativePath = getRelativeImportPath(
-        preference.consumerPath,
-        config.module,
-      );
+      const relativePath = getRelativeImportPath(consumerPath, config.module);
       return {
         ...config,
         module: relativePath,
