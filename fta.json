@@ -12,19 +12,19 @@
     "__tests__"
   ],
   "exclude_filenames": [
-    "*.test.ts",
-    "*.test.tsx",
-    "*.spec.ts",
-    "*.spec.tsx",
-    "*.e2e.test.ts",
-    "*.e2e.test.tsx",
-    "*.e2e.ts",
-    "*.e2e.tsx",
-    "*.gen.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.e2e.test.ts",
+    "**/*.e2e.test.tsx",
+    "**/*.e2e.ts",
+    "**/*.e2e.tsx",
+    "**/*.gen.ts",
     "**/index.ts",
     "**/index.tsx",
     "**/tsdown.config.ts",
-    "*.config.ts"
+    "**/*.config.ts"
   ],
   "extensions": [".ts", ".tsx"]
 }
