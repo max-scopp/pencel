@@ -3,18 +3,16 @@ import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 
 const log = createLog("ReactOutput");
 
-declare module "../../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    react: {
-      class: ReactOutput;
-      options: ReactOutputOptions;
-    };
-  }
-}
-
 type ReactOutputOptions = {
   outputPath?: string;
 };
+
+export interface ReactOutputRegistry {
+  react: {
+    class: ReactOutput;
+    options: ReactOutputOptions;
+  };
+}
 
 class ReactOutput extends PencelPlugin {
   constructor(userOptions: ReactOutputOptions) {

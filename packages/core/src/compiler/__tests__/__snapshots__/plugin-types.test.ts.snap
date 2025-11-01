@@ -1,0 +1,36 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Plugin Type System PluginDef union accepts string and object forms 1`] = `"scss"`;
+
+exports[`Plugin Type System PluginDef union accepts string and object forms 2`] = `
+{
+  "name": "angular",
+  "options": {
+    "outputPath": "dist/angular",
+  },
+}
+`;
+
+exports[`Plugin Type System PluginDef union accepts string and object forms 3`] = `
+{
+  "name": "css",
+}
+`;
+
+exports[`Plugin Type System PluginDefs array accepts mixed plugin definitions 1`] = `
+[
+  "scss",
+  {
+    "name": "angular",
+    "options": {
+      "outputPath": "dist/angular",
+    },
+  },
+  {
+    "name": "components",
+    "options": {
+      "path": "components.ts",
+    },
+  },
+]
+`;

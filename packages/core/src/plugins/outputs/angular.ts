@@ -3,18 +3,16 @@ import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 
 const log = createLog("AngularOutput");
 
-declare module "../../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    angular: {
-      class: AngularOutput;
-      options: AngularOutputOptions;
-    };
-  }
-}
-
 type AngularOutputOptions = {
   outputPath?: string;
 };
+
+export interface AngularOutputRegistry {
+  angular: {
+    class: AngularOutput;
+    options: AngularOutputOptions;
+  };
+}
 
 class AngularOutput extends PencelPlugin {
   constructor(userOptions: AngularOutputOptions) {
