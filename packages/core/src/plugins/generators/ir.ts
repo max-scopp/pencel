@@ -1,26 +1,24 @@
 import { writeFile } from "node:fs/promises";
 import { relative } from "node:path";
 import { createLog } from "@pencel/utils";
-import { Config } from "../config.ts";
-import { inject } from "../core/container.ts";
-import { PencelPlugin, Plugins } from "../core/plugin.ts";
+import { Config } from "../../compiler/config.ts";
+import { inject } from "../../compiler/core/container.ts";
+import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 
 const log = createLog("IRGenerator");
-
-declare module "../../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    ir: {
-      class: IRGenerator;
-      options: IRGeneratorOptions;
-    };
-  }
-}
 
 export interface IRGeneratorOptions {
   /**
    * @default "ir.json"
    */
   path: string;
+}
+
+export interface IRGeneratorRegistry {
+  ir: {
+    class: IRGenerator;
+    options: IRGeneratorOptions;
+  };
 }
 
 class IRGenerator extends PencelPlugin {

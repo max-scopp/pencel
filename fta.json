@@ -9,7 +9,10 @@
     ".nx",
     "coverage",
     "out",
-    "__tests__"
+    "__tests__",
+    "tests",
+    ".next",
+    ".astro"
   ],
   "exclude_filenames": [
     "**/*.test.ts",
@@ -21,10 +24,13 @@
     "**/*.e2e.ts",
     "**/*.e2e.tsx",
     "**/*.gen.ts",
+    "**/*.gen.tsx",
     "**/index.ts",
     "**/index.tsx",
     "**/tsdown.config.ts",
-    "**/*.config.ts"
+    "**/*.config.ts",
+    "**/README.e2e.md",
+    "**/*.d.ts"
   ],
   "extensions": [".ts", ".tsx"]
 }

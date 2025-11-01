@@ -2,7 +2,7 @@ import { relative } from "node:path";
 import { createLog, throwError } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
 import type { PencelConfig } from "./types/config-types.ts";
-import type { BasePluginOptions, PluginNames } from "./types/plugins.ts";
+import type { PluginNames, PluginOptionsOf } from "./types/plugins.ts";
 
 const log = createLog("Config");
 
@@ -23,6 +23,21 @@ export const defaultConfig: Required<PencelConfig> = {
     tagNamespace: "pencel",
   },
 };
+
+/**
+ * Type guard: Check if a plugin definition is a plugin object with a matching name.
+ */
+function isPluginWithName<TPluginName extends PluginNames>(
+  plugin: unknown,
+  name: TPluginName,
+): plugin is { name: TPluginName; options?: PluginOptionsOf<TPluginName> } {
+  return (
+    typeof plugin === "object" &&
+    plugin !== null &&
+    "name" in plugin &&
+    plugin.name === name
+  );
+}
 
 export class Config {
   #result?: ResolvedConfig<Required<PencelConfig>>;
@@ -52,28 +67,23 @@ export class Config {
     );
   }
 
-  getUserOptionsForPlugin<TPluginOptions extends BasePluginOptions>(
-    pluginName: PluginNames,
-  ): TPluginOptions {
+  getUserOptionsForPlugin<TPluginName extends PluginNames>(
+    pluginName: TPluginName,
+  ): PluginOptionsOf<TPluginName> {
     const plugins = this.user.plugins;
 
     for (const plugin of plugins) {
       if (typeof plugin === "string" && plugin === pluginName) {
-        return {
-          enabled: true,
-        } as TPluginOptions;
-      } else if (typeof plugin === "object" && plugin.name === pluginName) {
+        return { enabled: true } as PluginOptionsOf<TPluginName>;
+      }
+
+      if (isPluginWithName(plugin, pluginName)) {
         return (
-          plugin.options ??
-          ({
-            enabled: true,
-          } as TPluginOptions)
+          plugin.options ?? ({ enabled: true } as PluginOptionsOf<TPluginName>)
         );
       }
     }
 
-    return {
-      enabled: false,
-    } as TPluginOptions;
+    return { enabled: false } as PluginOptionsOf<TPluginName>;
   }
 }

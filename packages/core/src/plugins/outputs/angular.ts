@@ -8,15 +8,6 @@ import { SymbolRegistry } from "../../compiler/preprocessing/symbol-registry.ts"
 
 const log = createLog("AngularOutput");
 
-declare module "../../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    angular: {
-      class: AngularOutput;
-      options: AngularOutputOptions;
-    };
-  }
-}
-
 type AngularOutputOptions = {
   outputPath?: string;
   /**
@@ -24,6 +15,13 @@ type AngularOutputOptions = {
    */
   packageName?: string;
 };
+
+export interface AngularOutputRegistry {
+  angular: {
+    class: AngularOutput;
+    options: AngularOutputOptions;
+  };
+}
 
 class AngularOutput extends PencelPlugin {
   readonly #registry = inject(SymbolRegistry);

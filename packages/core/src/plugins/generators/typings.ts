@@ -1,24 +1,22 @@
 import { createLog } from "@pencel/utils";
 import ts, { factory } from "typescript";
-import { inject } from "../core/container.ts";
-import { PencelPlugin, Plugins } from "../core/plugin.ts";
-import { SourceFiles } from "../core/source-files.ts";
-import type { FileIR } from "../ir/file.ts";
-import type { ImplodeIRRefs } from "../ir/irri.ts";
+import { inject } from "../../compiler/core/container.ts";
+import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
+import { SourceFiles } from "../../compiler/core/source-files.ts";
+import type { FileIR } from "../../compiler/ir/file.ts";
+import type { ImplodeIRRefs } from "../../compiler/ir/irri.ts";
 
 const log = createLog("ComponentTypings");
 
-declare module "../../compiler/types/plugins.ts" {
-  interface PluginRegistry {
-    typings: {
-      class: ComponentTypings;
-      options: ComponentTypingsOptions;
-    };
-  }
-}
-
 export interface ComponentTypingsOptions {
   path: string;
+}
+
+export interface ComponentTypingsRegistry {
+  typings: {
+    class: ComponentTypings;
+    options: ComponentTypingsOptions;
+  };
 }
 
 class ComponentTypings extends PencelPlugin {
