@@ -1,3 +1,5 @@
+/// <reference types="@pencel/runtime" />
+
 interface Props {
   label: string;
   disabled: boolean;

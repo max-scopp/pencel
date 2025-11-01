@@ -262,7 +262,10 @@ describe("RenderTransformer E2E with zero-dom", () => {
       return value;
     };
 
-    const setPropsRuntime = (el: Element, propsData: Record<string, unknown>) => {
+    const setPropsRuntime = (
+      el: Element,
+      propsData: Record<string, unknown>,
+    ) => {
       for (const [key, value] of Object.entries(propsData)) {
         (el as HTMLElement).setAttribute(key, String(value));
       }

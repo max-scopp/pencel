@@ -1,3 +1,5 @@
+/// <reference types="@pencel/runtime" />
+
 interface Props {
   text: string;
   completed: boolean;
