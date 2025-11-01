@@ -72,11 +72,8 @@ Runs in `FileWriter.writeAllFiles()` before printing:
 ```typescript
 for (const sourceFile of files.values()) {
   const preprocessed = sourcePreprocessor.process(sourceFile)
-  const updated = preprocessed !== sourceFile
-    ? sourceFiles.setStatements(sourceFile, preprocessed.statements)
-    : sourceFile
   
-  const printed = sourcePrinter.printFile(updated)
+  const printed = sourcePrinter.printFile(preprocessed)
   await writeFile(outputPath, printed)
 }
 ```
