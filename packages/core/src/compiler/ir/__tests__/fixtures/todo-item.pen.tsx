@@ -3,7 +3,7 @@ interface Props {
   completed: boolean;
 }
 
-class TodoItem {
+export class TodoItem {
   text: string;
   completed: boolean;
 

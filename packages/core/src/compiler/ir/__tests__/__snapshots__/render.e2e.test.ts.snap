@@ -26,7 +26,7 @@ exports[`RenderTransformer E2E with zero-dom transformed code matches expected s
         let $2 = this.#cmc("span_2", () => dce("span"));
         sc($2, [this.text]);
         sc($0, [$1, $2]);
-        return $0;
+        sc(this, [$0]);
     }
 }"
 `;

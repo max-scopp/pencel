@@ -3,7 +3,7 @@ interface Props {
   disabled: boolean;
 }
 
-class SimpleButton {
+export class SimpleButton {
   label: string;
   disabled: boolean;
 
