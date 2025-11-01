@@ -204,8 +204,11 @@ export class RenderTransformer extends Transformer(RenderIR) {
       ).text;
       if (/^[A-Z]/.test(tagName)) {
         return (
-          this.#jsxTransformer?.transformCustomComponent(jsx, (e) =>
-            this.#transformExpression(e),
+          this.#jsxTransformer?.transformCustomComponent(
+            jsx,
+            this.#loopManager.getCurrent(),
+            this.#loopManager.buildHierarchicalScopeKey(),
+            (e) => this.#transformExpression(e),
           ) ?? jsx
         );
       }
