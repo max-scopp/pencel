@@ -38,7 +38,7 @@ Two kinds of output from IR:
 ```mermaid
 graph LR
     Source["component.pen.tsx"]
-    IR["FileIR<br/>(source of truth)"]
+    IR["FileIR (source of truth)"]
     Gen["component.gen.ts"]
     React["component.react.tsx"]
     Angular["component.angular.ts"]
@@ -56,5 +56,3 @@ graph LR
 ```
 
 **Key:** `.gen.ts` is the normalized source (inlined CSS, resolved URLs, extended impl). Derivatives wrap `.gen.ts` for each framework.
-
-See [Architecture Overview](/pencel/internals/architecture/) for the 7-phase pipeline, [File Management](/pencel/internals/file-management/) for how imports are managed.

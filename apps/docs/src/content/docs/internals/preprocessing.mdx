@@ -124,3 +124,22 @@ All files then auto-import when used—no configuration needed.
 - **Registry lookup** – O(1) hash table
 - **Injection** – Single AST pass
 - **Total** – Typically less than 1ms per file
+
+## Symbol Lookup Decision Tree
+
+```mermaid
+graph TD
+    Symbol["Symbol"]
+    Symbol --> WK["Well-known (@pencel/runtime)?"]
+    WK -->|Yes| Import1["Import from package"]
+    WK -->|No| Input["Input (user-defined)?"]
+    Input -->|Yes| Import2["Import from configured module"]
+    Input -->|No| Ignore["Ignore"]
+    
+    style Symbol fill:#fff59d,stroke:#fbc02d,color:#000
+    style WK fill:#42a5f5,stroke:#1565c0,color:#fff
+    style Input fill:#ab47bc,stroke:#6a1b9a,color:#fff
+    style Import1 fill:#66bb6a,stroke:#2e7d32,color:#fff
+    style Import2 fill:#66bb6a,stroke:#2e7d32,color:#fff
+    style Ignore fill:#e0e0e0,stroke:#616161,color:#000
+```

@@ -91,6 +91,6 @@ class Compiler {
 
 **Plugins** – Listen via `handle()` method. Generators create global files; derivatives create per-file adapters.
 
-**FileWriter** – Single pass: preprocess → print → postprocess → write. See [File Management](/pencel/internals/file-management/).
+**FileWriter** – Single pass: preprocess → print → postprocess → write. See [Symbol Resolution](/pencel/internals/preprocessing/).
 
 All services use [Dependency Injection](/pencel/internals/dependency-injection/) for singleton pattern and automatic wiring.
