@@ -131,23 +131,19 @@ export function Connected(options?: ConnectOptions): PropertyDecorator {
           const ctx = el[PENCIL_COMPONENT_CONTEXT];
 
           if (ctx?.stores?.has(storeName)) {
-            const equalFn = options?.equal ?? deepEqual;
             const oldValue = ctx.stores.get(storeName);
-            const isEqual = equalFn(value, oldValue);
 
-            if (!isEqual) {
-              ctx.stores.set(storeName, value);
-              log(fromToText(storeName, oldValue, value));
+            ctx.stores.set(storeName, value);
+            log(fromToText(storeName, oldValue, value));
 
-              const shouldUpdate = el.componentShouldUpdate?.(
-                value,
-                oldValue,
-                storeName,
-              );
+            const shouldUpdate = el.componentShouldUpdate?.(
+              value,
+              oldValue,
+              storeName,
+            );
 
-              if (shouldUpdate !== false) {
-                el.render?.();
-              }
+            if (shouldUpdate !== false) {
+              el.render?.();
             }
 
             return;
