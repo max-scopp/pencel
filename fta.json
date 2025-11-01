@@ -1,0 +1,21 @@
+{
+  "output_limit": 5000,
+  "score_cap": 70,
+  "include_comments": false,
+  "exclude_under": 6,
+  "exclude_directories": [
+    "node_modules",
+    "dist",
+    ".nx",
+    "coverage",
+    "out"
+  ],
+  "exclude_filenames": [
+    "*.test.ts",
+    "*.test.tsx",
+    "*.spec.ts",
+    "*.spec.tsx",
+    ".gen.ts"
+  ],
+  "extensions": [".ts", ".tsx"]
+}
