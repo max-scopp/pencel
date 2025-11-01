@@ -24,11 +24,38 @@
           "^build"
         ],
         "executor": "nx:run-commands",
+        "outputs": [
+          "{projectRoot}/dist"
+        ],
         "options": {
           "commands": [
             "tsdown",
             "tsc --noEmit"
           ],
+          "cwd": "packages/utils"
+        }
+      },
+      "lint": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check .",
+          "cwd": "packages/utils"
+        }
+      },
+      "lint-fix": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check . --write",
+          "cwd": "packages/utils"
+        }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit",
           "cwd": "packages/utils"
         }
       }

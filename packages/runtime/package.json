@@ -86,6 +86,30 @@
           ],
           "cwd": "packages/runtime"
         }
+      },
+      "lint": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check .",
+          "cwd": "packages/runtime"
+        }
+      },
+      "lint-fix": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check . --write",
+          "cwd": "packages/runtime"
+        }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit",
+          "cwd": "packages/runtime"
+        }
       }
     }
   }
