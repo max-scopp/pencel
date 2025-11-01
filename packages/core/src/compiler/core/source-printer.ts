@@ -1,4 +1,3 @@
-import { basename } from "node:path";
 import ts from "typescript";
 import { Config } from "../config.ts";
 import { formatWithBiome } from "../utils/biome-formatter.ts";
@@ -13,9 +12,6 @@ export class SourcePrinter {
    * Prints a single file with Pencel marker
    */
   async printFile(sourceFile: ts.SourceFile): Promise<string> {
-    const fname = basename(sourceFile.fileName);
-    perf.start(`print:${fname}`);
-
     const marker = createPencelMarker(sourceFile);
     const printer = ts.createPrinter({ removeComments: false });
     let printed = printer.printFile(sourceFile);
@@ -31,7 +27,6 @@ export class SourcePrinter {
       this.#config.cwd,
     );
 
-    perf.end(`print:${fname}`);
     return printed;
   }
 

@@ -1,28 +1,25 @@
 ---
-title: Architecture
+title: Architecture Overview
 sidebar:
   order: 1
 ---
 
-Pencel transforms component source files into framework-specific outputs. The compiler separates concerns into semantic, synchronization, and translation layers.
+Pencel is a component transpiler: read `.pen.tsx`, output multiple frameworks (React, Angular, Vue) via a single IR (Intermediate Representation).
 
-## Compilation Phases
+## The 7-Phase Pipeline
 
-The compiler follows a fixed sequence:
-
-1. **Discover** – Validates `tsconfig.json` and globs for input files
-2. **Load** – Creates TypeScript `SourceFile` objects
-3. **Build IR** – Parses decorators into immutable IR
-4. **Sync AST** – Updates AST nodes to match IR state
-5. **Generate** – Creates global files (ir.json, components.d.ts)
-6. **Derive** – Creates framework adapters (React, Angular)
-7. **Write** – Flushes files to disk
-
+1. **Discover** – Glob `.pen.ts` files, validate `tsconfig.json`
+2. **Load** – Create TypeScript AST objects
+3. **Build IR** – Parse decorators → immutable IR
+4. **Sync AST** – Update AST nodes from IR state
+5. **Generate** – Create global files (ir.json, components.d.ts)
+6. **Derive** – Create framework adapters (React, Angular, Vue)
+7. **Write** – Preprocess imports, print AST, flush to disk
 
 ## Key Concepts
 
-- **IR** – Immutable object graph capturing component metadata and relationships
-- **Generators** – Plugins creating global files (ir.json, components.d.ts). Always fully rebuild.
-- **Derivatives** – Plugins creating framework adapters (React, Angular). One output per source file, incremental.
+- **IR** – Immutable graph: tags, props, events, metadata
+- **Generators** – Plugins for global files (fully rebuild each pass)
+- **Derivatives** – Plugins for framework adapters (incremental per-file)
 
-**See [Understanding Pencel's Compiler](/pencel/internals/understanding/) for conceptual overview. See [Core Components](/pencel/internals/core/) for system architecture.**
+See [Compilation Flow](/pencel/internals/understanding/) for three-layer model, [Core Components](/pencel/internals/core/) for system architecture.

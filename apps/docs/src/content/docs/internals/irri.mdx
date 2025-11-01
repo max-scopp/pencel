@@ -1,18 +1,14 @@
 ---
-title: IRRI and IRRef
+title: IRRI & IRRef
 sidebar:
   order: 4
 ---
 
-How Pencel pairs IR with AST nodes and enables batch transformations.
+**IRRef** pairs IR with its AST node. **IRRI** collects all IRRefs for batch transformations.
 
-## The Problem
+## IRRef: The Pairing
 
-Transformers need to update AST nodes based on IR state. `IRRef<T, TNode>` pairs each IR with its corresponding AST node.
-
-## IRRef: IR + AST Pairing
-
-`IRRef<T, TNode>` holds both IR and its corresponding AST node. Auto-registers with IRRI on creation:
+Each IR has a corresponding AST node. `IRRef<T, TNode>` holds both:
 
 ```typescript
 export class IRRef<T extends IR, TNode extends Node> {
@@ -20,54 +16,55 @@ export class IRRef<T extends IR, TNode extends Node> {
     readonly ir: T,        // Immutable IR
     readonly node: TNode,  // AST node to transform
   ) {
-    inject(IRRI).register(this)
+    inject(IRRI).register(this)  // Auto-register
   }
 }
 ```
 
-When you create an `IRRef`, it auto-registers with `IRRI`, enabling batch transformations.
+When you create an `IRRef`, it auto-registers with `IRRI` and becomes discoverable.
 
 ## IRRI: Registry and Querying
 
-`IRRI` collects all `IRRef` instances created during compilation:
+`IRRI` collects all `IRRef` instances during compilation:
 
 ```typescript
 export class IRRI {
+  // Query all IRs of a kind
   allByKind<K extends IRKind>(kind: K): IRRef<KnownIRs[K], Node>[]
+  
+  // Find single IRRef with filter
   firstIrr<K extends IRKind>(kind: K, filterFn: (item: KnownIRs[K]) => boolean): IRRef<KnownIRs[K], Node> | undefined
+  
+  // Get pure IR without AST (for generators)
   implode<T extends IR>(irrs: IRRef<T, Node>[]): ImplodeIRRef<T>[]
 }
 ```
 
-**Key operations:**
+## Usage Patterns
 
-- **Query by kind** – `irri.allByKind('Component')` → all component IRefs
-- **Query with filter** – `irri.firstIrr('Component', (comp) => comp.tag === 'my-button')`
-- **Implode** – `irri.implode(componentIRs)` → pure IR without AST nodes (for generators)
+### Batch Transformations
 
-## Access Patterns
-
-### Batch by Kind
-Process all IRs of a specific kind:
+Process all IRs of a kind at once:
 
 ```typescript
 const components = irri.allByKind('Component')
 for (const ref of components) {
-  componentTransformer.transform(ref)
+  componentTransformer.transform(ref)  // Has both IR and AST
 }
 ```
 
-### Single IRRef
-Work with one IR and its AST node:
+### Single Lookup
 
 ```typescript
-const ref = irri.allByKind('Component')[0]
-const tag = ref.ir.tag              // Read IR
-updateDecorator(ref.node, ref.ir)   // Update AST
+const myButton = irri.firstIrr('Component', (comp) => comp.tag === 'my-button')
+if (myButton) {
+  updateDecorator(myButton.node, myButton.ir)
+}
 ```
 
 ### Pure IR Tree
-Get the complete IR tree for generators (no AST):
+
+For generators that don't need AST:
 
 ```typescript
 const components = irri.allByKind('Component')
@@ -75,27 +72,10 @@ const pureIR = irri.implode(components)  // ComponentIR[]
 generateIRJSON(pureIR)
 ```
 
-## Why This Design Matters
+## Why This Design
 
-**Convenience** – Both IR and AST are together. No lookup needed.
+**Convenience** – IR and AST are together; no separate lookup needed.
 
-**Batching** – IRRI enables efficient transformation: `irri.allByKind('Component')` processes all components at once.
+**Efficiency** – Batch by kind enables efficient transformation: process all components once.
 
-**Clarity** – Each compilation pass rebuilds everything fresh, so IRRef is purely about convenience, not caching.
-
-## The IRKind System
-
-IRs are tracked by kind, and types are tracked centrally:
-
-```typescript
-export type IRKind = keyof KnownIRs
-
-export type KnownIRs = {
-  File: FileIR
-  Component: ComponentIR
-  Prop: PropertyIR
-  Method: MethodIR
-  Event: EventIR
-  Render: RenderIR
-}
-```
+**Clarity** – Fresh IR each compilation; IRRef is purely organizational.

@@ -41,6 +41,7 @@ export class FileProcessor {
     const fileIrr = new IRRef(file, sourceFile);
 
     // Apply AST transformations based on IR
+    // Symbols will be automatically rescanned and updated in SourceFiles.setStatements()
     this.visitAndTransform([fileIrr]);
 
     // Let plugins derive framework-specific outputs

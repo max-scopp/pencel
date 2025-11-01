@@ -70,6 +70,7 @@
     "csso": "^5.0.5",
     "fast-glob": "^3.3.3",
     "lightningcss": "^1.30.2",
+    "picomatch": "^4.0.2",
     "sass": "^1.92.1",
     "sass-embedded": "^1.93.2",
     "ts-flattered": "^0.2.2",
@@ -79,6 +80,7 @@
   "devDependencies": {
     "@types/babel__code-frame": "~7.0.6",
     "@types/csso": "~5.0.4",
+    "@types/picomatch": "^2.3.0",
     "happy-dom": "^20.0.8",
     "tsdown": "^0.15.2"
   }

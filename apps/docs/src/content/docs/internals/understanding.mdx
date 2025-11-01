@@ -1,20 +1,16 @@
 ---
-title: Understanding Pencel's Compiler
+title: Compilation Flow
 sidebar:
-  order: 1.5
+  order: 2
 ---
 
-A conceptual overview of Pencel's three-layer architecture: semantic, synchronization, and translation.
+## The Problem
 
-## The Core Insight
+One `.pen.tsx` component needs to work in React, Angular, Vue, and vanilla JS. Pencel separates concerns into three layers to achieve this efficiently.
 
-A single `.pen.tsx` component should work in React, Angular, Vue, and vanilla JS—all from one source. Pencel separates concerns into three layers to make this efficient.
+## Layer 1: Semantic (IR)
 
-## Three Layers
-
-### 1. Semantic Layer
-
-The IR captures what the user wrote—format-agnostic metadata:
+Format-agnostic metadata captured from decorators:
 
 ```typescript
 {
@@ -24,55 +20,39 @@ The IR captures what the user wrote—format-agnostic metadata:
 }
 ```
 
-See [Architecture](/pencel/internals/architecture/) for the 7-phase compilation pipeline.
+This IR is the single source of truth for all downstream transformations.
 
-### 2. Synchronization Layer
+## Layer 2: Synchronization (AST)
 
-AST nodes sync with IR via [IRRef](/pencel/internals/irri/). **Transformers** use IR as the single source of truth to update AST.
+Transformers sync AST nodes with IR via [IRRef](/pencel/internals/irri/). IR drives all changes; AST mirrors the result.
 
-### 3. Translation Layer
+## Layer 3: Translation (Output)
 
-Two types of outputs from IR:
+Two kinds of output from IR:
 
-- **Generators** – Global files (ir.json, components.d.ts). Always fully rebuild from complete IR.
+- **Generators** – Global files (ir.json, components.d.ts). Fully rebuild from complete IR each pass.
 - **Derivatives** – Framework adapters (React, Angular, Vue). One per source file, incremental.
-- **Render Transformer** – Converts JSX render methods into zero-DOM factory function calls, optimizing component rendering.
-
-See [Architecture](/pencel/internals/architecture/) for pipeline phases, [Core Components](/pencel/internals/core/) for plugin hooks, and [Render Transformer](/pencel/internals/render-transformer/) for JSX compilation details.
 
 ## Mental Model
-
-Pencel is a component translation engine that outputs multiple formats from a single IR:
 
 ```mermaid
 graph LR
     Source["component.pen.tsx"]
-    IR["FileIR"]
+    IR["FileIR (source of truth)"]
     Gen["component.gen.ts"]
     React["component.react.tsx"]
     Angular["component.angular.ts"]
-    IRJson["ir.json"]
-    Types["components.d.ts"]
     
     Source -->|parse| IR
-    
     IR -->|normalize| Gen
     IR -->|derive| React
     IR -->|derive| Angular
-    IR -->|generate| IRJson
-    IR -->|generate| Types
     
     style Source fill:#b3e5fc,stroke:#0277bd,color:#000
     style IR fill:#fff59d,stroke:#fbc02d,stroke-width:3px,color:#000
     style Gen fill:#ffe0b2,stroke:#e65100,stroke-width:3px,color:#000
     style React fill:#c8e6c9,stroke:#388e3c,color:#000
     style Angular fill:#c8e6c9,stroke:#388e3c,color:#000
-    style IRJson fill:#f8bbd0,stroke:#c2185b,color:#000
-    style Types fill:#f8bbd0,stroke:#c2185b,color:#000
 ```
 
-**`.gen.ts`** is the normalized source: inlined CSS, resolved URLs, extended implementation.
-
-## File Management
-
-As files are generated/derived, Pencel manages imports via **SourceFiles**. See [File and Dependency Management](/pencel/internals/file-management/) for details.
+**Key:** `.gen.ts` is the normalized source (inlined CSS, resolved URLs, extended impl). Derivatives wrap `.gen.ts` for each framework.

@@ -1,6 +1,4 @@
-import { dirname, relative } from "node:path";
 import { createLog } from "@pencel/utils";
-import { factory, type Statement } from "typescript";
 import { inject } from "../../compiler/core/container.ts";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 import { SourceFiles } from "../../compiler/core/source-files.ts";
@@ -38,47 +36,22 @@ class ComponentsExportGenerator extends PencelPlugin {
     fileIRs: Array<ImplodeIRRefs<FileIR>>,
     path: string,
   ): Promise<void> {
-    const exportStatements: Statement[] = [];
-    const sourceFile = this.#sourceFiles.newFile(path);
-    const outputDir = dirname(sourceFile.fileName);
-
+    // Collect all component class names from IR
+    const componentClassNames = new Set<string>();
     for (const fileIR of fileIRs) {
       for (const componentIR of fileIR.components) {
-        // Get the source file and its absolute output path
-        const componentSourceFile = this.#sourceFiles.getSourceFile(
-          componentIR.fileName,
-        );
-        const outputFilePath =
-          this.#sourceFiles.getOutputPath(componentSourceFile);
-
-        let relativePath = relative(outputDir, outputFilePath);
-
-        relativePath = relativePath.replace(/\\/g, "/");
-        if (!relativePath.startsWith(".")) {
-          relativePath = `./${relativePath}`;
-        }
-
-        // export { ClassName } from "./path/to/file.ts";
-        const exportSpecifier = factory.createExportSpecifier(
-          false,
-          undefined,
-          componentIR.className,
-        );
-
-        const exportDeclaration = factory.createExportDeclaration(
-          undefined,
-          false,
-          factory.createNamedExports([exportSpecifier]),
-          factory.createStringLiteral(relativePath),
-        );
-
-        exportStatements.push(exportDeclaration);
+        componentClassNames.add(componentIR.className);
       }
     }
 
-    this.#sourceFiles.setStatements(sourceFile, exportStatements);
+    // Create barrel file that re-exports only component classes from all generated files
+    this.#sourceFiles.barrel(path, "**", {
+      symbols: Array.from(componentClassNames),
+    });
 
-    log(`Generated components with ${exportStatements.length} re-exports`);
+    log(
+      `Generated components barrel with ${componentClassNames.size} re-exports`,
+    );
   }
 }
 
