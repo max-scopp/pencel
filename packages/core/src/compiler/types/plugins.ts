@@ -32,16 +32,16 @@ export type PluginOptionsOf<TName extends PluginNames> =
     ? TOptions
     : never;
 
-export type PluginDefs<
-  TPlugin extends PluginNames = PluginNames,
-  TOptions extends object = never,
-> = Array<
-  | TPlugin
+export type PluginDef =
+  | PluginNames
   | {
-      name: TPlugin;
-      options?: TOptions;
-    }
->;
+      [K in PluginNames]: {
+        name: K;
+        options?: PluginOptionsOf<K>;
+      };
+    }[PluginNames];
+
+export type PluginDefs = Array<PluginDef>;
 
 /** Transform user styles to standard CSS */
 export type CssPreprocessHook = {
