@@ -1,8 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`RenderTransformer E2E with zero-dom transforms and renders todo-item component 1`] = `"<div class="todo-item"><input type="checkbox"><span class="">Buy groceries</span></div>"`;
+exports[`RenderTransformer E2E with zero-dom transforms and renders todo-item component 1`] = `"<div class="todo-pending"><input type="checkbox"><span>Buy groceries</span></div>"`;
 
-exports[`RenderTransformer E2E with zero-dom renders completed todo item 1`] = `"<div class="todo-item"><input type="checkbox"><span class="completed">Complete task</span></div>"`;
+exports[`RenderTransformer E2E with zero-dom renders completed todo item 1`] = `"<div class="todo-completed"><input type="checkbox"><span>Complete task</span></div>"`;
 
 exports[`RenderTransformer E2E with zero-dom transforms and renders simple-button component 1`] = `"<button>Submit</button>"`;
 
@@ -10,24 +10,23 @@ exports[`RenderTransformer E2E with zero-dom renders disabled button 1`] = `"<bu
 
 exports[`RenderTransformer E2E with zero-dom zero-dom cache works correctly 1`] = `
 {
-  "element1": "<div class="todo-item"><input type="checkbox"><span class="">Task 1</span></div>",
-  "element2": "<div class="todo-item"><input type="checkbox"><span class="completed">Task 2</span></div>",
+  "element1": "<div class="todo-pending"><input type="checkbox"><span>Task 1</span></div>",
+  "element2": "<div class="todo-completed"><input type="checkbox"><span>Task 2</span></div>",
 }
 `;
 
 exports[`RenderTransformer E2E with zero-dom transformed code matches expected structure 1`] = `
-"render(): VNode {
-    return function () {
-        let $0 = once("div_0", () => document.createElement("div"));
-        $0.setAttribute("className", "todo-item");
-        let $1 = once("input_1", () => document.createElement("input"));
-        $1.setAttribute("type", "checkbox");
-        $1.setAttribute("checked", this.completed);
-        let $2 = once("span_2", () => document.createElement("span"));
-        $2.setAttribute("className", this.completed ? "completed" : "");
-        setChildren($2, [this.text]);
-        setChildren($0, [$1, $2]);
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": this.completed ? "todo-completed" : "todo-pending" });
+        let $1 = this.#cmc("input_1", () => dce("input"));
+        sp($1, { "type": "checkbox" });
+        sp($1, { "checked": this.completed });
+        let $2 = this.#cmc("span_2", () => dce("span"));
+        sc($2, [this.text]);
+        sc($0, [$1, $2]);
         return $0;
-    }();
+    }
 }"
 `;

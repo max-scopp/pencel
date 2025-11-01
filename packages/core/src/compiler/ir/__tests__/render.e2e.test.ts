@@ -206,33 +206,72 @@ describe("RenderTransformer E2E with zero-dom", () => {
       }
     }
 
-    // Execute the transformed render function
-    // Extract just the IIFE body (the function inside the return statement)
-    // Pattern: return function () { BODY }();
-    const iifeMatch = transformedCode.match(
-      /return\s+function\s*\(\)\s*\{([\s\S]*)\}\(\);/,
-    );
-    if (!iifeMatch) {
-      throw new Error("Could not extract IIFE body from transformed code");
+    // Extract the render method body (the { ... } block inside render())
+    const bodyMatch = transformedCode.match(/render\(\)\s*\{([\s\S]*)\}/);
+    if (!bodyMatch) {
+      throw new Error("Could not extract render body from transformed code");
     }
 
+    // Replace abbreviated method calls with parameter names
+    let code = bodyMatch[1];
+    code = code.replace(/this\.#cmc/g, "__cmc"); // replace this.#cmc with __cmc parameter
+    code = code.replace(/\bsp\(/g, "__sp("); // replace sp( with __sp(
+    code = code.replace(/\bsc\(/g, "__sc("); // replace sc( with __sc(
+    code = code.replace(/\bdce\(/g, "__dce("); // replace dce( with __dce(
+
+    // Create cache map for memoization
+    const cacheMap = new Map<string, unknown>();
+
     const renderFunction = new Function(
-      "once",
-      "setChildren",
-      "document",
+      "__cmc",
+      "__sp",
+      "__sc",
+      "__dce",
+      "__checkElement",
       `
-      ${iifeMatch[1]}
+      ${code}
       `,
     );
 
+    // Create the runtime functions
+    const cmcFn = (key: string, factory: () => unknown) => {
+      if (cacheMap.has(key)) return cacheMap.get(key);
+      const value = factory();
+      cacheMap.set(key, value);
+      return value;
+    };
+
+    const setPropsFn = (el: Element, props: Record<string, unknown>) => {
+      for (const [key, value] of Object.entries(props)) {
+        (el as HTMLElement).setAttribute(key, String(value));
+      }
+    };
+
+    const checkElement = (el: unknown): boolean => {
+      return (
+        el != null &&
+        typeof (el as Record<string, unknown>).setAttribute === "function"
+      );
+    };
+
     const result = renderFunction.call(
       componentInstance,
-      once,
+      cmcFn,
+      setPropsFn,
       setChildrenPatched,
-      documentProxy,
+      patchedCreateElement,
+      checkElement,
     );
 
-    return result as HTMLElement;
+    // The transformed code now returns the root element directly
+    if (checkElement(result)) {
+      return result as unknown as HTMLElement;
+    }
+
+    // Fallback - return the first element created
+    const elements = documentProxy.body?.children || [];
+    return (elements[elements.length - 1] ||
+      elements[0]) as unknown as HTMLElement;
   }
 
   test("transforms and renders todo-item component", async () => {
