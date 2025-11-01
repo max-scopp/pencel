@@ -32,6 +32,7 @@ jobs:
         uses: exiguus/fta-github-action@v0.1.2
         with:
           config_path: "./fta.json"
+          project_path: packages/
           score_cap: 70
           format: table
         continue-on-error: true
