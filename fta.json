@@ -16,7 +16,11 @@
     "*.test.tsx",
     "*.spec.ts",
     "*.spec.tsx",
-    "*.gen.ts"
+    "*.e2e.test.ts",
+    "*.e2e.test.tsx",
+    "*.gen.ts",
+    "index.ts",
+    "tsdown.config.ts"
   ],
   "extensions": [".ts", ".tsx"]
 }

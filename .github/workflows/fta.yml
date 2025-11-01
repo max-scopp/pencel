@@ -49,12 +49,34 @@ jobs:
             const fs = require('fs');
             const body = fs.readFileSync('FTA_REPORT.md', 'utf8');
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            // Find existing FTA comment
+            const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: body
+              issue_number: context.issue.number,
             });
+
+            const ftaComment = comments.data.find(comment =>
+              comment.body.includes('# FTA Code Quality Report')
+            );
+
+            if (ftaComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: ftaComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
 
       - name: Fail if score exceeded
         if: steps.fta.outcome == 'failure'

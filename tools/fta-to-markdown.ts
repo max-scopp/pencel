@@ -55,8 +55,6 @@ function generateReport(
       data.reduce((sum, f) => sum + (f.halstead?.bugs || 0), 0) / data.length;
     const avgCyclo =
       data.reduce((sum, f) => sum + (f.cyclo || 0), 0) / data.length;
-    const avgVolume =
-      data.reduce((sum, f) => sum + (f.halstead?.volume || 0), 0) / data.length;
 
     markdown += "\n## Insights\n\n";
     markdown += `**Difficulty**: ${avgDifficulty.toFixed(1)}/100 - `;
@@ -97,7 +95,7 @@ function generateReport(
 
     markdown += `\n## Final Verdict\n\n`;
     markdown += `🚨 ${assessmentCounts.needs_improvement.length} need improvement | `;
-    markdown += `� ${assessmentCounts.could_be_better.length} could be better | `;
+    markdown += `💡 ${assessmentCounts.could_be_better.length} could be better | `;
     markdown += `✅ ${assessmentCounts.ok.length} well-maintained\n`;
 
     // Needs improvement - open by default
