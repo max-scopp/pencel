@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { throwError } from "@pencel/utils";
+import picomatch from "picomatch";
 import {
   createSourceFile,
   factory,
@@ -167,10 +168,7 @@ export class SourceFiles {
     );
 
     const allFiles = this.getAll();
-    const regex =
-      typeof sourceGlobOrRegex === "string"
-        ? new RegExp(sourceGlobOrRegex)
-        : sourceGlobOrRegex;
+    const regex = this.#globToRegex(sourceGlobOrRegex);
 
     const symbolsOption = options.symbols ?? "all";
     const allowedSymbols =
@@ -223,5 +221,21 @@ export class SourceFiles {
     const barrelFile = this.newFile(barrelPath, exportStatements);
 
     return barrelFile;
+  }
+
+  /**
+   * Convert glob pattern to regex using picomatch for stable glob matching.
+   * Supports common glob patterns:
+   * - "**" -> match all files
+   * - "**\/*.ts" -> match all .ts files
+   * - "src/**\/*.gen.ts" -> match generated TypeScript files in src
+   */
+  #globToRegex(pattern: string | RegExp): RegExp {
+    if (pattern instanceof RegExp) {
+      return pattern;
+    }
+
+    // Use picomatch to create a proper glob matcher
+    return picomatch.makeRe(pattern) as RegExp;
   }
 }

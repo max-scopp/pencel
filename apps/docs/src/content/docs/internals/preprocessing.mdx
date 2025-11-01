@@ -4,11 +4,15 @@ sidebar:
   order: 7
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 Preprocessing automatically collects symbol references and injects missing imports before writing files to disk.
 
 ## The Problem
 
 Generated code references `sp()`, `dce()`, `mc()`, `INTERNALS` without importing them. Preprocessing ensures all symbols are imported before files are written.
+
+Additionally, barrel files (files that only re-export symbols) should not have imports added for the re-exported symbols, since they're being re-exported, not used as references.
 
 ## Architecture
 
@@ -24,17 +28,42 @@ class SourcePreprocessor {
 }
 ```
 
-Two-bucket registry (well-known + input-discovered) means same processor handles everything.
+Three-bucket registry (well-known + project symbols + file symbols) means same processor handles all symbol types.
 
 ## Components
 
 | Component | Purpose |
 |-----------|---------|
-| **SymbolRegistry** | Symbol → module mapping; well-known + input buckets |
-| **SymbolCollector** | AST walk to find identifiers; filter declarations/builtins |
+| **SymbolRegistry** | Symbol → module mapping; well-known + project + file symbol buckets |
+| **SymbolCollector** | AST walk to find identifiers; filters declarations, imports, exports, and built-ins |
 | **ImportBuilder** | Convert symbols to requirements; group, deduplicate |
 | **ImportInjector** | Add/merge imports into AST using ts.factory |
 | **SourcePreprocessor** | Orchestrate: collect → build → inject |
+
+### SymbolCollector Details
+
+The collector performs a three-phase symbol collection process:
+
+1. **Pre-extraction phase** – Before traversing the AST, it pre-extracts:
+   - Symbols from import specifiers (e.g., `import { Symbol }`)
+   - Symbols from export specifiers (e.g., `export { Symbol }`)
+   - These symbols are skipped during collection to prevent them from being treated as missing references
+
+2. **Import extraction phase** – Collects symbols that are already imported via import declarations
+
+3. **Main traversal phase** – Walks the AST collecting identifier references, filtering out:
+   - Already-imported symbols
+   - Export/import specifier symbols
+   - Built-in globals (`Promise`, `Array`, `console`, etc.)
+   - Local declarations (variables, functions, classes, parameters, properties)
+
+<Aside type="note">
+**Why pre-extract export/import specifiers?** Factory-created AST nodes don't automatically have parent pointers set. Pre-extraction avoids the fragile parent pointer check and ensures barrel files (pure re-export files) remain clean without unnecessary imports added for re-exported symbols.
+</Aside>
+
+<Aside type="tip">
+**Barrel files are automatically clean.** If a file contains only `export { Symbol } from "./module"` statements, the preprocessor correctly identifies that these are not reference symbols needing imports—they're being re-exported. No import statements are added.
+</Aside>
 
 ## Integration
 
@@ -54,26 +83,48 @@ for (const sourceFile of files.values()) {
 
 ## Symbol Buckets
 
-### Well-Known (Runtime)
+The registry maintains three separate buckets for different symbol types:
 
-Always from `@pencel/runtime` (package import):
+### Well-Known Symbols
+
+Stable APIs registered by Pencel and plugins that are always available during symbol resolution. Well-known symbols represent dependencies that **should be imported regardless of where code appears** (generated files, derived files, or custom plugin outputs).
+
+Example well-known symbols from Pencel runtime:
 
 ```typescript
-sp, dce, dctn, sc, st, ael, mc     // DOM ops
-INTERNALS, cacheSymbol, eventListenersSymbol  // Metadata
+sp, dce, dctn, sc, st, ael, mc     // Runtime DOM operations
+INTERNALS, cacheSymbol, eventListenersSymbol  // Runtime metadata
 ```
 
-Registered on startup, never change.
+Registered on startup via `SymbolRegistry#registerRuntimeSymbols()` and plugin initialization. Once registered, well-known symbols never change during a compilation pass.
 
-### Input (User-Defined)
+**Intent:** Well-known symbols decouple imports from file location. A plugin generating Angular code can register Angular symbols as well-known, ensuring all outputs—whether generated components, derived adapters, or barrel files—automatically import from `@angular/core`. This keeps the preprocessing logic uniform across all output targets.
 
-Discovered from `.pen` files, configurable per plugin:
+### Project Symbols
+
+Discovered from generated `.gen.ts` files (component classes, etc.):
+
+```typescript
+TestFeatures, PenCardElement, PenInputElement  // Component classes
+```
+
+Registered via `registerInputSymbol()` as symbols are discovered. Configurable per plugin via `ImportPreference`:
 
 ```typescript
 preference.style === "package"
   ? { symbol: "MyComp", module: "@org/components" }
   : { symbol: "MyComp", module: "./my-comp.gen" }
 ```
+
+### File Symbols
+
+Cached mapping of which symbols were exported from each file:
+
+```typescript
+this.#fileSymbols: Map<filePath, Set<symbolNames>>
+```
+
+Used for incremental updates and rescanning when files change. Enables `upsertFileSymbols()` to track and update project symbols efficiently.
 
 ## Deduplication
 
@@ -100,6 +151,10 @@ export class Comp {
 ```
 
 Existing imports are preserved; only missing symbols are added.
+
+<Aside type="caution">
+**Identifier collection is broad.** The collector captures ALL identifiers in the code, including those in property access chains (`obj.method`), decorators, and type annotations. The `ImportBuilder` filters these through the registry—if a symbol isn't registered, it's silently ignored. This is intentional: only well-known symbols and registered user symbols get imports added.
+</Aside>
 
 ## Plugin Registration
 

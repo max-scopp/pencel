@@ -2,9 +2,11 @@ import {
   forEachChild,
   type Identifier,
   isClassDeclaration,
+  isExportSpecifier,
   isFunctionDeclaration,
   isIdentifier,
   isImportDeclaration,
+  isImportSpecifier,
   isNamedImports,
   isNamespaceImport,
   isParameter,
@@ -21,6 +23,10 @@ export class SymbolCollector {
   collect(sourceFile: SourceFile): Set<string> {
     const symbols = new Set<string>();
     const existingImports = this.#extractExistingImports(sourceFile);
+    const exportSpecifierSymbols =
+      this.#extractExportSpecifierSymbols(sourceFile);
+    const importSpecifierSymbols =
+      this.#extractImportSpecifierSymbols(sourceFile);
 
     const visit = (node: Node): void => {
       if (isIdentifier(node)) {
@@ -28,6 +34,8 @@ export class SymbolCollector {
 
         if (
           existingImports.has(text) ||
+          exportSpecifierSymbols.has(text) ||
+          importSpecifierSymbols.has(text) ||
           this.#isBuiltinOrKeyword(text) ||
           this.#isDeclaration(node)
         ) {
@@ -74,6 +82,40 @@ export class SymbolCollector {
   }
 
   /**
+   * Extract symbols from export specifiers (e.g., `export { Symbol }`).
+   */
+  #extractExportSpecifierSymbols(sourceFile: SourceFile): Set<string> {
+    const symbols = new Set<string>();
+
+    const visit = (node: Node): void => {
+      if (isExportSpecifier(node)) {
+        symbols.add(node.name.text);
+      }
+      forEachChild(node, visit);
+    };
+
+    visit(sourceFile);
+    return symbols;
+  }
+
+  /**
+   * Extract symbols from import specifiers (e.g., `import { Symbol } from ...`).
+   */
+  #extractImportSpecifierSymbols(sourceFile: SourceFile): Set<string> {
+    const symbols = new Set<string>();
+
+    const visit = (node: Node): void => {
+      if (isImportSpecifier(node)) {
+        symbols.add(node.name.text);
+      }
+      forEachChild(node, visit);
+    };
+
+    visit(sourceFile);
+    return symbols;
+  }
+
+  /**
    * Check if identifier is a built-in global or TypeScript keyword.
    */
   #isBuiltinOrKeyword(text: string): boolean {
@@ -103,7 +145,7 @@ export class SymbolCollector {
   }
 
   /**
-   * Check if identifier is part of a declaration (being defined).
+   * Check if identifier is part of a declaration (being defined), export, or import.
    */
   #isDeclaration(identifier: Identifier): boolean {
     const parent = identifier.parent;
@@ -129,6 +171,16 @@ export class SymbolCollector {
     }
 
     if (isPropertyDeclaration(parent) && parent.name === identifier) {
+      return true;
+    }
+
+    // Skip identifiers in export specifiers (e.g., `export { Symbol }`)
+    if (isExportSpecifier(parent)) {
+      return true;
+    }
+
+    // Skip identifiers in import specifiers (e.g., `import { Symbol } from ...`)
+    if (isImportSpecifier(parent)) {
       return true;
     }
 
