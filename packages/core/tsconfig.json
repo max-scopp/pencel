@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
+    "lib": ["DOM", "ESNext"],
     "outDir": "./dist",
     "declaration": true,
     "sourceMap": true,
@@ -12,9 +9,7 @@
     "jsxImportSource": "@pencel/runtime",
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",

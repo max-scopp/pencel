@@ -78,6 +78,3 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - run: bun test
-
-      - run: bun nx fix-ci
-        if: always()
