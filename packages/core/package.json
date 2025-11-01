@@ -80,6 +80,7 @@
   "devDependencies": {
     "@types/babel__code-frame": "~7.0.6",
     "@types/csso": "~5.0.4",
+    "@types/picomatch": "^2.3.0",
     "happy-dom": "^20.0.8",
     "tsdown": "^0.15.2"
   }
