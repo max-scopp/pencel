@@ -1,6 +1,14 @@
+<div align="center">
+
 # ✏️ Pencel
 
 Write components once. Output to React, Angular, Vue, and vanilla JS.
+
+[![CI](https://github.com/critical-graphite/pencel/actions/workflows/ci.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/ci.yml)
+[![FTA Code Quality](https://github.com/critical-graphite/pencel/actions/workflows/fta.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/fta.yml)
+[![Size Limit](https://github.com/critical-graphite/pencel/actions/workflows/size-limit.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/size-limit.yml)
+
+</div>
 
 ## Quick Example
 
