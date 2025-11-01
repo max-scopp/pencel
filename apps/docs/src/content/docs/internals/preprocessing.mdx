@@ -84,18 +84,9 @@ The registry maintains three separate buckets for different symbol types:
 
 ### Well-Known Symbols
 
-Stable APIs registered by Pencel and plugins that are always available during symbol resolution. Well-known symbols represent dependencies that **should be imported regardless of where code appears** (generated files, derived files, or custom plugin outputs).
+Stable APIs registered by Pencel and plugins—always imported regardless of file location. Examples: `sp`, `dce`, `INTERNALS` from `@pencel/runtime`; `provideAppInitializer` from `@angular/core`.
 
-Example well-known symbols from Pencel runtime:
-
-```typescript
-sp, dce, dctn, sc, st, ael, mc     // Runtime DOM operations
-INTERNALS, cacheSymbol, eventListenersSymbol  // Runtime metadata
-```
-
-Registered on startup via `SymbolRegistry#registerRuntimeSymbols()` and plugin initialization. Once registered, well-known symbols never change during a compilation pass.
-
-**Intent:** Well-known symbols decouple imports from file location. A plugin generating Angular code can register Angular symbols as well-known, ensuring all outputs—whether generated components, derived adapters, or barrel files—automatically import from `@angular/core`. This keeps the preprocessing logic uniform across all output targets.
+Registered on startup; never change during compilation. Enables plugins to ensure their framework symbols (Angular, React, Vue) auto-import everywhere.
 
 ### Project Symbols
 
@@ -155,7 +146,7 @@ Existing imports are preserved; only missing symbols are added.
 
 ## Plugin Registration
 
-See [Plugin System](/docs/internals/plugins/) for details on how plugins register and control symbols.
+See [Plugin System](/pencel/internals/plugins/) for details on how plugins register and control symbols.
 
 Plugins register symbols during initialization:
 
@@ -167,7 +158,7 @@ this.#registry.registerWellKnown([
 
 ## Import Preferences
 
-Plugins can control how symbols are imported in specific files using `ImportPreference`. See [Plugin System - File Creation with Preferences](/docs/internals/plugins/#file-creation-with-preferences) for complete examples.
+Plugins can control how symbols are imported in specific files using `ImportPreference`. See [Plugin System - File Creation with Preferences](/pencel/internals/plugins/#file-creation-with-preferences) for complete examples.
 
 **Quick reference:**
 
