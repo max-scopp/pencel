@@ -27,9 +27,5 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "references": [
-    {
-      "path": "../../../packages/runtime"
-    }
-  ]
+  "references": []
 }

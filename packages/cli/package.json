@@ -39,6 +39,9 @@
           "^build"
         ],
         "executor": "nx:run-commands",
+        "outputs": [
+          "{projectRoot}/dist"
+        ],
         "options": {
           "commands": [
             "tsdown",
@@ -54,6 +57,30 @@
         "executor": "nx:run-commands",
         "options": {
           "command": "bun src/main.ts",
+          "cwd": "packages/cli"
+        }
+      },
+      "lint": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check .",
+          "cwd": "packages/cli"
+        }
+      },
+      "lint-fix": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check . --write",
+          "cwd": "packages/cli"
+        }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit",
           "cwd": "packages/cli"
         }
       }
