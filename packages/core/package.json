@@ -32,6 +32,13 @@
           "cwd": "packages/core"
         }
       },
+      "lint-fix": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check . --write",
+          "cwd": "packages/core"
+        }
+      },
       "typecheck": {
         "dependsOn": [
           "^build"

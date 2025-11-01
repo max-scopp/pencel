@@ -94,6 +94,13 @@
           "cwd": "packages/runtime"
         }
       },
+      "lint-fix": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check . --write",
+          "cwd": "packages/runtime"
+        }
+      },
       "typecheck": {
         "dependsOn": [
           "^build"
