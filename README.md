@@ -1,6 +1,15 @@
+<div align="center">
+
 # ✏️ Pencel
 
 Write components once. Output to React, Angular, Vue, and vanilla JS.
+
+[![CI: code-check](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
+[![CI: test](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
+[![CI: typecheck-and-build](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
+[![FTA Code Quality](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
+
+</div>
 
 ## Quick Example
 
