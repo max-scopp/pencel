@@ -54,6 +54,22 @@ If you'd like to contribute, here are a few quick tips:
 
 Thank you for helping make Pencel better! 🙏
 
+### On AI-Generated Code
+
+Pencel couldn't move at this pace without AI assistance. However, disrespectful or unacknowledged use of AI ensures that problem volume and technical debt will rise.
+
+AI is a "yes-sayer"—it can drastically improve velocity by shifting humans into a tutor and reviewer role, effectively handling scaffolding and boilerplate while humans focus on architecture and decision-making. But **human work, knowledge, and judgment remain the most critical part of development.**
+
+AI code generation is not discouraged, but it must be handled with respect and rigor:
+
+- **Review thoroughly** – Don't assume AI output is correct.
+- **Test extensively** – AI can introduce subtle bugs.
+- **Be aware of prompt injection risks** – Especially when processing external input.
+- **Acknowledge AI contributions** – Transparency builds trust.
+- **Maintain ownership** – The human is always responsible for the final code.
+
+AI is a powerful tool, not a replacement for careful engineering.
+
 ## License
 
 MIT © Max Scopp
