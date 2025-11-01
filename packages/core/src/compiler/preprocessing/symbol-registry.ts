@@ -150,11 +150,6 @@ export class SymbolRegistry {
     config: SymbolConfig,
     preference: ImportPreference,
   ): SymbolConfig {
-    // Runtime symbols are never transformed
-    if (config.module === "@pencel/runtime") {
-      return config;
-    }
-
     if (preference.style === "package" && preference.packageName) {
       return {
         ...config,
