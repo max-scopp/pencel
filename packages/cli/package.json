@@ -35,25 +35,26 @@
     "projectType": "application",
     "targets": {
       "build": {
-        "dependsOn": [
-          "^build"
-        ],
+        "dependsOn": ["^build"],
         "executor": "nx:run-commands",
+        "outputs": ["{projectRoot}/dist"],
         "options": {
-          "commands": [
-            "tsdown",
-            "tsc --noEmit"
-          ],
+          "commands": ["tsdown", "tsc --noEmit"],
           "cwd": "packages/cli"
         }
       },
       "run": {
-        "dependsOn": [
-          "^build"
-        ],
+        "dependsOn": ["^build"],
         "executor": "nx:run-commands",
         "options": {
           "command": "bun src/main.ts",
+          "cwd": "packages/cli"
+        }
+      },
+      "lint": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "biome check .",
           "cwd": "packages/cli"
         }
       }
