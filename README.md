@@ -44,14 +44,13 @@ Pencel is an ambitious project, and contributions and feedback are **highly welc
 
 If you'd like to contribute, here are a few quick tips:
 
+- **Have feedback?** Open an issue or discussion—all ideas are appreciated!
+- **Ready to contribute code?** Fork the repo, make your changes, and submit a pull request.
 - **Linting issues?** If GitHub checks fail due to formatting, many issues can be automatically fixed with:
   ```bash
   nx run-many -t lint-fix
   ```
   This applies Biome formatting and fixes across all packages. Review and commit the changes after running.
-
-- **Have feedback?** Open an issue or discussion—all ideas are appreciated!
-- **Ready to contribute code?** Fork the repo, make your changes, and submit a pull request.
 
 Thank you for helping make Pencel better! 🙏
 
