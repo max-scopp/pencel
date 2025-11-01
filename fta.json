@@ -8,14 +8,15 @@
     "dist",
     ".nx",
     "coverage",
-    "out"
+    "out",
+    "__tests__"
   ],
   "exclude_filenames": [
     "*.test.ts",
     "*.test.tsx",
     "*.spec.ts",
     "*.spec.tsx",
-    ".gen.ts"
+    "*.gen.ts"
   ],
   "extensions": [".ts", ".tsx"]
 }
