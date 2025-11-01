@@ -9,7 +9,10 @@ import {
   type SourceFile,
   type Statement,
 } from "typescript";
+import { extractExportedSymbols } from "../../ts-utils/extractExportedSymbols.ts";
+import { getRelativeImportPath } from "../../ts-utils/getRelativeImportPath.ts";
 import { Config } from "../config.ts";
+import { SymbolRegistry } from "../preprocessing/symbol-registry.ts";
 import { inject } from "./container.ts";
 import { Program } from "./program.ts";
 
@@ -17,9 +20,19 @@ export interface RenamableSourceFile extends SourceFile {
   outputFileName?: string;
 }
 
+export interface BarrelOptions {
+  /**
+   * Control which symbols to export.
+   * - "all": export all symbols from matched files (default)
+   * - Array of symbol names: export only these symbols from each matched file
+   */
+  symbols?: "all" | string[];
+}
+
 export class SourceFiles {
   #program = inject(Program);
   #config = inject(Config);
+  #symbolRegistry = inject(SymbolRegistry);
 
   #generatedFiles = new Map<string, SourceFile>();
 
@@ -44,11 +57,13 @@ export class SourceFiles {
   }
 
   /**
-   * Clears all generated files and resets the generated files map
+   * Clears all generated files and resets the generated files map.
+   * Also clears input symbols to prepare for fresh discovery.
    * Should be called at the start of each compilation pass
    */
   clearGenerated(): void {
     this.#generatedFiles.clear();
+    this.#symbolRegistry.clear();
   }
 
   getAll(): Map<string, RenamableSourceFile> {
@@ -108,6 +123,7 @@ export class SourceFiles {
   /**
    * Updates or resets a SourceFile's statements
    * Returns a new SourceFile with updated statements, replacing it in the internal maps
+   * Also rescans and updates exported symbols in the registry
    */
   setStatements(
     sourceFile: SourceFile,
@@ -125,6 +141,87 @@ export class SourceFiles {
       throw new Error(`Source file not found in either map: ${fileName}`);
     }
 
+    // Rescan exported symbols from the updated file
+    this.#symbolRegistry.upsertFileSymbols(updated);
+
     return updated;
+  }
+
+  /**
+   * Generate a barrel file that re-exports symbols from files matching a glob or regex pattern.
+   * Accepts barrelPath as absolute, relative, or just a filename (resolved relative to baseDir).
+   * Automatically registers the barrel file's exports in the symbol registry.
+   * Use options to control which symbols are exported (default: all).
+   * Returns the created barrel SourceFile.
+   */
+  barrel(
+    barrelPath: string,
+    sourceGlobOrRegex: string | RegExp,
+    options: BarrelOptions = {},
+  ): SourceFile {
+    // Normalize barrelPath the same way as newFile() does internally
+    const resolvedBarrelPath = join(
+      this.#config.cwd,
+      this.#config.user.baseDir,
+      barrelPath,
+    );
+
+    const allFiles = this.getAll();
+    const regex =
+      typeof sourceGlobOrRegex === "string"
+        ? new RegExp(sourceGlobOrRegex)
+        : sourceGlobOrRegex;
+
+    const symbolsOption = options.symbols ?? "all";
+    const allowedSymbols =
+      symbolsOption === "all" ? null : new Set(symbolsOption);
+
+    // Collect matching files
+    const matchingFiles: Array<{ path: string; symbols: Set<string> }> = [];
+    for (const [filePath, sourceFile] of allFiles) {
+      // Compare against resolved path, skip if it's the barrel file itself
+      if (regex.test(filePath) && filePath !== resolvedBarrelPath) {
+        let symbols = extractExportedSymbols(sourceFile);
+        // Filter symbols if allowedSymbols is set
+        if (allowedSymbols) {
+          symbols = new Set(
+            Array.from(symbols).filter((sym) => allowedSymbols.has(sym)),
+          );
+        }
+        if (symbols.size > 0) {
+          matchingFiles.push({ path: filePath, symbols });
+        }
+      }
+    }
+
+    // Create export statements for each matching file
+    const exportStatements: Statement[] = matchingFiles.map(
+      ({ path, symbols }) => {
+        const relativeImportPath = getRelativeImportPath(
+          resolvedBarrelPath,
+          path,
+        );
+        const namedExports = Array.from(symbols).map((symbol) =>
+          factory.createExportSpecifier(
+            false,
+            undefined,
+            factory.createIdentifier(symbol),
+          ),
+        );
+
+        return factory.createExportDeclaration(
+          undefined,
+          false,
+          factory.createNamedExports(namedExports),
+          factory.createStringLiteral(relativeImportPath),
+          undefined,
+        );
+      },
+    );
+
+    // Create the barrel file using newFile (which resolves the path and registers it)
+    const barrelFile = this.newFile(barrelPath, exportStatements);
+
+    return barrelFile;
   }
 }

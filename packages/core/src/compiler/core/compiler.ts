@@ -2,6 +2,7 @@ import { basename } from "node:path";
 import type { SourceFile } from "typescript";
 import { Config } from "../config.ts";
 import type { FileIR } from "../ir/file.ts";
+import { SymbolRegistry } from "../preprocessing/symbol-registry.ts";
 import { perf } from "../utils/perf.ts";
 import { inject } from "./container.ts";
 import { FileProcessor } from "./file-processor.ts";
@@ -17,6 +18,7 @@ export class Compiler {
   readonly #sourceFiles = inject(SourceFiles);
   readonly #fileProcessor = inject(FileProcessor);
   readonly #fileWriter = inject(FileWriter);
+  readonly #symbolRegistry = inject(SymbolRegistry);
 
   async init(configFile?: string): Promise<void> {
     perf.start("initialize");
@@ -51,6 +53,10 @@ export class Compiler {
     perf.start("build-graph");
     await this.#program.discover();
     await this.#sourceFiles.loadSource();
+
+    // Build symbol graph from loaded source files
+    this.#symbolRegistry.buildSymbolGraph(this.#sourceFiles.getAll().values());
+
     // Clear generated files from previous pass so plugins can repopulate
     this.#sourceFiles.clearGenerated();
     perf.end("build-graph");

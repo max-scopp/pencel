@@ -1,4 +1,3 @@
-import { basename } from "node:path";
 import ts from "typescript";
 import { Config } from "../config.ts";
 import { formatWithBiome } from "../utils/biome-formatter.ts";

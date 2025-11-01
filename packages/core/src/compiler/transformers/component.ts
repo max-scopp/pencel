@@ -1,5 +1,5 @@
 import { type ComponentOptions, INTERNALS } from "@pencel/runtime";
-import { throwError } from "@pencel/utils";
+import { createWarn, throwError } from "@pencel/utils";
 import {
   type ClassDeclaration,
   factory,
@@ -7,6 +7,7 @@ import {
   isCallExpression,
   isDecorator,
   isIdentifier,
+  SyntaxKind,
 } from "typescript";
 import { recordToObjectLiteral } from "../../ts-utils/recordToObjectLiteral.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
@@ -16,6 +17,8 @@ import type { IRRef } from "../ir/irri.ts";
 import { PropertyTransformer } from "./props.ts";
 import { RenderTransformer } from "./render.ts";
 import { Transformer } from "./transformer.ts";
+
+const warn = createWarn("ComponentTransformer");
 
 export class ComponentTransformer extends Transformer(ComponentIR) {
   #propsTransformer = inject(PropertyTransformer);
@@ -108,9 +111,28 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
       (modifier) => !isDecorator(modifier),
     );
 
+    // Ensure component class has export keyword
+    const hasExport = nonDecoratorModifiers.some(
+      (m) => m.kind === SyntaxKind.ExportKeyword,
+    );
+
+    if (!hasExport) {
+      warn(
+        `Component class '${irr.ir.className}' is not exported. Adding 'export' keyword. ` +
+          `Make sure to export your component classes in the future.`,
+      );
+    }
+
+    const modifiersWithExport = hasExport
+      ? nonDecoratorModifiers
+      : [
+          factory.createToken(SyntaxKind.ExportKeyword),
+          ...nonDecoratorModifiers,
+        ];
+
     const combinedModifiers = [
       ...(updatedDecorators ?? []),
-      ...nonDecoratorModifiers,
+      ...modifiersWithExport,
     ];
 
     return factory.createClassDeclaration(

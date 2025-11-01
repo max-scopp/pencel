@@ -1,25 +1,43 @@
-import { Identifier, Node, SourceFile, forEachChild, isClassDeclaration, isFunctionDeclaration, isIdentifier, isImportDeclaration, isNamedImports, isNamespaceImport, isParameter, isPropertyDeclaration, isVariableDeclaration } from "typescript";
+import {
+  forEachChild,
+  type Identifier,
+  isClassDeclaration,
+  isFunctionDeclaration,
+  isIdentifier,
+  isImportDeclaration,
+  isNamedImports,
+  isNamespaceImport,
+  isParameter,
+  isPropertyDeclaration,
+  isVariableDeclaration,
+  type Node,
+  type SourceFile,
+} from "typescript";
 
 export class SymbolCollector {
   /**
    * Collect identifier references that could need imports.
    */
-  collect(sourceFile:SourceFile): Set<string> {
+  collect(sourceFile: SourceFile): Set<string> {
     const symbols = new Set<string>();
     const existingImports = this.#extractExistingImports(sourceFile);
 
-    const visit = (node:Node): void => {
+    const visit = (node: Node): void => {
       if (isIdentifier(node)) {
         const text = node.text;
 
-        if (existingImports.has(text) || this.#isBuiltinOrKeyword(text) || this.#isDeclaration(node)) {
+        if (
+          existingImports.has(text) ||
+          this.#isBuiltinOrKeyword(text) ||
+          this.#isDeclaration(node)
+        ) {
           return;
         }
 
         symbols.add(text);
       }
 
-     forEachChild(node, visit);
+      forEachChild(node, visit);
     };
 
     visit(sourceFile);
@@ -29,10 +47,10 @@ export class SymbolCollector {
   /**
    * Extract already-imported symbols from file.
    */
-  #extractExistingImports(sourceFile:SourceFile): Set<string> {
+  #extractExistingImports(sourceFile: SourceFile): Set<string> {
     const imports = new Set<string>();
 
-   forEachChild(sourceFile, (node) => {
+    forEachChild(sourceFile, (node) => {
       if (isImportDeclaration(node) && node.importClause) {
         const clause = node.importClause;
 
@@ -40,13 +58,13 @@ export class SymbolCollector {
           imports.add(clause.name.text);
         }
 
-        if (clause.namedBindings &&isNamedImports(clause.namedBindings)) {
+        if (clause.namedBindings && isNamedImports(clause.namedBindings)) {
           clause.namedBindings.elements.forEach((el) => {
             imports.add(el.name.text);
           });
         }
 
-        if (clause.namedBindings &&isNamespaceImport(clause.namedBindings)) {
+        if (clause.namedBindings && isNamespaceImport(clause.namedBindings)) {
           imports.add(clause.namedBindings.name.text);
         }
       }
@@ -87,7 +105,7 @@ export class SymbolCollector {
   /**
    * Check if identifier is part of a declaration (being defined).
    */
-  #isDeclaration(identifier:Identifier): boolean {
+  #isDeclaration(identifier: Identifier): boolean {
     const parent = identifier.parent;
 
     if (!parent) {

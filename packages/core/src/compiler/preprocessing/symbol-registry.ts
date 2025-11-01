@@ -1,3 +1,6 @@
+import type { SourceFile } from "typescript";
+import { extractExportedSymbols } from "../../ts-utils/extractExportedSymbols.ts";
+
 export interface SymbolConfig {
   symbol: string;
   module: string;
@@ -15,7 +18,8 @@ export interface ImportPreference {
  */
 export class SymbolRegistry {
   readonly #wellKnown = new Map<string, SymbolConfig>();
-  readonly #inputSymbols = new Map<string, SymbolConfig>();
+  readonly #projectSymbols = new Map<string, SymbolConfig>();
+  readonly #fileSymbols = new Map<string, Set<string>>();
   #importPreference: ImportPreference = { style: "package" };
 
   constructor() {
@@ -42,10 +46,55 @@ export class SymbolRegistry {
    * Register input symbols discovered from .pen files.
    */
   registerInputSymbol(symbol: string, module: string): void {
-    if (!this.#inputSymbols.has(symbol)) {
-      this.#inputSymbols.set(symbol, {
+    if (!this.#projectSymbols.has(symbol)) {
+      this.#projectSymbols.set(symbol, {
         symbol,
         module,
+        importStyle: "named",
+      });
+    }
+  }
+
+  /**
+   * Clear all registered input symbols, preserving well-known symbols.
+   */
+  clear(): void {
+    this.#projectSymbols.clear();
+    this.#fileSymbols.clear();
+  }
+
+  /**
+   * Build symbol graph from all source files.
+   * Scans exported symbols from each file and registers them.
+   */
+  buildSymbolGraph(sourceFiles: Iterable<SourceFile>): void {
+    for (const sourceFile of sourceFiles) {
+      this.upsertFileSymbols(sourceFile);
+    }
+  }
+
+  /**
+   * Scan a source file, extract exported symbols, and register them.
+   * Tracks which symbols came from which file for rescanning.
+   */
+  upsertFileSymbols(sourceFile: SourceFile): void {
+    const filePath = sourceFile.fileName;
+    const symbols = extractExportedSymbols(sourceFile);
+
+    // Remove old symbols from this file
+    const oldSymbols = this.#fileSymbols.get(filePath);
+    if (oldSymbols) {
+      for (const symbol of oldSymbols) {
+        this.#projectSymbols.delete(symbol);
+      }
+    }
+
+    // Register new symbols
+    this.#fileSymbols.set(filePath, symbols);
+    for (const symbol of symbols) {
+      this.#projectSymbols.set(symbol, {
+        symbol,
+        module: filePath,
         importStyle: "named",
       });
     }
@@ -60,9 +109,9 @@ export class SymbolRegistry {
       return wellKnown;
     }
 
-    const input = this.#inputSymbols.get(symbol);
-    if (input) {
-      return this.#adaptToPreference(input);
+    const project = this.#projectSymbols.get(symbol);
+    if (project) {
+      return this.#adaptToPreference(project);
     }
 
     return null;
@@ -74,8 +123,8 @@ export class SymbolRegistry {
   all(): SymbolConfig[] {
     return [
       ...Array.from(this.#wellKnown.values()),
-      ...Array.from(this.#inputSymbols.values()).map((s) =>
-        this.#adaptToPreference(s)
+      ...Array.from(this.#projectSymbols.values()).map((s) =>
+        this.#adaptToPreference(s),
       ),
     ];
   }
@@ -88,7 +137,10 @@ export class SymbolRegistry {
       return config;
     }
 
-    if (this.#importPreference.style === "package" && this.#importPreference.packageName) {
+    if (
+      this.#importPreference.style === "package" &&
+      this.#importPreference.packageName
+    ) {
       return {
         ...config,
         module: this.#importPreference.packageName,
@@ -109,8 +161,16 @@ export class SymbolRegistry {
       { symbol: "ael", module: "@pencel/runtime", importStyle: "named" },
       { symbol: "mc", module: "@pencel/runtime", importStyle: "named" },
       // symbols.ts
-      { symbol: "cacheSymbol", module: "@pencel/runtime", importStyle: "named" },
-      { symbol: "eventListenersSymbol", module: "@pencel/runtime", importStyle: "named" },
+      {
+        symbol: "cacheSymbol",
+        module: "@pencel/runtime",
+        importStyle: "named",
+      },
+      {
+        symbol: "eventListenersSymbol",
+        module: "@pencel/runtime",
+        importStyle: "named",
+      },
       // internals.ts
       { symbol: "INTERNALS", module: "@pencel/runtime", importStyle: "named" },
     ];
@@ -118,4 +178,3 @@ export class SymbolRegistry {
     this.registerWellKnown(runtimeSymbols);
   }
 }
-
