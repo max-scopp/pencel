@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  typecheck:
+  typecheck-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,31 +33,8 @@ jobs:
 
       - run: bun nx run-many -t typecheck --exclude='examples/**'
 
-  build:
-    needs: typecheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
-
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
-          restore-keys: ${{ runner.os }}-bun-
-
-      - run: bun install --frozen-lockfile
-
-      - run: bun nx run-many -t build --exclude='examples/**'
-
   code-check:
-    needs: typecheck
+    needs: typecheck-and-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +57,7 @@ jobs:
       - run: bun nx run-many -t lint --exclude='examples/**'
 
   test:
-    needs: typecheck
+    needs: typecheck-and-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

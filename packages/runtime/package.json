@@ -93,6 +93,11 @@
           "command": "biome check .",
           "cwd": "packages/runtime"
         }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ]
       }
     }
   }

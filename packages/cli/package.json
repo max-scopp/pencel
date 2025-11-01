@@ -57,6 +57,11 @@
           "command": "biome check .",
           "cwd": "packages/cli"
         }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^build"
+        ]
       }
     }
   }
