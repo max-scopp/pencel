@@ -1,0 +1,30 @@
+{
+  "output_limit": 5000,
+  "score_cap": 70,
+  "include_comments": false,
+  "exclude_under": 20,
+  "exclude_directories": [
+    "node_modules",
+    "dist",
+    ".nx",
+    "coverage",
+    "out",
+    "__tests__"
+  ],
+  "exclude_filenames": [
+    "*.test.ts",
+    "*.test.tsx",
+    "*.spec.ts",
+    "*.spec.tsx",
+    "*.e2e.test.ts",
+    "*.e2e.test.tsx",
+    "*.e2e.ts",
+    "*.e2e.tsx",
+    "*.gen.ts",
+    "**/index.ts",
+    "**/index.tsx",
+    "**/tsdown.config.ts",
+    "*.config.ts"
+  ],
+  "extensions": [".ts", ".tsx"]
+}
