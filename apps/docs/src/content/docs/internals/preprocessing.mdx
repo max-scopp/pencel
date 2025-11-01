@@ -162,9 +162,10 @@ Plugins register symbols during initialization:
 
 ```typescript
 class MyPlugin extends PencelPlugin {
-  async initialize(): Promise<void> {
-    const registry = inject(SymbolRegistry);
-    registry.registerWellKnown([
+  readonly #registry = inject(SymbolRegistry);
+
+  constructor() {
+    this.#registry.registerWellKnown([
       { symbol: "myHelper", module: "@my-org/helpers" }
     ]);
   }
