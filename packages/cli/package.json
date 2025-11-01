@@ -61,8 +61,14 @@
       "typecheck": {
         "dependsOn": [
           "^build"
-        ]
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit",
+          "cwd": "packages/cli"
+        }
       }
     }
   }
 }
+
