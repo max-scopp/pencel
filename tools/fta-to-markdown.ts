@@ -41,14 +41,10 @@ function generateReport(
     ).toFixed(2);
 
     // Health status header
-    markdown += "## Overall Status\n\n";
     if (_thresholdExceeded) {
-      markdown += `🚨 **Code Quality Alert**: Average FTA score of **${avgScore}** exceeds the threshold of **70**.\n\n`;
-      markdown +=
-        "This indicates complexity or maintainability concerns that should be addressed before merging.\n";
+      markdown += `🚨 **Alert**: Average score **${avgScore}** exceeds threshold (70)\n\n`;
     } else {
-      markdown += `✅ **Code Quality OK**: Average FTA score of **${avgScore}** is within acceptable limits.\n\n`;
-      markdown += "The codebase maintains good maintainability standards.\n";
+      markdown += `✅ **OK**: Average score **${avgScore}** within limits\n\n`;
     }
 
     // Calculate average Halstead metrics for technical debt insights
@@ -62,82 +58,79 @@ function generateReport(
     const avgVolume =
       data.reduce((sum, f) => sum + (f.halstead?.volume || 0), 0) / data.length;
 
-    markdown += "\n## Technical Debt & Maintainability Insights\n\n";
-    markdown += `**Difficulty to Understand**: ${avgDifficulty.toFixed(1)}/100 - `;
+    markdown += "\n## Insights\n\n";
+    markdown += `**Difficulty**: ${avgDifficulty.toFixed(1)}/100 - `;
     if (avgDifficulty > 50) {
-      markdown += "🔴 High complexity, risky to modify\n";
+      markdown += "🔴 High, risky to modify\n";
     } else if (avgDifficulty > 30) {
-      markdown += "🟡 Moderate, needs careful review\n";
+      markdown += "🟡 Moderate, needs review\n";
     } else {
-      markdown += "🟢 Straightforward and clear\n";
+      markdown += "🟢 Straightforward, easy to change\n";
     }
 
-    markdown += `**Predicted Bug Density**: ${avgBugs.toFixed(2)} bugs/1000 LOC - `;
+    markdown += `**Bug Density**: ${avgBugs.toFixed(2)} bugs/1000 LOC - `;
     if (avgBugs > 0.5) {
       markdown += "🔴 High risk, refactor needed\n";
     } else if (avgBugs > 0.2) {
-      markdown += "🟡 Moderate risk\n";
+      markdown += "🟡 Moderate, monitor changes\n";
     } else {
-      markdown += "🟢 Low defect rate\n";
+      markdown += "🟢 Low, well maintained\n";
     }
 
-    markdown += `**Code Paths (Cyclomatic)**: ${avgCyclo.toFixed(1)} avg - `;
+    markdown += `**Code Paths**: ${avgCyclo.toFixed(1)} avg - `;
     if (avgCyclo > 10) {
-      markdown += "🔴 Too many branches\n";
+      markdown += "🔴 Too many, break functions apart\n";
     } else if (avgCyclo > 5) {
-      markdown += "🟡 Multiple paths, test coverage critical\n";
+      markdown += "🟡 Multiple paths, increase test coverage\n";
     } else {
-      markdown += "🟢 Manageable\n";
-    }
-
-    markdown += `**Code Size (Vocabulary)**: ${avgVolume.toFixed(0)} - `;
-    if (avgVolume > 1000) {
-      markdown += "🔴 Very large, break it up\n";
-    } else if (avgVolume > 500) {
-      markdown += "🟡 Moderate size\n";
-    } else {
-      markdown += "🟢 Well-scoped\n";
+      markdown += "🟢 Manageable, good structure\n";
     }
 
     // Final verdict based on assessment distribution
     const assessmentCounts = {
       needs_improvement: data.filter(
         (f) => f.assessment === "Needs improvement",
-      ).length,
-      could_be_better: data.filter((f) => f.assessment === "Could be better")
-        .length,
-      ok: data.filter((f) => f.assessment === "OK").length,
+      ),
+      could_be_better: data.filter((f) => f.assessment === "Could be better"),
+      ok: data.filter((f) => f.assessment === "OK"),
     };
 
     markdown += `\n## Final Verdict\n\n`;
-    if (assessmentCounts.needs_improvement > 0) {
-      markdown += `🚨 ${assessmentCounts.needs_improvement} file(s) need improvement\n`;
-    }
-    if (assessmentCounts.could_be_better > 0) {
-      markdown += `💡 ${assessmentCounts.could_be_better} file(s) could be better\n`;
-    }
-    if (assessmentCounts.ok > 0) {
-      markdown += `✅ ${assessmentCounts.ok} file(s) well-maintained\n`;
+    markdown += `🚨 ${assessmentCounts.needs_improvement.length} need improvement | `;
+    markdown += `� ${assessmentCounts.could_be_better.length} could be better | `;
+    markdown += `✅ ${assessmentCounts.ok.length} well-maintained\n`;
+
+    // Needs improvement - open by default
+    if (assessmentCounts.needs_improvement.length > 0) {
+      markdown += `\n<details open>\n`;
+      markdown += `<summary><b>🚨 Files Needing Improvement</b></summary>\n\n`;
+      assessmentCounts.needs_improvement.forEach((file) => {
+        markdown += `- **${file.file_name}** (Score: ${file.fta_score.toFixed(2)})\n`;
+      });
+      markdown += `\n</details>\n`;
     }
 
-    // Identify problem areas if any
-    const problematicFiles = data.filter((f) => f.fta_score > 70);
-    if (problematicFiles.length > 0) {
-      markdown += `\n### ⚠️ Files Exceeding Threshold\n\n`;
-      markdown += `${problematicFiles.length} file(s) have complexity scores above 70:\n\n`;
-      problematicFiles.forEach((file) => {
-        markdown += `- **${file.file_name}** (${file.fta_score.toFixed(2)}) - ${file.assessment}\n`;
+    // Could be better - closed by default
+    if (assessmentCounts.could_be_better.length > 0) {
+      markdown += `\n<details>\n`;
+      markdown += `<summary><b>💡 Files That Could Be Better</b></summary>\n\n`;
+      assessmentCounts.could_be_better.forEach((file) => {
+        markdown += `- **${file.file_name}** (Score: ${file.fta_score.toFixed(2)})\n`;
       });
+      markdown += `\n</details>\n`;
     }
 
-    // Identify well-maintained files
-    const wellMaintainedFiles = data.filter((f) => f.fta_score < 30);
-    if (wellMaintainedFiles.length > 0) {
-      markdown += `\n### ✨ Well-Maintained Files\n\n`;
-      markdown += `${wellMaintainedFiles.length} file(s) have excellent maintainability:\n\n`;
-      wellMaintainedFiles.forEach((file) => {
-        markdown += `- **${file.file_name}** (${file.fta_score.toFixed(2)}) - ${file.assessment}\n`;
+    // Well-maintained - top 5 - closed by default
+    const topWellMaintained = assessmentCounts.ok
+      .sort((a, b) => a.fta_score - b.fta_score)
+      .slice(0, 5);
+    if (topWellMaintained.length > 0) {
+      markdown += `\n<details>\n`;
+      markdown += `<summary><b>✨ Top 5 Well-Maintained Files</b></summary>\n\n`;
+      topWellMaintained.forEach((file) => {
+        markdown += `- **${file.file_name}** (Score: ${file.fta_score.toFixed(2)})\n`;
       });
+      markdown += `\n</details>\n`;
     }
 
     markdown += "\n<details>\n";

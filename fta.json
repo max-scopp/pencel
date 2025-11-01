@@ -2,7 +2,7 @@
   "output_limit": 5000,
   "score_cap": 70,
   "include_comments": false,
-  "exclude_under": 6,
+  "exclude_under": 20,
   "exclude_directories": [
     "node_modules",
     "dist",
