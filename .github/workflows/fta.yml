@@ -1,0 +1,86 @@
+name: FTA Code Quality
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  fta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run FTA analysis
+        id: fta
+        uses: exiguus/fta-github-action@main
+        with:
+          config_path: "./fta.json"
+          project_path: packages/
+          score_cap: 70
+          format: json
+        continue-on-error: true
+
+      - name: Convert FTA JSON to Markdown
+        if: always()
+        run: bun tools/fta-to-markdown.ts output.json FTA_REPORT.md "${{ steps.fta.outcome == 'failure' }}"
+
+      - name: Comment PR with FTA results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('FTA_REPORT.md', 'utf8');
+
+            // Find existing FTA comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const ftaComment = comments.data.find(comment =>
+              comment.body.includes('# FTA Code Quality Report')
+            );
+
+            if (ftaComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: ftaComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
+
+      - name: Fail if score exceeded
+        if: steps.fta.outcome == 'failure'
+        run: |
+          echo "❌ FTA score exceeded threshold of 70"
+          echo "Summary: ${{ steps.fta.outputs.summary }}"
+          exit 1

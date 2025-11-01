@@ -20,11 +20,14 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+      - name: Read bun version
+        id: bun-version
+        run: echo "version=$(cat .bun-version)" >> $GITHUB_OUTPUT
       - name: Install, build, and upload your site
         uses: withastro/action@v3
         with:
           path: apps/docs
-          package-manager: bun@latest
+          package-manager: bun@${{ steps.bun-version.outputs.version }}
 
   deploy:
     needs: build
