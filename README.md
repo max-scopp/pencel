@@ -4,10 +4,9 @@
 
 Write components once. Output to React, Angular, Vue, and vanilla JS.
 
-[![CI: code-check](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
-[![CI: test](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
-[![CI: typecheck-and-build](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
-[![FTA Code Quality](https://github.com/max-scopp/pencil/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/max-scopp/pencil/actions)
+[![CI](https://github.com/critical-graphite/pencel/actions/workflows/ci.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/ci.yml)
+[![FTA Code Quality](https://github.com/critical-graphite/pencel/actions/workflows/fta.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/fta.yml)
+[![Size Limit](https://github.com/critical-graphite/pencel/actions/workflows/size-limit.yml/badge.svg)](https://github.com/critical-graphite/pencel/actions/workflows/size-limit.yml)
 
 </div>
 
