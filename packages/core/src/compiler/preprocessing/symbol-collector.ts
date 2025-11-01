@@ -17,6 +17,28 @@ import {
 } from "typescript";
 
 export class SymbolCollector {
+  static readonly #BUILTINS = new Set([
+    "undefined",
+    "null",
+    "true",
+    "false",
+    "this",
+    "super",
+    "console",
+    "window",
+    "document",
+    "Object",
+    "Array",
+    "String",
+    "Number",
+    "Boolean",
+    "Symbol",
+    "Map",
+    "Set",
+    "Promise",
+    "Error",
+  ]);
+
   /**
    * Collect identifier references that could need imports.
    */
@@ -36,7 +58,7 @@ export class SymbolCollector {
           existingImports.has(text) ||
           exportSpecifierSymbols.has(text) ||
           importSpecifierSymbols.has(text) ||
-          this.#isBuiltinOrKeyword(text) ||
+          SymbolCollector.#BUILTINS.has(text) ||
           this.#isDeclaration(node)
         ) {
           return;
@@ -113,35 +135,6 @@ export class SymbolCollector {
 
     visit(sourceFile);
     return symbols;
-  }
-
-  /**
-   * Check if identifier is a built-in global or TypeScript keyword.
-   */
-  #isBuiltinOrKeyword(text: string): boolean {
-    const builtins = new Set([
-      "undefined",
-      "null",
-      "true",
-      "false",
-      "this",
-      "super",
-      "console",
-      "window",
-      "document",
-      "Object",
-      "Array",
-      "String",
-      "Number",
-      "Boolean",
-      "Symbol",
-      "Map",
-      "Set",
-      "Promise",
-      "Error",
-    ]);
-
-    return builtins.has(text);
   }
 
   /**
