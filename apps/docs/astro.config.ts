@@ -47,10 +47,6 @@ export default defineConfig({
               label: "Reference",
               slug: "reference",
             },
-            {
-              label: "Roadmap",
-              slug: "roadmap",
-            },
           ],
         },
         {
