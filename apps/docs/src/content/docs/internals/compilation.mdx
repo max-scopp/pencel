@@ -1,48 +1,53 @@
 ---
-title: Compilation System
+title: Compilation Phases
 sidebar:
-  order: 2
+  order: 2.5
 ---
 
-Detailed walkthrough of each compilation phase. For high-level overview, see [Architecture](/pencel/internals/architecture/).
+Detailed walkthrough of each phase. For overview, see [Architecture Overview](/pencel/internals/architecture/).
 
-**⚠️ Note:** This describes intended architecture. See [TODOs](/pencel/internals/todos/) for implementation status.
+## Phase 1: Discover ✅
 
-## Phases
+Validate `tsconfig.json` and glob for input files matching the config pattern.
 
-### 1. Discover ✅
-Validates `tsconfig.json` and globs for input files matching the config pattern.
+## Phase 2: Load ✅
 
-### 2. Load ✅
-Reads files from disk and creates TypeScript `SourceFile` objects.
+Read files from disk, create TypeScript `SourceFile` AST objects.
 
-### 3. Build IR ✅
-Parses decorators and metadata into an immutable IR (component, prop, event definitions).
+## Phase 3: Build IR ✅
 
-### 4. Sync AST ⚠️
-Updates AST nodes to reflect IR state. Resolves cross-file dependencies.
+Parse decorators and metadata into immutable IR: components, props, events, methods.
 
-### 5. Generate ⚠️
-Runs generators (always fully rebuild from complete IR). Examples: `ir.json`, `components.d.ts`.
+## Phase 4: Sync AST ⚠️
 
-### 6. Derive ⚠️
-Runs derivatives (per-source framework adapters). Examples: `component.react.tsx`, `component.angular.ts`.
+Update AST nodes to reflect IR state. Resolve cross-file dependencies.
 
-### 7. Write ⚠️
-Flushes all generated files to disk.
+## Phase 5: Generate ⚠️
+
+Run generators (always fully rebuild). Examples: `ir.json`, `components.d.ts`.
+
+## Phase 6: Derive ⚠️
+
+Run derivatives (per-source framework adapters). Examples: `component.react.tsx`, `component.angular.ts`.
+
+## Phase 7: Write ✅
+
+Final write phase with multiple sub-stages:
+
+1. **Preprocess** – Collect referenced symbols, inject missing imports (see [Symbol Resolution](/pencel/internals/preprocessing/))
+2. **Print** – Convert AST to source code
+3. **Postprocess** – Format, validate, post-emit steps
+4. **Flush** – Write to disk
 
 ## File Organization
 
+During compilation:
+
 ```typescript
-sourceFiles.loadSource()        // Project source files
-sourceFiles.clearGenerated()    // Clear last pass's generated files
+sourceFiles.loadSource()        // Read project *.pen.ts files
+sourceFiles.clearGenerated()    // Clear stale outputs
 sourceFiles.newFile(name)       // Create a generated file
+sourceFiles.getAll()            // Get both source + generated
 ```
 
-**Project source files** are user-written components. **Generated files** are created each pass by generators and derivatives. Clear distinction prevents stale outputs.
-
-## Plugin Hooks
-
-Plugins listen for hooks using the `handle()` method. See [Core Components](/pencel/internals/core/) for orchestration details.
-
-**⚠️ Status:** Hook interfaces are evolving.
+**Project source files** persist across passes. **Generated files** are cleared at startup to prevent stale outputs.

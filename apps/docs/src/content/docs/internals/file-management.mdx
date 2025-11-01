@@ -1,62 +1,51 @@
 ---
-title: File and Dependency Management
+title: File Management
 sidebar:
-  order: 5
+  order: 6
 ---
 
-How Pencel manages source files, generated files, and import resolution during compilation.
+import { Aside } from '@astrojs/starlight/components';
+
+Pencel maintains separate registries for source files (user-written) and generated files (compiler-created).
 
 ## File Organization
 
-The compiler maintains three categories of files:
-
 ```typescript
-sourceFiles.loadSource()        // Project source files
-sourceFiles.clearGenerated()    // Clear last pass's generated files
-sourceFiles.newFile(name)       // Create a generated file
+sourceFiles.loadSource()        // Load *.pen.tsx files
+sourceFiles.clearGenerated()    // Clear stale outputs
+sourceFiles.newFile(name)       // Create generated file
+sourceFiles.getAll()            // Get source + generated
 ```
 
-**Project source files** are user-written components, persisted across compilation passes and updated by transformers. **Generated files** are created each pass by generators and derivatives, cleared at startup to prevent stale outputs.
+**Project source files** persist across passes. **Generated files** are cleared at startup.
 
 ## SourceFiles Registry
 
-The `SourceFiles` class manages all files and serves as the central registry:
+Central file registry for all files in compilation:
 
-- **`loadSource()`** – Reads `.pen.tsx` files from disk and creates TypeScript `SourceFile` objects
-- **`newFile(fileName)`** – Creates a generated file (auto-registers for tracking)
-- **`setStatements(sourceFile, statements)`** – Updates a file's AST statements
-- **`getAll()`** – Returns combined map of project + generated files
-- **`getSourceFile(filePath)`** – Retrieves a specific file by path
+- **`loadSource()`** – Read `.pen.tsx` files, create TypeScript AST
+- **`newFile(fileName)`** – Create generated file (auto-registered)
+- **`setStatements(sourceFile, statements)`** – Update AST statements
+- **`getAll()`** – Combined map of all files
+- **`getSourceFile(filePath)`** – Get specific file
 
-Generated files are automatically registered, ensuring clear separation between user code and compiler output.
+## Write Phase
 
-## Writing Files to Disk
+The `FileWriter` performs preprocessing then output:
 
-The `FileWriter` orchestrates final output:
+```mermaid
+graph LR
+    A["Preprocess<br/>collect symbols"] --> B["Print<br/>AST → code"]
+    B --> C["Postprocess"] --> D["Write"]
+    
+    style A fill:#ef5350,stroke:#c62828,color:#fff
+    style B fill:#42a5f5,stroke:#1565c0,color:#fff
+    style C fill:#42a5f5,stroke:#1565c0,color:#fff
+    style D fill:#66bb6a,stroke:#2e7d32,color:#fff
+```
 
-1. Runs all **generators** (global file plugins) with complete IR tree
-2. Calls `SourcePrinter.printFile()` for each file (AST → source code)
-3. Formats output using Biome
-4. Writes to disk with Pencel marker
+<Aside type="tip">
+Preprocessing runs before printing to ensure all symbol imports are in place before converting AST to code.
+</Aside>
 
-The `SourcePrinter` adds a marker comment to generated files for identification.
-
-## Source Code Printing
-
-The `SourcePrinter` converts TypeScript AST back to source code:
-
-- Uses `ts.createPrinter()` to emit AST
-- Adds Pencel marker comment (identifies generated files)
-- Formats with Biome
-- Preserves comments (non-JSDoc)
-
-## Import Symbol Resolution
-
-⚠️ **Not yet implemented.** When available, this will:
-
-- Validate import paths across files
-- Resolve type references between components
-- Ensure all symbols are properly exported
-- Handle cross-file dependency tracking
-
-This enables the **Sync AST** phase to correctly resolve and inject type definitions, making component metadata complete before generation.
+See [Symbol Resolution](/pencel/internals/preprocessing/) for import injection details.

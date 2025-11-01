@@ -1,0 +1,126 @@
+---
+title: Symbol Resolution
+sidebar:
+  order: 7
+---
+
+Preprocessing automatically collects symbol references and injects missing imports before writing files to disk.
+
+## The Problem
+
+Generated code references `sp()`, `dce()`, `mc()`, `INTERNALS` without importing them. Preprocessing ensures all symbols are imported before files are written.
+
+## Architecture
+
+Single universal processor works for all files:
+
+```typescript
+class SourcePreprocessor {
+  process(sourceFile: SourceFile): SourceFile {
+    const usedSymbols = collector.collect(sourceFile)      // Find all identifiers
+    const requirements = builder.build(usedSymbols)        // Lookup modules
+    return injector.injectImports(sourceFile, requirements) // Inject AST
+  }
+}
+```
+
+Two-bucket registry (well-known + input-discovered) means same processor handles everything.
+
+## Components
+
+| Component | Purpose |
+|-----------|---------|
+| **SymbolRegistry** | Symbol → module mapping; well-known + input buckets |
+| **SymbolCollector** | AST walk to find identifiers; filter declarations/builtins |
+| **ImportBuilder** | Convert symbols to requirements; group, deduplicate |
+| **ImportInjector** | Add/merge imports into AST using ts.factory |
+| **SourcePreprocessor** | Orchestrate: collect → build → inject |
+
+## Integration
+
+Runs in `FileWriter.writeAllFiles()` before printing:
+
+```typescript
+for (const sourceFile of files.values()) {
+  const preprocessed = sourcePreprocessor.process(sourceFile)
+  const updated = preprocessed !== sourceFile
+    ? sourceFiles.setStatements(sourceFile, preprocessed.statements)
+    : sourceFile
+  
+  const printed = sourcePrinter.printFile(updated)
+  await writeFile(outputPath, printed)
+}
+```
+
+## Symbol Buckets
+
+### Well-Known (Runtime)
+
+Always from `@pencel/runtime` (package import):
+
+```typescript
+sp, dce, dctn, sc, st, ael, mc     // DOM ops
+INTERNALS, cacheSymbol, eventListenersSymbol  // Metadata
+```
+
+Registered on startup, never change.
+
+### Input (User-Defined)
+
+Discovered from `.pen` files, configurable per plugin:
+
+```typescript
+preference.style === "package"
+  ? { symbol: "MyComp", module: "@org/components" }
+  : { symbol: "MyComp", module: "./my-comp.gen" }
+```
+
+## Deduplication
+
+Imports from same module are consolidated:
+
+```typescript
+// Before preprocessing
+import { State } from "@pencel/runtime";
+export class Comp {
+  render() {
+    sp(el, props);    // Uses sp, dce
+    dce("div");
+  }
+}
+
+// After preprocessing
+import { State, sp, dce } from "@pencel/runtime";
+export class Comp {
+  render() {
+    sp(el, props);
+    dce("div");
+  }
+}
+```
+
+Existing imports are preserved; only missing symbols are added.
+
+## Plugin Registration
+
+Plugins register symbols during initialization:
+
+```typescript
+class MyPlugin extends PencelPlugin {
+  async initialize(): Promise<void> {
+    const registry = inject(SymbolRegistry);
+    registry.registerWellKnown([
+      { symbol: "myHelper", module: "@my-org/helpers" }
+    ]);
+  }
+}
+```
+
+All files then auto-import when used—no configuration needed.
+
+## Performance
+
+- **Collection** – Linear AST walk per file
+- **Registry lookup** – O(1) hash table
+- **Injection** – Single AST pass
+- **Total** – Typically less than 1ms per file

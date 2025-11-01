@@ -1,19 +1,16 @@
 ---
 title: Render Transformer
 sidebar:
-  order: 6
+  order: 8
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+Converts JSX render methods into zero-DOM factory function calls for efficient rendering.
 
-Converts JSX render methods into zero-DOM factory function calls. Three specialized modules handle orchestration, JSX transformation, and loop management.
+## Transformation Example
 
-## How It Works
-
-The **RenderTransformer** converts JSX into factory function calls:
+Input: JSX render method
 
 ```typescript
-// Input: JSX render method
 render() {
   return (
     <div class="container">
@@ -26,8 +23,11 @@ render() {
     </div>
   );
 }
+```
 
-// Output: Factory function calls
+Output: Factory function calls
+
+```typescript
 render() {
   let $0 = this.#cmc("div_0", () => dce("div"));
   sp($0, { class: "container" });
@@ -49,40 +49,36 @@ render() {
 ```
 
 Key factory functions:
-- `dce()` - create element
-- `dctn()` - create text node
-- `sp()` - set property
-- `sc()` - set children
-- `ael()` - add event listener
-- `cmc()` - component memoization cache
+- `dce()` – Create element
+- `dctn()` – Create text node
+- `sp()` – Set property
+- `sc()` – Set children
+- `ael()` – Add event listener
+- `cmc()` – Memoization cache
 
 ## Architecture
 
-- **`render.ts`** – Orchestrates AST traversal. Dispatches JSX to the JSX transformer and loops to the loop handler.
-- **`render.jsx.ts`** – Converts JSX into factory function calls with memoization.
-- **`render.loop.ts`** – Tracks nesting depth and builds hierarchical scope keys.
+Three specialized modules:
+
+- **`render.ts`** – Orchestrates AST traversal; dispatches JSX and loops
+- **`render.jsx.ts`** – Converts JSX into factory calls with memoization
+- **`render.loop.ts`** – Tracks nesting depth, builds hierarchical scope keys
 
 ## Key Concepts
 
-**Hierarchical Memoization Keys** – Nested loops use hierarchical keys to prevent cache collisions:
+**Hierarchical Memoization Keys** – Nested loops prevent cache collisions:
 - Single loop: `"li_4_" + todo.id`
 - Nested (2 levels): `"span_2_index_index1" + cell.id`
 
 **Index Naming** – Depths 0, 1, 2 use `index`, `index1`, `index2`.
 
-**Statement Scoping** – Prepended statements execute inside loop callbacks, not before/after.
+**Prepended Statements** – Execute inside loop callbacks, not outside.
 
 ## Debugging
 
 | Issue | Root Cause | Fix |
 |-------|-----------|-----|
-| Double element creation | Statements bubble to parent instead of staying in loop | Wrap statements in block inside callback body |
-| Missing index parameter | Index not detected in keys | Check JSX key attributes for "index" usage |
-| Incorrect cache keys | Hierarchical scope not built | Verify `buildHierarchicalScopeKey()` joins all stack entries |
-
-## Key Points
-
-- **Hierarchical Keys:** Root elements include depth hierarchy (e.g., `"li_4_index_index1"`)
-- **Index Naming:** Depths 0, 1, 2 use `index`, `index1`, `index2`
-- **Prepended Statements** execute inside loop callbacks, not before/after
+| Double element creation | Statements bubble to parent | Wrap in block inside callback |
+| Missing index parameter | Index not in key attributes | Check for "index" in keys |
+| Incorrect cache keys | Hierarchical scope missing | Verify scope key building joins all stack entries |
 

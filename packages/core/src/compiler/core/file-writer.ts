@@ -1,8 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { basename, dirname } from "node:path";
 import { percentage } from "@pencel/utils";
 import { inject } from "../core/container.ts";
 import { IRRI } from "../ir/irri.ts";
+import { SourcePreprocessor } from "../preprocessing/source-preprocessor.ts";
 import { perf } from "../utils/perf.ts";
 import { Plugins } from "./plugin.ts";
 import { SourceFiles } from "./source-files.ts";
@@ -12,6 +13,7 @@ export class FileWriter {
   readonly #iri = inject(IRRI);
   readonly #sourceFiles = inject(SourceFiles);
   readonly #sourcePrinter = inject(SourcePrinter);
+  readonly #sourcePreprocessor = inject(SourcePreprocessor);
   readonly #plugins = inject(Plugins);
 
   async writeEverything(): Promise<void> {
@@ -29,12 +31,23 @@ export class FileWriter {
   async writeAllFiles(): Promise<void> {
     perf.start("file-write");
     const files = this.#sourceFiles.getAll();
+
     let progress = 1;
-    for (const contents of files.values()) {
-      const outputFilePath = contents.outputFileName ?? contents.fileName;
+    for (const sourceFile of files.values()) {
+      perf.start(`preprocess:${basename(sourceFile.fileName)}`);
+
+      const preprocessed = this.#sourcePreprocessor.process(sourceFile);
+      const fileToWrite =
+        preprocessed !== sourceFile
+          ? this.#sourceFiles.setStatements(sourceFile, preprocessed.statements)
+          : sourceFile;
+
+      perf.end(`preprocess:${basename(sourceFile.fileName)}`);
+
+      const outputFilePath = sourceFile.outputFileName ?? sourceFile.fileName;
 
       await mkdir(dirname(outputFilePath), { recursive: true });
-      const printed = await this.#sourcePrinter.printFile(contents);
+      const printed = await this.#sourcePrinter.printFile(fileToWrite);
       await writeFile(outputFilePath, printed);
       progress++;
       percentage(progress / files.size, {

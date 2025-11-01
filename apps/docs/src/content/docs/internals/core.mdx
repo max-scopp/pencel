@@ -1,99 +1,59 @@
 ---
 title: Core Components
 sidebar:
-  order: 3
+  order: 5
 ---
 
-The core compiler system and how the pieces fit together. See [Architecture](/pencel/internals/architecture/) for the pipeline overview.
+The compiler orchestrates through a set of interdependent services. See [Architecture Overview](/pencel/internals/architecture/) for pipeline phases.
 
 ## System Architecture
 
 ```mermaid
 graph TB
-    subgraph Discovery["Discovery & IR Building"]
+    subgraph Discovery["Discovery & IR"]
         Program["Program"]
         SourceFiles["SourceFiles"]
         FileProcessor["FileProcessor"]
     end
     
-    subgraph IRManagement["IR & Transformation"]
+    subgraph Mgmt["IR Management"]
         IRRI["IRRI"]
         Transformers["Transformers"]
     end
     
-    subgraph Output["Output Generation"]
+    subgraph Output["Output"]
         Plugins["Plugins"]
         FileWriter["FileWriter"]
     end
     
-    Compiler["Compiler<br/>(Orchestrator)"]
+    Compiler["Compiler"]
     
     Compiler --> Discovery
-    Compiler --> IRManagement
+    Compiler --> Mgmt
     Compiler --> Output
-    
     FileProcessor --> IRRI
     Transformers --> IRRI
-    SourceFiles -.->|registers| IRRI
     
     style Compiler fill:#fff3e0,stroke:#f57f17,stroke-width:3px,color:#000
     style Discovery fill:#e3f2fd,stroke:#01579b,color:#000
-    style IRManagement fill:#f3e5f5,stroke:#6a1b9a,color:#000
+    style Mgmt fill:#f3e5f5,stroke:#6a1b9a,color:#000
     style Output fill:#e8f5e9,stroke:#33691e,color:#000
 ```
 
-## Key Components
+## Component Reference
 
-### Program
+| Component | Purpose |
+|-----------|---------|
+| **Program** | Validate tsconfig.json, glob input files |
+| **SourceFiles** | Registry for source and generated files |
+| **FileProcessor** | Build IR for one file |
+| **IRRI** | Collect and query all IRefs by kind |
+| **Transformers** | Sync AST nodes from IR state |
+| **Plugins** | Run generators and derivatives |
+| **FileWriter** | Preprocess, print, write all files |
+| **Compiler** | Orchestrate pipeline |
 
-Discovers input files and validates `tsconfig.json`.
-
-- Validates TypeScript configuration
-- Globs for input files based on config pattern
-- Provides parsed `tsconfig` for compiler setup
-
-### SourceFiles
-
-Manages all source and generated files, maintains separation, and provides a central registry.
-
-- Maintains `#sourceFiles` separately from `#generatedFiles`
-- Provides API for creating generated files (auto-registers)
-- Manages import resolution
-
-See [File and Dependency Management](/pencel/internals/file-management/) for details.
-
-### FileProcessor
-
-Builds the IR for a single source file.
-
-- Creates `FileIR` for the source file
-- Runs `FileTransformer` to sync AST
-- Calls plugins for codegen hooks
-
-### IRRI
-
-Tracks all IR nodes created during compilation, organized by kind. Enables efficient batch transformations.
-
-See [IRRI and IRRef](/pencel/internals/irri/) for details on pairing IR with AST nodes.
-
-### Transformers
-
-Sync AST nodes to reflect their IR state. Internal infrastructure, not exposed as plugins.
-
-Examples: `ComponentTransformer`, `PropertyTransformer`
-
-Called on all IRs of a given kind, batched via `IRRI`.
-
-### FileWriter
-
-Flushes generated and derived files to disk.
-
-- Writes all files in `SourceFiles.getAll()`
-- Handles file system I/O
-
-## Compilation Flow
-
-The `Compiler` orchestrates the pipeline:
+## Compilation Loop
 
 ```ts
 class Compiler {
@@ -109,7 +69,7 @@ class Compiler {
     }
     
     await this.#plugins.runGenerators(irs)
-    await this.#plugins.runDerivatives(irs, this.#changedSourceFiles)
+    await this.#plugins.runDerivatives(irs)
     await this.#fileWriter.writeEverything()
     
     return irs
@@ -117,15 +77,20 @@ class Compiler {
 }
 ```
 
-## Dependency Injection
+## Key Details
 
-All core components use a lightweight DI container to retrieve their dependencies. This enables singleton pattern, automatic wiring, and circular dependency detection.
+**Program** – Discovers and validates input. See [Compilation Phases](/pencel/internals/compilation/).
 
-See [Dependency Injection](/pencel/internals/dependency-injection/) for details on the DI system and its usage.
+**SourceFiles** – Central registry. See [File Management](/pencel/internals/file-management/).
 
-## Plugin Hooks
+**FileProcessor** – Builds FileIR for one source file, dispatches to transformers.
 
-Plugins listen for hooks using the `handle()` method:
+**IRRI** – Tracks all IRefs by kind. See [IRRI & IRRef](/pencel/internals/irri/).
 
-- **`generate`** – Create global files from complete IR (always fully rebuild)
-- **`derive`** – Create framework adapters (per-source, incremental)
+**Transformers** – Update AST from IR state. Examples: ComponentTransformer, PropertyTransformer.
+
+**Plugins** – Listen via `handle()` method. Generators create global files; derivatives create per-file adapters.
+
+**FileWriter** – Single pass: preprocess → print → postprocess → write. See [File Management](/pencel/internals/file-management/).
+
+All services use [Dependency Injection](/pencel/internals/dependency-injection/) for singleton pattern and automatic wiring.

@@ -71,6 +71,7 @@ compiler/
 | **Component IR**          | Metadata extraction for .d.ts generation and validation  |
 | **File Processor**        | Validation and filtering of source files                 |
 | **inject() Pattern**     | Dependency injection without decorators or ceremony      |
+| **Preprocessors**         | Symbol collection and import injection before printing  |
 
 ---
 
@@ -81,3 +82,5 @@ compiler/
 3. **IR Building** - Extract component metadata during transformation
 4. **Decorator Processing** - Transform @Component, @Prop, etc.
 5. **Registration** - Register transformed files and IR for output
+6. **Preprocessing** - Collect referenced symbols and inject imports (before printing)
+7. **Printing** - Convert AST to source code and format

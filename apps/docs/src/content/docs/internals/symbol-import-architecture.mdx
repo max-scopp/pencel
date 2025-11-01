@@ -1,0 +1,100 @@
+---
+title: Symbol Import Diagrams
+sidebar:
+  order: 7.5
+---
+
+Visual reference for the symbol preprocessing system.
+
+## Core Pipeline (Simplified)
+
+```mermaid
+graph LR
+    A["Collect<br/>Symbols"] -->|registry lookup| B["Build<br/>Requirements"]
+    B -->|AST mutation| C["Inject<br/>Imports"]
+    C --> D["SourceFile<br/>with imports"]
+    
+    style A fill:#ef5350,stroke:#c62828,color:#fff
+    style B fill:#ff9800,stroke:#e65100,color:#fff
+    style C fill:#66bb6a,stroke:#2e7d32,color:#fff
+    style D fill:#42a5f5,stroke:#1565c0,color:#fff
+```
+
+## Two-Bucket Registry
+
+```mermaid
+graph TD
+    Registry["SymbolRegistry"]
+    
+    Registry --> WK["Well-Known<br/>@pencel/runtime"]
+    Registry --> Input["Input<br/>User-defined"]
+    
+    WK --> WKList["sp, dce, mc, ael<br/>INTERNALS, ..."]
+    Input --> InputList["plugin-registered<br/>custom symbols"]
+    
+    style Registry fill:#ffb74d,stroke:#f57f17,color:#000
+    style WK fill:#42a5f5,stroke:#1565c0,color:#fff
+    style Input fill:#ab47bc,stroke:#6a1b9a,color:#fff
+    style WKList fill:#e0e0e0,stroke:#616161,color:#000
+    style InputList fill:#e0e0e0,stroke:#616161,color:#000
+```
+
+## FileWriter Integration
+
+```mermaid
+graph TD
+    FW["FileWriter.writeAllFiles"]
+    
+    FW --> Loop["For each SourceFile"]
+    Loop --> PP["SourcePreprocessor"]
+    PP --> SC["collect → build → inject"]
+    SC --> SS["setStatements"]
+    SS --> Print["printFile"]
+    
+    style FW fill:#ffb74d,stroke:#f57f17,color:#000
+    style PP fill:#ef5350,stroke:#c62828,color:#fff
+    style SC fill:#42a5f5,stroke:#1565c0,color:#fff
+    style SS fill:#66bb6a,stroke:#2e7d32,color:#fff
+    style Print fill:#66bb6a,stroke:#2e7d32,color:#fff
+```
+
+## Symbol Collection Example
+
+```mermaid
+graph LR
+    Code["code: sp(el)<br/>dce('div')<br/>mc()"]
+    
+    Collect["AST walk<br/>find identifiers"]
+    
+    Filter["exclude:<br/>declarations<br/>built-ins<br/>imports"]
+    
+    Result["symbols:<br/>sp, dce, mc"]
+    
+    Code --> Collect
+    Collect --> Filter
+    Filter --> Result
+    
+    style Code fill:#e57373,stroke:#c62828,color:#fff
+    style Collect fill:#42a5f5,stroke:#1565c0,color:#fff
+    style Filter fill:#ff9800,stroke:#e65100,color:#fff
+    style Result fill:#66bb6a,stroke:#2e7d32,color:#fff
+```
+
+## Import Injection Example
+
+```mermaid
+graph LR
+    Before["import {State}<br/>from '@pencel/runtime'"]
+    
+    Inject["merge with<br/>new symbols"]
+    
+    After["import {State,<br/>sp, dce, mc}<br/>from '@pencel/runtime'"]
+    
+    Before --> Inject
+    Inject --> After
+    
+    style Before fill:#e57373,stroke:#c62828,color:#fff
+    style Inject fill:#ff9800,stroke:#e65100,color:#fff
+    style After fill:#66bb6a,stroke:#2e7d32,color:#fff
+```
+
