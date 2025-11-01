@@ -1,5 +1,6 @@
 import type { SourceFile } from "typescript";
 import { extractExportedSymbols } from "../../ts-utils/extractExportedSymbols.ts";
+import { getRelativeImportPath } from "../../ts-utils/getRelativeImportPath.ts";
 
 export interface SymbolConfig {
   symbol: string;
@@ -9,8 +10,23 @@ export interface SymbolConfig {
 }
 
 export interface ImportPreference {
-  style: "package" | "relative";
+  /**
+   * Import style for project symbols.
+   * - "package": use packageName for imports (e.g., `import { Button } from "@mylib/components"`)
+   * - "relative": compute relative import path from consuming file to source file
+   * - "deep": use the full package path (e.g., `import { Button } from "@mylib/components/button"`)
+   */
+  style: "package" | "relative" | "deep";
+  /**
+   * Package name to use when style is "package".
+   * Example: "@mylib/components"
+   */
   packageName?: string;
+  /**
+   * When style is "relative", the path of the file doing the importing.
+   * Used to compute relative import paths.
+   */
+  consumerPath?: string;
 }
 
 /**
@@ -20,17 +36,9 @@ export class SymbolRegistry {
   readonly #wellKnown = new Map<string, SymbolConfig>();
   readonly #projectSymbols = new Map<string, SymbolConfig>();
   readonly #fileSymbols = new Map<string, Set<string>>();
-  #importPreference: ImportPreference = { style: "package" };
 
   constructor() {
     this.#registerRuntimeSymbols();
-  }
-
-  /**
-   * Set import preference for derived files.
-   */
-  setImportPreference(preference: ImportPreference): void {
-    this.#importPreference = preference;
   }
 
   /**
@@ -102,8 +110,9 @@ export class SymbolRegistry {
 
   /**
    * Lookup symbol in either bucket. Returns SymbolConfig or null.
+   * Applies import preference to project symbols if provided.
    */
-  lookup(symbol: string): SymbolConfig | null {
+  lookup(symbol: string, preference?: ImportPreference): SymbolConfig | null {
     const wellKnown = this.#wellKnown.get(symbol);
     if (wellKnown) {
       return wellKnown;
@@ -111,7 +120,9 @@ export class SymbolRegistry {
 
     const project = this.#projectSymbols.get(symbol);
     if (project) {
-      return this.#adaptToPreference(project);
+      return preference
+        ? this.#adaptToPreference(project, preference)
+        : project;
     }
 
     return null;
@@ -120,33 +131,49 @@ export class SymbolRegistry {
   /**
    * Get all registered symbols.
    */
-  all(): SymbolConfig[] {
+  all(preference?: ImportPreference): SymbolConfig[] {
     return [
       ...Array.from(this.#wellKnown.values()),
       ...Array.from(this.#projectSymbols.values()).map((s) =>
-        this.#adaptToPreference(s),
+        preference ? this.#adaptToPreference(s, preference) : s,
       ),
     ];
   }
 
   /**
    * Adapt module path based on import preference.
+   * - "package": use packageName
+   * - "relative": compute relative path from consumerPath to module
+   * - "deep": use the full module path (file path)
    */
-  #adaptToPreference(config: SymbolConfig): SymbolConfig {
+  #adaptToPreference(
+    config: SymbolConfig,
+    preference: ImportPreference,
+  ): SymbolConfig {
+    // Runtime symbols are never transformed
     if (config.module === "@pencel/runtime") {
       return config;
     }
 
-    if (
-      this.#importPreference.style === "package" &&
-      this.#importPreference.packageName
-    ) {
+    if (preference.style === "package" && preference.packageName) {
       return {
         ...config,
-        module: this.#importPreference.packageName,
+        module: preference.packageName,
       };
     }
 
+    if (preference.style === "relative" && preference.consumerPath) {
+      const relativePath = getRelativeImportPath(
+        preference.consumerPath,
+        config.module,
+      );
+      return {
+        ...config,
+        module: relativePath,
+      };
+    }
+
+    // "deep" style or missing consumerPath: use module path as-is
     return config;
   }
 

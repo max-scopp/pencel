@@ -1,5 +1,5 @@
 import { inject } from "../core/container.ts";
-import { SymbolRegistry } from "./symbol-registry.ts";
+import { type ImportPreference, SymbolRegistry } from "./symbol-registry.ts";
 
 export interface ImportRequirement {
   symbols: string[];
@@ -17,12 +17,16 @@ export class ImportBuilder {
   /**
    * Build import requirements for symbols.
    * Groups by module, deduplicates, skips unknown symbols.
+   * Applies import preference if provided.
    */
-  build(symbols: Set<string>): ImportRequirement[] {
+  build(
+    symbols: Set<string>,
+    preference?: ImportPreference,
+  ): ImportRequirement[] {
     const requirements = new Map<string, ImportRequirement>();
 
     for (const symbol of symbols) {
-      const config = this.#registry.lookup(symbol);
+      const config = this.#registry.lookup(symbol, preference);
 
       if (!config) {
         continue;
@@ -39,9 +43,8 @@ export class ImportBuilder {
         });
       }
 
-      const req = requirements.get(key)!;
-
-      if (!req.symbols.includes(symbol)) {
+      const req = requirements.get(key);
+      if (req && !req.symbols.includes(symbol)) {
         req.symbols.push(symbol);
       }
     }
@@ -53,4 +56,3 @@ export class ImportBuilder {
     return Array.from(requirements.values());
   }
 }
-
