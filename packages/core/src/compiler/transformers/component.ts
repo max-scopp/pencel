@@ -118,7 +118,7 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
 
     if (!hasExport) {
       warn(
-        `Component class '${irr.ir.className}' is not exported. Adding 'export' keyword. ` +
+        `Component class '${irr.ir.className}' in file '${irr.node.getSourceFile().fileName}' is not exported. Adding 'export' keyword. ` +
           `Make sure to export your component classes in the future.`,
       );
     }
