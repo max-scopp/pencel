@@ -162,7 +162,13 @@ export class SymbolRegistry {
       };
     }
 
-    if (preference.style === "relative" && preference.consumerPath) {
+    if (preference.style === "relative") {
+      if (!preference.consumerPath) {
+        throw new Error(
+          `Import preference style "relative" requires consumerPath to be set`,
+        );
+      }
+
       const relativePath = getRelativeImportPath(
         preference.consumerPath,
         config.module,
@@ -173,7 +179,7 @@ export class SymbolRegistry {
       };
     }
 
-    // "deep" style or missing consumerPath: use module path as-is
+    // "deep" style: use module path as-is
     return config;
   }
 
