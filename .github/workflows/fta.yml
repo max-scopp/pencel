@@ -29,30 +29,23 @@ jobs:
 
       - name: Run FTA analysis
         id: fta
-        uses: exiguus/fta-github-action@v0.1.2
+        uses: exiguus/fta-github-action@main
         with:
           config_path: "./fta.json"
           project_path: packages/
           score_cap: 70
-          format: table
+          format: json
         continue-on-error: true
+
+      - name: Convert FTA JSON to Markdown
+        if: always()
+        run: bun tools/fta-to-markdown.ts output.json FTA_REPORT.md "${{ steps.fta.outcome == 'failure' }}"
 
       - name: Comment PR with FTA results
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: dawidd6/action-comment-pull-request@v3
         with:
-          script: |
-            const summary = `${{ steps.fta.outputs.summary }}`;
-            const ftaFailed = `${{ steps.fta.outcome }}` === 'failure';
-            const thresholdNote = ftaFailed ? '\n⚠️ **Threshold Exceeded**: Code quality score exceeds the threshold of 70.' : '\n✅ Code quality score is within threshold.';
-            if (summary) {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `## 📊 FTA Code Quality Report\n\n${summary}${thresholdNote}`
-              });
-            }
+          filePath: FTA_REPORT.md
 
       - name: Fail if score exceeded
         if: steps.fta.outcome == 'failure'
