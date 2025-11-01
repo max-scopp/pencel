@@ -146,14 +146,16 @@ describe("RenderTransformer E2E with zero-dom", () => {
           const boolValue =
             value === "true" || (value as unknown) === true || value === "";
           isSettingProperty = true;
-          (el as any as HTMLInputElement).checked = boolValue;
+          const inputEl = el as unknown as HTMLInputElement;
+          inputEl.checked = boolValue;
           isSettingProperty = false;
         } else if (name === "disabled") {
           // Boolean property - only set to true if value is truthy
           const boolValue =
             value === "true" || (value as unknown) === true || value === "";
           isSettingProperty = true;
-          (el as any as HTMLButtonElement).disabled = boolValue;
+          const buttonEl = el as unknown as HTMLButtonElement;
+          buttonEl.disabled = boolValue;
           isSettingProperty = false;
         } else {
           originalSetAttribute(name, value);
@@ -175,9 +177,14 @@ describe("RenderTransformer E2E with zero-dom", () => {
 
     // Create setChildren that uses the patched document
     function setChildrenPatched(
-      parent: HTMLElement | DocumentFragment,
+      parent: HTMLElement | DocumentFragment | Record<string, unknown>,
       children: (Node | string | boolean | number | null | undefined)[],
     ) {
+      // If parent is not a DOM element, just return (component instance case)
+      if (typeof (parent as unknown as Node).appendChild !== "function") {
+        return;
+      }
+
       const childNodes: (Node | Text)[] = children
         .filter((child) => child != null)
         .map((child) => {
@@ -191,48 +198,104 @@ describe("RenderTransformer E2E with zero-dom", () => {
           return child as Node;
         });
 
-      const old = parent.childNodes;
+      const domParent = parent as HTMLElement | DocumentFragment;
+      const old = Array.from(domParent.childNodes || []);
       const max = Math.max(old.length, childNodes.length);
       for (let i = 0; i < max; i++) {
         const w = childNodes[i];
         const h = old[i];
         if (!w) {
-          if (h) parent.removeChild(h);
+          if (h) domParent.removeChild(h);
           continue;
         }
         if (h === w) continue;
-        if (h) parent.replaceChild(w as any, h);
-        else parent.appendChild(w as any);
+        if (h) domParent.replaceChild(w as Node, h);
+        else domParent.appendChild(w as Node);
       }
     }
 
-    // Execute the transformed render function
-    // Extract just the IIFE body (the function inside the return statement)
-    // Pattern: return function () { BODY }();
-    const iifeMatch = transformedCode.match(
-      /return\s+function\s*\(\)\s*\{([\s\S]*)\}\(\);/,
-    );
-    if (!iifeMatch) {
-      throw new Error("Could not extract IIFE body from transformed code");
+    // Extract the render method body (the { ... } block inside render())
+    const bodyMatch = transformedCode.match(/render\(\)\s*\{([\s\S]*)\}/);
+    if (!bodyMatch) {
+      throw new Error("Could not extract render body from transformed code");
     }
 
+    // Replace abbreviated method calls with parameter names
+    let code = bodyMatch[1];
+    code = code.replace(/this\.#cmc/g, "__cmc"); // replace this.#cmc with __cmc parameter
+    code = code.replace(/\bsp\(/g, "__sp("); // replace sp( with __sp(
+    code = code.replace(/\bsc\(/g, "__sc("); // replace sc( with __sc(
+    code = code.replace(/\bdce\(/g, "__dce("); // replace dce( with __dce(
+
+    // Remove outer braces if present (from the block structure)
+    code = code.replace(/^\s*\{\s*/, "").replace(/\s*\}\s*$/, "");
+
+    // Extract the root element and inject a return statement
+    // The pattern is typically: let $0 = ...; ... sc(this, [$0]); or similar
+    // We need to return $0 (the first created element)
+    const assignMatch = code.match(/let\s+(\$\d+)\s*=/);
+    if (!assignMatch) {
+      throw new Error("Could not find root element assignment");
+    }
+    const rootVar = assignMatch[1];
+    code += `\nreturn ${rootVar};`;
+
+    // Create cache map for memoization
+    const cacheMap = new Map<string, unknown>();
+
     const renderFunction = new Function(
-      "once",
-      "setChildren",
-      "document",
+      "__cmc",
+      "__sp",
+      "__sc",
+      "__dce",
+      "__checkElement",
       `
-      ${iifeMatch[1]}
+      ${code}
       `,
     );
 
+    // Create the runtime functions
+    const cmcFn = (key: string, factory: () => unknown) => {
+      if (cacheMap.has(key)) return cacheMap.get(key);
+      const value = factory();
+      cacheMap.set(key, value);
+      return value;
+    };
+
+    const setPropsRuntime = (
+      el: Element,
+      propsData: Record<string, unknown>,
+    ) => {
+      for (const [key, value] of Object.entries(propsData)) {
+        (el as HTMLElement).setAttribute(key, String(value));
+      }
+    };
+
+    const checkElement = (el: unknown): boolean => {
+      return (
+        el != null &&
+        typeof (el as Record<string, unknown>).setAttribute === "function"
+      );
+    };
+
     const result = renderFunction.call(
       componentInstance,
-      once,
+      cmcFn,
+      setPropsRuntime,
       setChildrenPatched,
-      documentProxy,
+      patchedCreateElement,
+      checkElement,
     );
 
-    return result as HTMLElement;
+    // The transformed code now returns the root element directly
+    if (checkElement(result)) {
+      return result as unknown as HTMLElement;
+    }
+
+    // Fallback - return the first element created
+    const elements = documentProxy.body?.children || [];
+    return (elements[elements.length - 1] ||
+      elements[0]) as unknown as HTMLElement;
   }
 
   test("transforms and renders todo-item component", async () => {

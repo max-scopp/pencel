@@ -14,3 +14,6 @@ export * from "./decorators/state.ts";
 export * from "./decorators/store.ts";
 export * from "./decorators/watch.ts";
 export * from "./internals.ts";
+
+// Re-export JSX namespace for jsxImportSource
+import "./core/jsx/jsx.d.ts";
