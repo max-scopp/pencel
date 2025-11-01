@@ -1,5 +1,6 @@
 import type { SourceFile } from "typescript";
 import { inject } from "../core/container.ts";
+import { SourceFiles } from "../core/source-files.ts";
 import { ImportBuilder } from "./import-builder.ts";
 import { ImportInjector } from "./import-injector.ts";
 import { SymbolCollector } from "./symbol-collector.ts";
@@ -12,6 +13,7 @@ export class SourcePreprocessor {
   readonly #collector = inject(SymbolCollector);
   readonly #builder = inject(ImportBuilder);
   readonly #injector = inject(ImportInjector);
+  readonly #sourceFiles = inject(SourceFiles);
 
   /**
    * Process source file: collect symbols, build requirements, inject imports.
@@ -29,6 +31,7 @@ export class SourcePreprocessor {
       return sourceFile;
     }
 
-    return this.#injector.injectImports(sourceFile, requirements);
+    const statements = this.#injector.injectImports(sourceFile, requirements);
+    return this.#sourceFiles.setStatements(sourceFile, statements);
   }
 }

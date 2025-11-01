@@ -5,6 +5,7 @@ import {
   isNamedImports,
   isStringLiteral,
   type SourceFile,
+  type Statement,
 } from "typescript";
 import type { ImportRequirement } from "./import-builder.ts";
 
@@ -13,14 +14,14 @@ import type { ImportRequirement } from "./import-builder.ts";
  */
 export class ImportInjector {
   /**
-   * Add or merge imports into source file.
+   * Returns statements with injected or merged imports, deduplicating across modules.
    */
   injectImports(
     sourceFile: SourceFile,
     requirements: ImportRequirement[],
-  ): SourceFile {
+  ): readonly Statement[] {
     if (requirements.length === 0) {
-      return sourceFile;
+      return sourceFile.statements;
     }
 
     const existingImports = this.#extractImports(sourceFile);
@@ -29,9 +30,7 @@ export class ImportInjector {
     );
 
     const mergedImports = this.#mergeImports(existingImports, requirements);
-    const newStatements = [...mergedImports, ...otherStatements];
-
-    return factory.updateSourceFile(sourceFile, newStatements);
+    return [...mergedImports, ...otherStatements];
   }
 
   /**

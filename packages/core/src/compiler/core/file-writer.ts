@@ -34,21 +34,23 @@ export class FileWriter {
 
     let progress = 1;
     for (const sourceFile of files.values()) {
-      perf.start(`preprocess:${basename(sourceFile.fileName)}`);
+      perf.start(`pack:${basename(sourceFile.fileName)}`);
 
+      perf.start("preprocess");
       const preprocessed = this.#sourcePreprocessor.process(sourceFile);
-      const fileToWrite =
-        preprocessed !== sourceFile
-          ? this.#sourceFiles.setStatements(sourceFile, preprocessed.statements)
-          : sourceFile;
-
-      perf.end(`preprocess:${basename(sourceFile.fileName)}`);
+      perf.end("preprocess");
 
       const outputFilePath = sourceFile.outputFileName ?? sourceFile.fileName;
 
       await mkdir(dirname(outputFilePath), { recursive: true });
-      const printed = await this.#sourcePrinter.printFile(fileToWrite);
+      perf.start("print");
+      const printed = await this.#sourcePrinter.printFile(preprocessed);
+      perf.end("print");
+      perf.start("write");
       await writeFile(outputFilePath, printed);
+      perf.end("write");
+      perf.end(`pack:${basename(sourceFile.fileName)}`);
+
       progress++;
       percentage(progress / files.size, {
         prefix: "Writing",
