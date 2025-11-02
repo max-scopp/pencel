@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noConsole: its logging */
-import { ansiStackTrace, ansiTimestamp, ERROR_LABEL, getAnsiFromStyle, PENCIL_ERROR } from "./ansi.ts";
+import { ansiStackTrace, ansiTimestamp, ERROR_LABEL, getAnsiFromStyle, PENCeL_ERROR } from "./ansi.ts";
 import { coordLog } from "./coordinated-logging.ts";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
@@ -25,7 +25,7 @@ export function log(message: string, style?: string, ...other: unknown[]): void 
 
   if (isBrowser) {
     console.log(
-      `%c✏️ pencil%c ${timestamp} %c${message}`,
+      `%c✏️ pencel%c ${timestamp} %c${message}`,
       "background: #118e67; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey;",
       style || "",
@@ -100,7 +100,7 @@ export function error(messageOrError: string | Error | unknown, style?: string, 
 
   if (isBrowser) {
     console.group(
-      `%c⛔ pencil%c ${timestamp} %cERROR: ${message}`,
+      `%c⛔ pencel%c ${timestamp} %cERROR: ${message}`,
       "background: #d32f2f; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey; font-weight: normal;",
       "color: #d32f2f; font-weight: bold;",
@@ -119,7 +119,7 @@ export function error(messageOrError: string | Error | unknown, style?: string, 
     const ansiCode = style ? getAnsiFromStyle(style) : "";
 
     console.error(
-      `${PENCIL_ERROR} ${ansiTimestamp(timestamp)} ${ERROR_LABEL} ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
+      `${PENCeL_ERROR} ${ansiTimestamp(timestamp)} ${ERROR_LABEL} ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
       ...other,
     );
 
@@ -182,7 +182,7 @@ export function warn(message: string, style?: string, ...other: unknown[]): void
 
   if (isBrowser) {
     console.group(
-      `%c⚠️ pencil%c ${timestamp} %cWARNING: ${message}`,
+      `%c⚠️ pencel%c ${timestamp} %cWARNING: ${message}`,
       "background: #fbc02d; color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey; font-weight: normal;",
       "color: #fbc02d; font-weight: bold;",
