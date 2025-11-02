@@ -1,9 +1,9 @@
 ---
 title: Pencel
-description: Write components once, output to React, Angular, Vue, and vanilla JS.
+description: Universal component specification and compiler for Web, React, Angular, Vue, and native platforms.
 head:
   - tag: title
-    content: Pencel - Component Translation Engine
+    content: Pencel - Universal Component Specification & Emitter
   - tag: style
     content: |
       .hero-html {
@@ -14,10 +14,13 @@ head:
       }
 template: splash
 hero:
-  tagline: One component, multiple frameworks
+  tagline: One specification, infinite implementations
   image:
     html: ✏️
   actions:
+    - text: Read Specification
+      link: /pencel/specification/00-specification/
+      icon: open-book
     - text: Get Started
       link: /pencel/getting-started
       icon: right-arrow
@@ -30,40 +33,41 @@ hero:
 import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 
 <CardGrid stagger>
-	<Card title="Component Translation" icon="puzzle">
-		Write once in TypeScript + JSX. Transpile to React, Angular, Vue, vanilla JS.
+	<Card title="Define Once" icon="pen">
+		Specification-first. One JSON source. Props, events, state machines, tokens, accessibility.
 	</Card>
-	<Card title="Full Native Control" icon="document">
-		Extend HTML elements directly. HTMLButtonElement, HTMLInputElement—full platform access.
+	<Card title="Emit Everywhere" icon="rocket">
+		React, Vue, Angular, Web Components, React Native, SwiftUI, Flutter, XAML. Same definition.
 	</Card>
-	<Card title="Zero-VDOM Runtime" icon="rocket">
-		~4 kB gzipped. Direct DOM updates. Pure Web Components output.
+	<Card title="No Duplication" icon="document">
+		Fix a bug once, deploy everywhere. One source of truth across all platforms.
 	</Card>
-	<Card title="TypeScript First" icon="pen">
-		Decorators, JSX, familiar patterns. Type-safe from start to finish.
+	<Card title="Extensible Emitter Engine" icon="external">
+		Write custom emitters using native AST tools. Compile to any platform. Open architecture.
 	</Card>
 </CardGrid>
 
-## Quick Example
+## One Definition, Many Outputs
 
-```tsx
-import { Component, Prop, Event } from '@pencel/runtime';
-
-@Component({ tag: 'my-button' })
-export class MyButton extends HTMLButtonElement {
-  @Prop() label: string = 'Click me';
-  @Event() declare clicked: CustomEvent<void>;
-
-  render() {
-    return (
-      <Host onClick={() => this.clicked.emit()}>
-        {this.label}
-      </Host>
-    );
+```json
+{
+  "name": "Button",
+  "props": [
+    { "name": "label", "type": "string", "required": true },
+    { "name": "variant", "type": "enum", "values": ["primary", "secondary"] }
+  ],
+  "stateMachine": {
+    "initial": "idle",
+    "states": {
+      "idle": { "on": { "CLICK": { "target": "pressed" } } },
+      "pressed": { "on": { "RELEASE": { "target": "idle" } } }
+    }
   }
 }
 ```
 
-<Aside>
-The compiler transforms `.pen.tsx` files into framework-specific adapters automatically.
+Compiles to: React · Vue · Angular · Web Components · native apps · TypeScript types
+
+<Aside type="tip">
+**Not just for design systems.** Use Pencel for cross-platform apps, micro-frontends, shared component libraries, or any multi-framework team.
 </Aside>
