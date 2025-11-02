@@ -21,7 +21,7 @@ import {
   SyntaxKind,
   visitEachChild,
 } from "typescript";
-import { VarNameGenerator } from "../../ts-utils/factory-helpers.ts";
+import { createPropAccess, VarNameGenerator } from "../../ts-utils/factory-helpers.ts";
 import type { IRRef } from "../ir/irri.ts";
 import { RenderIR } from "../ir/render.ts";
 import { JsxTransformer } from "./render.jsx.ts";
@@ -106,9 +106,10 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Check if transformed expression is void(0) - indicator that a plugin handled the render
     const isVoidZero = transformedExpr.kind === SyntaxKind.VoidExpression;
 
-    // Create sc(this, [transformedExpr]) call if not void(0)
+    // Create sc.call(this, this, [transformedExpr]) call if not void(0)
     const setChildrenCall = !isVoidZero
-      ? factory.createCallExpression(factory.createIdentifier("sc"), undefined, [
+      ? factory.createCallExpression(createPropAccess(factory.createIdentifier("sc"), "call"), undefined, [
+          factory.createIdentifier("this"),
           factory.createIdentifier("this"),
           factory.createArrayLiteralExpression([transformedExpr]),
         ])

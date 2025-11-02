@@ -48,6 +48,22 @@ export function createElementCreation(tagName: string): Expression {
 }
 
 /**
+ * Create a factory call with .call(this, ...) binding for component context.
+ * Usage: createCallWithThis("sp", [element, props]) generates: sp.call(this, element, props)
+ */
+export function createCallWithThis(funcName: string, args: Expression[]): Expression {
+  return createCallWithContext(funcName, factory.createIdentifier("this"), args);
+}
+
+/**
+ * Create a factory call with explicit context binding.
+ * Usage: createCallWithContext("sp", [props], this) generates: sp.call(this, props)
+ */
+export function createCallWithContext(funcName: string, context: Expression, args: Expression[]): Expression {
+  return createCall(createPropAccess(factory.createIdentifier(funcName), "call"), [context, ...args]);
+}
+
+/**
  * Generate a new variable name with counter
  */
 export class VarNameGenerator {
