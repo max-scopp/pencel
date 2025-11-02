@@ -111,28 +111,40 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Transform the return expression
     const transformedExpr = this.#transformExpression(returnStmt.expression);
 
-    // Create sc(this, [transformedExpr]) call
-    const setChildrenCall = factory.createCallExpression(
-      factory.createIdentifier("sc"),
-      undefined,
-      [
-        factory.createIdentifier("this"),
-        factory.createArrayLiteralExpression([transformedExpr]),
-      ],
-    );
+    // Check if transformed expression is void(0) - indicator that a plugin handled the render
+    const isVoidZero = transformedExpr.kind === SyntaxKind.VoidExpression;
+
+    // Create sc(this, [transformedExpr]) call if not void(0)
+    const setChildrenCall = !isVoidZero
+      ? factory.createCallExpression(
+          factory.createIdentifier("sc"),
+          undefined,
+          [
+            factory.createIdentifier("this"),
+            factory.createArrayLiteralExpression([transformedExpr]),
+          ],
+        )
+      : null;
 
     // If we generated statements, wrap in a block
     if (this.#prependStatements.length > 0) {
-      const statements = [
-        ...this.#prependStatements,
-        factory.createExpressionStatement(setChildrenCall),
-      ];
+      const statements = setChildrenCall
+        ? [
+            ...this.#prependStatements,
+            factory.createExpressionStatement(setChildrenCall),
+          ]
+        : this.#prependStatements;
 
       this.#prependStatements = savedPrepend;
       return factory.createBlock(statements, true);
     }
 
-    // No transformation needed, just call sc
+    // No transformation needed
+    if (!setChildrenCall) {
+      this.#prependStatements = savedPrepend;
+      return factory.createExpressionStatement(factory.createVoidZero());
+    }
+
     this.#prependStatements = savedPrepend;
     return factory.createExpressionStatement(setChildrenCall);
   }
@@ -202,14 +214,17 @@ export class RenderTransformer extends Transformer(RenderIR) {
       const tagName = (
         jsx.openingElement.tagName as unknown as { text: string }
       ).text;
+      this.#jsxTransformer?.setPrependStatements(this.#prependStatements);
       if (/^[A-Z]/.test(tagName)) {
         return (
-          this.#jsxTransformer?.transformCustomComponent(jsx, (e) =>
-            this.#transformExpression(e),
+          this.#jsxTransformer?.transformCustomComponent(
+            jsx,
+            this.#loopManager.getCurrent(),
+            this.#loopManager.buildHierarchicalScopeKey(),
+            (e) => this.#transformExpression(e),
           ) ?? jsx
         );
       }
-      this.#jsxTransformer?.setPrependStatements(this.#prependStatements);
       return (
         this.#jsxTransformer?.transformJsxElement(
           jsx,

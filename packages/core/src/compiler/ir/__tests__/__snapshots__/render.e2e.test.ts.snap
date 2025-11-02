@@ -1,21 +1,331 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`RenderTransformer E2E with zero-dom transforms and renders todo-item component 1`] = `"<div class="todo-pending"><input type="checkbox"><span>Buy groceries</span></div>"`;
-
-exports[`RenderTransformer E2E with zero-dom renders completed todo item 1`] = `"<div class="todo-completed"><input type="checkbox"><span>Complete task</span></div>"`;
-
-exports[`RenderTransformer E2E with zero-dom transforms and renders simple-button component 1`] = `"<button>Submit</button>"`;
-
-exports[`RenderTransformer E2E with zero-dom renders disabled button 1`] = `"<button disabled="">Cancel</button>"`;
-
-exports[`RenderTransformer E2E with zero-dom zero-dom cache works correctly 1`] = `
-{
-  "element1": "<div class="todo-pending"><input type="checkbox"><span>Task 1</span></div>",
-  "element2": "<div class="todo-completed"><input type="checkbox"><span>Task 2</span></div>",
-}
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering arrow-function-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sc($0, [this.items.map((item) => {
+                let $1 = this.#cmc("div_1_" + item, () => dce("div"));
+                sp($1, { "class": "item" });
+                sc($1, [item.toUpperCase()]);
+                return $1;
+            }), this.items
+                .filter((item) => item.length > 5)
+                .map((item) => {
+                let $2 = this.#cmc("span_2_" + item, () => dce("span"));
+                sc($2, [item]);
+                return $2;
+            }), [1, 2, 3].map((num) => {
+                let $3 = this.#cmc("p_3_" + num, () => dce("p"));
+                sc($3, [num * this.multiplier]);
+                return $3;
+            })]);
+        sc(this, [$0]);
+    }
+}"
 `;
 
-exports[`RenderTransformer E2E with zero-dom transformed code matches expected structure 1`] = `
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering attribute-variations-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    const inputId = \`input-\${this.count}\`;
+    const maxLength = this.count * 10;
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        let $1 = this.#cmc("input_1", () => dce("input"));
+        sp($1, { "id": inputId });
+        sp($1, { "type": "text" });
+        sp($1, { "value": this.inputValue });
+        sp($1, { "placeholder": this.placeholder });
+        sp($1, { "maxLength": maxLength });
+        sp($1, { "aria-label": \`Input \${this.count}\` });
+        let $2 = this.#cmc("input_2", () => dce("input"));
+        sp($2, { "type": "checkbox" });
+        sp($2, { "checked": this.isChecked });
+        let $3 = this.#cmc("progress_3", () => dce("progress"));
+        sp($3, { "value": this.count });
+        sp($3, { "max": "10" });
+        sc($0, [$1, $2, $3]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering complex-conditional-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": \`status-container status-\${this.status}\` });
+        let $1 = this.#cmc("span_1", () => dce("span"));
+        sp($1, { "class": "spinner" });
+        let $1_text_2 = this.#cmc("$1_text_2", () => dctn("Loading..."));
+        sc($1, [$1_text_2]);
+        let $3 = this.#cmc("div_3", () => dce("div"));
+        let $4 = this.#cmc("ul_4", () => dce("ul"));
+        sc($4, [this.data.map((item, idx) => {
+                let $5 = this.#cmc("li_5_" + idx, () => dce("li"));
+                sc($5, [String(item)]);
+                return $5;
+            })]);
+        let $6 = this.#cmc("p_6", () => dce("p"));
+        let $6_text_7 = this.#cmc("$6_text_7", () => dctn("No data available"));
+        sc($6, [$6_text_7]);
+        sc($3, [this.data.length > 0 ? $4 : $6]);
+        let $8 = this.#cmc("div_8", () => dce("div"));
+        sp($8, { "class": "error-box" });
+        let $9 = this.#cmc("p_9", () => dce("p"));
+        let $9_text_10 = this.#cmc("$9_text_10", () => dctn("Error: "));
+        sc($9, [$9_text_10, this.errorMessage]);
+        sc($8, [$9]);
+        let $11 = this.#cmc("p_11", () => dce("p"));
+        let $11_text_12 = this.#cmc("$11_text_12", () => dctn("Ready to start"));
+        sc($11, [$11_text_12]);
+        sc($0, [this.status === "loading" ? $1 : this.status === "success" ? $3 : this.status === "error" ? $8 : $11]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering conditional-rendering-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        let $1 = this.#cmc("p_1", () => dce("p"));
+        let $1_text_2 = this.#cmc("$1_text_2", () => dctn("Content is visible"));
+        sc($1, [$1_text_2]);
+        let $3 = this.#cmc("p_3", () => dce("p"));
+        let $3_text_4 = this.#cmc("$3_text_4", () => dctn("Content is hidden"));
+        sc($3, [$3_text_4]);
+        let $5 = this.#cmc("strong_5", () => dce("strong"));
+        let $5_text_6 = this.#cmc("$5_text_6", () => dctn("Many items"));
+        sc($5, [$5_text_6]);
+        let $7 = this.#cmc("em_7", () => dce("em"));
+        let $7_text_8 = this.#cmc("$7_text_8", () => dctn("Few items"));
+        sc($7, [$7_text_8]);
+        let $9 = this.#cmc("span_9", () => dce("span"));
+        sp($9, { "class": "error-alert" });
+        let $9_text_10 = this.#cmc("$9_text_10", () => dctn("Error occurred!"));
+        sc($9, [$9_text_10]);
+        let $11 = this.#cmc("span_11", () => dce("span"));
+        sp($11, { "class": "success" });
+        let $11_text_12 = this.#cmc("$11_text_12", () => dctn("All good"));
+        sc($11, [$11_text_12]);
+        sc($0, [this.showContent ? $1 : $3, this.itemCount > 5 ? $5 : $7, this.hasError && $9, !this.hasError && $11]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering event-handler-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        let $1 = this.#cmc("button_1", () => dce("button"));
+        ael($1, "click", this.handleClick);
+        let $1_text_2 = this.#cmc("$1_text_2", () => dctn("Count: "));
+        sc($1, [$1_text_2, this.count]);
+        let $3 = this.#cmc("input_3", () => dce("input"));
+        sp($3, { "type": "text" });
+        ael($3, "input", this.handleInput);
+        ael($3, "change", this.handleChange);
+        sp($3, { "value": this.name });
+        sc($0, [$1, $3]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering full-feature-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    const headerClass = this.isOpen ? "expanded" : "collapsed";
+    const isSelected = this.selectedIndex >= 0;
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": \`component \${headerClass}\` });
+        let $1 = this.#cmc("header_1", () => dce("header"));
+        let $2 = this.#cmc("h2_2", () => dce("h2"));
+        sc($2, [this.title]);
+        let $3 = this.#cmc("button_3", () => dce("button"));
+        ael($3, "click", this.handleOpen);
+        sp($3, { "disabled": this.disabled || this.isOpen });
+        let $3_text_4 = this.#cmc("$3_text_4", () => dctn("\\n            Open\\n          "));
+        sc($3, [$3_text_4]);
+        sc($1, [$2, $3]);
+        let $5 = this.#cmc("div_5", () => dce("div"));
+        sp($5, { "class": "content" });
+        let $6 = this.#cmc("button_6", () => dce("button"));
+        ael($6, "click", this.handleClose);
+        let $6_text_7 = this.#cmc("$6_text_7", () => dctn("Close"));
+        sc($6, [$6_text_7]);
+        let $8 = this.#cmc("p_8", () => dce("p"));
+        let $8_text_9 = this.#cmc("$8_text_9", () => dctn("Selected: Item "));
+        sc($8, [$8_text_9, this.selectedIndex]);
+        let $10 = this.#cmc("p_10", () => dce("p"));
+        let $10_text_11 = this.#cmc("$10_text_11", () => dctn("No selection"));
+        sc($10, [$10_text_11]);
+        sc($5, [$6, isSelected ? $8 : $10]);
+        sc($0, [$1, this.isOpen && $5]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering host-and-slot-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": \`card card-\${this.variant}\` });
+        let $1 = this.#cmc("div_1", () => dce("div"));
+        sp($1, { "class": "card-header" });
+        let $2 = this.#cmc("slot_2", () => dce("slot"));
+        sp($2, { "name": "header" });
+        sc($1, [$2]);
+        let $3 = this.#cmc("div_3", () => dce("div"));
+        sp($3, { "class": "card-content" });
+        let $4 = this.#cmc("slot_4", () => dce("slot"));
+        sc($3, [$4]);
+        let $5 = this.#cmc("div_5", () => dce("div"));
+        sp($5, { "class": "card-footer" });
+        let $6 = this.#cmc("slot_6", () => dce("slot"));
+        sp($6, { "name": "footer" });
+        sc($5, [$6]);
+        sc($0, [$1, $3, $5]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering host-element-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    const paddingClass = \`host-padding-\${this.padding}\`;
+    const variantClass = \`host-variant-\${this.variant}\`;
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": \`host-content \${paddingClass}\` });
+        let $1 = this.#cmc("slot_1", () => dce("slot"));
+        sc($0, [$1]);
+        sc(this, [<Host class={\`host-wrapper \${variantClass}\`}>
+        $0
+      </Host>]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering host-with-conditional-content.pen.tsx matches snapshot 1`] = `
+"render() {
+    const stateClass = this.isOpen ? "expanded" : "collapsed";
+    const errorClass = this.hasError ? "error" : "success";
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": "expanded-content" });
+        let $1 = this.#cmc("slot_1", () => dce("slot"));
+        sp($1, { "name": "expanded" });
+        sc($0, [$1]);
+        let $2 = this.#cmc("div_2", () => dce("div"));
+        sp($2, { "class": "collapsed-content" });
+        let $3 = this.#cmc("p_3", () => dce("p"));
+        let $3_text_4 = this.#cmc("$3_text_4", () => dctn("Collapsed"));
+        sc($3, [$3_text_4]);
+        sc($2, [$3]);
+        let $5 = this.#cmc("div_5", () => dce("div"));
+        sp($5, { "class": "error-message" });
+        let $6 = this.#cmc("slot_6", () => dce("slot"));
+        sp($6, { "name": "error" });
+        sc($5, [$6]);
+        let $7 = this.#cmc("div_7", () => dce("div"));
+        sp($7, { "class": "success-message" });
+        let $7_text_8 = this.#cmc("$7_text_8", () => dctn("All good"));
+        sc($7, [$7_text_8]);
+        sc(this, [<Host class={\`component \${stateClass} \${errorClass}\`}>
+        {this.isOpen && $0}
+        {!this.isOpen && $2}
+        {this.hasError ? $5 : $7}
+      </Host>]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering host-with-multiple-slots.pen.tsx matches snapshot 1`] = `
+"render() {
+    const activeClass = this.active ? "active" : "inactive";
+    {
+        let $0 = this.#cmc("header_0", () => dce("header"));
+        let $1 = this.#cmc("slot_1", () => dce("slot"));
+        sp($1, { "name": "header" });
+        sc($0, [$1]);
+        let $2 = this.#cmc("main_2", () => dce("main"));
+        sp($2, { "class": "card-body" });
+        let $3 = this.#cmc("slot_3", () => dce("slot"));
+        sc($2, [$3]);
+        let $4 = this.#cmc("footer_4", () => dce("footer"));
+        let $5 = this.#cmc("slot_5", () => dce("slot"));
+        sp($5, { "name": "footer" });
+        sc($4, [$5]);
+        sc(this, [<Host class={\`card \${activeClass}\`}>
+        $0
+        $2
+        $4
+      </Host>]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering nested-map-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": "menu" });
+        sc($0, [this.items.map((item, index) => {
+                let $1 = this.#cmc("div_1_" + item.id, () => dce("div"));
+                sp($1, { "class": "menu-group" });
+                let $2 = this.#cmc("h3_2_" + item.id, () => dce("h3"));
+                sc($2, [item.label]);
+                let $3 = this.#cmc("ul_3_" + item.id, () => dce("ul"));
+                sc($3, [item.children.map((child) => {
+                        let $4 = this.#cmc("li_4_" + item.id + ("_" + child.id), () => dce("li"));
+                        sc($4, [child.label]);
+                        return $4;
+                    })]);
+                sc($1, [$2, item.children && $3]);
+                return $1;
+            })]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering simple-button.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("button_0", () => dce("button"));
+        sp($0, { "disabled": this.myDisabled });
+        sc($0, [this.label]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering template-string-component.pen.tsx matches snapshot 1`] = `
+"render() {
+    const ariaLabel = \`User \${this.userName} with role \${this.userRole}\`;
+    const message = \`You have \${this.itemCount} item\${this.itemCount !== 1 ? "s" : ""}\`;
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        let $1 = this.#cmc("p_1", () => dce("p"));
+        sc($1, [message]);
+        let $2 = this.#cmc("button_2", () => dce("button"));
+        sp($2, { "aria-label": ariaLabel });
+        let $2_text_3 = this.#cmc("$2_text_3", () => dctn("Options"));
+        sc($2, [$2_text_3]);
+        let $4 = this.#cmc("span_4", () => dce("span"));
+        sp($4, { "class": \`badge badge-\${this.userRole}\` });
+        sc($4, [this.userName]);
+        sc($0, [$1, $2, $4]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering todo-item.pen.tsx matches snapshot 1`] = `
 "render() {
     {
         let $0 = this.#cmc("div_0", () => dce("div"));

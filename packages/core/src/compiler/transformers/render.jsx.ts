@@ -21,6 +21,8 @@ import {
   createPropAccess,
   type VarNameGenerator,
 } from "../../ts-utils/factory-helpers.ts";
+import { inject } from "../core/container.ts";
+import { Plugins } from "../core/plugin.ts";
 import type { LoopContext } from "./render.loop.ts";
 
 /**
@@ -30,6 +32,7 @@ import type { LoopContext } from "./render.loop.ts";
 export class JsxTransformer {
   #varGenerator: VarNameGenerator;
   #prependStatements: Statement[] = [];
+  #plugins = inject(Plugins);
 
   constructor(varGenerator: VarNameGenerator) {
     this.#varGenerator = varGenerator;
@@ -133,12 +136,13 @@ export class JsxTransformer {
   }
 
   /**
-   * Transform children of a custom component (like <Host>).
-   * For Host components, extract children and apply Host attributes to 'this'.
-   * For other custom components, keep the wrapper but transform children.
+   * Transform children of a custom component.
+   * Calls plugin hooks to allow custom transformations before falling back to default behavior.
    */
   transformCustomComponent(
     jsx: JsxElement,
+    loopContext: LoopContext | undefined,
+    hierarchicalScopeKey: Expression | null,
     transformExpression: (expr: Expression) => Expression,
   ): Expression {
     const openingElement = (
@@ -150,13 +154,27 @@ export class JsxTransformer {
       }
     ).openingElement;
     const tagName = openingElement.tagName.text;
+    const attributes = openingElement.attributes.properties;
 
-    // Special handling for <Host> component
-    if (tagName === "Host") {
-      return this.#transformHostComponent(jsx, transformExpression);
+    const hook = {
+      hook: "jsx:transform" as const,
+      tagName,
+      attributes,
+      jsxNode: jsx,
+      loopContext,
+      hierarchicalScopeKey,
+      transformExpression,
+      prependStatements: this.#prependStatements,
+      result: undefined as Expression | undefined,
+    };
+
+    this.#plugins.handleSync(hook);
+
+    if (hook.result) {
+      return hook.result;
     }
 
-    // For other custom components, recursively visit all children and transform nested JSX
+    // Fallback: recursively visit children for unknown custom components
     return visitEachChild(
       jsx as unknown as Expression,
       (node) => {
@@ -532,106 +550,6 @@ export class JsxTransformer {
     );
 
     return factory.createIdentifier(textVarName);
-  }
-
-  /**
-   * Transform <Host> component - extract children and apply Host attributes to 'this'
-   */
-  #transformHostComponent(
-    jsx: JsxElement,
-    transformExpression: (expr: Expression) => Expression,
-  ): Expression {
-    const openingElement = (
-      jsx as unknown as {
-        openingElement: {
-          tagName: { text: string };
-          attributes: { properties?: unknown };
-        };
-      }
-    ).openingElement;
-
-    // Get Host attributes to apply to 'this'
-    const hostAttributes = openingElement.attributes.properties;
-    if (hostAttributes && Array.isArray(hostAttributes)) {
-      for (const attr of hostAttributes) {
-        if (
-          attr.kind === SyntaxKind.JsxAttribute &&
-          (attr as { name?: { text: string } }).name
-        ) {
-          const attrName = (attr as { name: { text: string } }).name.text;
-          const initializer = (
-            attr as {
-              initializer?: { kind: SyntaxKind; expression?: Expression };
-            }
-          ).initializer;
-
-          // Handle event attributes (onMouseEnter, etc.)
-          if (attrName.startsWith("on")) {
-            const eventName = attrName.slice(2).toLowerCase();
-            if (
-              initializer?.kind === SyntaxKind.JsxExpression &&
-              initializer.expression
-            ) {
-              this.#prependStatements.push(
-                createExprStmt(
-                  createCall(factory.createIdentifier("ael"), [
-                    factory.createThis(),
-                    factory.createStringLiteral(eventName),
-                    initializer.expression,
-                  ]),
-                ),
-              );
-            }
-          } else {
-            // Regular attributes (class, etc.)
-            if (
-              initializer?.kind === SyntaxKind.JsxExpression &&
-              initializer.expression
-            ) {
-              this.#prependStatements.push(
-                createExprStmt(
-                  createCall(factory.createIdentifier("sp"), [
-                    factory.createThis(),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createStringLiteral(attrName),
-                        initializer.expression,
-                      ),
-                    ]),
-                  ]),
-                ),
-              );
-            }
-          }
-        }
-      }
-    }
-
-    // Transform children and return the first child directly
-    const children = (
-      jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }
-    ).children;
-    if (children && children.length > 0) {
-      // Find the first non-whitespace child
-      for (const child of children) {
-        if (
-          child.kind === SyntaxKind.JsxElement ||
-          child.kind === SyntaxKind.JsxSelfClosingElement
-        ) {
-          return transformExpression(child as unknown as Expression);
-        }
-        if (child.kind === SyntaxKind.JsxExpression) {
-          const expr = (child as unknown as { expression?: Expression })
-            .expression;
-          if (expr) {
-            return transformExpression(expr);
-          }
-        }
-      }
-    }
-
-    // If no children, return null
-    return factory.createNull();
   }
 
   /**

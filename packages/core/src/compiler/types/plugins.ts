@@ -1,14 +1,23 @@
-import type { ClassDeclaration, SourceFile } from "typescript";
+import type {
+  ClassDeclaration,
+  Expression,
+  JsxElement,
+  JsxSelfClosingElement,
+  SourceFile,
+  Statement,
+} from "typescript";
 import type { CssPluginRegistry } from "../../plugins/css.ts";
 import type { ComponentsExportGeneratorRegistry } from "../../plugins/generators/components.ts";
 import type { IRGeneratorRegistry } from "../../plugins/generators/ir.ts";
 import type { ComponentTypingsRegistry } from "../../plugins/generators/typings.ts";
+import type { HostPluginRegistry } from "../../plugins/jsx-transform/host.ts";
 import type { AngularOutputRegistry } from "../../plugins/outputs/angular.ts";
 import type { ReactOutputRegistry } from "../../plugins/outputs/react.ts";
 import type { ScssPluginRegistry } from "../../plugins/scss.ts";
 import type { ComponentIR } from "../ir/component.ts";
 import type { FileIR } from "../ir/file.ts";
 import type { ImplodeIRRefs, IRRef } from "../ir/irri.ts";
+import type { LoopContext } from "../transformers/render.loop.ts";
 
 export interface BasePluginOptions {
   enabled?: boolean;
@@ -21,7 +30,8 @@ export interface PluginRegistry
     CssPluginRegistry,
     ScssPluginRegistry,
     ReactOutputRegistry,
-    AngularOutputRegistry {
+    AngularOutputRegistry,
+    HostPluginRegistry {
   _: object;
 }
 
@@ -70,6 +80,19 @@ export type DeriveHook = {
   irr: IRRef<FileIR, SourceFile>;
 };
 
+/** Transform JSX elements during render compilation */
+export type JsxTransformHook = {
+  hook: "jsx:transform";
+  tagName: string;
+  attributes: unknown;
+  jsxNode: JsxElement | JsxSelfClosingElement;
+  loopContext: LoopContext | undefined;
+  hierarchicalScopeKey: Expression | null;
+  transformExpression: (expr: Expression) => Expression;
+  prependStatements: Statement[];
+  result?: Expression;
+};
+
 /**
  * Union of all pluggable hooks in the system
  */
@@ -77,7 +100,8 @@ export type PluggableHooks =
   | CssPreprocessHook
   | CssPostprocessHook
   | GenerateHook
-  | DeriveHook;
+  | DeriveHook
+  | JsxTransformHook;
 
 export type HookOf<TKind extends PluggableHooks["hook"]> = Extract<
   PluggableHooks,

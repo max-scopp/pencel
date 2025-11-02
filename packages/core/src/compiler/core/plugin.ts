@@ -86,6 +86,22 @@ export class Plugins {
     return hook;
   }
 
+  /**
+   * Execute hook handlers synchronously (for render-time transformations).
+   * Handlers must be synchronous to work with this method.
+   */
+  handleSync<THook extends PluggableHooks>(hook: THook): THook {
+    perf.start(`handle-hook-sync:${hook.hook}`);
+
+    const handlers = this.#hookHandlers.get(hook.hook) ?? [];
+    for (const handler of handlers) {
+      handler(hook);
+    }
+
+    perf.end(`handle-hook-sync:${hook.hook}`);
+    return hook;
+  }
+
   registerHook<TKind extends HookKind>(
     hookKind: TKind,
     handler: HookHandler<TKind>,
