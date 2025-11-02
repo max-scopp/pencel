@@ -24,7 +24,7 @@ class HostPlugin extends PencelPlugin {
     super();
     this.handle("jsx:transform", (hook) => {
       // Debug: log when handler is called
-      if (hook.tagName === "Host" || hook.tagName?.includes?.("Host")) {
+      if (hook.tagName === "Host") {
         hook.result = this.#transformHostComponent(hook);
       }
     });
