@@ -34,14 +34,18 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
 
     switch (k) {
       case "style": {
-        const styleObj = v as Record<string, string>;
-        const style = (el as HTMLElement).style as unknown as Record<string, string>;
+        if (typeof v === "string") {
+          (el as HTMLElement).setAttribute("style", v);
+        } else {
+          const styleObj = v as Record<string, string>;
+          const style = (el as HTMLElement).style as unknown as Record<string, string>;
 
-        for (const styleKey in styleObj) {
-          const styleValue = styleObj[styleKey];
-          const current = style[styleKey];
-          if (current !== styleValue) {
-            style[styleKey] = styleValue;
+          for (const styleKey in styleObj) {
+            const styleValue = styleObj[styleKey];
+            const current = style[styleKey];
+            if (current !== styleValue) {
+              style[styleKey] = styleValue;
+            }
           }
         }
         break;
