@@ -2,11 +2,14 @@ import type { PropOptions } from "../decorators/prop.ts";
 import { PENCIL_COMPONENT_CONTEXT, PENCIL_OBSERVED_ATTRIBUTES } from "./symbols.ts";
 
 export interface PencilComponentContext {
+  shadow: boolean;
   extends?: string;
   props: Map<string | number | symbol, unknown>;
   popts: Map<string | number | symbol, PropOptions | undefined>;
   state: Map<string | number | symbol, unknown>;
   stores?: Map<string | number | symbol, unknown>;
+  slotPlaceholders?: Map<string, HTMLSlotElement>;
+  projectedContent?: Map<string, Node[]>;
 }
 
 /**
@@ -127,11 +130,3 @@ export interface ComponentInterface extends CustomElement {
    */
   render?(): JSX.Element;
 }
-
-/**
- * The phase of the component in its lifecycle.
- *
- * A component is considered "alive" immediately after the consumer's `componentWillLoad`
- * lifecycle hook has completed successfully and all internal setup is finished,
- * but before the first render is attempted.
- */

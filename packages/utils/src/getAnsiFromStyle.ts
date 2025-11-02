@@ -14,11 +14,11 @@ export function getAnsiFromStyle(style: string): string {
 }
 
 export function ansiLog(): string {
-  return `${ANSI_GREEN}${ANSI_BOLD}✏️ pencil${ANSI_RESET}`;
+  return `${ANSI_GREEN}${ANSI_BOLD}✏️ pencel${ANSI_RESET}`;
 }
 
 export function ansiError(): string {
-  return `${ANSI_RED}${ANSI_BOLD}⛔ pencil${ANSI_RESET}`;
+  return `${ANSI_RED}${ANSI_BOLD}⛔ pencel${ANSI_RESET}`;
 }
 
 export function ansiTimestamp(timestamp: string): string {

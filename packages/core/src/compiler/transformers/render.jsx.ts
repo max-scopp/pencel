@@ -16,6 +16,7 @@ import {
 import {
   createArrow,
   createCall,
+  createCallWithThis,
   createElementCreation,
   createExprStmt,
   createPropAccess,
@@ -108,7 +109,7 @@ export class JsxTransformer {
       if (childrenExpressions.length > 0) {
         this.#prependStatements.push(
           createExprStmt(
-            createCall(factory.createIdentifier("sc"), [
+            createCallWithThis("sc", [
               factory.createIdentifier(varName),
               factory.createArrayLiteralExpression(childrenExpressions),
             ]),
@@ -315,7 +316,7 @@ export class JsxTransformer {
             if (exprNode) {
               this.#prependStatements.push(
                 createExprStmt(
-                  createCall(factory.createIdentifier("ael"), [
+                  createCallWithThis("ael", [
                     factory.createIdentifier(varName),
                     factory.createStringLiteral(eventName),
                     exprNode,
@@ -330,7 +331,7 @@ export class JsxTransformer {
             // Boolean attribute like <input disabled />
             this.#prependStatements.push(
               createExprStmt(
-                createCall(factory.createIdentifier("sp"), [
+                createCallWithThis("sp", [
                   factory.createIdentifier(varName),
                   factory.createObjectLiteralExpression([
                     factory.createPropertyAssignment(
@@ -346,7 +347,7 @@ export class JsxTransformer {
             const attrValue = attr.initializer.text || "";
             this.#prependStatements.push(
               createExprStmt(
-                createCall(factory.createIdentifier("sp"), [
+                createCallWithThis("sp", [
                   factory.createIdentifier(varName),
                   factory.createObjectLiteralExpression([
                     factory.createPropertyAssignment(
@@ -363,7 +364,7 @@ export class JsxTransformer {
             if (exprNode) {
               this.#prependStatements.push(
                 createExprStmt(
-                  createCall(factory.createIdentifier("sp"), [
+                  createCallWithThis("sp", [
                     factory.createIdentifier(varName),
                     factory.createObjectLiteralExpression([
                       factory.createPropertyAssignment(factory.createStringLiteral(attrName), exprNode),

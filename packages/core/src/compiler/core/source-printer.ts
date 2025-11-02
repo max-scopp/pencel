@@ -1,4 +1,5 @@
 import ts from "typescript";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { Config } from "../config.ts";
 import { formatWithBiome } from "../utils/biome-formatter.ts";
 import { createPencelMarker } from "../utils/marker.ts";
@@ -21,7 +22,8 @@ export class SourcePrinter {
     }
 
     // TODO: Make formatters part of the plugin system
-    printed = await formatWithBiome(printed, sourceFile.fileName, this.#config.cwd);
+    const outputPath = getOutputPath(sourceFile);
+    printed = await formatWithBiome(printed, outputPath, this.#config.cwd);
 
     return printed;
   }
@@ -31,7 +33,8 @@ export class SourcePrinter {
     const result = new Map<string, string>();
 
     for (const sourceFile of sourceFiles) {
-      result.set(sourceFile.fileName, await this.printFile(sourceFile));
+      const outputPath = getOutputPath(sourceFile);
+      result.set(outputPath, await this.printFile(sourceFile));
     }
 
     perf.end("print-files");

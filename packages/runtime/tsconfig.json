@@ -9,7 +9,9 @@
     "jsxImportSource": "@pencel/runtime",
     "experimentalDecorators": true
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "references": [
     {
       "path": "../utils"

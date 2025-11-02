@@ -5,7 +5,7 @@
 import { type Expression, factory, type JsxElement, SyntaxKind } from "typescript";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 import type { JsxTransformHook } from "../../compiler/types/plugins.ts";
-import { createCall, createExprStmt } from "../../ts-utils/factory-helpers.ts";
+import { createCallWithThis, createExprStmt } from "../../ts-utils/factory-helpers.ts";
 
 export interface HostPluginRegistry {
   host: {
@@ -59,11 +59,7 @@ class HostPlugin extends PencelPlugin {
             if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
               hook.prependStatements.push(
                 createExprStmt(
-                  createCall(factory.createIdentifier("ael"), [
-                    factory.createThis(),
-                    factory.createStringLiteral(eventName),
-                    initializer.expression,
-                  ]),
+                  createCallWithThis("ael", [factory.createStringLiteral(eventName), initializer.expression]),
                 ),
               );
             }
@@ -79,15 +75,10 @@ class HostPlugin extends PencelPlugin {
       }
     }
 
-    // Create sp(this, {...attributes}) call if there are attributes
+    // Create sp.call(this, {...attributes}) call if there are attributes
     if (attributeProperties.length > 0) {
       hook.prependStatements.push(
-        createExprStmt(
-          createCall(factory.createIdentifier("sp"), [
-            factory.createThis(),
-            factory.createObjectLiteralExpression(attributeProperties),
-          ]),
-        ),
+        createExprStmt(createCallWithThis("sp", [factory.createObjectLiteralExpression(attributeProperties)])),
       );
     }
 
@@ -111,13 +102,10 @@ class HostPlugin extends PencelPlugin {
       }
     }
 
-    // Create sc(this, [...children]) call and prepend it
+    // Create sc.call(this, [...children]) call and prepend it
     hook.prependStatements.push(
       createExprStmt(
-        createCall(factory.createIdentifier("sc"), [
-          factory.createThis(),
-          factory.createArrayLiteralExpression(transformedChildren),
-        ]),
+        createCallWithThis("sc", [factory.createThis(), factory.createArrayLiteralExpression(transformedChildren)]),
       ),
     );
 

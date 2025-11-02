@@ -25,7 +25,7 @@ export function log(message: string, style?: string, ...other: unknown[]): void 
 
   if (isBrowser) {
     console.log(
-      `%c✏️ pencil%c ${timestamp} %c${message}`,
+      `%c✏️ pencel%c ${timestamp} %c${message}`,
       "background: #118e67; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey;",
       style || "",
@@ -100,7 +100,7 @@ export function error(messageOrError: string | Error | unknown, style?: string, 
 
   if (isBrowser) {
     console.group(
-      `%c⛔ pencil%c ${timestamp} %cERROR: ${message}`,
+      `%c⛔ pencel%c ${timestamp} %cERROR: ${message}`,
       "background: #d32f2f; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey; font-weight: normal;",
       "color: #d32f2f; font-weight: bold;",
@@ -182,7 +182,7 @@ export function warn(message: string, style?: string, ...other: unknown[]): void
 
   if (isBrowser) {
     console.group(
-      `%c⚠️ pencil%c ${timestamp} %cWARNING: ${message}`,
+      `%c⚠️ pencel%c ${timestamp} %cWARNING: ${message}`,
       "background: #fbc02d; color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;",
       "color: grey; font-weight: normal;",
       "color: #fbc02d; font-weight: bold;",

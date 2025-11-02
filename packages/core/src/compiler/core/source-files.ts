@@ -166,7 +166,9 @@ export class SourceFiles {
 
     // Create export statements for each matching file
     const exportStatements: Statement[] = matchingFiles.map(({ path, symbols }) => {
-      const relativeImportPath = getRelativeImportPath(resolvedBarrelPath, path);
+      const sourceFile = allFiles.get(path);
+      const outputPath = sourceFile ? this.getOutputPath(sourceFile) : path;
+      const relativeImportPath = getRelativeImportPath(resolvedBarrelPath, outputPath);
       const namedExports = Array.from(symbols).map((symbol) =>
         factory.createExportSpecifier(false, undefined, factory.createIdentifier(symbol)),
       );

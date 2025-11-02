@@ -1,3 +1,5 @@
+import type { ComponentInterfaceWithContext } from "./types.ts";
+
 export const cacheSymbol = Symbol("_$pen_cmc");
 export const eventListenersSymbol = Symbol("_$pen_listeners");
 
@@ -23,7 +25,7 @@ export function mc() {
  * set properties (formerly setProps)
  * Intelligently handles setting properties or attributes.
  */
-export function sp(el: Element, props: Record<string, unknown> | null) {
+export function sp(this: ComponentInterfaceWithContext, el: Element, props: Record<string, unknown> | null) {
   if (!props) return;
 
   // List of boolean properties that must be synced via property, not attribute
@@ -34,14 +36,18 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
 
     switch (k) {
       case "style": {
-        const styleObj = v as Record<string, string>;
-        const style = (el as HTMLElement).style as unknown as Record<string, string>;
+        if (typeof v === "string") {
+          (el as HTMLElement).setAttribute("style", v);
+        } else {
+          const styleObj = v as Record<string, string>;
+          const style = (el as HTMLElement).style as unknown as Record<string, string>;
 
-        for (const styleKey in styleObj) {
-          const styleValue = styleObj[styleKey];
-          const current = style[styleKey];
-          if (current !== styleValue) {
-            style[styleKey] = styleValue;
+          for (const styleKey in styleObj) {
+            const styleValue = styleObj[styleKey];
+            const current = style[styleKey];
+            if (current !== styleValue) {
+              style[styleKey] = styleValue;
+            }
           }
         }
         break;
@@ -74,12 +80,15 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
  * - Compares by reference (h === w) to detect reused nodes
  * - Matches by type and structure for semantic equivalence
  * - Replaces nodes when they're semantically equivalent but different instances
+ * Pass 1: Creates structure with slot placeholders (no projection yet)
+ * Projection happens in Pass 2 via commitProjection()
  */
 export function sc(
+  this: ComponentInterfaceWithContext,
   parent: Element | HTMLElement | DocumentFragment,
   children: (Node | Node[] | string | number | boolean | null | undefined)[],
 ) {
-  // Flatten children array
+  // Flatten children array, treating slots as regular placeholder elements
   const flatChildren: Node[] = [];
   const flatten = (arr: (Node | Node[] | string | number | boolean | null | undefined)[]): void => {
     for (const child of arr) {
@@ -150,7 +159,7 @@ export function sc(
  * set text (formerly setText)
  * Updates text node data if changed
  */
-export function st(node: Text, value: string) {
+export function st(this: ComponentInterfaceWithContext, node: Text, value: string) {
   if (node.data !== value) node.data = value;
 }
 
@@ -172,7 +181,7 @@ export const dctn = (text: string): Text => document.createTextNode(text);
  * Strategy: Store the last handler for each event type and remove it before adding a new one.
  * This keeps only the latest handler for each event, preventing stale closures.
  */
-export const ael = (el: Element, event: string, handler: EventListener): void => {
+export function ael(this: ComponentInterfaceWithContext, el: Element, event: string, handler: EventListener): void {
   // Cast to unknown first to access symbol property
   const elObj = el as unknown as Record<symbol, unknown>;
 
@@ -192,4 +201,4 @@ export const ael = (el: Element, event: string, handler: EventListener): void =>
   // Add the new handler and store it
   listenerMap[event] = handler;
   el.addEventListener(event, handler);
-};
+}

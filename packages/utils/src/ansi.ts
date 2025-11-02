@@ -1,5 +1,5 @@
-export const PENCIL_LOG = "\x1b[92m\x1b[1m✏️ pencil\x1b[0m";
-export const PENCIL_ERROR = "\x1b[91m\x1b[1m⛔ pencil\x1b[0m";
+export const PENCIL_LOG = "\x1b[92m\x1b[1m✏️ pencel\x1b[0m";
+export const PENCIL_ERROR = "\x1b[91m\x1b[1m⛔ pencel\x1b[0m";
 export const ERROR_LABEL = "\x1b[91m\x1b[1mERROR:\x1b[0m";
 
 export const ANSI_RESET = "\x1b[0m";

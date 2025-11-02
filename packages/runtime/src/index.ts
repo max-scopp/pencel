@@ -2,6 +2,7 @@ export type * from "./config.ts";
 export type { PencelRuntimeConfig as PencilRuntimeConfig } from "./config.ts";
 export * from "./core/jsx/jsx-helpers.ts";
 export type * from "./core/jsx/types.ts";
+export * from "./core/light-dom-slots.ts";
 export type * from "./core/types.ts";
 export * from "./core/zero-dom.ts";
 export * from "./decorators/component.ts";

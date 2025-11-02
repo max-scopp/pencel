@@ -1,4 +1,5 @@
 import type { SourceFile } from "typescript";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { inject } from "../core/container.ts";
 import { SourceFiles } from "../core/source-files.ts";
 import { ImportBuilder } from "./import-builder.ts";
@@ -29,6 +30,8 @@ export class SourcePreprocessor {
       return sourceFile;
     }
 
+    const outputPath = getOutputPath(sourceFile);
+
     // Filter out symbols that are defined/exported in this same file
     const externalSymbols = new Set<string>();
     for (const symbol of usedSymbols) {
@@ -37,7 +40,7 @@ export class SourcePreprocessor {
         continue;
       }
       // Skip symbols where the module is this file itself
-      if (config.module === sourceFile.fileName) {
+      if (config.module === outputPath) {
         continue;
       }
       externalSymbols.add(symbol);
@@ -50,12 +53,12 @@ export class SourcePreprocessor {
     // Use provided preference or default to relative imports
     const importPreference: ImportPreference = preference || {
       style: "relative",
-      consumerPath: sourceFile.fileName,
+      consumerPath: outputPath,
     };
 
     // Ensure consumerPath is set for relative style
     if (importPreference.style === "relative" && !importPreference.consumerPath) {
-      importPreference.consumerPath = sourceFile.fileName;
+      importPreference.consumerPath = outputPath;
     }
 
     // Build requirements with import preference
