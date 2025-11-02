@@ -20,9 +20,7 @@ import { serializeNode } from "./node.ts";
  * Convert a TypeScript ObjectLiteralExpression into a plain JS object recursively,
  * where functions/arrows are converted to ASTNode.
  */
-export function objectLiteralToRecord(
-  obj: ObjectLiteralExpression,
-): Record<string, any> {
+export function objectLiteralToRecord(obj: ObjectLiteralExpression): Record<string, any> {
   const result: Record<string, any> = {};
 
   for (const prop of obj.properties) {
@@ -63,8 +61,7 @@ function getPropName(name: PropertyName): string {
 export function extractValue(expr: Expression): any {
   if (isObjectLiteralExpression(expr)) return objectLiteralToRecord(expr);
   if (isArrayLiteralExpression(expr)) return expr.elements.map(extractValue);
-  if (isArrowFunction(expr) || isFunctionExpression(expr))
-    return serializeNode(expr);
+  if (isArrowFunction(expr) || isFunctionExpression(expr)) return serializeNode(expr);
   if (isStringLiteral(expr)) return expr.text;
   if (isNumericLiteral(expr)) return Number(expr.text);
   if (expr.kind === SyntaxKind.TrueKeyword) return true;

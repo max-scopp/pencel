@@ -31,9 +31,7 @@ class ComponentTypings extends PencelPlugin {
     });
   }
 
-  async #createAllTypings(
-    fileIRs: Array<ImplodeIRRefs<FileIR>>,
-  ): Promise<void> {
+  async #createAllTypings(fileIRs: Array<ImplodeIRRefs<FileIR>>): Promise<void> {
     const globalDeclarations: ts.Statement[] = [];
 
     for (const fileIR of fileIRs) {
@@ -51,9 +49,7 @@ class ComponentTypings extends PencelPlugin {
                 undefined,
                 "tagName",
                 undefined,
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.extends),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(cir.extends)),
               ),
               factory.createParameterDeclaration(
                 undefined,
@@ -65,9 +61,7 @@ class ComponentTypings extends PencelPlugin {
                     undefined,
                     factory.createIdentifier("is"),
                     undefined,
-                    factory.createLiteralTypeNode(
-                      factory.createStringLiteral(cir.normalizedTag),
-                    ),
+                    factory.createLiteralTypeNode(factory.createStringLiteral(cir.normalizedTag)),
                   ),
                 ]),
               ),
@@ -95,18 +89,14 @@ class ComponentTypings extends PencelPlugin {
                 undefined,
                 "name",
                 undefined,
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral("is"),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral("is")),
               ),
               factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 "value",
                 undefined,
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(cir.normalizedTag),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(cir.normalizedTag)),
               ),
             ],
             factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
@@ -120,10 +110,7 @@ class ComponentTypings extends PencelPlugin {
             [setAttributeMethodSignature],
           );
 
-          globalDeclarations.push(
-            createElementInterface,
-            setAttributeInterface,
-          );
+          globalDeclarations.push(createElementInterface, setAttributeInterface);
         } else {
           // Create HTMLElementTagNameMap interface property
           const htmlElementTagNameMapProperty = factory.createPropertySignature(
@@ -133,34 +120,29 @@ class ComponentTypings extends PencelPlugin {
             factory.createTypeReferenceNode(cir.className, undefined),
           );
 
-          const htmlElementTagNameMapInterface =
-            factory.createInterfaceDeclaration(
-              [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-              "HTMLElementTagNameMap",
-              undefined,
-              undefined,
-              [htmlElementTagNameMapProperty],
-            );
+          const htmlElementTagNameMapInterface = factory.createInterfaceDeclaration(
+            [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+            "HTMLElementTagNameMap",
+            undefined,
+            undefined,
+            [htmlElementTagNameMapProperty],
+          );
 
           // Create JSX.IntrinsicElements interface property
           const jsxIntrinsicElementProperty = factory.createPropertySignature(
             undefined,
             factory.createStringLiteral(cir.normalizedTag),
             undefined,
-            factory.createTypeReferenceNode(
-              `JSXElementAttributes<${cir.className}>`,
-              undefined,
-            ),
+            factory.createTypeReferenceNode(`JSXElementAttributes<${cir.className}>`, undefined),
           );
 
-          const jsxIntrinsicElementInterface =
-            factory.createInterfaceDeclaration(
-              [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-              "IntrinsicElements",
-              undefined,
-              undefined,
-              [jsxIntrinsicElementProperty],
-            );
+          const jsxIntrinsicElementInterface = factory.createInterfaceDeclaration(
+            [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+            "IntrinsicElements",
+            undefined,
+            undefined,
+            [jsxIntrinsicElementProperty],
+          );
 
           const jsxNamespace = factory.createModuleDeclaration(
             [factory.createModifier(ts.SyntaxKind.DeclareKeyword)],

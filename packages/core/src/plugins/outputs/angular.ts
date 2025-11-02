@@ -47,11 +47,7 @@ class AngularOutput extends PencelPlugin {
     });
 
     this.handle("derive", (hook) => {
-      log(
-        `Generate Framework bindings for file: ${hook.irr.node.fileName} to ${
-          userOptions.outputPath
-        }`,
-      );
+      log(`Generate Framework bindings for file: ${hook.irr.node.fileName} to ${userOptions.outputPath}`);
     });
   }
 
@@ -103,34 +99,27 @@ class AngularOutput extends PencelPlugin {
       factory.createBlock(
         [
           factory.createReturnStatement(
-            factory.createCallExpression(
-              factory.createIdentifier("provideAppInitializer"),
-              undefined,
-              [
-                factory.createArrowFunction(
-                  undefined,
-                  undefined,
-                  [],
-                  undefined,
-                  factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-                  factory.createBlock(
-                    [
-                      factory.createExpressionStatement(
-                        factory.createCallExpression(
-                          factory.createPropertyAccessExpression(
-                            factory.createIdentifier("console"),
-                            "log",
-                          ),
-                          undefined,
-                          [factory.createStringLiteral("test")],
-                        ),
+            factory.createCallExpression(factory.createIdentifier("provideAppInitializer"), undefined, [
+              factory.createArrowFunction(
+                undefined,
+                undefined,
+                [],
+                undefined,
+                factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+                factory.createBlock(
+                  [
+                    factory.createExpressionStatement(
+                      factory.createCallExpression(
+                        factory.createPropertyAccessExpression(factory.createIdentifier("console"), "log"),
+                        undefined,
+                        [factory.createStringLiteral("test")],
                       ),
-                    ],
-                    true,
-                  ),
+                    ),
+                  ],
+                  true,
                 ),
-              ],
-            ),
+              ),
+            ]),
           ),
         ],
         true,
@@ -148,15 +137,11 @@ class AngularOutput extends PencelPlugin {
       })),
     };
 
-    this.#sourceFiles.newFile(
-      `${outputPath}/directives.ts`,
-      [directivesExport, provideLibraryFunction],
-      { preference },
-    );
+    this.#sourceFiles.newFile(`${outputPath}/directives.ts`, [directivesExport, provideLibraryFunction], {
+      preference,
+    });
 
-    log(
-      `Generated directives.ts with ${componentClassNames.length} components from package ${packageName}`,
-    );
+    log(`Generated directives.ts with ${componentClassNames.length} components from package ${packageName}`);
   }
 }
 

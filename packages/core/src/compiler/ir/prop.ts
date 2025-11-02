@@ -24,8 +24,7 @@ export class PropertyIR extends IRM("Prop") {
 
     const decorator = singleDecorator(propertyDeclaration, "Prop");
     const [propOptions = {}] =
-      decoratorArgs<readonly [PropOptions]>(decorator) ??
-      throwError("@Prop must have arguments");
+      decoratorArgs<readonly [PropOptions]>(decorator) ?? throwError("@Prop must have arguments");
 
     this.name = propertyDeclaration.name.getText();
     this.attr = propOptions.attr ?? dashCase(this.name);
@@ -40,9 +39,7 @@ export class PropertyIR extends IRM("Prop") {
     this.defaultValue = propertyDeclaration.initializer?.getText();
   }
 
-  static isPencelPropMember(
-    member: ClassElement,
-  ): member is PropertyDeclaration {
+  static isPencelPropMember(member: ClassElement): member is PropertyDeclaration {
     if (isPropertyDeclaration(member)) {
       try {
         singleDecorator(member, "Prop");

@@ -54,11 +54,10 @@ If you'd like to contribute, here are a few quick tips:
 
 - **Have feedback?** Open an issue or discussion—all ideas are appreciated!
 - **Ready to contribute code?** Fork the repo, make your changes, and submit a pull request.
-- **Linting issues?** If GitHub checks fail due to formatting, many issues can be automatically fixed with:
-  ```bash
-  nx run-many -t lint-fix
-  ```
-  This applies Biome formatting and fixes across all packages. Review and commit the changes after running.
+- **Check your work before pushing:**
+  - Run `biome check . --write` to auto-fix formatting issues
+  - Run `bun test` to catch test failures locally
+  - The CI pipeline will report all issues (tests, type checks, lint, format) on your PR
 
 Thank you for helping make Pencel better! 🙏
 

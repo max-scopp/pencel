@@ -21,14 +21,9 @@ export function extractExportedSymbols(sourceFile: SourceFile): Set<string> {
   for (const statement of sourceFile.statements) {
     const hasModifiers = "modifiers" in statement;
 
-    const modifiers = hasModifiers
-      ? (statement as HasModifiers).modifiers
-      : undefined;
+    const modifiers = hasModifiers ? (statement as HasModifiers).modifiers : undefined;
 
-    const hasExport =
-      modifiers?.some(
-        (m: ModifierLike) => m.kind === SyntaxKind.ExportKeyword,
-      ) ?? false;
+    const hasExport = modifiers?.some((m: ModifierLike) => m.kind === SyntaxKind.ExportKeyword) ?? false;
 
     if (!hasExport) {
       continue;

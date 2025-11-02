@@ -21,8 +21,7 @@ export class StateIR extends IRM("State") {
 
     const decorator = singleDecorator(propertyDeclaration, "State");
     const [stateOptions = {}] =
-      decoratorArgs<readonly [StateOptions]>(decorator) ??
-      throwError("@State must have arguments");
+      decoratorArgs<readonly [StateOptions]>(decorator) ?? throwError("@State must have arguments");
 
     this.name = propertyDeclaration.name.getText();
 
@@ -33,9 +32,7 @@ export class StateIR extends IRM("State") {
     this.defaultValue = propertyDeclaration.initializer?.getText();
   }
 
-  static isPencelStateMember(
-    member: ClassElement,
-  ): member is PropertyDeclaration {
+  static isPencelStateMember(member: ClassElement): member is PropertyDeclaration {
     if (isPropertyDeclaration(member)) {
       try {
         singleDecorator(member, "State");

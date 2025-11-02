@@ -4,12 +4,7 @@
 export function deepEqual(a: any, b: any): boolean {
   if (Object.is(a, b)) return true;
 
-  if (
-    typeof a !== "object" ||
-    a === null ||
-    typeof b !== "object" ||
-    b === null
-  ) {
+  if (typeof a !== "object" || a === null || typeof b !== "object" || b === null) {
     return false;
   }
 

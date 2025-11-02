@@ -27,13 +27,7 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
   if (!props) return;
 
   // List of boolean properties that must be synced via property, not attribute
-  const booleanProps = new Set([
-    "checked",
-    "disabled",
-    "selected",
-    "defaultChecked",
-    "defaultSelected",
-  ]);
+  const booleanProps = new Set(["checked", "disabled", "selected", "defaultChecked", "defaultSelected"]);
 
   for (const k in props) {
     const v = props[k];
@@ -41,10 +35,7 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
     switch (k) {
       case "style": {
         const styleObj = v as Record<string, string>;
-        const style = (el as HTMLElement).style as unknown as Record<
-          string,
-          string
-        >;
+        const style = (el as HTMLElement).style as unknown as Record<string, string>;
 
         for (const styleKey in styleObj) {
           const styleValue = styleObj[styleKey];
@@ -90,9 +81,7 @@ export function sc(
 ) {
   // Flatten children array
   const flatChildren: Node[] = [];
-  const flatten = (
-    arr: (Node | Node[] | string | number | boolean | null | undefined)[],
-  ): void => {
+  const flatten = (arr: (Node | Node[] | string | number | boolean | null | undefined)[]): void => {
     for (const child of arr) {
       if (child == null) continue;
       if (Array.isArray(child)) {
@@ -134,9 +123,7 @@ export function sc(
     // Check if nodes are semantically equivalent and can be reused
     const canReuse =
       h.nodeType === w.nodeType &&
-      (h.nodeType === Node.TEXT_NODE
-        ? (h as Text).data === (w as Text).data
-        : h.nodeName === w.nodeName);
+      (h.nodeType === Node.TEXT_NODE ? (h as Text).data === (w as Text).data : h.nodeName === w.nodeName);
 
     if (canReuse) {
       // For element nodes that are semantically equivalent but different instances,
@@ -185,18 +172,12 @@ export const dctn = (text: string): Text => document.createTextNode(text);
  * Strategy: Store the last handler for each event type and remove it before adding a new one.
  * This keeps only the latest handler for each event, preventing stale closures.
  */
-export const ael = (
-  el: Element,
-  event: string,
-  handler: EventListener,
-): void => {
+export const ael = (el: Element, event: string, handler: EventListener): void => {
   // Cast to unknown first to access symbol property
   const elObj = el as unknown as Record<symbol, unknown>;
 
   // Get or create the listener map for this element
-  let listenerMap = elObj[eventListenersSymbol] as
-    | Record<string, EventListener>
-    | undefined;
+  let listenerMap = elObj[eventListenersSymbol] as Record<string, EventListener> | undefined;
   if (!listenerMap) {
     listenerMap = {};
     elObj[eventListenersSymbol] = listenerMap;

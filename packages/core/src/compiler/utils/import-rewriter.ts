@@ -14,15 +14,9 @@ export function updateSourceFileImports(
     const visitor: ts.Visitor = (node) => {
       // -------------------
       // import ... from "x"
-      if (
-        ts.isImportDeclaration(node) &&
-        ts.isStringLiteral(node.moduleSpecifier)
-      ) {
+      if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
         const newSpec = replacer(node.moduleSpecifier.text);
-        if (
-          typeof newSpec === "string" &&
-          newSpec !== node.moduleSpecifier.text
-        ) {
+        if (typeof newSpec === "string" && newSpec !== node.moduleSpecifier.text) {
           return tsFactory.updateImportDeclaration(
             node,
             node.modifiers,
@@ -35,16 +29,9 @@ export function updateSourceFileImports(
       }
 
       // export ... from "x"
-      if (
-        ts.isExportDeclaration(node) &&
-        node.moduleSpecifier &&
-        ts.isStringLiteral(node.moduleSpecifier)
-      ) {
+      if (ts.isExportDeclaration(node) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
         const newSpec = replacer(node.moduleSpecifier.text);
-        if (
-          typeof newSpec === "string" &&
-          newSpec !== node.moduleSpecifier.text
-        ) {
+        if (typeof newSpec === "string" && newSpec !== node.moduleSpecifier.text) {
           return tsFactory.updateExportDeclaration(
             node,
             node.modifiers,
@@ -64,13 +51,8 @@ export function updateSourceFileImports(
         ts.isStringLiteral(node.moduleReference.expression)
       ) {
         const newSpec = replacer(node.moduleReference.expression.text);
-        if (
-          typeof newSpec === "string" &&
-          newSpec !== node.moduleReference.expression.text
-        ) {
-          const newRef = tsFactory.createExternalModuleReference(
-            tsFactory.createStringLiteral(newSpec),
-          );
+        if (typeof newSpec === "string" && newSpec !== node.moduleReference.expression.text) {
+          const newRef = tsFactory.createExternalModuleReference(tsFactory.createStringLiteral(newSpec));
           return tsFactory.updateImportEqualsDeclaration(
             node,
             node.modifiers,
@@ -92,15 +74,10 @@ export function updateSourceFileImports(
         if (ts.isStringLiteral(arg)) {
           const newSpec = replacer(arg.text);
           if (typeof newSpec === "string" && newSpec !== arg.text) {
-            return tsFactory.updateCallExpression(
-              node,
-              node.expression,
-              node.typeArguments,
-              [
-                tsFactory.createStringLiteral(newSpec),
-                ...node.arguments.slice(1),
-              ],
-            );
+            return tsFactory.updateCallExpression(node, node.expression, node.typeArguments, [
+              tsFactory.createStringLiteral(newSpec),
+              ...node.arguments.slice(1),
+            ]);
           }
         }
         return node;
@@ -117,15 +94,10 @@ export function updateSourceFileImports(
         if (ts.isStringLiteral(arg)) {
           const newSpec = replacer(arg.text);
           if (typeof newSpec === "string" && newSpec !== arg.text) {
-            return tsFactory.updateCallExpression(
-              node,
-              node.expression,
-              node.typeArguments,
-              [
-                tsFactory.createStringLiteral(newSpec),
-                ...node.arguments.slice(1),
-              ],
-            );
+            return tsFactory.updateCallExpression(node, node.expression, node.typeArguments, [
+              tsFactory.createStringLiteral(newSpec),
+              ...node.arguments.slice(1),
+            ]);
           }
         }
         return node;
@@ -139,13 +111,8 @@ export function updateSourceFileImports(
         ts.isStringLiteral(node.argument.literal)
       ) {
         const newSpec = replacer(node.argument.literal.text);
-        if (
-          typeof newSpec === "string" &&
-          newSpec !== node.argument.literal.text
-        ) {
-          const newArg = tsFactory.createLiteralTypeNode(
-            tsFactory.createStringLiteral(newSpec),
-          );
+        if (typeof newSpec === "string" && newSpec !== node.argument.literal.text) {
+          const newArg = tsFactory.createLiteralTypeNode(tsFactory.createStringLiteral(newSpec));
           return ts.factory.updateImportTypeNode(
             node,
             newArg,
@@ -174,19 +141,12 @@ export function updateSourceFileImports(
 }
 
 /** Exact string replacement convenience */
-export function updateSourceFileImportsExact(
-  sf: ts.SourceFile,
-  from: string,
-  to: string,
-): ts.SourceFile {
+export function updateSourceFileImportsExact(sf: ts.SourceFile, from: string, to: string): ts.SourceFile {
   return updateSourceFileImports(sf, (s) => (s === from ? to : null));
 }
 
 /** Compute relative module specifier string from file paths */
-export function computeModuleSpecifierFor(
-  fromFile: string,
-  targetAbs: string,
-): string {
+export function computeModuleSpecifierFor(fromFile: string, targetAbs: string): string {
   let rel = relative(dirname(fromFile), targetAbs).replace(/\\/g, "/");
   rel = rel.replace(/\.(ts|tsx|js|jsx)$/, "");
   if (!rel.startsWith(".")) rel = `./${rel}`;

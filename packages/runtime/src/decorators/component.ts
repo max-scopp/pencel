@@ -58,18 +58,11 @@ export const Component = (options: ComponentOptions): ClassDecorator => {
     );
 
     if (options.extends) {
-      customElements.define(
-        options.tag,
-        wrappedKlass as CustomElementConstructor,
-        {
-          extends: options.extends,
-        },
-      );
+      customElements.define(options.tag, wrappedKlass as CustomElementConstructor, {
+        extends: options.extends,
+      });
     } else {
-      customElements.define(
-        options.tag,
-        wrappedKlass as CustomElementConstructor,
-      );
+      customElements.define(options.tag, wrappedKlass as CustomElementConstructor);
     }
 
     return wrappedKlass as unknown as TFunction;

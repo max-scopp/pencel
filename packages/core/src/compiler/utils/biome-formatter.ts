@@ -12,11 +12,7 @@ async function getBiome(): Promise<Biome> {
 /**
  *  Format code with Biome using the JavaScript API. filePath is used for language detection.
  */
-export async function formatWithBiome(
-  code: string,
-  filePath: string,
-  projectDir: string,
-): Promise<string> {
+export async function formatWithBiome(code: string, filePath: string, projectDir: string): Promise<string> {
   try {
     const biome = await getBiome();
     const { projectKey } = await biome.openProject(projectDir);
@@ -25,10 +21,7 @@ export async function formatWithBiome(
     });
     return formatted.content;
   } catch (error) {
-    console.warn(
-      `Warning: Biome formatting failed for ${filePath}:`,
-      error instanceof Error ? error.message : error,
-    );
+    console.warn(`Warning: Biome formatting failed for ${filePath}:`, error instanceof Error ? error.message : error);
     return code;
   }
 }

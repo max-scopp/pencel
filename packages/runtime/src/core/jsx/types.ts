@@ -16,9 +16,7 @@ export type PropsWithChildren<TProps extends Props = Props> = TProps & {
  * Functional component: takes props (with optional children
  * in props), returns JSX.
  */
-export type ComponentFunction<TProps extends Props = Props> = (
-  props: TProps,
-) => JSX.Element | null;
+export type ComponentFunction<TProps extends Props = Props> = (props: TProps) => JSX.Element | null;
 
 /**
  * A JSX element produced by the automatic runtime.

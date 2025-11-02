@@ -1,12 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  Host,
-  Prop,
-  State,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, Host, Prop, State } from "@pencel/runtime";
 
 @Component({
   tag: "pen-tabs",

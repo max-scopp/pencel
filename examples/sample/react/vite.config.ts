@@ -1,14 +1,14 @@
 /// <reference types='vitest' />
 
+import { resolve } from "node:path";
 import react from "@vitejs/plugin-react-swc";
-import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
   const packagesPath = resolve(__dirname, "..", "..", "..", "packages");
 
   return {
-    root: __dirname,
+    root: import.meta.dirname,
     cacheDir: "../../../node_modules/.vite/examples/sample/react",
     resolve: {
       alias: {
@@ -22,12 +22,7 @@ export default defineConfig(() => {
       port: 4200,
       host: "localhost",
       watch: {
-        ignored: [
-          "**/node_modules/**",
-          "**/.git/**",
-          "**/dist/**",
-          "**/*.tsbuildinfo",
-        ],
+        ignored: ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/*.tsbuildinfo"],
       },
     },
     preview: {

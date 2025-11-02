@@ -1,8 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface } from "@pencel/runtime";
 
 @Component({
   tag: "test-card",

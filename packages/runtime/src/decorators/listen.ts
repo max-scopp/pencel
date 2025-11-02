@@ -45,9 +45,7 @@ export function Listen(
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod !== "function") {
-      throw new Error(
-        `@Listen can only be applied to methods, but ${String(propertyKey)} is not a function`,
-      );
+      throw new Error(`@Listen can only be applied to methods, but ${String(propertyKey)} is not a function`);
     }
 
     const getTargetElm = () => {
@@ -67,8 +65,7 @@ export function Listen(
 
     const ctor = target.constructor as { new (): CustomElement };
 
-    const originalConnectedCallback = ctor.prototype
-      .connectedCallback as CustomElement["connectedCallback"];
+    const originalConnectedCallback = ctor.prototype.connectedCallback as CustomElement["connectedCallback"];
 
     ctor.prototype.connectedCallback = function () {
       const targetElm = getTargetElm() ?? this;

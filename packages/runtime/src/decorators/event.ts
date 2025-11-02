@@ -6,8 +6,7 @@ const log = createLog("EventDecorator");
 export class EventEmitter<T = never> {
   constructor(
     protected readonly getElement: () => HTMLElement,
-    protected readonly options: EventOptions &
-      Required<Pick<EventOptions, "eventName">>,
+    protected readonly options: EventOptions & Required<Pick<EventOptions, "eventName">>,
   ) {}
 
   emit(data: T): boolean {
@@ -19,9 +18,7 @@ export class EventEmitter<T = never> {
 
     const result = this.getElement().dispatchEvent(evt);
 
-    log(
-      `Event "${eventName}" emitted with data: ${JSON.stringify(data, null, 4)}`,
-    );
+    log(`Event "${eventName}" emitted with data: ${JSON.stringify(data, null, 4)}`);
 
     return result;
   }
@@ -72,9 +69,7 @@ export function Event(userOptions?: string | EventOptions): PropertyDecorator {
     let instance: ComponentInterface;
 
     const { eventName, ...options } =
-      typeof userOptions === "string"
-        ? { eventName: userOptions }
-        : (userOptions ?? {});
+      typeof userOptions === "string" ? { eventName: userOptions } : (userOptions ?? {});
 
     const emitter = new EventEmitter(() => instance, {
       eventName: eventName ?? dashCase(String(propertyKey)),

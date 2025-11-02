@@ -1,10 +1,5 @@
 import { createWarn } from "@pencel/utils";
-import {
-  type ClassElement,
-  isMethodDeclaration,
-  type MethodDeclaration,
-  SyntaxKind,
-} from "typescript";
+import { type ClassElement, isMethodDeclaration, type MethodDeclaration, SyntaxKind } from "typescript";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { IRM } from "./irri.ts";
 
@@ -21,9 +16,7 @@ export class MethodIR extends IRM("Method") {
     this.returnType = methodDeclaration.type?.getText();
   }
 
-  static isPencelMethodMember(
-    member: ClassElement,
-  ): member is MethodDeclaration {
+  static isPencelMethodMember(member: ClassElement): member is MethodDeclaration {
     if (!isMethodDeclaration(member)) {
       return false;
     }
@@ -38,13 +31,9 @@ export class MethodIR extends IRM("Method") {
     }
 
     // Check if method is public (not protected, private, or #private)
-    const hasProtected = member.modifiers?.some(
-      (m) => m.kind === SyntaxKind.ProtectedKeyword,
-    );
+    const hasProtected = member.modifiers?.some((m) => m.kind === SyntaxKind.ProtectedKeyword);
 
-    const hasPrivate = member.modifiers?.some(
-      (m) => m.kind === SyntaxKind.PrivateKeyword,
-    );
+    const hasPrivate = member.modifiers?.some((m) => m.kind === SyntaxKind.PrivateKeyword);
 
     const isPrivateName = member.name?.kind === SyntaxKind.PrivateIdentifier;
 

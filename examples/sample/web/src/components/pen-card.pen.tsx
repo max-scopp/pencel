@@ -1,10 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  Prop,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, Prop } from "@pencel/runtime";
 
 @Component({
   tag: "pen-card",

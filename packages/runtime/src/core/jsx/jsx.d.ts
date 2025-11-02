@@ -8,9 +8,7 @@ declare global {
     type Element = object | null;
     type Children = JSX.Element | JSX.Element[];
 
-    interface IntrinsicElements
-      extends JSXBase.IntrinsicElements,
-        CustomJSX.IntrinsicElements {}
+    interface IntrinsicElements extends JSXBase.IntrinsicElements, CustomJSX.IntrinsicElements {}
   }
 }
 

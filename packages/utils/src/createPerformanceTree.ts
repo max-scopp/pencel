@@ -18,9 +18,7 @@ export interface PerformanceTreeController {
   log(): void;
 }
 
-export function createPerformanceTree(
-  namespace = "Perf",
-): PerformanceTreeController {
+export function createPerformanceTree(namespace = "Perf"): PerformanceTreeController {
   if (!PENCEL_PERF_LOG_ENABLED) {
     return {
       start: () => {},
@@ -92,24 +90,13 @@ function calculateDuration(mark: PerformanceMark): number {
   return mark.endTime - mark.startTime;
 }
 
-function logPerformanceTree(
-  root: PerformanceMark,
-  logger: ReturnType<typeof createLog>,
-): void {
-  function logNode(
-    node: PerformanceMark,
-    depth: number,
-    siblingDurations: number[],
-    index: number,
-  ): void {
+function logPerformanceTree(root: PerformanceMark, logger: ReturnType<typeof createLog>): void {
+  function logNode(node: PerformanceMark, depth: number, siblingDurations: number[], index: number): void {
     const duration = calculateDuration(node);
 
     // Calculate percentage relative to siblings at same level
     const totalSiblingDuration = siblingDurations.reduce((a, b) => a + b, 0);
-    const percentage =
-      totalSiblingDuration > 0
-        ? ((duration / totalSiblingDuration) * 100).toFixed(2)
-        : "0.00";
+    const percentage = totalSiblingDuration > 0 ? ((duration / totalSiblingDuration) * 100).toFixed(2) : "0.00";
 
     // Format the message
     const indent = "  ".repeat(depth);
@@ -130,11 +117,7 @@ function logPerformanceTree(
       logger(message, `color: ${color}; font-weight: bold;`);
     } else {
       // Node.js: Only highlight the max percentage
-      const isMax =
-        percentNum ===
-        Math.max(
-          ...siblingDurations.map((d) => (d / totalSiblingDuration) * 100),
-        );
+      const isMax = percentNum === Math.max(...siblingDurations.map((d) => (d / totalSiblingDuration) * 100));
       if (isMax && percentNum > 0) {
         const ansiColor = getAnsiFromStyle("red");
         if (ansiColor) {

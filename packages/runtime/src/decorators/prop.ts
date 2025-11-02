@@ -1,10 +1,6 @@
 import { createLog, fromToText } from "@pencel/utils";
 import { PENCIL_COMPONENT_CONTEXT } from "../core/symbols.ts";
-import {
-  ATTR_MAP,
-  type ComponentInterfaceWithContext,
-  PROP_NAMES,
-} from "../core/types.ts";
+import { ATTR_MAP, type ComponentInterfaceWithContext, PROP_NAMES } from "../core/types.ts";
 import { resolveAttributeName } from "../utils/attributes.ts";
 
 const log = createLog("Prop");
@@ -86,9 +82,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
       get() {
         const ctx = this[PENCIL_COMPONENT_CONTEXT];
         const meta = ctx?.popts;
-        return (
-          ctx?.props.get(propertyName) ?? meta?.get(propertyName)?.fallbackValue
-        );
+        return ctx?.props.get(propertyName) ?? meta?.get(propertyName)?.fallbackValue;
       },
 
       set(value: unknown) {
@@ -103,11 +97,7 @@ export function Prop(options?: PropOptions): PropertyDecorator {
         ctx?.props.set(propertyName, value);
         log(fromToText(propertyName, oldValue, value));
 
-        const shouldUpdate = this.componentShouldUpdate?.(
-          value,
-          oldValue,
-          propertyName,
-        );
+        const shouldUpdate = this.componentShouldUpdate?.(value, oldValue, propertyName);
 
         if (shouldUpdate !== false) {
           this.render?.();

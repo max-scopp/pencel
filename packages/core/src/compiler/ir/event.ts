@@ -1,10 +1,6 @@
 import type { EventOptions } from "@pencel/runtime";
 import { throwError } from "@pencel/utils";
-import {
-  type ClassElement,
-  isPropertyDeclaration,
-  type PropertyDeclaration,
-} from "typescript";
+import { type ClassElement, isPropertyDeclaration, type PropertyDeclaration } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { IRM } from "./irri.ts";
@@ -24,8 +20,7 @@ export class EventIR extends IRM("Event") {
 
     const decorator = singleDecorator(propertyDeclaration, "Event");
     const [eventOptions = {}] =
-      decoratorArgs<readonly [EventOptions]>(decorator) ??
-      throwError(`@Event decorator requires an options object`);
+      decoratorArgs<readonly [EventOptions]>(decorator) ?? throwError(`@Event decorator requires an options object`);
 
     this.eventName = eventOptions.eventName;
     this.bubbles = eventOptions.bubbles;
@@ -40,9 +35,7 @@ export class EventIR extends IRM("Event") {
   /**
    * From EventEmitter<T>, extract type T, returns `undefined` if not EventEmitter<T> or missing.
    */
-  private extractEventDetailType(
-    propertyDeclaration: PropertyDeclaration,
-  ): string | undefined {
+  private extractEventDetailType(propertyDeclaration: PropertyDeclaration): string | undefined {
     const typeNode = propertyDeclaration.type;
     if (!typeNode) return;
 
@@ -51,9 +44,7 @@ export class EventIR extends IRM("Event") {
     return match?.[1];
   }
 
-  static isPencelEventMember(
-    member: ClassElement,
-  ): member is PropertyDeclaration {
+  static isPencelEventMember(member: ClassElement): member is PropertyDeclaration {
     if (isPropertyDeclaration(member)) {
       try {
         singleDecorator(member, "Event");

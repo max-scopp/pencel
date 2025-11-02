@@ -16,18 +16,13 @@ export class ImportInjector {
   /**
    * Returns statements with injected or merged imports, deduplicating across modules.
    */
-  injectImports(
-    sourceFile: SourceFile,
-    requirements: ImportRequirement[],
-  ): readonly Statement[] {
+  injectImports(sourceFile: SourceFile, requirements: ImportRequirement[]): readonly Statement[] {
     if (requirements.length === 0) {
       return sourceFile.statements;
     }
 
     const existingImports = this.#extractImports(sourceFile);
-    const otherStatements = sourceFile.statements.filter(
-      (stmt) => !isImportDeclaration(stmt),
-    );
+    const otherStatements = sourceFile.statements.filter((stmt) => !isImportDeclaration(stmt));
 
     const mergedImports = this.#mergeImports(existingImports, requirements);
     return [...mergedImports, ...otherStatements];
@@ -62,10 +57,7 @@ export class ImportInjector {
     const from = stmt.moduleSpecifier.text;
     const symbols: string[] = [];
 
-    if (
-      stmt.importClause?.namedBindings &&
-      isNamedImports(stmt.importClause.namedBindings)
-    ) {
+    if (stmt.importClause?.namedBindings && isNamedImports(stmt.importClause.namedBindings)) {
       stmt.importClause.namedBindings.elements.forEach((el) => {
         symbols.push(el.name.text);
       });
@@ -81,10 +73,7 @@ export class ImportInjector {
   /**
    * Merge new requirements with existing, returning deduplicated declarations.
    */
-  #mergeImports(
-    existingImports: ImportRequirement[],
-    newRequirements: ImportRequirement[],
-  ): ImportDeclaration[] {
+  #mergeImports(existingImports: ImportRequirement[], newRequirements: ImportRequirement[]): ImportDeclaration[] {
     const importsByModule = new Map<string, Set<string>>();
 
     for (const req of existingImports) {
@@ -94,7 +83,7 @@ export class ImportInjector {
       }
 
       for (const symbol of req.symbols) {
-        importsByModule.get(key)!.add(symbol);
+        importsByModule.get(key)?.add(symbol);
       }
     }
 
@@ -105,7 +94,7 @@ export class ImportInjector {
       }
 
       for (const symbol of req.symbols) {
-        importsByModule.get(key)!.add(symbol);
+        importsByModule.get(key)?.add(symbol);
       }
     }
 
@@ -115,20 +104,12 @@ export class ImportInjector {
       const sortedSymbols = Array.from(symbols).sort();
 
       const importElements = sortedSymbols.map((symbol) =>
-        factory.createImportSpecifier(
-          false,
-          undefined,
-          factory.createIdentifier(symbol),
-        ),
+        factory.createImportSpecifier(false, undefined, factory.createIdentifier(symbol)),
       );
 
       const importDecl = factory.createImportDeclaration(
         undefined,
-        factory.createImportClause(
-          false,
-          undefined,
-          factory.createNamedImports(importElements),
-        ),
+        factory.createImportClause(false, undefined, factory.createNamedImports(importElements)),
         factory.createStringLiteral(from),
       );
 

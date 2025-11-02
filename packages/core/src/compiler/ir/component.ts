@@ -1,11 +1,5 @@
 import type { ComponentOptions } from "@pencel/runtime";
-import {
-  firstMap,
-  getTagByExtendsString,
-  normalizeTag,
-  switchMapObject,
-  throwError,
-} from "@pencel/utils";
+import { firstMap, getTagByExtendsString, normalizeTag, switchMapObject, throwError } from "@pencel/utils";
 import type ts from "typescript";
 import {
   type ClassDeclaration,
@@ -71,24 +65,16 @@ export class ComponentIR extends IRM("Component") {
       throwError(`@Component decorator must have options object.`);
 
     this.fileName = sourceFile.fileName;
-    this.className =
-      classDeclaration.name?.text ??
-      throwError("A component must have a class name.");
+    this.className = classDeclaration.name?.text ?? throwError("A component must have a class name.");
 
     this.sourceTag =
-      componentOptions.tag ??
-      throwError(
-        `@Component for class ${this.className} must have a 'tag' property.`,
-      );
+      componentOptions.tag ?? throwError(`@Component for class ${this.className} must have a 'tag' property.`);
     this.shadow = componentOptions.shadow ?? false;
     this.scoped = componentOptions.scoped ?? true;
     this.extends = componentOptions.extends;
     this.formAssociated = componentOptions.formAssociated;
 
-    this.normalizedTag = normalizeTag(
-      this.sourceTag,
-      this.#config.user.runtime.tagNamespace,
-    );
+    this.normalizedTag = normalizeTag(this.sourceTag, this.#config.user.runtime.tagNamespace);
 
     this.heritage =
       firstMap(classDeclaration.heritageClauses, (hc) => {
@@ -108,10 +94,7 @@ export class ComponentIR extends IRM("Component") {
         }
 
         return extendsName;
-      }) ??
-      throwError(
-        `Component class ${this.className} must extend a valid HTML element.`,
-      );
+      }) ?? throwError(`Component class ${this.className} must extend a valid HTML element.`);
 
     this.extendsTag = getTagByExtendsString(this.heritage);
 
@@ -171,9 +154,7 @@ export class ComponentIR extends IRM("Component") {
   }
 }
 
-function isPencelRenderMember(
-  member: ClassElement,
-): member is MethodDeclaration {
+function isPencelRenderMember(member: ClassElement): member is MethodDeclaration {
   if (!isMethodDeclaration(member)) {
     return false;
   }

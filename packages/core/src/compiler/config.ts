@@ -1,4 +1,5 @@
 import { relative } from "node:path";
+import process from "node:process";
 import { createLog, throwError } from "@pencel/utils";
 import { loadConfig, type ResolvedConfig } from "c12";
 import type { PencelConfig } from "./types/config-types.ts";
@@ -31,12 +32,7 @@ function isPluginWithName<TPluginName extends PluginNames>(
   plugin: unknown,
   name: TPluginName,
 ): plugin is { name: TPluginName; options?: PluginOptionsOf<TPluginName> } {
-  return (
-    typeof plugin === "object" &&
-    plugin !== null &&
-    "name" in plugin &&
-    plugin.name === name
-  );
+  return typeof plugin === "object" && plugin !== null && "name" in plugin && plugin.name === name;
 }
 
 export class Config {
@@ -49,9 +45,7 @@ export class Config {
       defaults: defaultConfig,
     });
 
-    log(
-      `Using ${relative(result.cwd ?? process.cwd(), result.configFile ?? "")}`,
-    );
+    log(`Using ${relative(result.cwd ?? process.cwd(), result.configFile ?? "")}`);
 
     this.#result = result;
   }
@@ -61,15 +55,10 @@ export class Config {
   }
 
   get cwd(): string {
-    return (
-      (this.#result ?? throwError("Config not loaded yet.")).cwd ??
-      process.cwd()
-    );
+    return (this.#result ?? throwError("Config not loaded yet.")).cwd ?? process.cwd();
   }
 
-  getUserOptionsForPlugin<TPluginName extends PluginNames>(
-    pluginName: TPluginName,
-  ): PluginOptionsOf<TPluginName> {
+  getUserOptionsForPlugin<TPluginName extends PluginNames>(pluginName: TPluginName): PluginOptionsOf<TPluginName> {
     const plugins = this.user.plugins;
 
     for (const plugin of plugins) {
@@ -78,9 +67,7 @@ export class Config {
       }
 
       if (isPluginWithName(plugin, pluginName)) {
-        return (
-          plugin.options ?? ({ enabled: true } as PluginOptionsOf<TPluginName>)
-        );
+        return plugin.options ?? ({ enabled: true } as PluginOptionsOf<TPluginName>);
       }
     }
 

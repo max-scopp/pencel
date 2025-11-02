@@ -1,17 +1,10 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  Prop,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, Prop } from "@pencel/runtime";
 
 @Component({
   tag: "pen-badge",
 })
 export class PenBadgeElement extends HTMLElement implements ComponentInterface {
-  @Prop() variant: "primary" | "secondary" | "success" | "warning" | "error" =
-    "primary";
+  @Prop() variant: "primary" | "secondary" | "success" | "warning" | "error" = "primary";
   @Prop() size: "sm" | "md" | "lg" = "md";
   @Prop() count?: number;
   @Prop() max?: number;
@@ -22,11 +15,7 @@ export class PenBadgeElement extends HTMLElement implements ComponentInterface {
     const sizeClass = `badge-size-${this.size}`;
 
     const displayCount =
-      this.count !== undefined &&
-      this.max !== undefined &&
-      this.count > this.max
-        ? `${this.max}+`
-        : this.count;
+      this.count !== undefined && this.max !== undefined && this.count > this.max ? `${this.max}+` : this.count;
 
     return (
       <Host class={`pen-badge ${variantClass} ${sizeClass}`}>
@@ -34,11 +23,7 @@ export class PenBadgeElement extends HTMLElement implements ComponentInterface {
           <span class="badge-dot" />
         ) : (
           <span class="badge-content">
-            {displayCount !== undefined ? (
-              <span class="badge-count">{displayCount}</span>
-            ) : (
-              <slot />
-            )}
+            {displayCount !== undefined ? <span class="badge-count">{displayCount}</span> : <slot />}
           </span>
         )}
       </Host>

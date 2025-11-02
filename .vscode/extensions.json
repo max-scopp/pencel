@@ -1,10 +1,9 @@
 {
   "recommendations": [
-    "nrwl.angular-console",
     "oven.bun-vscode",
-    "ms-playwright.playwright",
     "tamasfe.even-better-toml",
     "unifiedjs.vscode-mdx",
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "editorconfig.editorconfig"
   ]
 }

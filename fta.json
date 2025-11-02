@@ -3,17 +3,7 @@
   "score_cap": 70,
   "include_comments": false,
   "exclude_under": 20,
-  "exclude_directories": [
-    "node_modules",
-    "dist",
-    ".nx",
-    "coverage",
-    "out",
-    "__tests__",
-    "tests",
-    ".next",
-    ".astro"
-  ],
+  "exclude_directories": ["node_modules", "dist", ".nx", "coverage", "out", "__tests__", "tests", ".next", ".astro"],
   "exclude_filenames": [
     "**/*.test.ts",
     "**/*.test.tsx",

@@ -8,9 +8,7 @@ import { PencelPlugin, Plugins } from "../compiler/core/plugin.ts";
 const log = createLog("CSS");
 
 function isErrorLocation(err: unknown): err is SyntaxError & ErrorLocation {
-  return (
-    typeof err === "object" && err !== null && "line" in err && "column" in err
-  );
+  return typeof err === "object" && err !== null && "line" in err && "column" in err;
 }
 
 interface CssPluginOptions {
@@ -40,13 +38,9 @@ class CssPlugin extends PencelPlugin {
       try {
         // Apply scoping transformation if component is scoped and feature is enabled
         let cssContent = hook.input;
-        const isScopedTransformEnabled =
-          this.#options.scopedTransform !== false;
+        const isScopedTransformEnabled = this.#options.scopedTransform !== false;
         if (isScopedTransformEnabled && hook.irr?.ir.scoped === true) {
-          cssContent = this.applyScopedTransform(
-            cssContent,
-            hook.irr.ir.normalizedTag,
-          );
+          cssContent = this.applyScopedTransform(cssContent, hook.irr.ir.normalizedTag);
         }
 
         const result = transform({
@@ -62,9 +56,7 @@ class CssPlugin extends PencelPlugin {
         hook.input = result.code.toString();
       } catch (err) {
         if (isErrorLocation(err)) {
-          warn(
-            `CSS Syntax Error in ${hook.path}:${err.line}:${err.column}\n\t${err.message}`,
-          );
+          warn(`CSS Syntax Error in ${hook.path}:${err.line}:${err.column}\n\t${err.message}`);
         } else {
           throw err;
         }
@@ -116,10 +108,7 @@ class CssPlugin extends PencelPlugin {
 
           // Check if selector already starts with the tagName (avoid double-prefixing)
           const firstNode = selector.first;
-          const startsWithTag =
-            firstNode &&
-            firstNode.type === "tag" &&
-            firstNode.value === tagName;
+          const startsWithTag = firstNode && firstNode.type === "tag" && firstNode.value === tagName;
 
           // If it doesn't already start with tagName, prepend it with space
           if (!startsWithTag) {

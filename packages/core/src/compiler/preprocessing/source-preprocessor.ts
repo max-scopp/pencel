@@ -54,10 +54,7 @@ export class SourcePreprocessor {
     };
 
     // Ensure consumerPath is set for relative style
-    if (
-      importPreference.style === "relative" &&
-      !importPreference.consumerPath
-    ) {
+    if (importPreference.style === "relative" && !importPreference.consumerPath) {
       importPreference.consumerPath = sourceFile.fileName;
     }
 

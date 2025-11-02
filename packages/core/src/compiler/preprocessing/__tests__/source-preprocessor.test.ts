@@ -52,11 +52,7 @@ describe("SourcePreprocessor - Symbol Resolution", () => {
     registry.registerInputSymbol("ComponentA", "/project/src/components/a.ts");
 
     // Simulate what SourcePreprocessor does
-    const externalSymbols = new Set([
-      "DIRECTIVES",
-      "provideLibrary",
-      "ComponentA",
-    ]);
+    const externalSymbols = new Set(["DIRECTIVES", "provideLibrary", "ComponentA"]);
     const filtered = new Set<string>();
 
     for (const symbol of externalSymbols) {

@@ -10,11 +10,7 @@
     "allowImportingTsExtensions": true
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/compiler/ir/__tests__/fixtures/**/*.pen.tsx"
-  ],
+  "exclude": ["node_modules", "dist", "src/compiler/ir/__tests__/fixtures/**/*.pen.tsx"],
   "references": [
     {
       "path": "../utils/tsconfig.json"

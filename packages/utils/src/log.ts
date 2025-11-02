@@ -1,11 +1,5 @@
 /** biome-ignore-all lint/suspicious/noConsole: its logging */
-import {
-  ansiStackTrace,
-  ansiTimestamp,
-  ERROR_LABEL,
-  getAnsiFromStyle,
-  PENCIL_ERROR,
-} from "./ansi.ts";
+import { ansiStackTrace, ansiTimestamp, ERROR_LABEL, getAnsiFromStyle, PENCIL_ERROR } from "./ansi.ts";
 import { coordLog } from "./coordinated-logging.ts";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
@@ -13,11 +7,7 @@ import { isBrowser } from "./isBrowser.ts";
 // This can be overridden via tsdown's `define` option for tree-shaking
 const PENCEL_LOG_ENABLED = true;
 
-export function log(
-  message: string,
-  style?: string,
-  ...other: unknown[]
-): void {
+export function log(message: string, style?: string, ...other: unknown[]): void {
   if (!PENCEL_LOG_ENABLED) {
     return;
   }
@@ -54,29 +44,21 @@ export function log(
   }
 }
 
-export function createLog(
-  namespace: string,
-): (message: string, style?: string, ...other: unknown[]) => void {
+export function createLog(namespace: string): (message: string, style?: string, ...other: unknown[]) => void {
   return (message: string, style?: string, ...other: unknown[]) => {
     const prefixedMessage = `[${namespace}] ${message}`;
     log(prefixedMessage, style, ...other);
   };
 }
 
-export function debug(
-  message: string,
-  style?: string,
-  ...other: unknown[]
-): void {
+export function debug(message: string, style?: string, ...other: unknown[]): void {
   if (!PENCEL_LOG_ENABLED) {
     return;
   }
   log(message, style, ...other);
 }
 
-export function createDebugLog(
-  namespace: string,
-): (message: string, style?: string, ...other: unknown[]) => void {
+export function createDebugLog(namespace: string): (message: string, style?: string, ...other: unknown[]) => void {
   return (message: string, style?: string, ...other: unknown[]) => {
     if (!PENCEL_LOG_ENABLED) {
       return;
@@ -88,16 +70,8 @@ export function createDebugLog(
 
 export function error(err: unknown): void;
 export function error(err: Error): void;
-export function error(
-  message: string,
-  style?: string,
-  ...other: unknown[]
-): void;
-export function error(
-  messageOrError: string | Error | unknown,
-  style?: string,
-  ...other: unknown[]
-): void {
+export function error(message: string, style?: string, ...other: unknown[]): void;
+export function error(messageOrError: string | Error | unknown, style?: string, ...other: unknown[]): void {
   if (!PENCEL_LOG_ENABLED) {
     return;
   }
@@ -158,8 +132,7 @@ export function error(
 
 export function createError(
   namespace: string,
-): ((err: Error) => void) &
-  ((message: string, style?: string, ...other: unknown[]) => void) {
+): ((err: Error) => void) & ((message: string, style?: string, ...other: unknown[]) => void) {
   const prefixedError = (err: Error): void => {
     const prefixedMessage = `[${namespace}] ${err.message}`;
     const newError = new Error(prefixedMessage);
@@ -167,21 +140,13 @@ export function createError(
     error(newError);
   };
 
-  const prefixedLog = (
-    message: string,
-    style?: string,
-    ...other: unknown[]
-  ): void => {
+  const prefixedLog = (message: string, style?: string, ...other: unknown[]): void => {
     const prefixedMessage = `[${namespace}] ${message}`;
     error(prefixedMessage, style, ...other);
   };
 
   // Create a function that can handle both overloads
-  function combined(
-    messageOrError: string | Error,
-    style?: string,
-    ...other: unknown[]
-  ): void {
+  function combined(messageOrError: string | Error, style?: string, ...other: unknown[]): void {
     if (messageOrError instanceof Error) {
       prefixedError(messageOrError);
     } else {
@@ -192,20 +157,14 @@ export function createError(
   return combined;
 }
 
-export function createWarn(
-  namespace: string,
-): (message: string, style?: string, ...other: unknown[]) => void {
+export function createWarn(namespace: string): (message: string, style?: string, ...other: unknown[]) => void {
   return (message: string, style?: string, ...other: unknown[]) => {
     const prefixedMessage = `[${namespace}] ${message}`;
     warn(prefixedMessage, style, ...other);
   };
 }
 
-export function warn(
-  message: string,
-  style?: string,
-  ...other: unknown[]
-): void {
+export function warn(message: string, style?: string, ...other: unknown[]): void {
   if (!PENCEL_LOG_ENABLED) {
     return;
   }

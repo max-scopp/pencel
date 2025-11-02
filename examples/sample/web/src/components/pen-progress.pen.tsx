@@ -1,18 +1,9 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  Prop,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, Prop } from "@pencel/runtime";
 
 @Component({
   tag: "pen-progress",
 })
-export class PenProgressElement
-  extends HTMLElement
-  implements ComponentInterface
-{
+export class PenProgressElement extends HTMLElement implements ComponentInterface {
   @Prop() value: number = 0;
   @Prop() max: number = 100;
   @Prop() variant: "default" | "striped" | "animated" = "default";
@@ -38,9 +29,7 @@ export class PenProgressElement
             aria-valuemax={this.max}
           />
         </div>
-        {this.showLabel && (
-          <span class="progress-label">{Math.round(percentage)}%</span>
-        )}
+        {this.showLabel && <span class="progress-label">{Math.round(percentage)}%</span>}
       </Host>
     );
   }

@@ -18,11 +18,7 @@ class ReactOutput extends PencelPlugin {
   constructor(userOptions: ReactOutputOptions) {
     super();
     this.handle("derive", (hook) => {
-      log(
-        `Generate Framework bindings for file: ${hook.irr.node.fileName} to ${
-          userOptions.outputPath
-        }`,
-      );
+      log(`Generate Framework bindings for file: ${hook.irr.node.fileName} to ${userOptions.outputPath}`);
     });
   }
 }

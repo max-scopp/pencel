@@ -1,12 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  Host,
-  Prop,
-  State,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, Host, Prop, State } from "@pencel/runtime";
 
 @Component({
   tag: "pen-input",
@@ -42,11 +34,7 @@ export class PenInputElement extends HTMLElement implements ComponentInterface {
 
   render() {
     const sizeClass = `input-size-${this.size}`;
-    const stateClass = this.error
-      ? "input-error"
-      : this.focused
-        ? "input-focused"
-        : "";
+    const stateClass = this.error ? "input-error" : this.focused ? "input-focused" : "";
 
     return (
       <Host class={`pen-input ${sizeClass} ${stateClass}`}>
@@ -63,9 +51,7 @@ export class PenInputElement extends HTMLElement implements ComponentInterface {
           aria-label={this.label || this.placeholder}
           aria-invalid={this.error}
         />
-        {this.error && this.errorMessage && (
-          <span class="input-error-message">{this.errorMessage}</span>
-        )}
+        {this.error && this.errorMessage && <span class="input-error-message">{this.errorMessage}</span>}
       </Host>
     );
   }

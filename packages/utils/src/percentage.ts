@@ -1,3 +1,4 @@
+import process from "node:process";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
 
@@ -52,8 +53,6 @@ export function percentage(
  * @param options - Configuration options for the progress display
  * @returns A function that updates the progress display
  */
-export function createProgressIndicator(
-  options: { width?: number; prefix?: string } = {},
-) {
+export function createProgressIndicator(options: { width?: number; prefix?: string } = {}) {
   return (progress: number): void => percentage(progress, options);
 }

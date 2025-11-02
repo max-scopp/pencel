@@ -21,11 +21,7 @@ export class SourcePrinter {
     }
 
     // TODO: Make formatters part of the plugin system
-    printed = await formatWithBiome(
-      printed,
-      sourceFile.fileName,
-      this.#config.cwd,
-    );
+    printed = await formatWithBiome(printed, sourceFile.fileName, this.#config.cwd);
 
     return printed;
   }

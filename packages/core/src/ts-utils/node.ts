@@ -19,9 +19,7 @@ import {
  * Simple type guard for ASTNode
  */
 export function isASTNode(obj: unknown): obj is ASTNode {
-  return (
-    typeof obj === "object" && obj !== null && "kind" in obj && "text" in obj
-  );
+  return typeof obj === "object" && obj !== null && "kind" in obj && "text" in obj;
 }
 
 /**
@@ -154,10 +152,7 @@ export function deserializeNode(ast: ASTNode): Expression {
     case "NullKeyword":
       return factory.createNull();
     case "ArrayLiteralExpression":
-      return factory.createArrayLiteralExpression(
-        ast.children.map(deserializeNode),
-        false,
-      );
+      return factory.createArrayLiteralExpression(ast.children.map(deserializeNode), false);
     case "ObjectLiteralExpression": {
       const props = ast.children.map((child) => {
         if (child.kindName === "PropertyAssignment") {
@@ -169,13 +164,9 @@ export function deserializeNode(ast: ASTNode): Expression {
           );
         }
         if (child.kindName === "SpreadAssignment") {
-          return factory.createSpreadAssignment(
-            deserializeNode(child.children[0]),
-          );
+          return factory.createSpreadAssignment(deserializeNode(child.children[0]));
         }
-        throw new Error(
-          `Unknown object literal property hook: ${child.kindName}`,
-        );
+        throw new Error(`Unknown object literal property hook: ${child.kindName}`);
       });
       return factory.createObjectLiteralExpression(props, true);
     }
@@ -191,8 +182,7 @@ export function deserializeNode(ast: ASTNode): Expression {
 /** Helpers */
 
 function getPropName(name: PropertyName): string {
-  if (isStringLiteral(name) || isNumericLiteral(name) || "text" in name)
-    return (name as any).text;
+  if (isStringLiteral(name) || isNumericLiteral(name) || "text" in name) return (name as any).text;
   return name.getText();
 }
 
@@ -206,9 +196,7 @@ function ensureBlock(body: Expression): Block {
 function deserializeArrowFunction(ast: ASTNode): Expression {
   const params = ast.children
     .slice(0, -1)
-    .map((p) =>
-      factory.createParameterDeclaration(undefined, undefined, p.text ?? ""),
-    );
+    .map((p) => factory.createParameterDeclaration(undefined, undefined, p.text ?? ""));
   const bodyExpr = deserializeNode(ast.children[ast.children.length - 1]);
   // Arrow functions can have concise expression bodies
   const body = (bodyExpr as any).statements ? bodyExpr : bodyExpr;
@@ -225,18 +213,8 @@ function deserializeArrowFunction(ast: ASTNode): Expression {
 function deserializeFunctionExpression(ast: ASTNode): Expression {
   const params = ast.children
     .slice(0, -1)
-    .map((p) =>
-      factory.createParameterDeclaration(undefined, undefined, p.text ?? ""),
-    );
+    .map((p) => factory.createParameterDeclaration(undefined, undefined, p.text ?? ""));
   const bodyExpr = deserializeNode(ast.children[ast.children.length - 1]);
   const bodyBlock = ensureBlock(bodyExpr);
-  return factory.createFunctionExpression(
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    params,
-    undefined,
-    bodyBlock,
-  );
+  return factory.createFunctionExpression(undefined, undefined, undefined, undefined, params, undefined, bodyBlock);
 }

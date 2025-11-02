@@ -6,12 +6,7 @@
     "jsx": "react-jsx",
     "lib": ["dom"],
     "baseUrl": "src",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts",
-      "vite/client"
-    ],
+    "types": ["node", "@nx/react/typings/cssmodule.d.ts", "@nx/react/typings/image.d.ts", "vite/client"],
     "module": "esnext",
     "moduleResolution": "bundler"
   },

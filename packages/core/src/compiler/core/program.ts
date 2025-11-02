@@ -26,8 +26,7 @@ export class Program {
 
     perf.start("verify-tsconfig");
 
-    const tsconfigPath =
-      config.user.tsconfig ?? throwError("tsconfig not specified");
+    const tsconfigPath = config.user.tsconfig ?? throwError("tsconfig not specified");
 
     this.#tsconfigPath = resolve(config.cwd, tsconfigPath);
 
@@ -48,11 +47,7 @@ export class Program {
       );
     }
 
-    this.tsconfig = ts.parseJsonConfigFileContent(
-      configFile.config,
-      ts.sys,
-      config.cwd,
-    );
+    this.tsconfig = ts.parseJsonConfigFileContent(configFile.config, ts.sys, config.cwd);
 
     this.#verifyConfig();
 
@@ -101,15 +96,11 @@ export class Program {
     }
 
     if (opts.jsxImportSource !== "@pencel/runtime") {
-      throw new Error(
-        `[TSC] compilerOptions.jsxImportSource: must be "@pencel/runtime"`,
-      );
+      throw new Error(`[TSC] compilerOptions.jsxImportSource: must be "@pencel/runtime"`);
     }
 
     if (!opts.experimentalDecorators) {
-      throw new Error(
-        `[TSC] compilerOptions.experimentalDecorators: must be true`,
-      );
+      throw new Error(`[TSC] compilerOptions.experimentalDecorators: must be true`);
     }
   }
 }

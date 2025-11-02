@@ -13,9 +13,7 @@ export function decoratorArgs<TArgs extends readonly unknown[]>(
   if (!decorator) return;
 
   if (ts.isCallExpression(decorator.expression)) {
-    return decorator.expression.arguments.map(
-      extractValue,
-    ) as ASTArgsFrom<TArgs>;
+    return decorator.expression.arguments.map(extractValue) as ASTArgsFrom<TArgs>;
   }
 
   return;

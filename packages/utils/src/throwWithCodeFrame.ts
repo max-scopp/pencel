@@ -1,13 +1,9 @@
+import process from "node:process";
 import { isBrowser } from "./isBrowser.ts";
 import { error } from "./log.ts";
 
-export const throwWithCodeFrame = (
-  errorMessage: string | string[],
-  codeFrame: string,
-): never => {
-  const message = Array.isArray(errorMessage)
-    ? errorMessage.join("\n")
-    : errorMessage;
+export const throwWithCodeFrame = (errorMessage: string | string[], codeFrame: string): never => {
+  const message = Array.isArray(errorMessage) ? errorMessage.join("\n") : errorMessage;
 
   // Show the code frame with styling
   if (isBrowser) {

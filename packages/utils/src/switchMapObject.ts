@@ -1,7 +1,4 @@
-export function switchMapObject<
-  TItem,
-  TCases extends Record<string, (item: TItem) => unknown | undefined | null>,
->(
+export function switchMapObject<TItem, TCases extends Record<string, (item: TItem) => unknown | undefined | null>>(
   items: readonly TItem[],
   cases: TCases,
 ): { [K in keyof TCases]: Exclude<ReturnType<TCases[K]>, undefined | null>[] } {
@@ -19,12 +16,7 @@ export function switchMapObject<
       const typedKey = key as keyof TCases;
       const mapped = cases[typedKey](item);
       if (mapped != null) {
-        result[typedKey].push(
-          mapped as Exclude<
-            ReturnType<TCases[typeof typedKey]>,
-            null | undefined
-          >,
-        );
+        result[typedKey].push(mapped as Exclude<ReturnType<TCases[typeof typedKey]>, null | undefined>);
       }
     }
   }

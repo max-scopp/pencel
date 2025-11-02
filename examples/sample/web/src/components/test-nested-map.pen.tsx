@@ -1,9 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  State,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, State } from "@pencel/runtime";
 
 interface Item {
   id: string;

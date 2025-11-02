@@ -92,8 +92,7 @@ export class IRRI {
   }
 
   updateNode(oldNode: Node, newNode: Node) {
-    const irr =
-      this.#nodeToIrr.get(oldNode) ?? throwError("IRRef not found for node");
+    const irr = this.#nodeToIrr.get(oldNode) ?? throwError("IRRef not found for node");
 
     this.#nodeToIrr.delete(oldNode);
     irr.node = newNode;
@@ -106,10 +105,7 @@ export class IRRI {
     return [...bucket] as IRRef<KnownIRs[K], Node>[];
   }
 
-  firstIrr<K extends IRKind>(
-    kind: K,
-    filterFn: (item: KnownIRs[K]) => boolean,
-  ) {
+  firstIrr<K extends IRKind>(kind: K, filterFn: (item: KnownIRs[K]) => boolean) {
     const bucket = this.#byKind.get(kind);
 
     if (!bucket) {

@@ -1,9 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  State,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, State } from "@pencel/runtime";
 
 interface Item {
   id: string;
@@ -29,7 +24,7 @@ export class PerfTestElement extends HTMLElement implements ComponentInterface {
     // Shuffle every second and randomize colors
     this.#intervalId = window.setInterval(() => {
       this.items = this.#shuffle([...this.items]);
-      
+
       this.items = this.items.map((item) => ({
         ...item,
       }));
@@ -63,10 +58,7 @@ export class PerfTestElement extends HTMLElement implements ComponentInterface {
             <p>Render Count: {this.renderCount}</p>
           </div>
 
-          <ul
-            class="perf-list"
-            style={{ display: "flex", flexFlow: "row wrap" }}
-          >
+          <ul class="perf-list" style={{ display: "flex", flexFlow: "row wrap" }}>
             {this.items.map((item) => (
               <li
                 class="perf-item"

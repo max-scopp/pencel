@@ -1,10 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  type EventEmitter,
-  State,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, type EventEmitter, State } from "@pencel/runtime";
 
 type FilterType = "all" | "active" | "completed";
 
@@ -81,9 +75,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
   };
 
   handleToggleTodo = (id: string) => {
-    this.todos = this.todos.map((todo) =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-    );
+    this.todos = this.todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo));
     this.saveTodos();
     const todo = this.todos.find((t) => t.id === id);
     if (todo) {
@@ -122,9 +114,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
       this.handleDeleteTodo(id);
       return;
     }
-    this.todos = this.todos.map((todo) =>
-      todo.id === id ? { ...todo, title: text, editing: false } : todo,
-    );
+    this.todos = this.todos.map((todo) => (todo.id === id ? { ...todo, title: text, editing: false } : todo));
     this.editingId = null;
     this.editingText = "";
     this.saveTodos();
@@ -199,9 +189,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
                 {filteredTodos.map((todo) => (
                   <li
                     key={todo.id}
-                    class={`${todo.completed ? "completed" : ""} ${
-                      this.editingId === todo.id ? "editing" : ""
-                    }`}
+                    class={`${todo.completed ? "completed" : ""} ${this.editingId === todo.id ? "editing" : ""}`}
                   >
                     <div class="view">
                       <input
@@ -210,13 +198,8 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
                         checked={todo.completed}
                         onChange={() => this.handleToggleTodo(todo.id)}
                       />
-                      <label onDblClick={() => this.handleStartEdit(todo)}>
-                        {todo.title}
-                      </label>
-                      <button
-                        class="destroy"
-                        onClick={() => this.handleDeleteTodo(todo.id)}
-                      />
+                      <label onDblClick={() => this.handleStartEdit(todo)}>{todo.title}</label>
+                      <button class="destroy" onClick={() => this.handleDeleteTodo(todo.id)} />
                     </div>
                     {this.editingId === todo.id && (
                       <input
@@ -225,9 +208,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
                         onInput={(e: any) => {
                           this.editingText = e.target.value;
                         }}
-                        onKeyPress={(e: any) =>
-                          this.handleEditKeyPress(e, todo.id)
-                        }
+                        onKeyPress={(e: any) => this.handleEditKeyPress(e, todo.id)}
                         onBlur={() => this.handleSaveEdit(todo.id)}
                         autofocus
                       />
@@ -244,11 +225,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
               </span>
               <ul class="filters">
                 <li>
-                  <a
-                    href="#/"
-                    class={this.filter === "all" ? "selected" : ""}
-                    onClick={() => this.setFilter("all")}
-                  >
+                  <a href="#/" class={this.filter === "all" ? "selected" : ""} onClick={() => this.setFilter("all")}>
                     All
                   </a>
                 </li>
@@ -272,10 +249,7 @@ export class TodoMvcElement extends HTMLElement implements ComponentInterface {
                 </li>
               </ul>
               {completedCount > 0 && (
-                <button
-                  class="clear-completed"
-                  onClick={this.handleClearCompleted}
-                >
+                <button class="clear-completed" onClick={this.handleClearCompleted}>
                   Clear completed
                 </button>
               )}

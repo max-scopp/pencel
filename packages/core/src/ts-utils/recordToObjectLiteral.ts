@@ -1,9 +1,4 @@
-import {
-  type Expression,
-  factory,
-  type ObjectLiteralExpression,
-  type PropertyAssignment,
-} from "typescript";
+import { type Expression, factory, type ObjectLiteralExpression, type PropertyAssignment } from "typescript";
 
 interface RecordToObjectLiteralOptions {
   symbolNames?: Map<symbol, string>;
@@ -36,13 +31,10 @@ export function recordToObjectLiteral(
 
   // Handle symbol keys
   for (const key of Object.getOwnPropertySymbols(obj)) {
-    const symbolName =
-      symbolNames.get(key) || key.description || key.toString();
+    const symbolName = symbolNames.get(key) || key.description || key.toString();
     properties.push(
       factory.createPropertyAssignment(
-        factory.createComputedPropertyName(
-          factory.createIdentifier(symbolName),
-        ),
+        factory.createComputedPropertyName(factory.createIdentifier(symbolName)),
         valueToExpression((obj as Record<symbol, unknown>)[key], options),
       ),
     );
@@ -51,16 +43,12 @@ export function recordToObjectLiteral(
   return factory.createObjectLiteralExpression(properties, true);
 }
 
-function valueToExpression(
-  value: unknown,
-  options?: RecordToObjectLiteralOptions,
-): Expression {
+function valueToExpression(value: unknown, options?: RecordToObjectLiteralOptions): Expression {
   if (value === null) return factory.createNull();
   if (value === undefined) return factory.createIdentifier("undefined");
   if (typeof value === "string") return factory.createStringLiteral(value);
   if (typeof value === "number") return factory.createNumericLiteral(value);
-  if (typeof value === "boolean")
-    return value ? factory.createTrue() : factory.createFalse();
+  if (typeof value === "boolean") return value ? factory.createTrue() : factory.createFalse();
   if (Array.isArray(value)) {
     return factory.createArrayLiteralExpression(
       value.map((v) => valueToExpression(v, options)),

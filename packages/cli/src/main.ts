@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import process from "node:process";
 import { log } from "@pencel/utils";
 import { Cli } from "clipanion";
 import pkg from "../package.json" with { type: "json" };

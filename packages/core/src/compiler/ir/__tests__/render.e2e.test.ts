@@ -29,20 +29,12 @@ describe("RenderTransformer E2E with zero-dom", () => {
   /**
    * Transform a .pen.tsx file's render method to zero-dom code
    */
-  async function transformComponentFile(
-    fixturePath: string,
-  ): Promise<{ transformed: string; original: string }> {
+  async function transformComponentFile(fixturePath: string): Promise<{ transformed: string; original: string }> {
     const fullPath = join(import.meta.dir, "fixtures", fixturePath);
     const source = await readFile(fullPath, "utf-8");
 
     // Create TypeScript source file
-    const sourceFile = createSourceFile(
-      fixturePath,
-      source,
-      99 as ScriptTarget /* Latest */,
-      true,
-      ScriptKind.TSX,
-    );
+    const sourceFile = createSourceFile(fixturePath, source, 99 as ScriptTarget /* Latest */, true, ScriptKind.TSX);
 
     // Find class and render method
     let renderMethod: MethodDeclaration | null = null;
@@ -50,10 +42,7 @@ describe("RenderTransformer E2E with zero-dom", () => {
     sourceFile.forEachChild((node) => {
       if (isClassDeclaration(node)) {
         for (const member of node.members) {
-          if (
-            isMethodDeclaration(member) &&
-            member.name?.getText(foundSourceFile) === "render"
-          ) {
+          if (isMethodDeclaration(member) && member.name?.getText(foundSourceFile) === "render") {
             renderMethod = member as MethodDeclaration;
             break;
           }
@@ -75,11 +64,7 @@ describe("RenderTransformer E2E with zero-dom", () => {
 
     // Get the transformed code
     const printer = createPrinter();
-    const transformed = printer.printNode(
-      EmitHint.Unspecified,
-      transformedMethod,
-      foundSourceFile,
-    );
+    const transformed = printer.printNode(EmitHint.Unspecified, transformedMethod, foundSourceFile);
 
     return {
       transformed,
