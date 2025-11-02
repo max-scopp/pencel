@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noConsole: its logging */
-import { ansiStackTrace, ansiTimestamp, ERROR_LABEL, getAnsiFromStyle, PENCeL_ERROR } from "./ansi.ts";
+import { ansiStackTrace, ansiTimestamp, ERROR_LABEL, getAnsiFromStyle, PENCIL_ERROR } from "./ansi.ts";
 import { coordLog } from "./coordinated-logging.ts";
 import { ansiLog } from "./getAnsiFromStyle.ts";
 import { isBrowser } from "./isBrowser.ts";
@@ -119,7 +119,7 @@ export function error(messageOrError: string | Error | unknown, style?: string, 
     const ansiCode = style ? getAnsiFromStyle(style) : "";
 
     console.error(
-      `${PENCeL_ERROR} ${ansiTimestamp(timestamp)} ${ERROR_LABEL} ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
+      `${PENCIL_ERROR} ${ansiTimestamp(timestamp)} ${ERROR_LABEL} ${ansiCode}${message}${getAnsiFromStyle("reset")}`,
       ...other,
     );
 
