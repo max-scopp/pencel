@@ -1,3 +1,8 @@
+---
+title: "Scope & Conformance"
+description: "Component IR specification scope, conformance criteria, and versioning guidelines."
+---
+
 # Scope & Conformance
 
 ## 1. Scope

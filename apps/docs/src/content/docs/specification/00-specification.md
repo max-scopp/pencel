@@ -33,14 +33,15 @@ This specification is written for:
 
 | Document | Purpose | Cross-References |
 | --- | --- | --- |
-| [Scope & Conformance](./01-scope-and-conformance.md) | Formal scope, maturity, normative language, conformance levels | Defines RFC 2119 keywords used throughout; referenced by all documents |
-| [Component Metadata](./02-component-metadata.md) | Component IR schema and root structure | Root of all other sections; references [Style Tokens](./03-style-tokens.md), [State Machine](./04-state-machine.md), [Accessibility](./06-accessibility.md) |
-| [Style Tokens](./03-style-tokens.md) | Primitive, semantic, and component-scoped token definitions | Referenced by [Component Metadata](./02-component-metadata.md) (`styleTokens` property); linked to [State Machine](./04-state-machine.md) via `styleMap` |
-| [State Machine](./04-state-machine.md) | Behaviour, state definitions, transitions, events | Referenced by [Component Metadata](./02-component-metadata.md) (`stateMachine` property); maps states to [Style Tokens](./03-style-tokens.md) via `styleMap`; coordinates [Bindings & Data](./07-bindings-and-data.md) |
-| [Slots & Structure](./05-slots-and-structure.md) | Internal component hierarchy and named slots | Referenced by [Component Metadata](./02-component-metadata.md) (`structure` property); detailed DOM mapping |
-| [Accessibility](./06-accessibility.md) | Semantic roles, labels, and platform-specific mappings | Referenced by [Component Metadata](./02-component-metadata.md) (`semantics` property); works with [State Machine](./04-state-machine.md) for accessible interactions |
-| [Bindings & Data](./07-bindings-and-data.md) | Reactive data flow and binding semantics | Referenced by [Component Metadata](./02-component-metadata.md) (`bindings` property); coordinates with [State Machine](./04-state-machine.md) for context updates |
-| [Platform Mapping](./08-platform-mapping.md) | Target platform compilation and runtime semantics | Consumes all IR sections; compiles [Style Tokens](./03-style-tokens.md) and [State Machine](./04-state-machine.md) to platform code |
+| [Scope & Conformance](/pencel/specification/01-scope-and-conformance) | Formal scope, maturity, normative language, conformance levels | Defines RFC 2119 keywords used throughout; referenced by all documents |
+| [Component Metadata](/pencel/specification/02-component-metadata) | Component IR schema and root structure | Root of all other sections; references [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility) |
+| [Style Tokens](/pencel/specification/03-style-tokens) | Primitive, semantic, and component-scoped token definitions | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`styleTokens` property); linked to [State Machine](/pencel/specification/04-state-machine) via `styleMap` |
+| [State Machine](/pencel/specification/04-state-machine) | Behaviour, state definitions, transitions, events | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`stateMachine` property); maps states to [Style Tokens](/pencel/specification/03-style-tokens) via `styleMap`; coordinates [Bindings & Data](/pencel/specification/07-bindings-and-data) |
+| [Slots & Structure](/pencel/specification/05-slots-and-structure) | Internal component hierarchy and named slots | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`structure` property); detailed DOM mapping |
+| [Accessibility](/pencel/specification/06-accessibility) | Semantic roles, labels, and platform-specific mappings | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`semantics` property); works with [State Machine](/pencel/specification/04-state-machine) for accessible interactions |
+| [Bindings & Data](/pencel/specification/07-bindings-and-data) | Reactive data flow and binding semantics | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`bindings` property); coordinates with [State Machine](/pencel/specification/04-state-machine) for context updates |
+| [Platform Mapping](/pencel/specification/08-platform-mapping) | Target platform compilation and runtime semantics | Consumes all IR sections; compiles [Style Tokens](/pencel/specification/03-style-tokens) and [State Machine](/pencel/specification/04-state-machine) to platform code |
+| [Type System](/pencel/specification/09-type-system) | Unified type definitions, schemas, and reusable type references | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`types` property); supports props, events, and nested structures |
 
 ## Quick Start
 
@@ -133,44 +134,44 @@ Tokens           Machine            Structure      ibility
 **Quick navigation by use case:**
 
 ### I want to define component structure and API
-→ Start with [Component Metadata](./02-component-metadata.md)
+→ Start with [Component Metadata](/pencel/specification/02-component-metadata)
 - Define `name`, `version`, `props`, `slots`, `structure`
-- Then reference [Style Tokens](./03-style-tokens.md), [State Machine](./04-state-machine.md), [Accessibility](./06-accessibility.md)
+- Then reference [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility)
 
 ### I want to define visual design and theming
-→ Start with [Style Tokens](./03-style-tokens.md)
+→ Start with [Style Tokens](/pencel/specification/03-style-tokens)
 - Organize tokens: primitive → semantic → component-scoped
 - Reference [W3C Design Tokens Format Module](https://www.designtokens.org/tr/drafts/format/)
-- Link to [State Machine](./04-state-machine.md) `styleMap` for state-dependent styling
+- Link to [State Machine](/pencel/specification/04-state-machine) `styleMap` for state-dependent styling
 
 ### I want to define user interactions and behaviour
-→ Start with [State Machine](./04-state-machine.md)
+→ Start with [State Machine](/pencel/specification/04-state-machine)
 - Define states, events, transitions, context
-- Map states to [Style Tokens](./03-style-tokens.md) via `styleMap`
+- Map states to [Style Tokens](/pencel/specification/03-style-tokens) via `styleMap`
 - Reference [XState](https://stately.ai/docs/xstate) and [Zag.js](https://zagjs.com/) for patterns
-- Coordinate with [Bindings & Data](./07-bindings-and-data.md) for reactive updates
+- Coordinate with [Bindings & Data](/pencel/specification/07-bindings-and-data) for reactive updates
 
 ### I want to define reactive data flow
-→ See [Bindings & Data](./07-bindings-and-data.md)
+→ See [Bindings & Data](/pencel/specification/07-bindings-and-data)
 - One-way and two-way binding semantics
-- Coordinates with [State Machine](./04-state-machine.md) context updates
+- Coordinates with [State Machine](/pencel/specification/04-state-machine) context updates
 
 ### I want to define accessibility
-→ See [Accessibility](./06-accessibility.md)
+→ See [Accessibility](/pencel/specification/06-accessibility)
 - Semantic roles, ARIA attributes, keyboard interaction
-- Integrates with [State Machine](./04-state-machine.md) for state announcements
+- Integrates with [State Machine](/pencel/specification/04-state-machine) for state announcements
 
 ### I want to define internal component structure
-→ See [Slots & Structure](./05-slots-and-structure.md)
+→ See [Slots & Structure](/pencel/specification/05-slots-and-structure)
 - DOM hierarchy, slot placement
-- Referenced by [Component Metadata](./02-component-metadata.md) `structure` property
+- Referenced by [Component Metadata](/pencel/specification/02-component-metadata) `structure` property
 
 ### I want to understand how to compile IR to a specific platform
-→ See [Platform Mapping](./08-platform-mapping.md)
+→ See [Platform Mapping](/pencel/specification/08-platform-mapping)
 - Web/HTML, React, React Native, SwiftUI, Flutter, WPF/XAML, embedded
-- Consumes [Style Tokens](./03-style-tokens.md), [State Machine](./04-state-machine.md), [Accessibility](./06-accessibility.md)
+- Consumes [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility)
 
 ### I need conformance guidelines
-→ See [Scope & Conformance](./01-scope-and-conformance.md)
+→ See [Scope & Conformance](/pencel/specification/01-scope-and-conformance)
 - RFC 2119 definitions, error handling, versioning
 - Referenced by all documents

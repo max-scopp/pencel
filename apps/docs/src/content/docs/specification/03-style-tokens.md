@@ -1,3 +1,8 @@
+---
+title: "Style Tokens"
+description: "W3C Design Tokens Format alignment with primitive, semantic, and component-scoped token tiers."
+---
+
 # Style Tokens
 
 ## 1. Overview
@@ -11,8 +16,8 @@ All component IRs SHOULD include style tokens organized across three tiers:
 3. **Component-Scoped Tokens** — Component-specific overrides and variations
 
 **Cross-references:**
-- Declared in [Component Metadata](./02-component-metadata.md) via `styleTokens` property
-- Applied dynamically via [State Machine](./04-state-machine.md) `styleMap` (states → token names)
+- Declared in [Component Metadata](/pencel/specification/02-component-metadata) via `styleTokens` property
+- Applied dynamically via [State Machine](/pencel/specification/04-state-machine) `styleMap` (states → token names)
 - Organized per [W3C Design Tokens Format Module](https://www.designtokens.org/tr/drafts/format/) §6 (Groups), §7 (Aliases), §8–9 (Types)
 
 ## 2. Token Structure

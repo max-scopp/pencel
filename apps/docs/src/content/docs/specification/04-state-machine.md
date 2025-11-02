@@ -1,3 +1,8 @@
+---
+title: "State Machine & Behaviour"
+description: "Finite state machines, XState and Zag.js patterns, and state-to-style mapping."
+---
+
 # State Machine & Behaviour
 
 ## 1. Overview
@@ -16,10 +21,10 @@ A state machine defines:
 All component IRs SHOULD include a `stateMachine` definition that captures component interaction patterns and state-dependent styling.
 
 **Cross-references:**
-- Declared in [Component Metadata](./02-component-metadata.md) via `stateMachine` property
-- Links states to [Style Tokens](./03-style-tokens.md) via `styleMap` property (§5 of this document)
-- Interacts with [Bindings & Data](./07-bindings-and-data.md) via context updates
-- Complements [Accessibility](./06-accessibility.md) for keyboard and screen reader state announcements
+- Declared in [Component Metadata](/pencel/specification/02-component-metadata) via `stateMachine` property
+- Links states to [Style Tokens](/pencel/specification/03-style-tokens) via `styleMap` property (§5 of this document)
+- Interacts with [Bindings & Data](/pencel/specification/07-bindings-and-data) via context updates
+- Complements [Accessibility](/pencel/specification/06-accessibility) for keyboard and screen reader state announcements
 - Inspired by [XState](https://stately.ai/docs/xstate) and [Zag.js](https://zagjs.com/)
 
 ## 2. State Machine Structure

@@ -64,10 +64,10 @@ export default defineConfig({
           },
         },
         {
-          label: "Best Practices",
+          label: "Specification",
           collapsed: true,
           autogenerate: {
-            directory: "best-practices",
+            directory: "specification",
           },
         },
         {

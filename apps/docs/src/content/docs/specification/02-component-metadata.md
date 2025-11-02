@@ -1,3 +1,8 @@
+---
+title: "Component Metadata"
+description: "Universal component IR structure, props, events, slots, and type system."
+---
+
 # Component Metadata
 
 ## 1. Overview
@@ -7,10 +12,11 @@ Component metadata defines the root structure of a universal component. It captu
 All component IRs MUST conform to the Component Metadata schema defined in this section.
 
 **Cross-references:** This document is the root specification. Refer to:
-- [Style Tokens](./03-style-tokens.md) for `styleTokens` details
-- [State Machine](./04-state-machine.md) for `stateMachine` details
-- [Accessibility](./06-accessibility.md) for `semantics` details
-- [Bindings & Data](./07-bindings-and-data.md) for `bindings` details
+- [Type System](/pencel/specification/09-type-system) for `types` details and prop/event type definitions
+- [Style Tokens](/pencel/specification/03-style-tokens) for `styleTokens` details
+- [State Machine](/pencel/specification/04-state-machine) for `stateMachine` details
+- [Accessibility](/pencel/specification/06-accessibility) for `semantics` details
+- [Bindings & Data](/pencel/specification/07-bindings-and-data) for `bindings` details
 
 ## 2. Preliminary Component Schema
 
@@ -116,16 +122,18 @@ The following diagram illustrates how these domains compose a complete component
 | `description` | string | – | Human-readable component description |
 | `version` | string | – | Component version (semantic) |
 | `maturity` | enum | `"stable"` | Component API stability level |
-| `types` | object | – | Reusable type definitions (see §2.3.5); shared by props and events |
+| `types` | object | – | Reusable type definitions (see [Type System](/pencel/specification/09-type-system)); shared by props and events |
 | `structure` | object | – | Internal component hierarchy (see §2.6) |
-| `semantics` | object | – | Accessibility metadata (see [Accessibility](./06-accessibility.md)) |
-| `styleTokens` | array | – | Component-scoped style tokens (see [Style Tokens](./03-style-tokens.md)) |
-| `stateMachine` | object | – | Behaviour definition (see [State Machine](./04-state-machine.md)) |
-| `bindings` | array | – | Reactive bindings (see [Bindings & Data](./07-bindings-and-data.md)) |
+| `semantics` | object | – | Accessibility metadata (see [Accessibility](/pencel/specification/06-accessibility)) |
+| `styleTokens` | array | – | Component-scoped style tokens (see [Style Tokens](/pencel/specification/03-style-tokens)) |
+| `stateMachine` | object | – | Behaviour definition (see [State Machine](/pencel/specification/04-state-machine)) |
+| `bindings` | array | – | Reactive bindings (see [Bindings & Data](/pencel/specification/07-bindings-and-data)) |
 
 ### 2.3 Props Definition
 
-Props declare the public API of a component. Each prop is an object with the following structure:
+Props declare the public API of a component. See [Type System](/pencel/specification/09-type-system) §2 for detailed type definitions and examples.
+
+Each prop is an object with the following structure:
 
 ```json
 {
@@ -140,332 +148,10 @@ Props declare the public API of a component. Each prop is an object with the fol
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `name` | string | REQUIRED | Prop identifier; MUST be valid camelCase |
-| `type` | string \| enum | REQUIRED | Scalar type, reference, or type reference; see §2.3.1 |
+| `type` | string \| enum | REQUIRED | Scalar type, reference, or type reference; see [Type System](/pencel/specification/09-type-system) §2.3 |
 | `required` | boolean | OPTIONAL (default: `false`) | Whether prop is mandatory |
 | `default` | any | OPTIONAL | Default value if not provided |
 | `description` | string | OPTIONAL | Documentation for the prop |
-
-### 2.3.1 Prop Types
-
-Conforming props MUST use one of the following types:
-
-| Type | Description | Reference | Example |
-| --- | --- | --- | --- |
-| `"string"` | Text value | – | `"label"` |
-| `"number"` | Numeric value | – | `42`, `3.14` |
-| `"boolean"` | Boolean value | – | `true`, `false` |
-| `"enum"` | Fixed set of values | §2.3.2 | `{ "type": "enum", "values": ["small", "large"] }` |
-| `"object"` | Structured object with named properties | §2.3.3 | `{ "type": "object", "schema": {...} }` |
-| `"array"` | Array of homogeneous items | §2.3.4 | `{ "type": "array", "items": "string" }` |
-| **Type Reference** | Reference to a type in `types` section | §2.3.5 | `"#/types/Position"` or `"#/types/ButtonVariant"` |
-
-### 2.3.2 Enum Types
-
-Enums declare a fixed set of literal string values:
-
-```json
-{
-  "name": "size",
-  "type": "enum",
-  "values": ["small", "medium", "large"],
-  "default": "medium",
-  "description": "Button size variant"
-}
-```
-
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `values` | array | REQUIRED | Array of string literals |
-| `default` | string | OPTIONAL | Must be one of `values` if provided |
-
-### 2.3.3 Object Types
-
-Objects define structured data with named properties. Inline object definitions use the `schema` property; complex objects should be defined in the `types` section (§2.3.5).
-
-**Inline object** (simple cases):
-
-```json
-{
-  "name": "position",
-  "type": "object",
-  "schema": {
-    "x": "number",
-    "y": "number"
-  },
-  "description": "2D position coordinates"
-}
-```
-
-**Referenced object** (complex/reusable types):
-
-```json
-{
-  "name": "config",
-  "type": "#/types/CustomConfig",
-  "description": "Component configuration"
-}
-```
-
-### 2.3.3.1 Object Schema Structure
-
-Inline object schemas map property names to types:
-
-```json
-{
-  "schema": {
-    "propertyName": "string | number | boolean | enum | array | #/types/TypeName",
-    "optionalProperty": { "type": "string", "optional": true },
-    "complexProperty": { "type": "#/types/NestedType" }
-  }
-}
-```
-
-Each property MAY include:
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `type` | string | Type of the property (see §2.3.1) |
-| `optional` | boolean | Whether property is optional (default: `false`) |
-| `description` | string | Documentation for the property |
-| `default` | any | Default value for the property |
-
-**Example with optional properties:**
-
-```json
-{
-  "name": "options",
-  "type": "object",
-  "schema": {
-    "timeout": { "type": "number", "description": "Request timeout in ms" },
-    "retries": { "type": "number", "optional": true, "default": 3 },
-    "headers": { "type": "#/types/HeaderMap", "optional": true }
-  }
-}
-```
-
-### 2.3.4 Array Types
-
-Arrays contain homogeneous items of a single type:
-
-```json
-{
-  "name": "items",
-  "type": "array",
-  "items": "string",
-  "description": "List of item labels"
-}
-```
-
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `items` | string \| TypeRef | REQUIRED | Type of array elements (scalar, reference, or complex) |
-
-**Array of primitives:**
-
-```json
-{
-  "name": "tags",
-  "type": "array",
-  "items": "string"
-}
-```
-
-**Array of objects:**
-
-```json
-{
-  "name": "rows",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "schema": {
-      "id": "string",
-      "label": "string",
-      "checked": { "type": "boolean", "optional": true }
-    }
-  }
-}
-```
-
-**Array of referenced types:**
-
-```json
-{
-  "name": "dataSource",
-  "type": "array",
-  "items": "#/types/DataRecord"
-}
-```
-
-### 2.3.5 Type Definitions Section (Global System)
-
-The `types` section is a **global, unified type system** at the root level of the component definition. All complex types are defined ONCE and reused everywhere they're needed — props, events, nested structures, arrays, etc.
-
-**Single source of truth principle:**
-- Define each type once in `types`
-- Reference it everywhere with `#/types/TypeName`
-- No type duplication or inline redefinition
-- Enables consistency and maintainability
-
-```json
-{
-  "irVersion": "1.0.0",
-  "name": "DataTable",
-  "type": "component",
-  "types": {
-    "DataRecord": {
-      "description": "A single row of table data",
-      "schema": {
-        "id": "string",
-        "name": { "type": "string" },
-        "email": { "type": "string", "optional": true },
-        "active": { "type": "boolean", "default": true },
-        "metadata": { "type": "#/types/RecordMetadata", "optional": true }
-      }
-    },
-    "RecordMetadata": {
-      "description": "Additional metadata attached to a record",
-      "schema": {
-        "createdAt": "string",
-        "updatedAt": "string",
-        "tags": { "type": "array", "items": "string", "optional": true }
-      }
-    },
-    "SortConfig": {
-      "description": "Configuration for column sorting",
-      "schema": {
-        "column": "string",
-        "direction": { "type": "enum", "values": ["asc", "desc"] }
-      }
-    }
-  },
-  "props": [
-    {
-      "name": "data",
-      "type": "array",
-      "items": "#/types/DataRecord",
-      "required": true,
-      "description": "Array of records to display"
-    },
-    {
-      "name": "sortConfig",
-      "type": "#/types/SortConfig",
-      "optional": true,
-      "description": "Initial sort configuration"
-    }
-  ]
-}
-```
-
-### 2.3.5.1 Type Definition Structure
-
-Each type in the `types` section is an object with:
-
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `description` | string | OPTIONAL | Human-readable documentation |
-| `schema` | object | REQUIRED | Type shape definition (see §2.3.3.1) |
-| `examples` | array | OPTIONAL | Array of example values conforming to this type |
-
-**Full example with examples:**
-
-```json
-{
-  "types": {
-    "ButtonVariant": {
-      "description": "Visual style variant for Button components",
-      "schema": {
-        "name": "enum",
-        "values": ["primary", "secondary", "ghost", "danger"]
-      },
-      "examples": ["primary", "ghost"]
-    },
-    "Position": {
-      "description": "2D coordinate position",
-      "schema": {
-        "x": { "type": "number", "description": "Horizontal position in pixels" },
-        "y": { "type": "number", "description": "Vertical position in pixels" }
-      },
-      "examples": [
-        { "x": 0, "y": 0 },
-        { "x": 100, "y": 200 }
-      ]
-    }
-  }
-}
-```
-
-### 2.3.6 Example: Global Type System (Props & Events Unified)
-
-All types are defined once in the `types` section and referenced throughout the component definition:
-
-```json
-{
-  "irVersion": "1.0.0",
-  "name": "Button",
-  "type": "component",
-  "types": {
-    "ButtonVariant": {
-      "description": "Button visual style variant",
-      "schema": {
-        "variant": { "type": "enum", "values": ["primary", "secondary", "ghost"] }
-      }
-    },
-    "ClickEventDetail": {
-      "description": "Details of a button click event",
-      "schema": {
-        "timestamp": "number",
-        "x": "number",
-        "y": "number",
-        "shiftKey": { "type": "boolean", "optional": true }
-      }
-    },
-    "Icon": {
-      "description": "Icon configuration",
-      "schema": {
-        "src": "string",
-        "alt": { "type": "string", "optional": true },
-        "size": { "type": "enum", "values": ["small", "medium", "large"] }
-      }
-    }
-  },
-  "props": [
-    {
-      "name": "label",
-      "type": "string",
-      "required": true,
-      "description": "Button text label"
-    },
-    {
-      "name": "variant",
-      "type": "#/types/ButtonVariant",
-      "default": "primary",
-      "description": "Button visual style"
-    },
-    {
-      "name": "disabled",
-      "type": "boolean",
-      "default": false
-    },
-    {
-      "name": "icon",
-      "type": "#/types/Icon",
-      "optional": true,
-      "description": "Optional icon to display"
-    }
-  ],
-  "events": {
-    "click": {
-      "description": "Fired when button is clicked",
-      "detail": "#/types/ClickEventDetail",
-      "bubbles": true,
-      "cancelable": true
-    }
-  }
-}
-```
-
-**Key principle:** Define types once in `types`, reference everywhere with `#/types/TypeName`.
 
 ## 2.4 Slots Definition
 
@@ -653,7 +339,7 @@ Nodes in the structure tree use:
 - `"attributes"` — element attributes (e.g., `{ "type": "button" }`)
 - `"children"` — array of child node keys or slot references (e.g., `["slot:default"]`, `["label"]`)
 
-More details in [Slots & Structure](./05-slots-and-structure.md).
+More details in [Slots & Structure](/pencel/specification/05-slots-and-structure).
 
 ## 2.7 Example: Complete Component Metadata with Global Types
 
@@ -775,5 +461,5 @@ A conforming component metadata object:
    - `bubbles`, `cancelable`, `composed` MUST be boolean values
    - Event names MUST follow Web API conventions (lowercase, no spaces)
 7. If `structure` is present, all referenced slots MUST be defined in `slots`
-8. If `stateMachine` is present, it MUST conform to [State Machine](./04-state-machine.md) schema
-9. If `semantics` is present, it MUST conform to [Accessibility](./06-accessibility.md) schema
+8. If `stateMachine` is present, it MUST conform to [State Machine](/pencel/specification/04-state-machine) schema
+9. If `semantics` is present, it MUST conform to [Accessibility](/pencel/specification/06-accessibility) schema
