@@ -6,7 +6,72 @@ Component metadata defines the root structure of a universal component. It captu
 
 All component IRs MUST conform to the Component Metadata schema defined in this section.
 
-## 2. Component Root Schema
+**Cross-references:** This document is the root specification. Refer to:
+- [Style Tokens](./03-style-tokens.md) for `styleTokens` details
+- [State Machine](./04-state-machine.md) for `stateMachine` details
+- [Accessibility](./06-accessibility.md) for `semantics` details
+- [Bindings & Data](./07-bindings-and-data.md) for `bindings` details
+
+## 2. Preliminary Component Schema
+
+A component definition is organized into **nine functional domains**. Each domain captures specific aspects of the component's contract and behaviour. The following table provides a quick reference:
+
+| Domain | Purpose | Key Concepts |
+| --- | --- | --- |
+| **Identity & Metadata** | Component identity and versioning | name, version, description, maturity, platform hints |
+| **Public API** | Surface-level input parameters | props, types, required/optional, defaults, mutability |
+| **Content Projection** | Named regions for child content | slots, accepted types, optionality |
+| **Internal Structure** | Component layout and DOM shape | root element, hierarchy, slot placement, encapsulation |
+| **State Management** | Internal reactive properties | state properties, types, defaults, change detection |
+| **Interaction & Events** | User actions and notifications | events, detail types, propagation flags, handlers |
+| **Styling & Theming** | Visual design and token system | primitive tokens, semantic tokens, component scopes, overrides |
+| **Accessibility & Semantics** | Inclusive interaction and meaning | roles, ARIA attributes, keyboard rules, platform mappings |
+| **Behaviour Rules** | State transitions and reactions | state machine, transitions, state→style bindings, animations |
+| **Data Binding** | Reactive data synchronization | binding direction, source/target paths, transforms, validation |
+
+### 2.1 Domain Breakdown
+
+The following diagram illustrates how these domains compose a complete component definition:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                     COMPONENT DEFINITION                               │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│   📋 IDENTITY & METADATA          🎛️ PUBLIC API                       │
+│   ├─ Name                         ├─ Property Name                     │
+│   ├─ Version                      ├─ Type Definition                   │
+│   ├─ Description                  ├─ Required / Optional               │
+│   ├─ Maturity                     ├─ Default Value                     │
+│   └─ Platform Hints               └─ Reflection / Mutability           │
+│                                                                        │
+│   📦 CONTENT PROJECTION            🏗️ INTERNAL STRUCTURE                │
+│   ├─ Slot Name                    ├─ Root Element                      │
+│   ├─ Accepted Types               ├─ Child Hierarchy                   │
+│   └─ Optionality                  ├─ Slot Placement                    │
+│                                    ├─ Shadow DOM Mode                  │
+│                                    └─ Style Scoping                    │
+│                                                                        │
+│   💾 STATE MANAGEMENT              ⚡ INTERACTION & EVENTS              │
+│   ├─ State Property               ├─ Event Name                        │
+│   ├─ Type & Default               ├─ Detail Type                       │
+│   ├─ Equality Comparator          ├─ Propagation Flags                 │
+│   └─ Change Detection             └─ Handler Bindings                  │
+│                                                                        │
+│   🎨 STYLING & THEMING             ♿ ACCESSIBILITY & SEMANTICS         │
+│   ├─ Primitive Tokens             ├─ Semantic Role                     │
+│   ├─ Semantic Tokens              ├─ ARIA Attributes                   │
+│   ├─ Component Scopes             ├─ Keyboard Interaction              │
+│   └─ Platform Overrides           └─ Platform Mappings                 │
+│                                                                        │
+│   🔄 BEHAVIOUR RULES               🔗 DATA BINDING & REACTIVITY         │
+│   ├─ Named States                 ├─ Binding Direction                 │
+│   ├─ Transitions & Events         ├─ Source & Target Paths             │
+│   ├─ State → Style Maps           ├─ Transform Functions               │
+│   └─ Animation / Timing           └─ Validation Rules                  │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
 ### 2.1 Required Properties
 
@@ -25,8 +90,8 @@ All component IRs MUST conform to the Component Metadata schema defined in this 
 | `irVersion` | string | REQUIRED | Semantic version of the IR spec (e.g., `"1.0.0"`) |
 | `name` | string | REQUIRED | Component name; MUST be a valid PascalCase identifier |
 | `type` | enum | REQUIRED | MUST be `"component"` |
-| `props` | array | REQUIRED | Array of prop definitions (see §2.3) |
-| `slots` | object | REQUIRED | Named slot definitions (see §2.4); MAY be empty object `{}` |
+| `props` | array | REQUIRED | Array of prop definitions (see §2.4) |
+| `slots` | object | REQUIRED | Named slot definitions (see §2.5); MAY be empty object `{}` |
 
 ### 2.2 Optional Properties
 
@@ -48,13 +113,13 @@ All component IRs MUST conform to the Component Metadata schema defined in this 
 | `description` | string | – | Human-readable component description |
 | `version` | string | – | Component version (semantic) |
 | `maturity` | enum | `"stable"` | Component API stability level |
-| `structure` | object | – | Internal component hierarchy (see §2.5) |
+| `structure` | object | – | Internal component hierarchy (see §2.6) |
 | `semantics` | object | – | Accessibility metadata (see [Accessibility](./06-accessibility.md)) |
 | `styleTokens` | array | – | Component-scoped style tokens (see [Style Tokens](./03-style-tokens.md)) |
 | `stateMachine` | object | – | Behaviour definition (see [State Machine](./04-state-machine.md)) |
 | `bindings` | array | – | Reactive bindings (see [Bindings & Data](./07-bindings-and-data.md)) |
 
-## 2.3 Props Definition
+### 2.3 Props Definition
 
 Props declare the public API of a component. Each prop is an object with the following structure:
 
