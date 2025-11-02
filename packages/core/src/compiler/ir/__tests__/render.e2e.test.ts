@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   createPrinter,
@@ -86,13 +86,14 @@ describe("RenderTransformer E2E with zero-dom", () => {
       original: typedRenderMethod.getText(foundSourceFile),
     };
   }
-  describe("Automated fixture rendering", () => {
-    const fixtureFiles = ["todo-item.pen.tsx", "simple-button.pen.tsx"];
+  describe("Automated fixture rendering", async () => {
+    const fixturesDir = join(import.meta.dir, "fixtures");
+    const files = await readdir(fixturesDir);
+    const fixtureFiles = files.filter((f) => f.endsWith(".pen.tsx")).sort();
 
     for (const fixture of fixtureFiles) {
       test(`${fixture} matches snapshot`, async () => {
         const { transformed } = await transformComponentFile(fixture);
-
         expect(transformed).toMatchSnapshot();
       });
     }
