@@ -91,7 +91,13 @@ function calculateDuration(mark: PerformanceMark): number {
 }
 
 function logPerformanceTree(root: PerformanceMark, logger: ReturnType<typeof createLog>): void {
-  function logNode(node: PerformanceMark, depth: number, siblingDurations: number[], isLast: boolean, prefix: string): void {
+  function logNode(
+    node: PerformanceMark,
+    depth: number,
+    siblingDurations: number[],
+    isLast: boolean,
+    prefix: string,
+  ): void {
     const duration = calculateDuration(node);
     const totalSiblingDuration = siblingDurations.reduce((a, b) => a + b, 0);
     const percentage = totalSiblingDuration > 0 ? ((duration / totalSiblingDuration) * 100).toFixed(2) : "0.00";
