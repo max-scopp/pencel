@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { percentage } from "@pencel/utils";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { inject } from "../core/container.ts";
 import { IRRI } from "../ir/irri.ts";
 import { SourcePreprocessor } from "../preprocessing/source-preprocessor.ts";
@@ -34,14 +35,13 @@ export class FileWriter {
 
     let progress = 1;
     for (const sourceFile of files.values()) {
-      perf.start(`pack:${basename(sourceFile.fileName)}`);
+      const outputFilePath = getOutputPath(sourceFile);
+      perf.start(`pack:${basename(outputFilePath)}`);
 
       perf.start("preprocess");
       const preference = this.#sourceFiles.getImportPreference(sourceFile.fileName);
       const preprocessed = this.#sourcePreprocessor.process(sourceFile, preference);
       perf.end("preprocess");
-
-      const outputFilePath = sourceFile.outputFileName ?? sourceFile.fileName;
 
       await mkdir(dirname(outputFilePath), { recursive: true });
       perf.start("print");
@@ -50,7 +50,7 @@ export class FileWriter {
       perf.start("write");
       await writeFile(outputFilePath, printed);
       perf.end("write");
-      perf.end(`pack:${basename(sourceFile.fileName)}`);
+      perf.end(`pack:${basename(outputFilePath)}`);
 
       progress++;
       percentage(progress / files.size, {

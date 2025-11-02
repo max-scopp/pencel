@@ -9,6 +9,7 @@ import {
   SyntaxKind,
 } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { Config } from "../config.ts";
 import { inject } from "../core/container.ts";
@@ -25,6 +26,7 @@ export class ComponentIR extends IRM("Component") {
 
   readonly className: string;
   readonly fileName: string;
+  readonly outputFileName: string;
 
   readonly sourceTag: string;
   readonly shadow?: boolean;
@@ -65,6 +67,7 @@ export class ComponentIR extends IRM("Component") {
       throwError(`@Component decorator must have options object.`);
 
     this.fileName = sourceFile.fileName;
+    this.outputFileName = getOutputPath(sourceFile);
     this.className = classDeclaration.name?.text ?? throwError("A component must have a class name.");
 
     this.sourceTag =

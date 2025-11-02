@@ -1,5 +1,6 @@
 import type { SourceFile } from "typescript";
 import { extractExportedSymbols } from "../../ts-utils/extractExportedSymbols.ts";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { getRelativeImportPath } from "../../ts-utils/getRelativeImportPath.ts";
 
 export interface SymbolConfig {
@@ -105,11 +106,11 @@ export class SymbolRegistry {
    * Tracks which symbols came from which file for rescanning.
    */
   upsertFileSymbols(sourceFile: SourceFile): void {
-    const filePath = sourceFile.fileName;
+    const outputFilePath = getOutputPath(sourceFile);
     const symbols = extractExportedSymbols(sourceFile);
 
     // Remove old symbols from this file
-    const oldSymbols = this.#fileSymbols.get(filePath);
+    const oldSymbols = this.#fileSymbols.get(outputFilePath);
     if (oldSymbols) {
       for (const symbol of oldSymbols) {
         this.#projectSymbols.delete(symbol);
@@ -117,11 +118,11 @@ export class SymbolRegistry {
     }
 
     // Register new symbols
-    this.#fileSymbols.set(filePath, symbols);
+    this.#fileSymbols.set(outputFilePath, symbols);
     for (const symbol of symbols) {
       this.#projectSymbols.set(symbol, {
         symbol,
-        module: filePath,
+        module: outputFilePath,
         importStyle: "named",
       });
     }

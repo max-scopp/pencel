@@ -2,6 +2,7 @@ import type { ComponentOptions } from "@pencel/runtime";
 import { filterMap, throwError } from "@pencel/utils";
 import { type ClassDeclaration, isClassDeclaration, type SourceFile } from "typescript";
 import { decoratorArgs } from "../../ts-utils/decoratorArgs.ts";
+import { getOutputPath } from "../../ts-utils/getOutputPath.ts";
 import { singleDecorator } from "../../ts-utils/singleDecorator.ts";
 import { ComponentIR } from "./component.ts";
 import { IRM, IRRef } from "./irri.ts";
@@ -9,11 +10,13 @@ import { StyleIR } from "./style.ts";
 
 export class FileIR extends IRM("File") {
   readonly fileName: string;
+  readonly outputFileName: string;
   readonly components: IRRef<ComponentIR, ClassDeclaration>[];
 
   private constructor(sourceFile: SourceFile, components: IRRef<ComponentIR, ClassDeclaration>[]) {
     super();
     this.fileName = sourceFile.fileName;
+    this.outputFileName = getOutputPath(sourceFile);
     this.components = components;
   }
 
