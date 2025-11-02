@@ -52,25 +52,33 @@ export class Plugins {
   async initialize(): Promise<void> {
     perf.start("initialize-plugins");
 
-    Plugins.registeredPlugins.forEach(async ([klass, defaultOptions], name) => {
-      const requiredPlugins: Array<PluginNames> = [];
+    const initPromises = Array.from(Plugins.registeredPlugins.entries()).map(
+      async ([name, [klass, defaultOptions]]) => {
+        const requiredPlugins: Array<PluginNames> = [];
 
-      const userOptions = this.#config.getUserOptionsForPlugin(name);
-      const mergedOptions = {
-        ...defaultOptions,
-        ...userOptions,
-      } as BasePluginOptions;
+        const userOptions = this.#config.getUserOptionsForPlugin(name);
+        const mergedOptions = {
+          ...defaultOptions,
+          ...userOptions,
+        } as BasePluginOptions;
 
-      if (!requiredPlugins.includes(name) && mergedOptions.enabled === false) {
-        return;
-      }
+        if (
+          !requiredPlugins.includes(name) &&
+          mergedOptions.enabled === false
+        ) {
+          return;
+        }
 
-      perf.start(`initialize-plugin:${name}`);
-      const instance = new klass(mergedOptions as PluginOptionsOf<typeof name>);
-      this.#instances.set(name, instance);
-      perf.end(`initialize-plugin:${name}`);
-    });
+        perf.start(`initialize-plugin:${name}`);
+        const instance = new klass(
+          mergedOptions as PluginOptionsOf<typeof name>,
+        );
+        this.#instances.set(name, instance);
+        perf.end(`initialize-plugin:${name}`);
+      },
+    );
 
+    await Promise.all(initPromises);
     perf.end("initialize-plugins");
   }
 

@@ -18,7 +18,7 @@ export const defaultConfig: Required<PencelConfig> = {
     qualifier: "gen",
   },
   tsconfig: "tsconfig.json",
-  plugins: ["css", "typings", "ir", "components"],
+  plugins: ["host", "css", "typings", "ir", "components"],
   runtime: {
     tagNamespace: "pencel",
   },

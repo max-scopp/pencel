@@ -4,5 +4,5 @@ export default defineConfig({
   runtime: {
     tagNamespace: "wb",
   },
-  plugins: ["scss", "angular"],
+  plugins: ["host", "scss", "angular"],
 });

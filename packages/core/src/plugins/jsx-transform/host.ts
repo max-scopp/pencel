@@ -23,7 +23,8 @@ class HostPlugin extends PencelPlugin {
   constructor() {
     super();
     this.handle("jsx:transform", (hook) => {
-      if (hook.tagName === "Host") {
+      // Debug: log when handler is called
+      if (hook.tagName === "Host" || hook.tagName?.includes?.("Host")) {
         hook.result = this.#transformHostComponent(hook);
       }
     });
@@ -43,8 +44,12 @@ class HostPlugin extends PencelPlugin {
       }
     ).openingElement;
 
-    // Get Host attributes to apply to 'this'
+    // Collect Host attributes to apply to 'this'
+    const attributeProperties: ReturnType<
+      typeof factory.createPropertyAssignment
+    >[] = [];
     const hostAttributes = openingElement.attributes.properties;
+
     if (hostAttributes && Array.isArray(hostAttributes)) {
       for (const attr of hostAttributes) {
         if (
@@ -81,17 +86,10 @@ class HostPlugin extends PencelPlugin {
               initializer?.kind === SyntaxKind.JsxExpression &&
               initializer.expression
             ) {
-              hook.prependStatements.push(
-                createExprStmt(
-                  createCall(factory.createIdentifier("sp"), [
-                    factory.createThis(),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createStringLiteral(attrName),
-                        initializer.expression,
-                      ),
-                    ]),
-                  ]),
+              attributeProperties.push(
+                factory.createPropertyAssignment(
+                  factory.createStringLiteral(attrName),
+                  initializer.expression,
                 ),
               );
             }
@@ -100,31 +98,60 @@ class HostPlugin extends PencelPlugin {
       }
     }
 
-    // Transform children and return the first child directly
+    // Create sp(this, {...attributes}) call if there are attributes
+    if (attributeProperties.length > 0) {
+      hook.prependStatements.push(
+        createExprStmt(
+          createCall(factory.createIdentifier("sp"), [
+            factory.createThis(),
+            factory.createObjectLiteralExpression(attributeProperties),
+          ]),
+        ),
+      );
+    }
+
+    // Collect and transform children
     const children = (
       jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }
     ).children;
+
+    const transformedChildren: Expression[] = [];
     if (children && children.length > 0) {
-      // Find the first non-whitespace child
       for (const child of children) {
         if (
           child.kind === SyntaxKind.JsxElement ||
           child.kind === SyntaxKind.JsxSelfClosingElement
         ) {
-          return hook.transformExpression(child as unknown as Expression);
-        }
-        if (child.kind === SyntaxKind.JsxExpression) {
+          transformedChildren.push(
+            hook.transformExpression(child as unknown as Expression),
+          );
+        } else if (child.kind === SyntaxKind.JsxExpression) {
           const expr = (child as unknown as { expression?: Expression })
             .expression;
           if (expr) {
-            return hook.transformExpression(expr);
+            transformedChildren.push(hook.transformExpression(expr));
           }
+        } else if (child.kind !== SyntaxKind.JsxText) {
+          // Include other non-text children as-is
+          transformedChildren.push(
+            hook.transformExpression(child as unknown as Expression),
+          );
         }
       }
     }
 
-    // If no children, return null
-    return factory.createNull();
+    // Create sc(this, [...children]) call and prepend it
+    hook.prependStatements.push(
+      createExprStmt(
+        createCall(factory.createIdentifier("sc"), [
+          factory.createThis(),
+          factory.createArrayLiteralExpression(transformedChildren),
+        ]),
+      ),
+    );
+
+    // Return void(0) - Host doesn't render anything itself
+    return factory.createVoidZero();
   }
 }
 
