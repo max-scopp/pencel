@@ -4,81 +4,66 @@ sidebar:
   order: 8
 ---
 
-Converts JSX render methods into zero-DOM factory function calls for efficient rendering.
-
-## Transformation Example
-
-Input: JSX render method
+Converts JSX render methods into zero-DOM factory function calls for efficient reconciliation:
 
 ```typescript
-render() {
-  return (
-    <div class="container">
-      <h1>Hello {this.name}</h1>
-      <ul>
-        {this.todos.map((todo) => (
-          <li key={todo.id}>{todo.text}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
+// Input JSX
+render() { return <div class="btn">{this.label}</div>; }
 
-Output: Factory function calls
-
-```typescript
+// Output: factory calls with memoization
 render() {
   let $0 = this.#cmc("div_0", () => dce("div"));
-  sp($0, { class: "container" });
-  let $1 = this.#cmc("h1_1", () => dce("h1"));
-  let $1_text_2 = this.#cmc("$1_text_2", () => dctn("Hello "));
-  sc($1, [$1_text_2, this.name]);
-  let $3 = this.#cmc("ul_3", () => dce("ul"));
-  sc($3, [
-    this.todos.map((todo) => {
-      let $4 = this.#cmc("li_4_" + todo.id, () => dce("li"));
-      let $4_text_5 = this.#cmc("$4_text_5_" + todo.id, () => dctn(""));
-      sc($4, [$4_text_5, todo.text]);
-      return $4;
-    }),
-  ]);
-  sc($0, [$1, $3]);
+  sp($0, { class: "btn" });
+  sc($0, [this.label]);
   sc(this, [$0]);
 }
 ```
 
-Key factory functions:
-- `dce()` – Create element
-- `dctn()` – Create text node
-- `sp()` – Set property
-- `sc()` – Set children
-- `ael()` – Add event listener
-- `cmc()` – Memoization cache
+**Factory functions:**
+- `dce(tag)` – Create element
+- `dctn(text)` – Create text node
+- `sp(el, props)` – Set properties
+- `sc(parent, children)` – Set children with reconciliation
+- `ael(el, event, handler)` – Add event listener
+- `mc()` – Memoization cache
 
 ## Architecture
 
-Three specialized modules:
+- **`render.ts`** – AST traversal orchestrator
+- **`render.jsx.ts`** – JSX-to-factory transformation
+- **`render.loop.ts`** – Loop nesting and scope key building
 
-- **`render.ts`** – Orchestrates AST traversal; dispatches JSX and loops
-- **`render.jsx.ts`** – Converts JSX into factory calls with memoization
-- **`render.loop.ts`** – Tracks nesting depth, builds hierarchical scope keys
+**Memoization Keys** – Nested loops use hierarchical keys to prevent collisions (`"li_4_" + id`, `"span_2_index_index1" + id`).
 
-## Key Concepts
+## Zero-DOM Function Binding
 
-**Hierarchical Memoization Keys** – Nested loops prevent cache collisions:
-- Single loop: `"li_4_" + todo.id`
-- Nested (2 levels): `"span_2_index_index1" + cell.id`
+All factory functions accept `this: ComponentInterfaceWithContext` for component context:
 
-**Index Naming** – Depths 0, 1, 2 use `index`, `index1`, `index2`.
+```typescript
+sp.call(this, element, { class: "btn" });    // Set property
+sc.call(this, parent, [child1, child2]);     // Set children
+st.call(this, textNode, "value");            // Set text
+ael.call(this, element, "click", handler);   // Add listener
+```
 
-**Prepended Statements** – Execute inside loop callbacks, not outside.
+## Light-DOM Slot Projection
+
+For non-shadow components, slots are projected with fallback logic:
+
+```typescript
+const lightDOMState = getLightDOMState(this);
+const $slot = dce("slot");
+sc(this, lightDOMState ? projectSlot($slot, this) : [$slot]);
+```
+
+**Filtering:** Default slot includes text/element nodes without `slot` attribute. Elements with `slot` attribute are excluded (reserved for named slots in Phase 2).
 
 ## Debugging
 
-| Issue | Root Cause | Fix |
-|-------|-----------|-----|
-| Double element creation | Statements bubble to parent | Wrap in block inside callback |
-| Missing index parameter | Index not in key attributes | Check for "index" in keys |
-| Incorrect cache keys | Hierarchical scope missing | Verify scope key building joins all stack entries |
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Double creation | Statements bubble to parent | Wrap in block inside callback |
+| Missing index | Index not in key | Check "index" presence in keys |
+| Incorrect cache keys | Hierarchical scope missing | Verify scope key joins all stack entries |
+| Slots not projecting | Light-DOM state not initialized | Verify `prepareLightDOMSlots()` in lifecycle |
 

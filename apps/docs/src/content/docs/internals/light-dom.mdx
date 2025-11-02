@@ -1,0 +1,153 @@
+---
+title: Light-DOM Slot Projection
+sidebar:
+  order: 9
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Light-DOM slot projection lets you use your own HTML inside components without Shadow DOM, so you get predictable content projection and fallback behavior—making it easier to customize and style components as you need.
+
+## Overview
+
+**Phase 1 (Current):**
+- ✅ Default slot projection (unnamed slots)
+- ✅ Named slots (with slot attribute mapping)
+- ✅ Content vs. fallback logic
+- ✅ Lifecycle integration
+
+**Phase 2+ (Planned):**
+- ❌ Slot change events
+- ❌ Dynamic mutation tracking
+- ❌ Nested slot composition
+- ❌ Slot validation and registration
+
+## Architecture
+
+**Core modules:**
+- `light-dom-slots.ts` – Projection logic and state management
+- `zero-dom.ts` – Slot interception via `projectSlot()`
+- `pencilCustomElementWrap.tsx` – Lifecycle hook
+
+**Key functions:**
+```typescript
+prepareLightDOMSlots(host)              // Capture light-DOM at mount
+getLightDOMState(host)                  // Retrieve state
+projectSlot(slot, host): Node[]         // Project: content or fallback
+updateLightDOMSlots(host)               // Refresh for dynamic updates
+getDefaultSlotMetadata(host)            // Get default slot info
+getNamedSlotMetadata(host, name)        // Get named slot info
+```
+
+## Usage
+
+**Component with fallback:**
+```tsx
+@Component({ tag: "my-component", shadow: false })
+export class MyComponent {
+  render() {
+    return <Host><slot><p>Fallback</p></slot></Host>;
+  }
+}
+```
+
+**With user content:**
+```html
+<my-component><p>User content</p></my-component>
+```
+→ Slot displays `<p>User content</p>`
+
+**Without content:**
+```html
+<my-component></my-component>
+```
+→ Slot displays `<p>Fallback</p>`
+
+**Named slots filtered out:**
+```html
+<my-component>
+  <h2 slot="header">Ignored</h2>
+  <p>Projected</p>
+</my-component>
+```
+→ Default slot receives only `<p>Projected</p>`
+
+<Aside type="note">
+Whitespace text nodes are preserved. A normalization option is planned for Phase 2.
+</Aside>
+
+## Content Filtering
+
+**Default slot** projects:
+- ✅ Text nodes
+- ✅ Elements without `slot` attribute
+- ✅ Comment nodes
+- ❌ Elements with `slot` attribute (routed to named slots)
+
+**Named slots** project:
+- ✅ Elements with matching `slot="name"` attribute
+- ❌ Text nodes (not routed to named slots)
+
+```typescript
+// Default slot filtering
+lightChildren.filter((node) => {
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    return !node.hasAttribute("slot");  // Exclude named slot elements
+  }
+  return true;  // Include text and comments
+});
+
+// Named slot filtering
+lightChildren.filter((node) => {
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    return node.getAttribute("slot") === slotName;
+  }
+  return false;  // No text nodes for named slots
+});
+```
+
+## State Management
+
+Projection state stored on component instance via symbol:
+
+```typescript
+interface SlotProjectionState {
+  lightChildren: Node[];           // User-provided nodes
+  processedSlots: Set<HTMLElement>;
+  slotMetadata: SlotMetadataMap;
+}
+```
+
+**Capture-at-mount strategy:**
+- ✅ Deterministic, no MutationObserver overhead
+- ❌ Static after mount; manual update needed for dynamic changes
+
+For dynamic updates:
+```typescript
+updateLightDOMSlots(component);
+component.render();
+```
+
+## Integration with Render Transformer
+
+Generated code pattern:
+```typescript
+const lightDOMState = getLightDOMState(this);
+const $slot = dce("slot");
+sc(this, lightDOMState ? projectSlot($slot, this) : [$slot]);
+```
+
+## Limitations
+
+- No `slotchange` events (Phase 2)
+- No dynamic mutation tracking after mount (Phase 2)
+- No nested slot composition (Phase 2)
+- Mutations after mount require manual re-render
+
+## References
+
+- Implementation: `packages/runtime/src/core/light-dom-slots.ts`
+- Zero-DOM: `packages/runtime/src/core/zero-dom.ts`
+- Render transformer: `packages/core/src/compiler/transformers/render.jsx.ts`
+- [MDN: Web Components Slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots)
+
