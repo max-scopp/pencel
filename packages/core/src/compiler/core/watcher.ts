@@ -1,3 +1,4 @@
+import process from "node:process";
 import { createLog } from "@pencel/utils";
 import chokidar from "chokidar";
 import { Config } from "../config.ts";
@@ -105,9 +106,7 @@ export class Watcher {
       log(`Rebuild complete in ${duration}s`);
       perf.log();
     } catch (error) {
-      log(
-        `Rebuild error: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      log(`Rebuild error: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }

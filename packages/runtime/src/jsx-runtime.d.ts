@@ -1,8 +1,4 @@
-import type {
-  ComponentFunction,
-  Props,
-  PropsWithChildren,
-} from "./core/jsx/types.ts";
+import type { ComponentFunction, Props, PropsWithChildren } from "./core/jsx/types.ts";
 import type { CustomElement } from "./core/types.ts";
 import "./core/jsx/jsx.d.ts";
 

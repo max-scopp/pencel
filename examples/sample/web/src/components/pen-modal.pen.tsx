@@ -1,12 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  Host,
-  Prop,
-  State,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, Host, Prop, State } from "@pencel/runtime";
 
 @Component({
   tag: "pen-modal",
@@ -52,23 +44,13 @@ export class PenModalElement extends HTMLElement implements ComponentInterface {
 
     return (
       <Host class={`pen-modal ${isOpenClass}`}>
-        {this.backdrop && (
-          <div
-            class="modal-backdrop"
-            onClick={this.handleBackdropClick}
-            role="presentation"
-          />
-        )}
+        {this.backdrop && <div class="modal-backdrop" onClick={this.handleBackdropClick} role="presentation" />}
         <div class={`modal-content ${sizeClass}`} role="dialog">
           {this.heading && (
             <div class="modal-header">
               <h2 class="modal-title">{this.heading}</h2>
               {this.closeButton && (
-                <button
-                  class="modal-close-button"
-                  onClick={this.handleClose}
-                  aria-label="Close modal"
-                >
+                <button class="modal-close-button" onClick={this.handleClose} aria-label="Close modal">
                   ✕
                 </button>
               )}

@@ -1,10 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Host,
-  Prop,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Host, Prop } from "@pencel/runtime";
 
 @Component({
   tag: "pen-stack",
@@ -24,9 +18,7 @@ export class PenStackElement extends HTMLElement implements ComponentInterface {
     const wrapClass = this.wrap ? "stack-wrap" : "";
 
     return (
-      <Host
-        class={`pen-stack ${directionClass} ${gapClass} ${alignClass} ${justifyClass} ${wrapClass}`}
-      >
+      <Host class={`pen-stack ${directionClass} ${gapClass} ${alignClass} ${justifyClass} ${wrapClass}`}>
         <slot />
       </Host>
     );

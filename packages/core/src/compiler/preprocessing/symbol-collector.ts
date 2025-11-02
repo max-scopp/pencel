@@ -45,10 +45,8 @@ export class SymbolCollector {
   collect(sourceFile: SourceFile): Set<string> {
     const symbols = new Set<string>();
     const existingImports = this.#extractExistingImports(sourceFile);
-    const exportSpecifierSymbols =
-      this.#extractExportSpecifierSymbols(sourceFile);
-    const importSpecifierSymbols =
-      this.#extractImportSpecifierSymbols(sourceFile);
+    const exportSpecifierSymbols = this.#extractExportSpecifierSymbols(sourceFile);
+    const importSpecifierSymbols = this.#extractImportSpecifierSymbols(sourceFile);
 
     const visit = (node: Node): void => {
       if (isIdentifier(node)) {

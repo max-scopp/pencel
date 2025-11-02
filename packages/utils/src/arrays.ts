@@ -1,7 +1,6 @@
-export function single<
-  TItem,
-  TArray extends Array<TItem> | ReadonlyArray<TItem>,
->(arr: TArray | null | undefined): TItem {
+export function single<TItem, TArray extends Array<TItem> | ReadonlyArray<TItem>>(
+  arr: TArray | null | undefined,
+): TItem {
   if (!arr || arr.length !== 1) throw new Error("Expected exactly one element");
   return arr[0];
 }
@@ -30,11 +29,7 @@ export function defaultable<T, TDefault = T | undefined>(
 }
 
 /** Combines firstMap + defaultable */
-export function firstMapOrDefault<
-  TItem,
-  TMapped,
-  TDefault = TMapped | undefined,
->(
+export function firstMapOrDefault<TItem, TMapped, TDefault = TMapped | undefined>(
   arr: Array<TItem> | ReadonlyArray<TItem> | null | undefined,
   filterMapFn: (item: TItem) => TMapped | null | undefined,
   defaultValue: TDefault,

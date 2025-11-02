@@ -139,9 +139,7 @@ export class SymbolRegistry {
 
     const project = this.#projectSymbols.get(symbol);
     if (project) {
-      return preference
-        ? this.#adaptToPreference(project, preference)
-        : project;
+      return preference ? this.#adaptToPreference(project, preference) : project;
     }
 
     return null;
@@ -166,10 +164,7 @@ export class SymbolRegistry {
    * - "deep": use the full module path (file path)
    * Checks symbol overrides first before applying global preference.
    */
-  #adaptToPreference(
-    config: SymbolConfig,
-    preference: ImportPreference,
-  ): SymbolConfig {
+  #adaptToPreference(config: SymbolConfig, preference: ImportPreference): SymbolConfig {
     // Check symbol overrides first
     if (preference.symbolOverrides) {
       for (const override of preference.symbolOverrides) {
@@ -185,12 +180,7 @@ export class SymbolRegistry {
     }
 
     // Apply global preference
-    return this.#applyStylePreference(
-      config,
-      preference.style,
-      preference.packageName,
-      preference.consumerPath,
-    );
+    return this.#applyStylePreference(config, preference.style, preference.packageName, preference.consumerPath);
   }
 
   /**
@@ -228,9 +218,7 @@ export class SymbolRegistry {
 
     if (style === "relative") {
       if (!consumerPath) {
-        throw new Error(
-          `Import preference style "relative" requires consumerPath to be set`,
-        );
+        throw new Error(`Import preference style "relative" requires consumerPath to be set`);
       }
 
       const relativePath = getRelativeImportPath(consumerPath, config.module);

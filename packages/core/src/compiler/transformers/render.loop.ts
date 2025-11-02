@@ -4,13 +4,7 @@
  */
 
 import type { Block, Node } from "typescript";
-import {
-  type Expression,
-  factory,
-  type ParameterDeclaration,
-  SyntaxKind,
-  visitEachChild,
-} from "typescript";
+import { type Expression, factory, type ParameterDeclaration, SyntaxKind, visitEachChild } from "typescript";
 
 /**
  * Tracks context for loop processing (parameter name and index variable)
@@ -67,10 +61,7 @@ export class LoopContextManager {
 
     const checkNode = (node: Node): Node => {
       // Look for JSX elements
-      if (
-        node.kind === SyntaxKind.JsxElement ||
-        node.kind === SyntaxKind.JsxSelfClosingElement
-      ) {
+      if (node.kind === SyntaxKind.JsxElement || node.kind === SyntaxKind.JsxSelfClosingElement) {
         const jsxNode = node as unknown as {
           openingElement?: {
             attributes?: {
@@ -88,9 +79,7 @@ export class LoopContextManager {
         // Check if this element has a key prop
         const hasKey =
           jsxNode.openingElement?.attributes?.properties?.some(
-            (attr) =>
-              attr.kind === SyntaxKind.JsxAttribute &&
-              attr.name?.text === "key",
+            (attr) => attr.kind === SyntaxKind.JsxAttribute && attr.name?.text === "key",
           ) ?? false;
 
         // Check the root element itself first
@@ -132,10 +121,7 @@ export class LoopContextManager {
    */
   extractJsxKeyFromBody(body: Expression | Block): Expression | null {
     const checkNode = (node: Node): Expression | null => {
-      if (
-        node.kind === SyntaxKind.JsxElement ||
-        node.kind === SyntaxKind.JsxSelfClosingElement
-      ) {
+      if (node.kind === SyntaxKind.JsxElement || node.kind === SyntaxKind.JsxSelfClosingElement) {
         const jsxNode = node as unknown as {
           openingElement?: {
             attributes?: {
@@ -154,14 +140,8 @@ export class LoopContextManager {
         // Look for key prop in attributes
         if (jsxNode.openingElement?.attributes?.properties) {
           for (const attr of jsxNode.openingElement.attributes.properties) {
-            if (
-              attr.kind === SyntaxKind.JsxAttribute &&
-              attr.name?.text === "key"
-            ) {
-              if (
-                attr.initializer?.kind === SyntaxKind.JsxExpression &&
-                attr.initializer.expression
-              ) {
+            if (attr.kind === SyntaxKind.JsxAttribute && attr.name?.text === "key") {
+              if (attr.initializer?.kind === SyntaxKind.JsxExpression && attr.initializer.expression) {
                 return attr.initializer.expression;
               }
             }
@@ -186,10 +166,7 @@ export class LoopContextManager {
       }
 
       // For return/expression statements, check the expression
-      if (
-        node.kind === SyntaxKind.ReturnStatement ||
-        node.kind === SyntaxKind.ExpressionStatement
-      ) {
+      if (node.kind === SyntaxKind.ReturnStatement || node.kind === SyntaxKind.ExpressionStatement) {
         const exprNode = node as unknown as { expression?: Expression };
         if (exprNode.expression) {
           return checkNode(exprNode.expression as unknown as Node);
@@ -240,11 +217,7 @@ export class LoopContextManager {
       result = factory.createBinaryExpression(
         result,
         SyntaxKind.PlusToken,
-        factory.createBinaryExpression(
-          factory.createStringLiteral("_"),
-          SyntaxKind.PlusToken,
-          scopeKeys[i],
-        ),
+        factory.createBinaryExpression(factory.createStringLiteral("_"), SyntaxKind.PlusToken, scopeKeys[i]),
       );
     }
 

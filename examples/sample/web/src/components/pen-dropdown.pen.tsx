@@ -1,28 +1,11 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  Host,
-  Prop,
-  State,
-  type VNode,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, Host, Prop, State } from "@pencel/runtime";
 
 @Component({
   tag: "pen-dropdown",
 })
-export class PenDropdownElement
-  extends HTMLElement
-  implements ComponentInterface
-{
+export class PenDropdownElement extends HTMLElement implements ComponentInterface {
   @Prop() label: string = "";
-  @Prop() placement:
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "top-start"
-    | "bottom-start" = "bottom";
+  @Prop() placement: "top" | "bottom" | "left" | "right" | "top-start" | "bottom-start" = "bottom";
   @Prop() trigger: "click" | "hover" = "click";
 
   @State() isOpen: boolean = false;
@@ -65,12 +48,7 @@ export class PenDropdownElement
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <button
-          class="dropdown-trigger"
-          onClick={this.handleTrigger}
-          aria-haspopup="true"
-          aria-expanded={this.isOpen}
-        >
+        <button class="dropdown-trigger" onClick={this.handleTrigger} aria-haspopup="true" aria-expanded={this.isOpen}>
           {this.label}
           <span class="dropdown-icon">▼</span>
         </button>

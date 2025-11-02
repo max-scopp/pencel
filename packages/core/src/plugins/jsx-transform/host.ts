@@ -2,12 +2,7 @@
  * Host JSX component plugin - transforms <Host> elements to apply attributes to 'this'.
  */
 
-import {
-  type Expression,
-  factory,
-  type JsxElement,
-  SyntaxKind,
-} from "typescript";
+import { type Expression, factory, type JsxElement, SyntaxKind } from "typescript";
 import { PencelPlugin, Plugins } from "../../compiler/core/plugin.ts";
 import type { JsxTransformHook } from "../../compiler/types/plugins.ts";
 import { createCall, createExprStmt } from "../../ts-utils/factory-helpers.ts";
@@ -45,17 +40,12 @@ class HostPlugin extends PencelPlugin {
     ).openingElement;
 
     // Collect Host attributes to apply to 'this'
-    const attributeProperties: ReturnType<
-      typeof factory.createPropertyAssignment
-    >[] = [];
+    const attributeProperties: ReturnType<typeof factory.createPropertyAssignment>[] = [];
     const hostAttributes = openingElement.attributes.properties;
 
     if (hostAttributes && Array.isArray(hostAttributes)) {
       for (const attr of hostAttributes) {
-        if (
-          attr.kind === SyntaxKind.JsxAttribute &&
-          (attr as { name?: { text: string } }).name
-        ) {
+        if (attr.kind === SyntaxKind.JsxAttribute && (attr as { name?: { text: string } }).name) {
           const attrName = (attr as { name: { text: string } }).name.text;
           const initializer = (
             attr as {
@@ -66,10 +56,7 @@ class HostPlugin extends PencelPlugin {
           // Handle event attributes (onMouseEnter, etc.)
           if (attrName.startsWith("on")) {
             const eventName = attrName.slice(2).toLowerCase();
-            if (
-              initializer?.kind === SyntaxKind.JsxExpression &&
-              initializer.expression
-            ) {
+            if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
               hook.prependStatements.push(
                 createExprStmt(
                   createCall(factory.createIdentifier("ael"), [
@@ -82,15 +69,9 @@ class HostPlugin extends PencelPlugin {
             }
           } else {
             // Regular attributes (class, etc.)
-            if (
-              initializer?.kind === SyntaxKind.JsxExpression &&
-              initializer.expression
-            ) {
+            if (initializer?.kind === SyntaxKind.JsxExpression && initializer.expression) {
               attributeProperties.push(
-                factory.createPropertyAssignment(
-                  factory.createStringLiteral(attrName),
-                  initializer.expression,
-                ),
+                factory.createPropertyAssignment(factory.createStringLiteral(attrName), initializer.expression),
               );
             }
           }
@@ -111,31 +92,21 @@ class HostPlugin extends PencelPlugin {
     }
 
     // Collect and transform children
-    const children = (
-      jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }
-    ).children;
+    const children = (jsx as unknown as { children?: Array<{ kind: SyntaxKind }> }).children;
 
     const transformedChildren: Expression[] = [];
     if (children && children.length > 0) {
       for (const child of children) {
-        if (
-          child.kind === SyntaxKind.JsxElement ||
-          child.kind === SyntaxKind.JsxSelfClosingElement
-        ) {
-          transformedChildren.push(
-            hook.transformExpression(child as unknown as Expression),
-          );
+        if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
+          transformedChildren.push(hook.transformExpression(child as unknown as Expression));
         } else if (child.kind === SyntaxKind.JsxExpression) {
-          const expr = (child as unknown as { expression?: Expression })
-            .expression;
+          const expr = (child as unknown as { expression?: Expression }).expression;
           if (expr) {
             transformedChildren.push(hook.transformExpression(expr));
           }
         } else if (child.kind !== SyntaxKind.JsxText) {
           // Include other non-text children as-is
-          transformedChildren.push(
-            hook.transformExpression(child as unknown as Expression),
-          );
+          transformedChildren.push(hook.transformExpression(child as unknown as Expression));
         }
       }
     }

@@ -7,9 +7,7 @@ export interface ITransformer<TNode extends Node, TIR extends IR> {
   transform(irr: IRRef<TIR, TNode>): TNode;
 }
 
-export function Transformer<TNode extends Node, TIR extends IR = IR>(
-  forIr: any,
-) {
+export function Transformer<TNode extends Node, TIR extends IR = IR>(forIr: any) {
   return class implements ITransformer<TNode, TIR> {
     readonly forIr = forIr;
     transform(_irr: IRRef<TIR, TNode>): TNode {

@@ -37,13 +37,8 @@ export class FileWriter {
       perf.start(`pack:${basename(sourceFile.fileName)}`);
 
       perf.start("preprocess");
-      const preference = this.#sourceFiles.getImportPreference(
-        sourceFile.fileName,
-      );
-      const preprocessed = this.#sourcePreprocessor.process(
-        sourceFile,
-        preference,
-      );
+      const preference = this.#sourceFiles.getImportPreference(sourceFile.fileName);
+      const preprocessed = this.#sourcePreprocessor.process(sourceFile, preference);
       perf.end("preprocess");
 
       const outputFilePath = sourceFile.outputFileName ?? sourceFile.fileName;

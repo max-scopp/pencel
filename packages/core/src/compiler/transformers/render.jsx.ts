@@ -68,40 +68,25 @@ export class JsxTransformer {
     const tagName = elementData.tagName;
 
     // Extract and remove key from attributes
-    const { keyExpr, remainingAttrs } = this.#extractKeyFromJsx(
-      elementData.attributes,
-    );
+    const { keyExpr, remainingAttrs } = this.#extractKeyFromJsx(elementData.attributes);
     elementData.attributes = remainingAttrs;
 
     // Build memoization key
-    const cmcKey = this.#buildCmcKey(
-      tagName,
-      varName,
-      loopContext,
-      hierarchicalScopeKey,
-      keyExpr,
-    );
+    const cmcKey = this.#buildCmcKey(tagName, varName, loopContext, hierarchicalScopeKey, keyExpr);
 
     // Create element with memoization
     const createExpr = createElementCreation(tagName);
-    const onceCall = createCall(
-      createPropAccess(factory.createIdentifier("this"), "#cmc"),
-      [cmcKey, createArrow(createExpr)],
-    );
+    const onceCall = createCall(createPropAccess(factory.createIdentifier("this"), "#cmc"), [
+      cmcKey,
+      createArrow(createExpr),
+    ]);
 
     // Add element creation statement
     this.#prependStatements.push(
       factory.createVariableStatement(
         undefined,
         factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              varName,
-              undefined,
-              undefined,
-              onceCall as unknown as Expression,
-            ),
-          ],
+          [factory.createVariableDeclaration(varName, undefined, undefined, onceCall as unknown as Expression)],
           NodeFlags.Let,
         ),
       ),
@@ -178,23 +163,15 @@ export class JsxTransformer {
     return visitEachChild(
       jsx as unknown as Expression,
       (node) => {
-        if (
-          node.kind === SyntaxKind.JsxElement ||
-          node.kind === SyntaxKind.JsxSelfClosingElement
-        ) {
-          return transformExpression(
-            node as Expression,
-          ) as unknown as typeof node;
+        if (node.kind === SyntaxKind.JsxElement || node.kind === SyntaxKind.JsxSelfClosingElement) {
+          return transformExpression(node as Expression) as unknown as typeof node;
         }
         if (node.kind === SyntaxKind.JsxExpression) {
-          const expr = (node as unknown as { expression?: Expression })
-            .expression;
+          const expr = (node as unknown as { expression?: Expression }).expression;
           if (expr) {
             const transformed = transformExpression(expr);
             return factory.updateJsxExpression(
-              node as unknown as Parameters<
-                typeof factory.updateJsxExpression
-              >[0],
+              node as unknown as Parameters<typeof factory.updateJsxExpression>[0],
               transformed,
             );
           }
@@ -223,16 +200,15 @@ export class JsxTransformer {
         tagName: elem.openingElement.tagName.text || "div",
         attributes: elem.openingElement.attributes.properties,
       };
-    } else {
-      const elem = jsx as unknown as {
-        tagName: { text: string };
-        attributes: { properties?: unknown };
-      };
-      return {
-        tagName: elem.tagName.text || "div",
-        attributes: elem.attributes.properties,
-      };
     }
+    const elem = jsx as unknown as {
+      tagName: { text: string };
+      attributes: { properties?: unknown };
+    };
+    return {
+      tagName: elem.tagName.text || "div",
+      attributes: elem.attributes.properties,
+    };
   }
 
   /**
@@ -255,22 +231,14 @@ export class JsxTransformer {
 
       if (hierarchicalScopeKey) {
         // We have parent scopes - add them first
-        key = factory.createBinaryExpression(
-          key,
-          SyntaxKind.PlusToken,
-          hierarchicalScopeKey,
-        );
+        key = factory.createBinaryExpression(key, SyntaxKind.PlusToken, hierarchicalScopeKey);
 
         // Then add the element's own key/scope
         if (keyExpr) {
           key = factory.createBinaryExpression(
             key,
             SyntaxKind.PlusToken,
-            factory.createBinaryExpression(
-              factory.createStringLiteral("_"),
-              SyntaxKind.PlusToken,
-              keyExpr,
-            ),
+            factory.createBinaryExpression(factory.createStringLiteral("_"), SyntaxKind.PlusToken, keyExpr),
           );
         } else if (loopContext.scopeKeyExpr) {
           key = factory.createBinaryExpression(
@@ -286,17 +254,9 @@ export class JsxTransformer {
       } else {
         // No parent scopes - just use explicit key or current scope
         if (keyExpr) {
-          key = factory.createBinaryExpression(
-            key,
-            SyntaxKind.PlusToken,
-            keyExpr,
-          );
+          key = factory.createBinaryExpression(key, SyntaxKind.PlusToken, keyExpr);
         } else if (loopContext.scopeKeyExpr) {
-          key = factory.createBinaryExpression(
-            key,
-            SyntaxKind.PlusToken,
-            loopContext.scopeKeyExpr,
-          );
+          key = factory.createBinaryExpression(key, SyntaxKind.PlusToken, loopContext.scopeKeyExpr);
         } else if (loopContext.indexName) {
           key = factory.createBinaryExpression(
             key,
@@ -307,24 +267,23 @@ export class JsxTransformer {
       }
 
       return key;
-    } else {
-      // Child element in loop - use hierarchical scope for uniqueness
-      if (hierarchicalScopeKey) {
-        return factory.createBinaryExpression(
-          factory.createStringLiteral(`${baseKey}_`),
-          SyntaxKind.PlusToken,
-          hierarchicalScopeKey,
-        );
-      } else if (loopContext?.scopeKeyExpr) {
-        return factory.createBinaryExpression(
-          factory.createStringLiteral(`${baseKey}_`),
-          SyntaxKind.PlusToken,
-          loopContext.scopeKeyExpr,
-        );
-      } else {
-        return factory.createStringLiteral(baseKey);
-      }
     }
+    // Child element in loop - use hierarchical scope for uniqueness
+    if (hierarchicalScopeKey) {
+      return factory.createBinaryExpression(
+        factory.createStringLiteral(`${baseKey}_`),
+        SyntaxKind.PlusToken,
+        hierarchicalScopeKey,
+      );
+    }
+    if (loopContext?.scopeKeyExpr) {
+      return factory.createBinaryExpression(
+        factory.createStringLiteral(`${baseKey}_`),
+        SyntaxKind.PlusToken,
+        loopContext.scopeKeyExpr,
+      );
+    }
+    return factory.createStringLiteral(baseKey);
   }
 
   /**
@@ -407,10 +366,7 @@ export class JsxTransformer {
                   createCall(factory.createIdentifier("sp"), [
                     factory.createIdentifier(varName),
                     factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createStringLiteral(attrName),
-                        exprNode,
-                      ),
+                      factory.createPropertyAssignment(factory.createStringLiteral(attrName), exprNode),
                     ]),
                   ]),
                 ),
@@ -452,12 +408,7 @@ export class JsxTransformer {
       if (child.kind === SyntaxKind.JsxText) {
         const text = child.text || "";
         if (text.trim()) {
-          const textExpr = this.#createTextNode(
-            varName,
-            text,
-            loopContext,
-            hierarchicalScopeKey,
-          );
+          const textExpr = this.#createTextNode(varName, text, loopContext, hierarchicalScopeKey);
           children.push(textExpr);
         }
       } else if (child.kind === SyntaxKind.JsxExpression) {
@@ -466,10 +417,7 @@ export class JsxTransformer {
           const transformed = transformExpression(exprNode);
           children.push(transformed);
         }
-      } else if (
-        child.kind === SyntaxKind.JsxElement ||
-        child.kind === SyntaxKind.JsxSelfClosingElement
-      ) {
+      } else if (child.kind === SyntaxKind.JsxElement || child.kind === SyntaxKind.JsxSelfClosingElement) {
         const transformed = transformExpression(child as unknown as Expression);
         children.push(transformed);
       }
@@ -520,30 +468,16 @@ export class JsxTransformer {
     }
 
     const textVarName = `${parentVarName}_text_${this.#varGenerator.current() - 1}`;
-    const textOnce = createCall(
-      createPropAccess(factory.createIdentifier("this"), "#cmc"),
-      [
-        textKey,
-        createArrow(
-          createCall(factory.createIdentifier("dctn"), [
-            factory.createStringLiteral(text),
-          ]),
-        ),
-      ],
-    );
+    const textOnce = createCall(createPropAccess(factory.createIdentifier("this"), "#cmc"), [
+      textKey,
+      createArrow(createCall(factory.createIdentifier("dctn"), [factory.createStringLiteral(text)])),
+    ]);
 
     this.#prependStatements.push(
       factory.createVariableStatement(
         undefined,
         factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              textVarName,
-              undefined,
-              undefined,
-              textOnce as unknown as Expression,
-            ),
-          ],
+          [factory.createVariableDeclaration(textVarName, undefined, undefined, textOnce as unknown as Expression)],
           NodeFlags.Let,
         ),
       ),
@@ -575,10 +509,7 @@ export class JsxTransformer {
     let keyExpr: Expression | null = null;
     const remainingAttrs = attrs.filter((attr) => {
       if (attr.kind === SyntaxKind.JsxAttribute && attr.name?.text === "key") {
-        if (
-          attr.initializer?.kind === SyntaxKind.JsxExpression &&
-          attr.initializer.expression
-        ) {
+        if (attr.initializer?.kind === SyntaxKind.JsxExpression && attr.initializer.expression) {
           keyExpr = attr.initializer.expression;
         }
         return false; // Remove key attribute

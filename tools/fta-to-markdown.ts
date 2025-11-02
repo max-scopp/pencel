@@ -1,9 +1,11 @@
 #!/usr/bin/env bun
+
 /**
  * Convert FTA JSON output to Markdown report with technical debt insights.
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "node:fs";
+import process from "node:process";
 
 interface Halstead {
   difficulty: number;
@@ -21,11 +23,7 @@ interface FTAFile {
   halstead: Halstead;
 }
 
-function generateReport(
-  inputPath: string,
-  outputPath: string,
-  _thresholdExceeded: boolean = false,
-): void {
+function generateReport(inputPath: string, outputPath: string, _thresholdExceeded: boolean = false): void {
   try {
     const data: FTAFile[] = JSON.parse(readFileSync(inputPath, "utf8"));
 
@@ -36,9 +34,7 @@ function generateReport(
 
     let markdown = "# FTA Code Quality Report\n\n";
 
-    const avgScore = (
-      data.reduce((sum, f) => sum + f.fta_score, 0) / data.length
-    ).toFixed(2);
+    const avgScore = (data.reduce((sum, f) => sum + f.fta_score, 0) / data.length).toFixed(2);
 
     // Health status header
     if (_thresholdExceeded) {
@@ -48,13 +44,9 @@ function generateReport(
     }
 
     // Calculate average Halstead metrics for technical debt insights
-    const avgDifficulty =
-      data.reduce((sum, f) => sum + (f.halstead?.difficulty || 0), 0) /
-      data.length;
-    const avgBugs =
-      data.reduce((sum, f) => sum + (f.halstead?.bugs || 0), 0) / data.length;
-    const avgCyclo =
-      data.reduce((sum, f) => sum + (f.cyclo || 0), 0) / data.length;
+    const avgDifficulty = data.reduce((sum, f) => sum + (f.halstead?.difficulty || 0), 0) / data.length;
+    const avgBugs = data.reduce((sum, f) => sum + (f.halstead?.bugs || 0), 0) / data.length;
+    const avgCyclo = data.reduce((sum, f) => sum + (f.cyclo || 0), 0) / data.length;
 
     markdown += "\n## Insights\n\n";
     markdown += `**Difficulty**: ${avgDifficulty.toFixed(1)}/100 - `;
@@ -86,9 +78,7 @@ function generateReport(
 
     // Final verdict based on assessment distribution
     const assessmentCounts = {
-      needs_improvement: data.filter(
-        (f) => f.assessment === "Needs improvement",
-      ),
+      needs_improvement: data.filter((f) => f.assessment === "Needs improvement"),
       could_be_better: data.filter((f) => f.assessment === "Could be better"),
       ok: data.filter((f) => f.assessment === "OK"),
     };
@@ -119,9 +109,7 @@ function generateReport(
     }
 
     // Well-maintained - top 5 - closed by default
-    const topWellMaintained = assessmentCounts.ok
-      .sort((a, b) => a.fta_score - b.fta_score)
-      .slice(0, 5);
+    const topWellMaintained = assessmentCounts.ok.sort((a, b) => a.fta_score - b.fta_score).slice(0, 5);
     if (topWellMaintained.length > 0) {
       markdown += `\n<details>\n`;
       markdown += `<summary><b>✨ Top 5 Well-Maintained Files</b></summary>\n\n`;

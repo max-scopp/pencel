@@ -1,13 +1,13 @@
 /// <reference types='vitest' />
 
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
   const packagesPath = resolve(__dirname, "..", "..", "..", "packages");
 
   return {
-    root: __dirname,
+    root: import.meta.dirname,
     cacheDir: "../../../node_modules/.vite/examples/sample/web",
     resolve: {
       alias: {
@@ -21,12 +21,7 @@ export default defineConfig(() => {
       port: 4200,
       host: "localhost",
       watch: {
-        ignored: [
-          "**/node_modules/**",
-          "**/.git/**",
-          "**/dist/**",
-          "**/*.tsbuildinfo",
-        ],
+        ignored: ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/*.tsbuildinfo"],
       },
     },
     preview: {

@@ -1,8 +1,5 @@
 import type { PropOptions } from "../decorators/prop.ts";
-import {
-  PENCIL_COMPONENT_CONTEXT,
-  PENCIL_OBSERVED_ATTRIBUTES,
-} from "./symbols.ts";
+import { PENCIL_COMPONENT_CONTEXT, PENCIL_OBSERVED_ATTRIBUTES } from "./symbols.ts";
 
 export interface PencilComponentContext {
   extends?: string;
@@ -29,11 +26,7 @@ export interface CustomElement extends HTMLElement {
   /**
    * Called when one of the element’s observed attributes is added, removed, or changed.
    */
-  attributeChangedCallback?(
-    name: string,
-    oldValue: string | null,
-    newValue: string | null,
-  ): void;
+  attributeChangedCallback?(name: string, oldValue: string | null, newValue: string | null): void;
 
   /**
    * Called each time the element is moved to a new document.
@@ -104,11 +97,7 @@ export interface ComponentInterface extends CustomElement {
   /**
    * Called before each render, including the first one.
    */
-  componentShouldUpdate?<TValue>(
-    newValue: TValue,
-    oldValue: TValue | undefined,
-    propName: string | symbol,
-  ): boolean;
+  componentShouldUpdate?<TValue>(newValue: TValue, oldValue: TValue | undefined, propName: string | symbol): boolean;
 
   /**
    * Called before rendering when new props or state are being received and

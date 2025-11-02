@@ -42,9 +42,7 @@ export class Compiler {
   /**
    * Incremental compile: reloads graph, then transforms only specified files
    */
-  async compileChangedFiles(
-    changedFiles: string[],
-  ): Promise<Map<string, FileIR>> {
+  async compileChangedFiles(changedFiles: string[]): Promise<Map<string, FileIR>> {
     await this.#buildGraph();
     return this.processFiles(changedFiles);
   }
@@ -62,9 +60,7 @@ export class Compiler {
     perf.end("build-graph");
   }
 
-  async processFile(
-    sourceFile: SourceFile,
-  ): Promise<FileIR | null | undefined> {
+  async processFile(sourceFile: SourceFile): Promise<FileIR | null | undefined> {
     perf.start(`transform:${basename(sourceFile.fileName)}`);
 
     const fileIrr = await this.#fileProcessor.process(sourceFile);

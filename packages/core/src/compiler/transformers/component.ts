@@ -50,10 +50,7 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
     );
 
     // Create updated decorator with the new call expression
-    const updatedDecorator = factory.updateDecorator(
-      decorator,
-      updatedCallExpression,
-    );
+    const updatedDecorator = factory.updateDecorator(decorator, updatedCallExpression);
 
     // Get all decorators and replace the updated one
     const decorators = getDecorators(irr.node);
@@ -96,25 +93,17 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
           factory.createIdentifier("#cmc"),
           undefined,
           undefined,
-          factory.createCallExpression(
-            factory.createIdentifier("mc"),
-            undefined,
-            [],
-          ),
+          factory.createCallExpression(factory.createIdentifier("mc"), undefined, []),
         );
         updatedMembers = factory.createNodeArray([cmcField, ...updatedMembers]);
       }
     }
 
     // Combine modifiers (excluding decorators) and updated decorators
-    const nonDecoratorModifiers = (irr.node.modifiers ?? []).filter(
-      (modifier) => !isDecorator(modifier),
-    );
+    const nonDecoratorModifiers = (irr.node.modifiers ?? []).filter((modifier) => !isDecorator(modifier));
 
     // Ensure component class has export keyword
-    const hasExport = nonDecoratorModifiers.some(
-      (m) => m.kind === SyntaxKind.ExportKeyword,
-    );
+    const hasExport = nonDecoratorModifiers.some((m) => m.kind === SyntaxKind.ExportKeyword);
 
     if (!hasExport) {
       warn(
@@ -125,15 +114,9 @@ export class ComponentTransformer extends Transformer(ComponentIR) {
 
     const modifiersWithExport = hasExport
       ? nonDecoratorModifiers
-      : [
-          factory.createToken(SyntaxKind.ExportKeyword),
-          ...nonDecoratorModifiers,
-        ];
+      : [factory.createToken(SyntaxKind.ExportKeyword), ...nonDecoratorModifiers];
 
-    const combinedModifiers = [
-      ...(updatedDecorators ?? []),
-      ...modifiersWithExport,
-    ];
+    const combinedModifiers = [...(updatedDecorators ?? []), ...modifiersWithExport];
 
     return factory.createClassDeclaration(
       combinedModifiers,

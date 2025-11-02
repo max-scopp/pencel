@@ -65,11 +65,7 @@ export function Store(options?: StoreOptions): PropertyDecorator {
           ctx.stores.set(propertyKey, value);
           log(fromToText(String(propertyKey), oldValue, value));
 
-          const shouldUpdate = this.componentShouldUpdate?.(
-            value,
-            oldValue,
-            propertyKey,
-          );
+          const shouldUpdate = this.componentShouldUpdate?.(value, oldValue, propertyKey);
 
           if (shouldUpdate !== false) {
             this.render?.();
@@ -136,11 +132,7 @@ export function Connected(options?: ConnectOptions): PropertyDecorator {
             ctx.stores.set(storeName, value);
             log(fromToText(storeName, oldValue, value));
 
-            const shouldUpdate = el.componentShouldUpdate?.(
-              value,
-              oldValue,
-              storeName,
-            );
+            const shouldUpdate = el.componentShouldUpdate?.(value, oldValue, storeName);
 
             if (shouldUpdate !== false) {
               el.render?.();

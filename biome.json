@@ -18,7 +18,10 @@
   "linter": {
     "rules": {
       "recommended": true,
-      "correctness": "error",
+      "correctness": {
+        "noNodejsModules": "off"
+      },
+      "a11y": "off",
       "suspicious": {
         "noExplicitAny": "warn",
         "noDoubleEquals": "error",

@@ -3,8 +3,7 @@ import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
 import { SymbolCollector } from "../symbol-collector.ts";
 
 describe("SymbolCollector", () => {
-  const createTestFile = (code: string) =>
-    createSourceFile("test.ts", code, ScriptTarget.Latest, true, ScriptKind.TS);
+  const createTestFile = (code: string) => createSourceFile("test.ts", code, ScriptTarget.Latest, true, ScriptKind.TS);
 
   const collector = new SymbolCollector();
 

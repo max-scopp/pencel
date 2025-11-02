@@ -37,10 +37,11 @@ export interface PluginRegistry
 
 export type PluginNames = keyof Omit<PluginRegistry, "_">;
 
-export type PluginOptionsOf<TName extends PluginNames> =
-  PluginRegistry[TName] extends { options: infer TOptions & BasePluginOptions }
-    ? TOptions
-    : never;
+export type PluginOptionsOf<TName extends PluginNames> = PluginRegistry[TName] extends {
+  options: infer TOptions & BasePluginOptions;
+}
+  ? TOptions
+  : never;
 
 export type PluginDef =
   | PluginNames
@@ -96,20 +97,10 @@ export type JsxTransformHook = {
 /**
  * Union of all pluggable hooks in the system
  */
-export type PluggableHooks =
-  | CssPreprocessHook
-  | CssPostprocessHook
-  | GenerateHook
-  | DeriveHook
-  | JsxTransformHook;
+export type PluggableHooks = CssPreprocessHook | CssPostprocessHook | GenerateHook | DeriveHook | JsxTransformHook;
 
-export type HookOf<TKind extends PluggableHooks["hook"]> = Extract<
-  PluggableHooks,
-  { hook: TKind }
->;
+export type HookOf<TKind extends PluggableHooks["hook"]> = Extract<PluggableHooks, { hook: TKind }>;
 
-export type HookHandler<TKind extends PluggableHooks["hook"]> = (
-  hook: HookOf<TKind>,
-) => void | Promise<void>;
+export type HookHandler<TKind extends PluggableHooks["hook"]> = (hook: HookOf<TKind>) => void | Promise<void>;
 
 export type HookKind = PluggableHooks["hook"];

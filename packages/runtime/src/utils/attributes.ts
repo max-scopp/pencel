@@ -5,11 +5,7 @@ import type { PropOptions } from "../decorators/prop.ts";
 /**
  * Handles type conversion for attribute values based on prop options
  */
-export function coerceAttributeValue(
-  value: string | null,
-  propOptions?: PropOptions,
-  hasAttribute = false,
-): unknown {
+export function coerceAttributeValue(value: string | null, propOptions?: PropOptions, hasAttribute = false): unknown {
   if (!propOptions?.type) {
     return value;
   }
@@ -39,11 +35,7 @@ export function resolveAttribute(
   const attrName = resolveAttributeName(propName, propOptions);
   const attrValue = component.getAttribute(attrName);
 
-  return coerceAttributeValue(
-    attrValue,
-    propOptions,
-    component.hasAttribute(attrName),
-  ) as string;
+  return coerceAttributeValue(attrValue, propOptions, component.hasAttribute(attrName)) as string;
 }
 
 export function serializeAttributeValue(value: unknown): string {
@@ -79,9 +71,6 @@ export function reflectAttributeValue(
   }
 }
 
-export function resolveAttributeName(
-  propName: string | number | symbol,
-  propOptions?: PropOptions,
-): string {
+export function resolveAttributeName(propName: string | number | symbol, propOptions?: PropOptions): string {
   return propOptions?.attr || dashCase(String(propName));
 }

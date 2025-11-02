@@ -1,4 +1,4 @@
-import { Host } from "../../src/core/jsx/jsx-helpers";
+import { Host } from "../../src/core/jsx/jsx-helpers.ts";
 import { renderVNode } from "../../src/core/vdom/renderVNode";
 
 export function customElementRender(container: HTMLElement) {

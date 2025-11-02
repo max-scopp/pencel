@@ -1,11 +1,4 @@
-import {
-  Component,
-  type ComponentInterface,
-  Event,
-  Host,
-  Prop,
-  State,
-} from "@pencel/runtime";
+import { Component, type ComponentInterface, Event, Host, Prop, State } from "@pencel/runtime";
 
 @Component({
   tag: "pen-toast",
@@ -14,13 +7,8 @@ export class PenToastElement extends HTMLElement implements ComponentInterface {
   @Prop() type: "success" | "error" | "warning" | "info" = "info";
   @Prop() duration?: number;
   @Prop() closeable: boolean = true;
-  @Prop() position:
-    | "top-left"
-    | "top-center"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-center"
-    | "bottom-right" = "top-right";
+  @Prop() position: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right" =
+    "top-right";
 
   @State() visible: boolean = true;
 
@@ -70,11 +58,7 @@ export class PenToastElement extends HTMLElement implements ComponentInterface {
             <slot />
           </div>
           {this.closeable && (
-            <button
-              class="toast-close"
-              onClick={this.dismiss}
-              aria-label="Close notification"
-            >
+            <button class="toast-close" onClick={this.dismiss} aria-label="Close notification">
               ✕
             </button>
           )}

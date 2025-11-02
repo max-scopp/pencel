@@ -59,10 +59,7 @@ export class StyleIR extends IRM("Style") {
       return readFileSync(fullPath, "utf-8");
     };
 
-    const processStyleFile = async (
-      content: string,
-      filePath: string,
-    ): Promise<string> => {
+    const processStyleFile = async (content: string, filePath: string): Promise<string> => {
       const preprocessed = await plugins.handle({
         hook: "css:preprocess",
         input: content,
@@ -88,9 +85,7 @@ export class StyleIR extends IRM("Style") {
 
     const processedStyleUrls: Record<string, string> = {};
     if (componentOptions.styleUrls) {
-      for (const [key, styleUrl] of Object.entries(
-        componentOptions.styleUrls,
-      )) {
+      for (const [key, styleUrl] of Object.entries(componentOptions.styleUrls)) {
         const fullPath = resolvePath(styleUrl);
         const fileContent = readFile(fullPath);
         processedStyleUrls[key] = await processStyleFile(fileContent, fullPath);

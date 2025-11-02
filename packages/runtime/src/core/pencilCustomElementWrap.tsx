@@ -1,9 +1,4 @@
-import {
-  createLog,
-  createPerformanceTree,
-  error,
-  fromToText,
-} from "@pencel/utils";
+import { createLog, createPerformanceTree, error, fromToText } from "@pencel/utils";
 import type { ComponentOptions } from "../decorators/component.ts";
 import { INTERNALS } from "../internals.ts";
 import {
@@ -13,10 +8,7 @@ import {
   resolveAttributeName,
 } from "../utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "../utils/simpleCustomElementDisplayText.ts";
-import {
-  PENCIL_COMPONENT_CONTEXT,
-  PENCIL_OBSERVED_ATTRIBUTES,
-} from "./symbols.ts";
+import { PENCIL_COMPONENT_CONTEXT, PENCIL_OBSERVED_ATTRIBUTES } from "./symbols.ts";
 import {
   ATTR_MAP,
   type ComponentInterfaceWithContext,
@@ -29,10 +21,7 @@ const log = createLog("Wrapper");
 /**
  * TODO: non-shadow styles (scoped or global) must be attached globally, once per registered component; NOT per instance
  */
-function buildStyles(
-  component: ComponentInterfaceWithContext,
-  options: ComponentOptions,
-): CSSStyleSheet[] {
+function buildStyles(component: ComponentInterfaceWithContext, options: ComponentOptions): CSSStyleSheet[] {
   const styles = new Set<CSSStyleSheet>();
 
   const internals = options[INTERNALS];
@@ -43,12 +32,7 @@ function buildStyles(
       sheet.replaceSync(internals.styles);
       styles.add(sheet);
     } catch (e) {
-      console.warn(
-        `Could not parse CSS string for ${simpleCustomElementDisplayText(
-          component,
-        )}:`,
-        e,
-      );
+      console.warn(`Could not parse CSS string for ${simpleCustomElementDisplayText(component)}:`, e);
     }
   }
 
@@ -105,15 +89,12 @@ function interopStyleAttachment(
  *
  * TODO: Still hacky
  */
-function captureForVNodeProjection(
-  component: ComponentInterfaceWithContext,
-  options: ComponentOptions,
-): void {
+function captureForVNodeProjection(component: ComponentInterfaceWithContext, options: ComponentOptions): void {
   if (!options.shadow && component.childNodes.length > 0) {
     // Store original slot content before any rendering happens
-    (
-      component as HTMLElement & { __pencil_slot_content__?: Node[] }
-    ).__pencil_slot_content__ = Array.from(component.childNodes);
+    (component as HTMLElement & { __pencil_slot_content__?: Node[] }).__pencil_slot_content__ = Array.from(
+      component.childNodes,
+    );
   }
 }
 
@@ -122,9 +103,11 @@ let cid = 0;
 /**
  * Wraps the component class to register instances with the component controller
  */
-export function wrapComponentForRegistration<
-  T extends ConstructablePencilComponent,
->(klass: T, options: ComponentOptions, customElementExtends?: string): T {
+export function wrapComponentForRegistration<T extends ConstructablePencilComponent>(
+  klass: T,
+  options: ComponentOptions,
+  customElementExtends?: string,
+): T {
   /**
    * Copy property descriptors (getters/setters) from a source prototype chain
    * to a target object. This ensures @State/@Prop/@Store descriptors are
@@ -151,12 +134,8 @@ export function wrapComponentForRegistration<
   };
 
   class PencilCustomElementWrap extends klass {
-    #hydratePerf = createPerformanceTree(
-      `Hydration ${simpleCustomElementDisplayText(this)}`,
-    );
-    #renderPerf = createPerformanceTree(
-      `Render ${simpleCustomElementDisplayText(this)}`,
-    );
+    #hydratePerf = createPerformanceTree(`Hydration ${simpleCustomElementDisplayText(this)}`);
+    #renderPerf = createPerformanceTree(`Render ${simpleCustomElementDisplayText(this)}`);
     #renderFrameId: number | null = null;
     #pendingRender = false;
 
@@ -184,15 +163,8 @@ export function wrapComponentForRegistration<
           // initialize it in the context
           if (descriptor && (descriptor.get || descriptor.set)) {
             const ownDescriptor = Object.getOwnPropertyDescriptor(this, key);
-            if (
-              ownDescriptor &&
-              ownDescriptor.value !== undefined &&
-              !this[PENCIL_COMPONENT_CONTEXT]?.state.has(key)
-            ) {
-              this[PENCIL_COMPONENT_CONTEXT]?.state.set(
-                key,
-                ownDescriptor.value,
-              );
+            if (ownDescriptor && ownDescriptor.value !== undefined && !this[PENCIL_COMPONENT_CONTEXT]?.state.has(key)) {
+              this[PENCIL_COMPONENT_CONTEXT]?.state.set(key, ownDescriptor.value);
               // Delete the own property so descriptor is used instead
               // biome-ignore lint/suspicious/noExplicitAny: property deletion required
               delete (this as any)[key];
@@ -256,11 +228,7 @@ export function wrapComponentForRegistration<
       this.#hydratePerf.log();
     }
 
-    override attributeChangedCallback(
-      name: string,
-      oldValue: string | null,
-      newValue: string | null,
-    ): void {
+    override attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
       log(fromToText(name, oldValue, newValue));
       updatePropsByAttribute(this, name, newValue);
       super.attributeChangedCallback?.(name, oldValue, newValue);
@@ -271,11 +239,7 @@ export function wrapComponentForRegistration<
       oldValue: TValue | undefined,
       propName: string | symbol,
     ): boolean {
-      const shouldUpdate = super.componentShouldUpdate?.(
-        newValue,
-        oldValue,
-        propName,
-      );
+      const shouldUpdate = super.componentShouldUpdate?.(newValue, oldValue, propName);
 
       if (shouldUpdate === false) {
         log(`  componentShouldUpdate returned false for ${String(propName)}`);
@@ -310,17 +274,9 @@ export function wrapComponentForRegistration<
           return;
         }
 
-        const attrName = resolveAttributeName(
-          propName,
-          ctx.popts.get(propName),
-        );
+        const attrName = resolveAttributeName(propName, ctx.popts.get(propName));
 
-        reflectAttributeValue(
-          this,
-          attrName,
-          ctx.props.get(propName),
-          propOptions,
-        );
+        reflectAttributeValue(this, attrName, ctx.props.get(propName), propOptions);
       });
 
       return super.componentWillRender?.();
@@ -352,9 +308,7 @@ export function wrapComponentForRegistration<
         // Styles are already attached in connectedCallback, don't reattach
       } catch (origin) {
         error(origin);
-        throw new Error(
-          `Error rendering ${simpleCustomElementDisplayText(this)}`,
-        );
+        throw new Error(`Error rendering ${simpleCustomElementDisplayText(this)}`);
       } finally {
         this.#renderPerf.end("total");
         this.#renderPerf.log();
@@ -376,9 +330,7 @@ export function wrapComponentForRegistration<
 /**
  * Registers props as attributes for the custom elements API and initializes prop metadata
  */
-export function initializeProps(
-  component: ComponentInterfaceWithContext,
-): void {
+export function initializeProps(component: ComponentInterfaceWithContext): void {
   const props = component[PROP_NAMES];
 
   props?.forEach((propOptions, propName) => {
@@ -390,20 +342,14 @@ export function initializeProps(
     cnstrctr[PENCIL_OBSERVED_ATTRIBUTES].push(attrName);
 
     component[PENCIL_COMPONENT_CONTEXT]?.popts.set(propName, propOptions);
-    component[PENCIL_COMPONENT_CONTEXT]?.props.set(
-      propName,
-      resolveAttribute(component, propName, propOptions),
-    );
+    component[PENCIL_COMPONENT_CONTEXT]?.props.set(propName, resolveAttribute(component, propName, propOptions));
   });
 }
 
 /**
  * Initializes and attaches styles to the component instance
  */
-export function initializeStyles(
-  component: ComponentInterfaceWithContext,
-  options: ComponentOptions,
-): void {
+export function initializeStyles(component: ComponentInterfaceWithContext, options: ComponentOptions): void {
   const styles = buildStyles(component, options);
   interopStyleAttachment(component, styles, options);
 }
@@ -422,21 +368,13 @@ export function updatePropsByAttribute(
   }
 
   const propOptions = component[PROP_NAMES]?.get(propName);
-  const propValue = coerceAttributeValue(
-    newValue,
-    propOptions,
-    Boolean(newValue),
-  );
+  const propValue = coerceAttributeValue(newValue, propOptions, Boolean(newValue));
 
   const ctx = component[PENCIL_COMPONENT_CONTEXT];
   const oldValue = ctx?.props.get(propName);
   ctx?.props.set(propName, propValue);
 
-  const shouldUpdate = component.componentShouldUpdate?.(
-    propValue,
-    oldValue,
-    propName,
-  );
+  const shouldUpdate = component.componentShouldUpdate?.(propValue, oldValue, propName);
 
   if (shouldUpdate !== false) {
     component.render?.();

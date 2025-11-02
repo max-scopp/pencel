@@ -39,18 +39,14 @@ export class RenderTransformer extends Transformer(RenderIR) {
   #loopManager = new LoopContextManager();
   #jsxTransformer: JsxTransformer | null = null;
 
-  override transform(
-    irr: IRRef<RenderIR, MethodDeclaration>,
-  ): MethodDeclaration {
+  override transform(irr: IRRef<RenderIR, MethodDeclaration>): MethodDeclaration {
     // Reset state for each method
     this.#varGenerator.reset();
     this.#prependStatements = [];
     this.#jsxTransformer = new JsxTransformer(this.#varGenerator);
 
     // Transform the method body recursively
-    const newBody = irr.node.body
-      ? (this.#visitNode(irr.node.body) as unknown as Block)
-      : irr.node.body;
+    const newBody = irr.node.body ? (this.#visitNode(irr.node.body) as unknown as Block) : irr.node.body;
 
     return factory.updateMethodDeclaration(
       irr.node,
@@ -70,9 +66,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
    */
   #visitNode(node: Node): Node {
     if (isReturnStatement(node)) {
-      return this.#transformReturn(
-        node as unknown as { expression?: Expression },
-      );
+      return this.#transformReturn(node as unknown as { expression?: Expression });
     }
 
     // For if statements, transform both branches
@@ -86,9 +80,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
         node as unknown as Parameters<typeof factory.updateIfStatement>[0],
         ifStmt.expression,
         this.#visitNode(ifStmt.thenStatement) as Statement,
-        ifStmt.elseStatement
-          ? (this.#visitNode(ifStmt.elseStatement) as Statement)
-          : undefined,
+        ifStmt.elseStatement ? (this.#visitNode(ifStmt.elseStatement) as Statement) : undefined,
       );
     }
 
@@ -116,23 +108,16 @@ export class RenderTransformer extends Transformer(RenderIR) {
 
     // Create sc(this, [transformedExpr]) call if not void(0)
     const setChildrenCall = !isVoidZero
-      ? factory.createCallExpression(
-          factory.createIdentifier("sc"),
-          undefined,
-          [
-            factory.createIdentifier("this"),
-            factory.createArrayLiteralExpression([transformedExpr]),
-          ],
-        )
+      ? factory.createCallExpression(factory.createIdentifier("sc"), undefined, [
+          factory.createIdentifier("this"),
+          factory.createArrayLiteralExpression([transformedExpr]),
+        ])
       : null;
 
     // If we generated statements, wrap in a block
     if (this.#prependStatements.length > 0) {
       const statements = setChildrenCall
-        ? [
-            ...this.#prependStatements,
-            factory.createExpressionStatement(setChildrenCall),
-          ]
+        ? [...this.#prependStatements, factory.createExpressionStatement(setChildrenCall)]
         : this.#prependStatements;
 
       this.#prependStatements = savedPrepend;
@@ -155,8 +140,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
   #transformExpression(expr: Expression): Expression {
     // Unwrap parenthesized expressions
     if (expr.kind === SyntaxKind.ParenthesizedExpression) {
-      const unwrapped = (expr as unknown as { expression: Expression })
-        .expression;
+      const unwrapped = (expr as unknown as { expression: Expression }).expression;
       return this.#transformExpression(unwrapped);
     }
 
@@ -211,9 +195,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Handle JSX elements
     if (expr.kind === SyntaxKind.JsxElement) {
       const jsx = expr as unknown as JsxElement;
-      const tagName = (
-        jsx.openingElement.tagName as unknown as { text: string }
-      ).text;
+      const tagName = (jsx.openingElement.tagName as unknown as { text: string }).text;
       this.#jsxTransformer?.setPrependStatements(this.#prependStatements);
       if (/^[A-Z]/.test(tagName)) {
         return (
@@ -256,9 +238,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
     if (expr.kind === SyntaxKind.JsxFragment) {
       const fragment = expr as unknown as JsxFragment;
       // Transform each child in the fragment
-      const transformedChildren = (
-        fragment.children as unknown as Expression[]
-      ).map((child) => {
+      const transformedChildren = (fragment.children as unknown as Expression[]).map((child) => {
         if (child.kind === SyntaxKind.JsxText) {
           // Skip text nodes - they're handled by the JSX element transformer
           return null;
@@ -344,22 +324,11 @@ export class RenderTransformer extends Transformer(RenderIR) {
     const methodCall = this.#isLoopMethodCall(call.expression);
     if (methodCall && call.arguments.length > 0) {
       const callback = call.arguments[0];
-      return this.#transformLoopCall(
-        callExpr,
-        call.expression,
-        callback as Expression,
-      );
+      return this.#transformLoopCall(callExpr, call.expression, callback as Expression);
     }
 
-    const transformedArgs = call.arguments.map((arg) =>
-      this.#transformExpression(arg),
-    );
-    return factory.updateCallExpression(
-      callExpr,
-      call.expression,
-      undefined,
-      transformedArgs,
-    );
+    const transformedArgs = call.arguments.map((arg) => this.#transformExpression(arg));
+    return factory.updateCallExpression(callExpr, call.expression, undefined, transformedArgs);
   }
 
   /**
@@ -386,9 +355,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
     // Only arrow functions need transformation
     if (callback.kind !== SyntaxKind.ArrowFunction) {
       const transformedCallback = this.#transformExpression(callback);
-      return factory.updateCallExpression(callExpr, methodExpr, undefined, [
-        transformedCallback,
-      ]);
+      return factory.updateCallExpression(callExpr, methodExpr, undefined, [transformedCallback]);
     }
 
     const arrowFunc = callback as unknown as {
@@ -419,9 +386,7 @@ export class RenderTransformer extends Transformer(RenderIR) {
 
     // Extract JSX key from body or use index
     let scopeKeyExpr: Expression | undefined;
-    const jsxKeyFromBody = this.#loopManager.extractJsxKeyFromBody(
-      arrowFunc.body,
-    );
+    const jsxKeyFromBody = this.#loopManager.extractJsxKeyFromBody(arrowFunc.body);
     if (jsxKeyFromBody) {
       scopeKeyExpr = jsxKeyFromBody;
     } else if (indexName) {
@@ -458,15 +423,10 @@ export class RenderTransformer extends Transformer(RenderIR) {
       }
       transformedBody = factory.createBlock(transformedStatements, true);
     } else {
-      const transformedExpr = this.#transformExpression(
-        arrowFunc.body as Expression,
-      );
+      const transformedExpr = this.#transformExpression(arrowFunc.body as Expression);
 
       if (this.#prependStatements.length > 0) {
-        const stmts: Statement[] = [
-          ...this.#prependStatements,
-          factory.createReturnStatement(transformedExpr),
-        ];
+        const stmts: Statement[] = [...this.#prependStatements, factory.createReturnStatement(transformedExpr)];
         transformedBody = factory.createBlock(stmts, true);
       } else {
         transformedBody = transformedExpr;
@@ -505,14 +465,8 @@ export class RenderTransformer extends Transformer(RenderIR) {
     }
 
     // Update callback
-    const transformedCallback = updateLoopCallback(
-      callback,
-      transformedBody,
-      newParams,
-    );
+    const transformedCallback = updateLoopCallback(callback, transformedBody, newParams);
 
-    return factory.updateCallExpression(callExpr, methodExpr, undefined, [
-      transformedCallback,
-    ]);
+    return factory.updateCallExpression(callExpr, methodExpr, undefined, [transformedCallback]);
   }
 }

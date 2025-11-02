@@ -1,10 +1,4 @@
-import {
-  type Node,
-  type SourceFile,
-  type TransformerFactory,
-  transform,
-  visitEachChild,
-} from "typescript";
+import { type Node, type SourceFile, type TransformerFactory, transform, visitEachChild } from "typescript";
 import { FileIR } from "../ir/file.ts";
 import { type IR, IRRef, IRRI } from "../ir/irri.ts";
 import { ComponentTransformer } from "../transformers/component.ts";
@@ -29,9 +23,7 @@ export class FileProcessor {
 
   readonly plugins: Plugins = inject(Plugins);
 
-  async process(
-    sourceFile: SourceFile,
-  ): Promise<IRRef<FileIR, SourceFile> | null> {
+  async process(sourceFile: SourceFile): Promise<IRRef<FileIR, SourceFile> | null> {
     if (!this.shouldProcess(sourceFile)) {
       return null;
     }
@@ -71,9 +63,7 @@ export class FileProcessor {
 
       let transformedNode: Node;
       if (irr) {
-        const transformer = this.#transformers.find(
-          (t) => irr.ir instanceof t.forIr,
-        ) as ITransformer<Node, IR>;
+        const transformer = this.#transformers.find((t) => irr.ir instanceof t.forIr) as ITransformer<Node, IR>;
 
         if (transformer) {
           transformedNode = transformer.transform(irr);
@@ -91,8 +81,7 @@ export class FileProcessor {
       return transformedNode;
     };
 
-    const factory: TransformerFactory<SourceFile> = () => (sourceFile) =>
-      visit(sourceFile) as SourceFile;
+    const factory: TransformerFactory<SourceFile> = () => (sourceFile) => visit(sourceFile) as SourceFile;
 
     const result = transform(
       fileIrrs.map((irr) => irr.node),

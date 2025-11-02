@@ -19,10 +19,7 @@ export class ImportBuilder {
    * Groups by module, deduplicates, skips unknown symbols.
    * Applies import preference if provided.
    */
-  build(
-    symbols: Set<string>,
-    preference?: ImportPreference,
-  ): ImportRequirement[] {
+  build(symbols: Set<string>, preference?: ImportPreference): ImportRequirement[] {
     const requirements = new Map<string, ImportRequirement>();
 
     for (const symbol of symbols) {

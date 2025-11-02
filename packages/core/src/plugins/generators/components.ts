@@ -32,10 +32,7 @@ class ComponentsExportGenerator extends PencelPlugin {
     });
   }
 
-  async #generateComponentsExports(
-    fileIRs: Array<ImplodeIRRefs<FileIR>>,
-    path: string,
-  ): Promise<void> {
+  async #generateComponentsExports(fileIRs: Array<ImplodeIRRefs<FileIR>>, path: string): Promise<void> {
     // Collect all component class names from IR
     const componentClassNames = new Set<string>();
     for (const fileIR of fileIRs) {
@@ -49,9 +46,7 @@ class ComponentsExportGenerator extends PencelPlugin {
       symbols: Array.from(componentClassNames),
     });
 
-    log(
-      `Generated components barrel with ${componentClassNames.size} re-exports`,
-    );
+    log(`Generated components barrel with ${componentClassNames.size} re-exports`);
   }
 }
 

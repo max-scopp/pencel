@@ -1,6 +1,4 @@
-export function getTagByExtendsString(
-  extendsClassText: string | undefined,
-): string | undefined {
+export function getTagByExtendsString(extendsClassText: string | undefined): string | undefined {
   switch (extendsClassText) {
     case "HTMLAnchorElement":
       return "a";

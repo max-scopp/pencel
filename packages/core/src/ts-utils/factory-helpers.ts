@@ -3,13 +3,7 @@
  * These are utility wrappers around TypeScript's factory API.
  */
 
-import {
-  type Block,
-  type Expression,
-  factory,
-  type Statement,
-  SyntaxKind,
-} from "typescript";
+import { type Block, type Expression, factory, type Statement, SyntaxKind } from "typescript";
 
 /**
  * Create a call expression: fn(args...)
@@ -50,9 +44,7 @@ export function createExprStmt(expr: Expression): Statement {
  * Create element factory expression (dce call)
  */
 export function createElementCreation(tagName: string): Expression {
-  return createCall(factory.createIdentifier("dce"), [
-    factory.createStringLiteral(tagName),
-  ]);
+  return createCall(factory.createIdentifier("dce"), [factory.createStringLiteral(tagName)]);
 }
 
 /**

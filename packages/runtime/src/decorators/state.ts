@@ -48,11 +48,7 @@ export function State(options?: StateOptions): PropertyDecorator {
           ctx?.state.set(propertyKey, value);
           log(fromToText(String(propertyKey), oldValue, value));
 
-          const shouldUpdate = this.componentShouldUpdate?.(
-            value,
-            oldValue,
-            propertyKey,
-          );
+          const shouldUpdate = this.componentShouldUpdate?.(value, oldValue, propertyKey);
 
           if (shouldUpdate !== false) {
             this.render?.();
