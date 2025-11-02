@@ -1,3 +1,7 @@
+import { isProjectableSlot, projectSlot, updateLightDOMSlots } from "./light-dom-slots.ts";
+import { PENCIL_COMPONENT_CONTEXT } from "./symbols.ts";
+import type { ComponentInterfaceWithContext } from "./types.ts";
+
 export const cacheSymbol = Symbol("_$pen_cmc");
 export const eventListenersSymbol = Symbol("_$pen_listeners");
 
@@ -23,7 +27,7 @@ export function mc() {
  * set properties (formerly setProps)
  * Intelligently handles setting properties or attributes.
  */
-export function sp(el: Element, props: Record<string, unknown> | null) {
+export function sp(this: ComponentInterfaceWithContext, el: Element, props: Record<string, unknown> | null) {
   if (!props) return;
 
   // List of boolean properties that must be synced via property, not attribute
@@ -80,10 +84,19 @@ export function sp(el: Element, props: Record<string, unknown> | null) {
  * - Replaces nodes when they're semantically equivalent but different instances
  */
 export function sc(
+  this: ComponentInterfaceWithContext,
   parent: Element | HTMLElement | DocumentFragment,
   children: (Node | Node[] | string | number | boolean | null | undefined)[],
 ) {
-  // Flatten children array
+  // Intercept slot elements for light-DOM projection (skip if using shadow DOM)
+  const usingShadowDOM = this[PENCIL_COMPONENT_CONTEXT]?.shadow;
+
+  // Update light-DOM slots on each render pass if context exists
+  if (!usingShadowDOM && parent === this && parent instanceof Element) {
+    updateLightDOMSlots(parent);
+  }
+
+  // Flatten children array, intercepting slot elements for projection
   const flatChildren: Node[] = [];
   const flatten = (arr: (Node | Node[] | string | number | boolean | null | undefined)[]): void => {
     for (const child of arr) {
@@ -93,7 +106,19 @@ export function sc(
       } else if (typeof child === "string" || typeof child === "number") {
         flatChildren.push(document.createTextNode(String(child)));
       } else if (child instanceof Node) {
-        flatChildren.push(child);
+        if (!usingShadowDOM && isProjectableSlot(child)) {
+          // Always use 'this' (the component host) as the source for light DOM context,
+          // regardless of where the slot appears in the render tree
+          if (this instanceof Element) {
+            const projectedContent = projectSlot(child, this);
+            flatChildren.push(...projectedContent);
+          } else {
+            // Fallback: use the slot's fallback content
+            flatChildren.push(...Array.from(child.childNodes));
+          }
+        } else {
+          flatChildren.push(child);
+        }
       }
     }
   };
@@ -154,7 +179,7 @@ export function sc(
  * set text (formerly setText)
  * Updates text node data if changed
  */
-export function st(node: Text, value: string) {
+export function st(this: ComponentInterfaceWithContext, node: Text, value: string) {
   if (node.data !== value) node.data = value;
 }
 
@@ -176,7 +201,7 @@ export const dctn = (text: string): Text => document.createTextNode(text);
  * Strategy: Store the last handler for each event type and remove it before adding a new one.
  * This keeps only the latest handler for each event, preventing stale closures.
  */
-export const ael = (el: Element, event: string, handler: EventListener): void => {
+export function ael(this: ComponentInterfaceWithContext, el: Element, event: string, handler: EventListener): void {
   // Cast to unknown first to access symbol property
   const elObj = el as unknown as Record<symbol, unknown>;
 
@@ -196,4 +221,4 @@ export const ael = (el: Element, event: string, handler: EventListener): void =>
   // Add the new handler and store it
   listenerMap[event] = handler;
   el.addEventListener(event, handler);
-};
+}

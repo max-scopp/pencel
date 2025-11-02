@@ -8,6 +8,7 @@ import {
   resolveAttributeName,
 } from "../utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "../utils/simpleCustomElementDisplayText.ts";
+import { prepareLightDOMSlots } from "./light-dom-slots.ts";
 import { PENCIL_COMPONENT_CONTEXT, PENCIL_OBSERVED_ATTRIBUTES } from "./symbols.ts";
 import {
   ATTR_MAP,
@@ -83,21 +84,6 @@ function interopStyleAttachment(
   }
 }
 
-/**
- * Captures original children for VNode projection in non-shadow components.
- * This enables slot projection by preserving the original DOM content before rendering.
- *
- * TODO: Still hacky
- */
-function captureForVNodeProjection(component: ComponentInterfaceWithContext, options: ComponentOptions): void {
-  if (!options.shadow && component.childNodes.length > 0) {
-    // Store original slot content before any rendering happens
-    (component as HTMLElement & { __pencil_slot_content__?: Node[] }).__pencil_slot_content__ = Array.from(
-      component.childNodes,
-    );
-  }
-}
-
 let cid = 0;
 
 /**
@@ -145,6 +131,7 @@ export function wrapComponentForRegistration<T extends ConstructablePencilCompon
 
       // Initialize component context
       this[PENCIL_COMPONENT_CONTEXT] = {
+        shadow: Boolean(options.shadow),
         extends: customElementExtends,
         props: new Map(),
         popts: new Map(),
@@ -206,9 +193,11 @@ export function wrapComponentForRegistration<T extends ConstructablePencilCompon
       initializeStyles(this, options);
       this.#hydratePerf.end("styles");
 
-      // Content projection setup
+      // Content projection setup - prepare light-DOM slots before first render
       this.#hydratePerf.start("slots");
-      captureForVNodeProjection(this, options);
+      if (!options.shadow) {
+        prepareLightDOMSlots(this as Element);
+      }
       this.#hydratePerf.end("slots");
 
       // Lifecycle methods
