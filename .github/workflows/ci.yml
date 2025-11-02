@@ -54,7 +54,7 @@ jobs:
 
       - run: bun ci
 
-      - run: biome ci .
+      - run: bunx biome ci .
 
   test:
     needs: typecheck-and-build
@@ -77,4 +77,4 @@ jobs:
 
       - run: bun ci
 
-      - run: bun test --reporter=github-actions
+      - run: bun test
