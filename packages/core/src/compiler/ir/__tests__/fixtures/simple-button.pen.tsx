@@ -8,14 +8,9 @@ interface Props {
 
 export class SimpleButton {
   label: string;
-  disabled: boolean;
-
-  constructor(props: Props) {
-    this.label = props.label;
-    this.disabled = props.disabled;
-  }
+  myDisabled: boolean;
 
   render() {
-    return <button disabled={this.disabled}>{this.label}</button>;
+    return <button disabled={this.myDisabled}>{this.label}</button>;
   }
 }

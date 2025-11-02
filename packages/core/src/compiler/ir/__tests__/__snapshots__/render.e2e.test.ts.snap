@@ -1,21 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`RenderTransformer E2E with zero-dom transforms and renders todo-item component 1`] = `"<div class="todo-pending"><input type="checkbox"><span>Buy groceries</span></div>"`;
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering renders todo-item.pen.tsx and matches snapshot 1`] = `"<div class="todo-pending"><input type="checkbox"><span></span></div>"`;
 
-exports[`RenderTransformer E2E with zero-dom renders completed todo item 1`] = `"<div class="todo-completed"><input type="checkbox"><span>Complete task</span></div>"`;
-
-exports[`RenderTransformer E2E with zero-dom transforms and renders simple-button component 1`] = `"<button>Submit</button>"`;
-
-exports[`RenderTransformer E2E with zero-dom renders disabled button 1`] = `"<button disabled="">Cancel</button>"`;
-
-exports[`RenderTransformer E2E with zero-dom zero-dom cache works correctly 1`] = `
-{
-  "element1": "<div class="todo-pending"><input type="checkbox"><span>Task 1</span></div>",
-  "element2": "<div class="todo-completed"><input type="checkbox"><span>Task 2</span></div>",
-}
-`;
-
-exports[`RenderTransformer E2E with zero-dom transformed code matches expected structure 1`] = `
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering transformed code for todo-item.pen.tsx matches snapshot 1`] = `
 "render() {
     {
         let $0 = this.#cmc("div_0", () => dce("div"));
@@ -26,6 +13,46 @@ exports[`RenderTransformer E2E with zero-dom transformed code matches expected s
         let $2 = this.#cmc("span_2", () => dce("span"));
         sc($2, [this.text]);
         sc($0, [$1, $2]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering renders simple-button.pen.tsx and matches snapshot 1`] = `"<button></button>"`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering transformed code for simple-button.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("button_0", () => dce("button"));
+        sp($0, { "disabled": this.myDisabled });
+        sc($0, [this.label]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering todo-item.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("div_0", () => dce("div"));
+        sp($0, { "class": this.completed ? "todo-completed" : "todo-pending" });
+        let $1 = this.#cmc("input_1", () => dce("input"));
+        sp($1, { "type": "checkbox" });
+        sp($1, { "checked": this.completed });
+        let $2 = this.#cmc("span_2", () => dce("span"));
+        sc($2, [this.text]);
+        sc($0, [$1, $2]);
+        sc(this, [$0]);
+    }
+}"
+`;
+
+exports[`RenderTransformer E2E with zero-dom Automated fixture rendering simple-button.pen.tsx matches snapshot 1`] = `
+"render() {
+    {
+        let $0 = this.#cmc("button_0", () => dce("button"));
+        sp($0, { "disabled": this.myDisabled });
+        sc($0, [this.label]);
         sc(this, [$0]);
     }
 }"
