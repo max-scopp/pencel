@@ -91,32 +91,23 @@ function calculateDuration(mark: PerformanceMark): number {
 }
 
 function logPerformanceTree(root: PerformanceMark, logger: ReturnType<typeof createLog>): void {
-  function logNode(node: PerformanceMark, depth: number, siblingDurations: number[], index: number): void {
+  function logNode(node: PerformanceMark, depth: number, siblingDurations: number[], isLast: boolean, prefix: string): void {
     const duration = calculateDuration(node);
-
-    // Calculate percentage relative to siblings at same level
     const totalSiblingDuration = siblingDurations.reduce((a, b) => a + b, 0);
     const percentage = totalSiblingDuration > 0 ? ((duration / totalSiblingDuration) * 100).toFixed(2) : "0.00";
 
-    // Format the message
-    const indent = "  ".repeat(depth);
-    const isLast = index === siblingDurations.length - 1;
-    const prefix = depth === 0 ? "" : isLast ? "└── " : "├── ";
-
-    const message = `${indent}${prefix}${node.name}: ${formatTime(duration)} (${percentage}%)`;
+    const nodePrefix = depth === 0 ? "" : isLast ? "└── " : "├── ";
+    const message = `${prefix}${nodePrefix}${node.name}: ${formatTime(duration)} (${percentage}%)`;
 
     const percentNum = Number.parseFloat(percentage);
 
     if (isBrowser) {
-      // Browser: Use HSL gradient blue → green → orange → red
-      // 0% = blue (240°), 50% = green (120°), 100% = red (0°)
-      const hue = 240 - (percentNum / 100) * 240; // 240 to 0
+      const hue = 240 - (percentNum / 100) * 240;
       const saturation = 60;
       const lightness = 55;
       const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
       logger(message, `color: ${color}; font-weight: bold;`);
     } else {
-      // Node.js: Only highlight the max percentage
       const isMax = percentNum === Math.max(...siblingDurations.map((d) => (d / totalSiblingDuration) * 100));
       if (isMax && percentNum > 0) {
         const ansiColor = getAnsiFromStyle("red");
@@ -130,20 +121,22 @@ function logPerformanceTree(root: PerformanceMark, logger: ReturnType<typeof cre
       }
     }
 
-    // Log children
     if (node.children.length > 0) {
       const childDurations = node.children.map((c) => calculateDuration(c));
+      const newPrefix = depth === 0 ? "" : prefix + (isLast ? "    " : "│   ");
+
       node.children.forEach((child, childIndex) => {
-        logNode(child, depth + 1, childDurations, childIndex);
+        const childIsLast = childIndex === childDurations.length - 1;
+        logNode(child, depth + 1, childDurations, childIsLast, newPrefix);
       });
     }
   }
 
-  // Log root's children (skip root itself)
   if (root.children.length > 0) {
     const childDurations = root.children.map((c) => calculateDuration(c));
     root.children.forEach((child, index) => {
-      logNode(child, 0, childDurations, index);
+      const isLast = index === childDurations.length - 1;
+      logNode(child, 0, childDurations, isLast, "");
     });
   }
 }
