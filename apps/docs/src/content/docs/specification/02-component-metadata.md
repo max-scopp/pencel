@@ -1,15 +1,14 @@
 ---
 title: "Component Metadata"
-description: "Universal component IR structure, props, events, slots, and type system."
+description: "Universal component schema structure, props, events, slots, and type system."
 ---
 
-# Component Metadata
 
 ## 1. Overview
 
 Component metadata defines the root structure of a universal component. It captures the component's identity, API surface (props), content slots, internal structure, styling requirements, behaviour, and accessibility semantics.
 
-All component IRs MUST conform to the Component Metadata schema defined in this section.
+All components MUST conform to the Component Metadata schema defined in this section.
 
 **Cross-references:** This document is the root specification. Refer to:
 - [Type System](/pencel/specification/09-type-system) for `types` details and prop/event type definitions
@@ -83,7 +82,7 @@ The following diagram illustrates how these domains compose a complete component
 
 ```json
 {
-  "irVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
   "name": "string",
   "type": "component",
   "props": [],
@@ -94,7 +93,7 @@ The following diagram illustrates how these domains compose a complete component
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
-| `irVersion` | string | REQUIRED | Semantic version of the IR spec (e.g., `"1.0.0"`) |
+| `schemaVersion` | string | REQUIRED | Semantic version of the schema spec (e.g., `"1.0.0"`) |
 | `name` | string | REQUIRED | Component name; MUST be a valid PascalCase identifier |
 | `type` | enum | REQUIRED | MUST be `"component"` |
 | `props` | array | REQUIRED | Array of prop definitions (see §2.3); MAY be empty array `[]` |
@@ -259,7 +258,7 @@ Events reference types defined once in the global `types` section (same as props
 
 ```json
 {
-  "irVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
   "name": "Button",
   "type": "component",
   "types": {
@@ -345,7 +344,7 @@ More details in [Slots & Structure](/pencel/specification/05-slots-and-structure
 
 ```json
 {
-  "irVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
   "name": "Button",
   "type": "component",
   "version": "1.0.0",

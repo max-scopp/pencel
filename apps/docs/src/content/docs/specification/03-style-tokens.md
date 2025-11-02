@@ -3,13 +3,12 @@ title: "Style Tokens"
 description: "W3C Design Tokens Format alignment with primitive, semantic, and component-scoped token tiers."
 ---
 
-# Style Tokens
 
 ## 1. Overview
 
 Style tokens define the visual and interactive properties of components through a hierarchical token system. This specification aligns with the [W3C Design Tokens Format Module (2025.10)](https://www.designtokens.org/tr/drafts/format/) while providing component-specific guidance.
 
-All component IRs SHOULD include style tokens organized across three tiers:
+All components SHOULD include style tokens organized across three tiers:
 
 1. **Primitive Tokens** — Foundational design values (colors, spacing, typography)
 2. **Semantic Tokens** — Intent-based aliases mapping to primitives (primary, success, error)
@@ -37,7 +36,7 @@ Tokens follow the W3C format with the following structure:
 
 ### 2.1 Supported Token Types
 
-The following token types are REQUIRED to be supported by conforming IR compilers:
+The following token types are REQUIRED to be supported by conforming schema compilers:
 
 | Type | Purpose | Example |
 | --- | --- | --- |

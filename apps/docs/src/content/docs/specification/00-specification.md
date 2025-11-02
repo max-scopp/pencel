@@ -1,9 +1,8 @@
 ---
-title: "Universal Component IR Specification"
-description: "Platform-agnostic component definition language for cross-platform UI development."
+title: "Universal Component Schema Specification"
+description: "Platform-agnostic component definition schema for cross-platform UI development."
 ---
 
-# Universal Component IR Specification
 
 **Status**: Working Draft (WD)  
 **Latest Version**: [/spec/README.md](/spec/README.md)  
@@ -11,7 +10,7 @@ description: "Platform-agnostic component definition language for cross-platform
 
 ## Overview
 
-The **Universal Component IR (Intermediate Representation) Specification** defines a platform-agnostic format for authoring UI components that compile to multiple targets: Web/HTML, React, React Native, SwiftUI, Flutter, WPF/XAML, and embedded/AR/VR platforms.
+The **Universal Component Schema Specification** defines a platform-agnostic format for authoring UI components that compile to multiple targets: Web/HTML, React, React Native, SwiftUI, Flutter, WPF/XAML, and embedded/AR/VR platforms.
 
 This specification enables:
 
@@ -24,7 +23,7 @@ This specification enables:
 
 This specification is written for:
 
-- **Tool developers**: Building component compilers, code generators, and IR emitters
+- **Tool developers**: Building component compilers, code generators, and schema processors
 - **Implementers**: Creating platform-specific runtimes and code generators (React, WPF, SwiftUI, etc.)
 - **Design system authors**: Defining reusable components once, deploying everywhere
 - **Framework maintainers**: Integrating universal components into cross-platform frameworks
@@ -34,13 +33,13 @@ This specification is written for:
 | Document | Purpose | Cross-References |
 | --- | --- | --- |
 | [Scope & Conformance](/pencel/specification/01-scope-and-conformance) | Formal scope, maturity, normative language, conformance levels | Defines RFC 2119 keywords used throughout; referenced by all documents |
-| [Component Metadata](/pencel/specification/02-component-metadata) | Component IR schema and root structure | Root of all other sections; references [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility) |
+| [Component Metadata](/pencel/specification/02-component-metadata) | Component schema and root structure | Root of all other sections; references [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility) |
 | [Style Tokens](/pencel/specification/03-style-tokens) | Primitive, semantic, and component-scoped token definitions | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`styleTokens` property); linked to [State Machine](/pencel/specification/04-state-machine) via `styleMap` |
 | [State Machine](/pencel/specification/04-state-machine) | Behaviour, state definitions, transitions, events | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`stateMachine` property); maps states to [Style Tokens](/pencel/specification/03-style-tokens) via `styleMap`; coordinates [Bindings & Data](/pencel/specification/07-bindings-and-data) |
 | [Slots & Structure](/pencel/specification/05-slots-and-structure) | Internal component hierarchy and named slots | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`structure` property); detailed DOM mapping |
 | [Accessibility](/pencel/specification/06-accessibility) | Semantic roles, labels, and platform-specific mappings | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`semantics` property); works with [State Machine](/pencel/specification/04-state-machine) for accessible interactions |
 | [Bindings & Data](/pencel/specification/07-bindings-and-data) | Reactive data flow and binding semantics | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`bindings` property); coordinates with [State Machine](/pencel/specification/04-state-machine) for context updates |
-| [Platform Mapping](/pencel/specification/08-platform-mapping) | Target platform compilation and runtime semantics | Consumes all IR sections; compiles [Style Tokens](/pencel/specification/03-style-tokens) and [State Machine](/pencel/specification/04-state-machine) to platform code |
+| [Platform Mapping](/pencel/specification/08-platform-mapping) | Target platform compilation and runtime semantics | Consumes all schema sections; compiles [Style Tokens](/pencel/specification/03-style-tokens) and [State Machine](/pencel/specification/04-state-machine) to platform code |
 | [Type System](/pencel/specification/09-type-system) | Unified type definitions, schemas, and reusable type references | Referenced by [Component Metadata](/pencel/specification/02-component-metadata) (`types` property); supports props, events, and nested structures |
 
 ## Quick Start
@@ -49,7 +48,7 @@ A minimal component definition:
 
 ```json
 {
-  "irVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
   "name": "Button",
   "type": "component",
   "props": [
@@ -112,7 +111,7 @@ Tokens           Machine            Structure      ibility
           │
           ↓
         08. Platform Mapping
-        (compile IR → Web, React, Native, XAML, etc.)
+        (compile schema → Web, React, Native, XAML, etc.)
 ```
 
 ## Maturity & Process
@@ -166,7 +165,7 @@ Tokens           Machine            Structure      ibility
 - DOM hierarchy, slot placement
 - Referenced by [Component Metadata](/pencel/specification/02-component-metadata) `structure` property
 
-### I want to understand how to compile IR to a specific platform
+### I want to understand how to compile components to a specific platform
 → See [Platform Mapping](/pencel/specification/08-platform-mapping)
 - Web/HTML, React, React Native, SwiftUI, Flutter, WPF/XAML, embedded
 - Consumes [Style Tokens](/pencel/specification/03-style-tokens), [State Machine](/pencel/specification/04-state-machine), [Accessibility](/pencel/specification/06-accessibility)

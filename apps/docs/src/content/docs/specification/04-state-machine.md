@@ -3,7 +3,6 @@ title: "State Machine & Behaviour"
 description: "Finite state machines, XState and Zag.js patterns, and state-to-style mapping."
 ---
 
-# State Machine & Behaviour
 
 ## 1. Overview
 
@@ -18,7 +17,7 @@ A state machine defines:
 - **Guards** — Conditions that must be true for a transition to occur
 - **Context** — Shared state data that persists across states
 
-All component IRs SHOULD include a `stateMachine` definition that captures component interaction patterns and state-dependent styling.
+All components SHOULD include a `stateMachine` definition that captures component interaction patterns and state-dependent styling.
 
 **Cross-references:**
 - Declared in [Component Metadata](/pencel/specification/02-component-metadata) via `stateMachine` property

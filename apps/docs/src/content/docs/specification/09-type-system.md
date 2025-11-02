@@ -1,9 +1,8 @@
 ---
 title: "Type System"
-description: "Universal Component IR type definitions, schemas, and reusable type references."
+description: "Universal Component Schema type definitions, schemas, and reusable type references."
 ---
 
-# Type System
 
 ## 1. Overview
 
@@ -30,7 +29,7 @@ The `types` section is a **global, unified type registry** at the root level of 
 
 ```json
 {
-  "irVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
   "name": "DataTable",
   "type": "component",
   "types": {
