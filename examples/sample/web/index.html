@@ -9,13 +9,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="stylesheet" href="/src/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
 </head>
 
 <body>
-  <h1>Pencel Examples</h1>
+  <h1>Slot Testing Suite</h1>
 
+  <h2>Slot Testing Overview</h2>
+  <p>This test suite validates web component slot behavior across multiple scenarios:</p>
+  <ul>
+    <li><strong>Basic Slots:</strong> Default slot with fallback content</li>
+    <li><strong>Named Slots:</strong> Multiple named slots with independent fallbacks</li>
+    <li><strong>Slot Composition:</strong> Nested slots across component boundaries</li>
+    <li><strong>Mixed Slots:</strong> Combination of named and default slots</li>
+    <li><strong>Advanced:</strong> Complex scenarios with state and performance</li>
+  </ul>
+
+  <h2>Test 1: Basic Default Slot with Fallback</h2>
+
+  <h3>Scenario 1.1: No Content (Fallback should show)</h3>
+  <p>Expected: Display fallback text</p>
+  <wb-test-slots-basic></wb-test-slots-basic>
+
+  <h3>Scenario 1.2: With Custom Content</h3>
+  <p>Expected: Display custom content instead of fallback</p>
+  <wb-test-slots-basic>
+    <div>
+      <strong>✓ Custom Content:</strong> This is my custom content replacing the fallback!
+    </div>
+  </wb-test-slots-basic>
+
+  <h3>Scenario 1.3: With Complex HTML Content</h3>
+  <p>Expected: Display complex HTML structure properly</p>
+  <wb-test-slots-basic>
+    <div>
+      <h4>User Profile Card</h4>
+      <p>Name: <strong>John Doe</strong></p>
+      <p>Email: <em>john@example.com</em></p>
+      <button>Contact</button>
+    </div>
+  </wb-test-slots-basic>
+
+  <h2>Test 2: Multiple Named Slots with Fallbacks</h2>
+
+  <h3>Scenario 2.1: No Named Content (All fallbacks show)</h3>
+  <p>Expected: All sections display fallback content</p>
+  <wb-test-slots-named></wb-test-slots-named>
+
+  <h3>Scenario 2.2: Partial Named Content</h3>
+  <p>Expected: Header and content filled, footer/sidebar show fallback</p>
+  <wb-test-slots-named>
+    <h3 slot="header">📋 My Custom Header</h3>
+    <p slot="content">This is the main content area with custom text.</p>
+  </wb-test-slots-named>
+
+  <h3>Scenario 2.3: All Named Slots Populated</h3>
+  <p>Expected: All named slots display provided content</p>
+  <wb-test-slots-named>
+    <h3 slot="header">Full Card Layout</h3>
+    <div slot="content">
+      <p>This is the main content area with all sections populated.</p>
+      <ul>
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+        <li>Feature 3</li>
+      </ul>
+    </div>
+    <p slot="footer">© 2025 - All rights reserved</p>
+    <p slot="sidebar">ℹ️ Info: This is sidebar content!</p>
+  </wb-test-slots-named>
+
+  <h3>Scenario 2.4: Only Footer and Sidebar (Header/Content fallback)</h3>
+  <p>Expected: Header and content use fallback, footer and sidebar show custom</p>
+  <wb-test-slots-named>
+    <p slot="footer">💾 Save Changes</p>
+    <span slot="sidebar">🔒 Locked</span>
+  </wb-test-slots-named>
+
+  <h2>Test 3: Slot Composition (Nested Slots)</h2>
+
+  <h3>Scenario 3.1: No Content (All composition fallbacks)</h3>
+  <p>Expected: Outer start, inner, and outer end all show fallback</p>
+  <wb-test-slots-composition></wb-test-slots-composition>
+
+  <h3>Scenario 3.2: Only Outer Slots Filled</h3>
+  <p>Expected: Outer sections filled, inner shows fallback</p>
+  <wb-test-slots-composition>
+    <div slot="outer-start">
+      <strong>🔝 Outer Start:</strong> Opening section
+    </div>
+    <div slot="outer-end">
+      <strong>🔚 Outer End:</strong> Closing section
+    </div>
+  </wb-test-slots-composition>
+
+  <h3>Scenario 3.3: All Composition Slots Filled</h3>
+  <p>Expected: All sections display custom content</p>
+  <wb-test-slots-composition>
+    <div slot="outer-start">
+      <strong>🌟 Start:</strong> Opening context
+    </div>
+    <div slot="inner">
+      <strong>⭐ Inner Content:</strong> Nested slot content here
+    </div>
+    <div slot="outer-end">
+      <strong>🎯 End:</strong> Closing context
+    </div>
+  </wb-test-slots-composition>
+
+  <h2>Test 4: Mixed Named & Default Slots</h2>
+
+  <h3>Scenario 4.1: No Content (All fallbacks)</h3>
+  <p>Expected: All sections display fallback content</p>
+  <wb-test-slots-mixed></wb-test-slots-mixed>
+
+  <h3>Scenario 4.2: Only Named Slots (Default remains fallback)</h3>
+  <p>Expected: Named slots filled, default slot shows fallback</p>
+  <wb-test-slots-mixed>
+    <span slot="primary">🎨 Primary Content</span>
+    <span slot="secondary">🎭 Secondary Content</span>
+  </wb-test-slots-mixed>
+
+  <h3>Scenario 4.3: Only Default Slot (Named remain fallback)</h3>
+  <p>Expected: Default slot filled with content, named slots show fallback</p>
+  <wb-test-slots-mixed>
+    <div>
+      <strong>📝 Default Slot Content:</strong> This goes into the default/catch-all slot!
+    </div>
+  </wb-test-slots-mixed>
+
+  <h3>Scenario 4.4: Mixed (Named + Default + Optional)</h3>
+  <p>Expected: Named/default filled, unused optional shows fallback</p>
+  <wb-test-slots-mixed>
+    <h3 slot="primary">🎯 Primary Section</h3>
+    <h3 slot="secondary">🎪 Secondary Section</h3>
+    <div>
+      <strong>💬 Default Content:</strong> Falls into the default slot
+    </div>
+    <span slot="optional">🏆 Optional Used!</span>
+  </wb-test-slots-mixed>
+
+  <h2>Test 5: Advanced Components (TODO MVC & Performance)</h2>
+  <p>Complex real-world component examples:</p>
+
+  <h3>Advanced 5.1: Todo MVC Application</h3>
+  <p>Tests state management, event handling, and dynamic rendering</p>
   <wb-todo-mvc></wb-todo-mvc>
+
+  <h3>Advanced 5.2: Performance Test Suite</h3>
+  <p>Tests rendering performance with various scales</p>
   <wb-perf-test></wb-perf-test>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 
