@@ -8,6 +8,8 @@ export interface PencilComponentContext {
   popts: Map<string | number | symbol, PropOptions | undefined>;
   state: Map<string | number | symbol, unknown>;
   stores?: Map<string | number | symbol, unknown>;
+  slotPlaceholders?: Map<string, HTMLSlotElement>;
+  projectedContent?: Map<string, Node[]>;
 }
 
 /**

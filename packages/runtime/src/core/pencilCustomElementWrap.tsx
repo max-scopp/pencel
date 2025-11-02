@@ -8,7 +8,16 @@ import {
   resolveAttributeName,
 } from "../utils/attributes.ts";
 import { simpleCustomElementDisplayText } from "../utils/simpleCustomElementDisplayText.ts";
-import { prepareLightDOMSlots } from "./light-dom-slots.ts";
+import {
+  captureExternalLightDOM,
+  cleanupOrphanedNodes,
+  commitProjection,
+  identifyPlaceholders,
+  pauseExternalChangeDetection,
+  projectIntoPlaceholders,
+  resumeExternalChangeDetection,
+  setupExternalChangeDetection,
+} from "./light-dom-slots.ts";
 import { PENCIL_COMPONENT_CONTEXT, PENCIL_OBSERVED_ATTRIBUTES } from "./symbols.ts";
 import {
   ATTR_MAP,
@@ -193,10 +202,13 @@ export function wrapComponentForRegistration<T extends ConstructablePencilCompon
       initializeStyles(this, options);
       this.#hydratePerf.end("styles");
 
-      // Content projection setup - prepare light-DOM slots before first render
+      // Content projection setup - set up external change detection for light-DOM
       this.#hydratePerf.start("slots");
       if (!options.shadow) {
-        prepareLightDOMSlots(this as Element);
+        setupExternalChangeDetection(this as Element, (host) => {
+          const component = host as ComponentInterfaceWithContext;
+          component.render?.();
+        });
       }
       this.#hydratePerf.end("slots");
 
@@ -291,10 +303,48 @@ export function wrapComponentForRegistration<T extends ConstructablePencilCompon
 
       try {
         await this.componentWillRender?.();
-        // Execute the component's render method
-        // Mutations are automatically batched via requestAnimationFrame
+
+        const ctx = this[PENCIL_COMPONENT_CONTEXT];
+
+        // PASS 0: Extract user content BEFORE rendering to prevent mixing with structure
+        let lightDOM: Node[] = [];
+        const tempHolder = new DocumentFragment();
+        if (!ctx?.shadow && this instanceof Element && ctx) {
+          lightDOM = captureExternalLightDOM(this);
+          // Move captured nodes to temp holder to prevent them from interfering with PASS 1
+          for (const node of lightDOM) {
+            tempHolder.appendChild(node);
+          }
+        }
+
+        // PASS 1: Execute component render (generates structure with slot placeholders)
         super.render?.();
-        // Styles are already attached in connectedCallback, don't reattach
+
+        // PASS 2: Project user content into placeholder slots
+        if (!ctx?.shadow && this instanceof Element && ctx) {
+          // Pause observer to prevent internal mutations from triggering new renders
+          pauseExternalChangeDetection(this as Element);
+
+          try {
+            const placeholders = identifyPlaceholders(this);
+            // Use the temp holder nodes for projection (they're not in the DOM tree now)
+            const projection = projectIntoPlaceholders(placeholders, Array.from(tempHolder.childNodes));
+
+            commitProjection(placeholders, projection);
+            cleanupOrphanedNodes(this, projection);
+
+            // Store state for next cycle
+            ctx.slotPlaceholders = placeholders;
+            ctx.projectedContent = projection;
+
+            log(`Pass 2: projected ${placeholders.size} slots`);
+          } finally {
+            // Resume observer for external changes
+            resumeExternalChangeDetection(this as Element);
+          }
+        }
+
+        this.componentDidRender?.();
       } catch (origin) {
         error(origin);
         throw new Error(`Error rendering ${simpleCustomElementDisplayText(this)}`);

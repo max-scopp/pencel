@@ -1,5 +1,3 @@
-import { isProjectableSlot, projectSlot, updateLightDOMSlots } from "./light-dom-slots.ts";
-import { PENCIL_COMPONENT_CONTEXT } from "./symbols.ts";
 import type { ComponentInterfaceWithContext } from "./types.ts";
 
 export const cacheSymbol = Symbol("_$pen_cmc");
@@ -82,21 +80,15 @@ export function sp(this: ComponentInterfaceWithContext, el: Element, props: Reco
  * - Compares by reference (h === w) to detect reused nodes
  * - Matches by type and structure for semantic equivalence
  * - Replaces nodes when they're semantically equivalent but different instances
+ * Pass 1: Creates structure with slot placeholders (no projection yet)
+ * Projection happens in Pass 2 via commitProjection()
  */
 export function sc(
   this: ComponentInterfaceWithContext,
   parent: Element | HTMLElement | DocumentFragment,
   children: (Node | Node[] | string | number | boolean | null | undefined)[],
 ) {
-  // Intercept slot elements for light-DOM projection (skip if using shadow DOM)
-  const usingShadowDOM = this[PENCIL_COMPONENT_CONTEXT]?.shadow;
-
-  // Update light-DOM slots on each render pass if context exists
-  if (!usingShadowDOM && parent === this && parent instanceof Element) {
-    updateLightDOMSlots(parent);
-  }
-
-  // Flatten children array, intercepting slot elements for projection
+  // Flatten children array, treating slots as regular placeholder elements
   const flatChildren: Node[] = [];
   const flatten = (arr: (Node | Node[] | string | number | boolean | null | undefined)[]): void => {
     for (const child of arr) {
@@ -106,19 +98,7 @@ export function sc(
       } else if (typeof child === "string" || typeof child === "number") {
         flatChildren.push(document.createTextNode(String(child)));
       } else if (child instanceof Node) {
-        if (!usingShadowDOM && isProjectableSlot(child)) {
-          // Always use 'this' (the component host) as the source for light DOM context,
-          // regardless of where the slot appears in the render tree
-          if (this instanceof Element) {
-            const projectedContent = projectSlot(child, this);
-            flatChildren.push(...projectedContent);
-          } else {
-            // Fallback: use the slot's fallback content
-            flatChildren.push(...Array.from(child.childNodes));
-          }
-        } else {
-          flatChildren.push(child);
-        }
+        flatChildren.push(child);
       }
     }
   };

@@ -104,7 +104,9 @@ class HostPlugin extends PencelPlugin {
 
     // Create sc.call(this, [...children]) call and prepend it
     hook.prependStatements.push(
-      createExprStmt(createCallWithThis("sc", [factory.createArrayLiteralExpression(transformedChildren)])),
+      createExprStmt(
+        createCallWithThis("sc", [factory.createThis(), factory.createArrayLiteralExpression(transformedChildren)]),
+      ),
     );
 
     // Return void(0) - Host doesn't render anything itself

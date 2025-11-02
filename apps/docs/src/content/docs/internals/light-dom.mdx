@@ -88,24 +88,6 @@ Whitespace text nodes are preserved. A normalization option is planned for Phase
 - ✅ Elements with matching `slot="name"` attribute
 - ❌ Text nodes (not routed to named slots)
 
-```typescript
-// Default slot filtering
-lightChildren.filter((node) => {
-  if (node.nodeType === Node.ELEMENT_NODE) {
-    return !node.hasAttribute("slot");  // Exclude named slot elements
-  }
-  return true;  // Include text and comments
-});
-
-// Named slot filtering
-lightChildren.filter((node) => {
-  if (node.nodeType === Node.ELEMENT_NODE) {
-    return node.getAttribute("slot") === slotName;
-  }
-  return false;  // No text nodes for named slots
-});
-```
-
 ## State Management
 
 Projection state stored on component instance via symbol:

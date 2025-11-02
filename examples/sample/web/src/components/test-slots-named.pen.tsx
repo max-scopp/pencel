@@ -43,6 +43,11 @@ export class TestSlotsNamed extends HTMLElement implements ComponentInterface {
             </slot>
           </header>
 
+          <div style="outline: 2px dashed red; padding: 0.5rem; margin: 0.5rem 0;">
+            <p>Default Slot</p>
+            <slot></slot>
+          </div>
+
           <main class="card-body">
             <slot name="content">
               <p style="margin: 0; color: #999;">Default body content goes here</p>

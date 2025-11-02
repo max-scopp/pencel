@@ -149,14 +149,28 @@
     <span slot="optional">🏆 Optional Used!</span>
   </wb-test-slots-mixed>
 
-  <h2>Test 5: Advanced Components (TODO MVC & Performance)</h2>
+  <h2>Test 5: Dynamic Slot Changes</h2>
+  <p>Tests slot re-projection when light-DOM content changes:</p>
+
+  <h3>Scenario 5.1: Toggle Content (Manual Update)</h3>
+  <p>Expected: Clicking button toggles between content and fallback</p>
+  <wb-test-slots-dynamic></wb-test-slots-dynamic>
+
+  <h3>Scenario 5.2: Append/Remove Content (Dynamic DOM Changes)</h3>
+  <p>Expected: Slots re-project when children are added/removed dynamically</p>
+  <div id="dynamic-append-test" style="border: 1px solid #ccc; padding: 1rem; margin: 1rem 0; background: #fafafa;">
+    <p>Use the component's buttons to add/remove content and watch slots update:</p>
+    <wb-test-slots-dynamic></wb-test-slots-dynamic>
+  </div>
+
+  <h2>Test 6: Advanced Components (TODO MVC & Performance)</h2>
   <p>Complex real-world component examples:</p>
 
-  <h3>Advanced 5.1: Todo MVC Application</h3>
+  <h3>Advanced 6.1: Todo MVC Application</h3>
   <p>Tests state management, event handling, and dynamic rendering</p>
   <wb-todo-mvc></wb-todo-mvc>
 
-  <h3>Advanced 5.2: Performance Test Suite</h3>
+  <h3>Advanced 6.2: Performance Test Suite</h3>
   <p>Tests rendering performance with various scales</p>
   <!-- <wb-perf-test></wb-perf-test> -->
 
